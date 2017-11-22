@@ -1,0 +1,120 @@
+---
+title: "sliced_block_by_block"
+author: "Xuelong Wang"
+date: '`r Sys.Date()`'
+header-includes:
+   - \usepackage{amsmath, bbm}
+output: pdf_document
+---
+
+# Problem  
+Assume we want to use the SIR method, but the data is too large to be loaded to the memory. 
+
+# Solution
+We can read the data blocks by blocks, and recorded the sufficient statistcs for each block and each slice. At the end, we can add them together. 
+
+# Some details
+
+## Goal 
+$$x_i = \Sigma_{xx}^{-1/2}(x_i-\bar{x}) , ~~ V = \sum_{h = 1}^{H}pm_h m_h^{T}$$
+
+
+## Statistics
+
+$\bar{x}$ the mean vector of the x  
+$\Sigma_{xx}$ sample covaraince  
+$m_h$ mean for each slice  
+$p$ propotion for each slice  
+
+
+## sufficient statistics by block
+- Assume that the data set is splited into B block, each block is represted as $X_b$, and we have
+\[
+X = \begin{bmatrix} 
+    X_{1} \\
+    \vdots \\
+    X_{B}  
+    \end{bmatrix}
+\]
+
+- For each $X_b$, it may contains observations from each slice, thus we may also have 
+
+\[
+X_b = \begin{bmatrix} 
+    X_{b1} \\
+    \vdots \\
+    X_{bh}  
+    \end{bmatrix}
+\]
+
+### Calcuate $\Sigma_{xx}$
+\begin{align*}
+  \Sigma_{xx} &= \frac{1}{n} (X^TX - \bar{X}^T\bar{X})
+\end{align*}
+Since 
+\[
+X = \begin{bmatrix} 
+    X_{1} \\
+    \vdots \\
+    X_{b}
+    \end{bmatrix} ,
+\] thus 
+
+$$X^TX = \sum_{b = 1}^BX_{b}^TX_{b}$$
+$$\bar{X} = \frac{1}{n} \sum_{b=1}^B\mathbbm{1}_{n_b}^TX_b $$
+So all the values can be calcuated by adding the values from all the blocks 
+
+### Calcuate the slice mean $m_h$
+
+The notations used for calculating $m_h$ is a little bit of tedious, it invovles two layers of subscribes
+
+  - one layer is for the block $b$  
+  - one layer is for the slice $h$  
+
+Aassume no block, and calculate $m_h$ in matrix format
+\[ \tilde{m}_h = \frac{\mathbbm{1}_{n_h}^T}{n_h} \left[ X_h - \bar{X} \right] \Sigma_{xx}^{-1/2} ,\]
+
+For each slice data $X_h$, we break down further with blocks
+
+\[
+X_h = \begin{bmatrix} 
+    X_{h1} \\
+    \vdots \\
+    X_{hb}
+    \end{bmatrix} , 
+\mathbbm{1}_{n_h} = \begin{bmatrix} 
+    \mathbbm{1}_{n_{h1}} \\
+    \vdots \\
+    \mathbbm{1}_{n_{hb}}
+    \end{bmatrix}
+\] 
+
+Then the slice mean can be written in the following way
+
+\begin{align*}
+  \tilde{m}_h &= \frac{\mathbbm{1}_{n_h}^T}{n_h} \left[ X_h - \bar{X} \right] \Sigma_{xx}^{-1/2} \\
+              &= \frac{1}{n_h} \left ( \begin{bmatrix}   
+                                        \mathbbm{1}_{n_{h1}}^T \hdots  \mathbbm{1}_{n_{hb}}^T 
+                                       \end{bmatrix} 
+                                       \begin{bmatrix}  
+                                         X_{h1} \\
+                                         \vdots \\
+                                         X_{hb}
+                                       \end{bmatrix} - \bar{X} \right) \Sigma_{xx}^{-1/2} \\
+              &= \frac{1}{n_h} \sum_{b=1}^{b=B} \left(\mathbbm{1}_{n_{hb}}^T X_{hb}-\bar{X}\right) \Sigma_{xx}^{-1/2}
+\end{align*}
+                         
+### The sufficient statistcs for each block b and slice h 
+
+$$S_{hb} = \mathbbm{1}_{n_{hb}}^T X_{hb} , ~ n_{bh}, ~ X_b^TX_b$$
+
+
+Based those statistics we can calculate following
+$$ n = \sum_b \sum_h n_{hb} , ~~\bar{x} =  \frac{\sum_b \sum_h S_{hb}}{n} $$
+
+
+
+
+
+
+
