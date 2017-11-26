@@ -10,7 +10,8 @@ header-includes:
 output: 
    uiucthemes::beamer_illinois: 
        toc: true
-bibliography: bibliography.bib
+       keep_tex: true
+       fig_caption: true
 ---
 
 ---
@@ -18,8 +19,9 @@ nocite: |
   @ref1, @ref2, @ref3, @ref4
 ...
 
-
 # Introduction
+
+## Introduction
 
 ### Challenge 
 1. Memory Barrier  
@@ -38,6 +40,8 @@ Calcuated by scanning the data rows by rows
 Map-Reduced method 
 
 # Classical PCA
+
+## Classical PCA
 
 ### Basic idea of PCA
 
@@ -60,8 +64,8 @@ Map-Reduced method
          \end{bmatrix}}_\text{Loading}
 \end{align*} 
 
-- $Pc_j = d_j\pmb{u_j} = X\pmb{v_j}$ is the jth principle component 
-- The sample variance of $Pc_j$ is $d_j^2/n$
+- $PC_j = d_j\pmb{u_j} = X\pmb{v_j}$ is the jth principle component 
+- The sample variance of $PC_j$ is $d_j^2/n$
 
 ### Basic idea of PCA
 
@@ -81,6 +85,24 @@ Its proportion of the total variation is
 
 ### Follow-up analysis
 
+The PCA approach is applied to a linear regression 
+
+#### Model
+
+\[
+  y = \mathbbm{1}_{n}\alpha_s + U_kD_K\beta_{s,k} + \epsilon_{s,k},
+\]
+
+Where $\epsilon_{s,k} \sim N(0, \sigma^2_{s,k}\pmb{I}_n)$ 
+
+#### LSE and their varaince
+\[
+  \hat{\alpha}_s = \bar{Y},~~ \hat{\beta}_{s,k} = D_k^{-1}U_k^Ty  ~~\textcolor{red}{(PCs~are~ Orthogonal)}
+\]
+
+\[
+  \mathbb{V}(\hat{\sigma}_{s,k}^2) = [y^T(\underbrace{\mathbb{I_n} - \mathbb{J}_n/n - U_kU_k^T}_{\mathbb{I_n} - P_k})y]/(n-k)
+\]
 
 # PCA for Big Data
 
@@ -88,7 +110,83 @@ Its proportion of the total variation is
 
 ### Sufficient Statistics 
 
-### Paralle Computation 
+\begin{block}{factorization therome}
+\[
+  f(x_1, x_2, ... , x_n;\theta) =\phi\left[u(x_1, ... , x_n);\theta \right] h(x_1, ... , x_n)
+\]
+
+\end{block}
+
+- $u(x_1, ... , x_n)$ is the sufficient statistics for $\theta$
+- If $\theta$ is a vector, then $u(x_1, ... , x_n)$, the Joint Sufficient Statistics, will be also a vector.  
+
+### Sufficient Statistics 
+
+\begin{block}{model}
+\[
+  y = \mathbbm{1}_{n}\alpha_s + U_kD_K\beta_{s,k} + \epsilon_{s,k},~\epsilon_{s,k} \sim N(0, \sigma^2_{s,k}\pmb{I}_n)
+\]
+\end{block}
+
+\begin{block}{Log-Likelihood function}
+
+\begin{multline*}
+  \log{\{f(y|x, \alpha, \beta, \sigma)\}} =  \frac{n}{2}\log{2\pi} - \frac{n}{2}\log{\sigma^2} \\ -\frac{1}{2\sigma^2}(c_yy - 2\alpha c_y + 2c_{xy}\beta + n\alpha^2 + 2\alpha c_x^T\beta +\beta^T c_{xx} \beta) 
+\end{multline*}
+
+\end{block}
+
+- Define: $\mathcal{C}(y, X) = (c_0, c_{yy}, c_y, \pmb{c}_{xy}, \pmb{c}_x, C_{xx})$
+
+- Note that $\ell(\alpha, \beta, \sigma)$ only depends on $\mathcal{C}(y, X)$
+
+
+
+### Computation of $\mathcal{C}(y, X)$
+
+```{r, out.width= "60%", fig.align ="center", echo=FALSE, fig.cap = "$c_{0} = n$, $c_{yy} = \\sum_{i=1}^n Y_i^2$, $c_y = \\sum_{i=1}^n Y_i$, $c_{xy} =\\sum_{i=1}^n Y_ix_i$,$c_x = \\sum_{i=1}^n x_i$, $C_{xx} = \\sum_{i=1}^n x_ix_i^T$"}
+knitr::include_graphics("./Alg_1.png") 
+```
+
+- The Algorithm needs $\mathcal{O}((p+1)^2)$ memory size and $\mathcal{O}(n(p+1)^2)$ floating operations
+
+### Sufficient Statistics based on $X_s$ 
+
+\begin{block}{Statistics affected by standardization}
+\[
+  C_{s, xx} = X^T_{s}X_{s},~~ c_{s,xy} = X_s^Ty, ~~~c_x = \mathbbm{1}_{n}^TX_s/n
+\]
+\end{block}
+
+- It can be proved that, those statistics can be computed directly from $\mathcal{C}(y, X)$
+
+\begin{block}{key step}
+\[
+c_{s,k,xy} = V_k^Tc_{s,xy} = V_k^TVDU^Ty= D_kU_k^Ty ~\Rightarrow ~U_k^Ty = D^{-1}_kc_{s,k,xy}    
+\]
+\end{block}
+
+
+### Back to PCA regression
+
+
+\[
+  X_s = UDV^T
+\]
+
+Since n is large, it's not avaiable to calculate U. However, we can only use $V$ and $D$ to get the estimated coefficients and variance value. 
+
+#### PCA regression based on sufficient statistics
+
+1. $D$, $V$ can be calculated by $C_{s, xx} = X_sX_s^T = VD^2V^T$
+1. $U_k^Ty = D^{-1}_kc_{s,k,xy}$, so $\hat{\beta}_{s,k} = D^{-2}_kc_{s,k,xy}$
+1. $\mathbb{V}(\hat{\sigma}_{s,k}^2) = [c_{yy}-c_{yy}/n - c_{s,k,xy}^TD^{-2}_kc_{s,k,xy}]/(n-k)$
+
+
+
+
+
+
 
 ## Parallel Computation with Distributed Systems
 

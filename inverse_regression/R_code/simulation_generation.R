@@ -1,4 +1,4 @@
-root_path <- 
+root_path <- "/Users/Ben/dev/projects/inverse_regression/sim_data/"
 
 source (helpers)
 

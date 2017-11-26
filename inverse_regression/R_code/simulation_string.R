@@ -13,5 +13,4 @@ y_2 <- 3*sin(x%*%beta_1/4) + 3*sin(x%*%beta_2/4) + sigma*e
 y_3 <- 0.4*(x%*%beta_1)^2 + (x%*%beta_2) %>% abs(.) %>% sqrt(.) + sigma*e
 y_4 <- 3*sin(x%*%beta_2/4) + (1+x%*%beta_2)*sigma*e
 y <- list(y_1 = y_1, y_2 = y_2, y_3 = y_3, y_4 = y_4)
-print('hello')
 "
