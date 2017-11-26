@@ -1,0 +1,99 @@
+---
+title: 'Big Data Dimension Reduction using PCA'
+author: "Xuelong Wang"
+date: '`r format(Sys.Date(), "%B %d, %Y")`'      # Month DD, YYYY (Main Slide)
+short-date: '`r format(Sys.Date(), "%m/%d/%Y")`' # MM/DD/YYYY (Lower Right)
+section-titles: false                            # Provides slide headings
+safe-columns: true   # Enables special latex macros for columns.
+header-includes:
+   - \usepackage{amsmath, bbm}
+output: 
+   uiucthemes::beamer_illinois: 
+       toc: true
+bibliography: bibliography.bib
+---
+
+---
+nocite: | 
+  @ref1, @ref2, @ref3, @ref4
+...
+
+
+# Introduction
+
+### Challenge 
+1. Memory Barrier  
+The size of data is too large to load into memeory 
+
+
+2. The computing time  
+Time consuming if only single core used
+
+### Solution
+1. Sufficient statistics  
+Calcuated by scanning the data rows by rows 
+
+
+2. Parallel computation  
+Map-Reduced method 
+
+# Classical PCA
+
+### Basic idea of PCA
+
+#### Singular Value Decomposition
+\begin{gather*} 
+  X_s = UDV^T \text{~~,where~~~} x_{ij,s} = \frac{x_{ij} - \bar{x}}{s_j} \\
+  U = (u_1, \dots, u_r) \text {~is a n by r orthgonal matrix~} \\
+  D = diag(d_1, \dots, d_r) \text {~is a r by r diagonal matrix~} \\
+  V = (v_1, \dots, v_r) \text {~is a p by r orthgonal matrix~} \\
+\end{gather*} 
+
+### Basic idea of PCA
+
+#### Principle Component and Loading
+\begin{align*} 
+  X_s &= \underbrace{\begin{bmatrix} d_1u_1 \hdots  d_ru_r \end{bmatrix} }_\text{PCs}
+         \underbrace{\begin{bmatrix} v_1^T \\
+                         \vdots \\
+                         v_r^T \\
+         \end{bmatrix}}_\text{Loading}
+\end{align*} 
+
+- $Pc_j = d_j\pmb{u_j} = X\pmb{v_j}$ is the jth principle component 
+- The sample variance of $Pc_j$ is $d_j^2/n$
+
+### Basic idea of PCA
+
+\begin{block}{Reduced matrix $X_{s,k}$}
+\begin{align*}
+  X_{s,k} &= \sum_{j=1}^{k}d_j\pmb{u_jv_k} = U_kD_kV_k^T, \text{~~Its Variation ~}  \sum_{j=1}^kd_j^2/n. 
+\end{align*}
+\end{block}
+
+Its proportion of the total variation is 
+
+\[
+\lambda_k = \frac{\sum_{j=1}^{k}d_j^2}{\sum_{j=1}^{r}d_j^2} 
+\]
+
+- If a small k such that $\lambda_k \approx	1$, we can use $U_kD_k$ in the follow up analysis
+
+### Follow-up analysis
+
+
+# PCA for Big Data
+
+## Method Based on A signle Processor
+
+### Sufficient Statistics 
+
+### Paralle Computation 
+
+## Parallel Computation with Distributed Systems
+
+# Simulation
+
+### Setting up
+
+### Reference

@@ -1,0 +1,44 @@
+---
+title: "Big Data Dimension Reduction using PCA"
+author: | 
+  | Xuelong Wang  
+  
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+bibliography: bibliography.bib
+output:
+  beamer_presentation: 
+    toc: true
+    slide_level: 3
+---
+
+
+---
+nocite: | 
+  @ref1, @ref2, @ref3, @ref4
+...
+
+
+# Introduction
+
+## Challenge 
+
+## Solution
+
+# Classical PCA
+
+## Basic idea of PCA
+
+## Follow-up analysis
+
+# PCA for Big Data
+
+## Method Based on A signle Processor
+
+### Sufficient Statistics 
+
+## Paralle Computation 
+
+# Simulation
+
+# Reference
+
