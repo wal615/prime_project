@@ -82,6 +82,15 @@
 \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
 }{}
 \newif\ifbibliography
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight0.8\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
 
 % Prevent slide breaks in the middle of a paragraph:
 \widowpenalties 1 10000
@@ -101,9 +110,9 @@
 Xuelong Wang
 ]{Xuelong Wang}
 \date[
-11/26/2017
+11/28/2017
 ]{
-November 26, 2017
+November 28, 2017
 }
 
 % Option to fake out the raw_tex plugin and, thus, enabling the embedding of
@@ -120,7 +129,7 @@ November 26, 2017
 % See: http://tex.stackexchange.com/questions/181032/ignorenonframetext-option-breaks-frame-background-color-option
 \mode<all>{
 \title[
-Missing ``\texttt{short-title}'' field!
+PCA on Big Data
 ]{
 %\begin{columns}
 %\column{.25\textwidth}
@@ -144,17 +153,36 @@ Big Data Dimension Reduction using PCA
 
 \subsection{Introduction}\label{introduction-1}
 
-\begin{frame}{Challenge}
+\begin{frame}{Challenge of Big Data}
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
+\tightlist
 \item
   Memory Barrier\\
-  The size of data is too large to load into memeory
-\item
-  The computing time\\
-  Time consuming if only single core used
 \end{enumerate}
+
+\begin{itemize}
+\tightlist
+\item
+  The size of data is too large to load into memory
+\item
+  More specifically, n is way more large than p
+\end{itemize}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{1}
+\tightlist
+\item
+  The computation time\\
+\end{enumerate}
+
+\begin{itemize}
+\tightlist
+\item
+  It could be very time consuming if only use single core or cluster
+\end{itemize}
 
 \end{frame}
 
@@ -162,19 +190,41 @@ Big Data Dimension Reduction using PCA
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
+\tightlist
 \item
-  Sufficient statistics\\
-  Calcuated by scanning the data rows by rows
+  Sufficient statistics
+\end{enumerate}
+
+\begin{itemize}
+\tightlist
+\item
+  PCA regression only uses sufficient statistics
+\item
+  Sufficient statistics can be calculated by scanning the data
+  row-by-row
+\end{itemize}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{1}
+\tightlist
 \item
   Parallel computation\\
-  Map-Reduced method
 \end{enumerate}
+
+\begin{itemize}
+\tightlist
+\item
+  Multiple threads
+\item
+  Map-Reduced structure
+\end{itemize}
 
 \end{frame}
 
-\section{Classical PCA}\label{classical-pca}
+\section{PCA Regression}\label{pca-regression}
 
-\subsection{Classical PCA}\label{classical-pca-1}
+\subsection{Classical PCA}\label{classical-pca}
 
 \begin{frame}{Basic idea of PCA}
 
@@ -182,9 +232,9 @@ Big Data Dimension Reduction using PCA
 
 \begin{gather*} 
   X_s = UDV^T \text{~~,where~~~} x_{ij,s} = \frac{x_{ij} - \bar{x}}{s_j} \\
-  U = (u_1, \dots, u_r) \text {~is a n by r orthgonal matrix~} \\
+  U = (u_1, \dots, u_r) \text {~is a n by r orthogonal matrix~} \\
   D = diag(d_1, \dots, d_r) \text {~is a r by r diagonal matrix~} \\
-  V = (v_1, \dots, v_r) \text {~is a p by r orthgonal matrix~} \\
+  V = (v_1, \dots, v_r) \text {~is a p by r orthogonal matrix~} \\
 \end{gather*}
 
 \end{block}
@@ -259,21 +309,20 @@ Where \(\epsilon_{s,k} \sim N(0, \sigma^2_{s,k}\pmb{I}_n)\)
 \]
 
 \[
-  \mathbb{V}(\hat{\sigma}_{s,k}^2) = [y^T(\underbrace{\mathbb{I_n} - \mathbb{J}_n/n - U_kU_k^T}_{\mathbb{I_n} - P_k})y]/(n-k)
+  \mathbb{V}(\hat{\sigma}_{s,k}^2) = [y^T(\underbrace{\mathbb{I}_n - \mathbb{J}_n/n - U_kU_k^T}_{\mathbb{I}_n - P_k})y]/(n-k)
 \]
 
 \end{block}
 
 \end{frame}
 
-\section{PCA for Big Data}\label{pca-for-big-data}
+\section{Sufficient Statistics}\label{sufficient-statistics}
 
-\subsection{Method Based on A signle
-Processor}\label{method-based-on-a-signle-processor}
+\subsection{Def}\label{def}
 
 \begin{frame}{Sufficient Statistics}
 
-\begin{block}{factorization therome}
+\begin{block}{Factorization Theorem}
 \[
   f(x_1, x_2, ... , x_n;\theta) =\phi\left[u(x_1, ... , x_n);\theta \right] h(x_1, ... , x_n)
 \]
@@ -295,14 +344,14 @@ Processor}\label{method-based-on-a-signle-processor}
 
 \begin{block}{model}
 \[
-  y = \mathbbm{1}_{n}\alpha_s + U_kD_K\beta_{s,k} + \epsilon_{s,k},~\epsilon_{s,k} \sim N(0, \sigma^2_{s,k}\pmb{I}_n)
+  y = \mathbbm{1}_{n}\alpha + X\beta + \epsilon,~\epsilon \sim N(0, \sigma^2\pmb{I}_n)
 \]
 \end{block}
 
 \begin{block}{Log-Likelihood function}
 
 \begin{multline*}
-  \log{\{f(y|x, \alpha, \beta, \sigma)\}} =  \frac{n}{2}\log{2\pi} - \frac{n}{2}\log{\sigma^2} \\ -\frac{1}{2\sigma^2}(c_yy - 2\alpha c_y + 2c_{xy}\beta + n\alpha^2 + 2\alpha c_x^T\beta +\beta^T c_{xx} \beta) 
+  \log{\{f(y|x, \alpha, \beta, \sigma)\}} =  \frac{n}{2}\log{2\pi} - \frac{n}{2}\log{\sigma^2} \\ -\frac{1}{2\sigma^2}(c_{yy} - 2\alpha c_y + 2c_{xy}\beta + n\alpha^2 + 2\alpha c_x^T\beta +\beta^T C_{xx} \beta) 
 \end{multline*}
 
 \end{block}
@@ -318,21 +367,39 @@ Processor}\label{method-based-on-a-signle-processor}
 
 \end{frame}
 
-\begin{frame}{Computation of \(\mathcal{C}(y, X)\)}
+\subsection{Sufficient statistics for
+PCA}\label{sufficient-statistics-for-pca}
 
-\begin{figure}
+\begin{frame}{More about \(\mathcal{C}(y, X)\)}
 
-{\centering \includegraphics[width=0.6\linewidth]{./Alg_1} 
-
-}
-
-\caption{$c_{0} = n$, $c_{yy} = \sum_{i=1}^n Y_i^2$, $c_y = \sum_{i=1}^n Y_i$, $c_{xy} =\sum_{i=1}^n Y_ix_i$,$c_x = \sum_{i=1}^n x_i$, $C_{xx} = \sum_{i=1}^n x_ix_i^T$}\label{fig:unnamed-chunk-1}
-\end{figure}
+\begin{block}{Elements of $\mathcal{C}(y, X)$}
+  \begin{gather*}
+  c_{0} = n, ~c_{yy} = \sum_{i=1}^n Y_i^2, ~c_y = \sum_{i=1}^n Y_i, \\
+  ~c_{xy} =\sum_{i=1}^n Y_ix_i,~c_x = \sum_{i=1}^n x_i, ~C_{xx} = \sum_{i=1}^n x_ix_i^T
+  \end{gather*}
+\end{block}
 
 \begin{itemize}
 \tightlist
 \item
-  The Algorithm needs \(\mathcal{O}((p+1)^2)\) memory size and
+  Notice that \(\mathcal{C}(y, X)\) is the Joint sufficient statistics
+  for \((\alpha, \beta, \sigma)\)
+\item
+  All terms are in the summation format, so it can be calculated by
+  reading the data row-by-row
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Computation of \(\mathcal{C}(y, X)\)}
+
+\includegraphics[width=0.7\linewidth]{./Alg_1}
+
+\begin{itemize}
+\tightlist
+\item
+  \(\mathcal{O}((p+1)^2)\) memory size\\
+\item
   \(\mathcal{O}(n(p+1)^2)\) floating operations
 \end{itemize}
 
@@ -342,7 +409,7 @@ Processor}\label{method-based-on-a-signle-processor}
 
 \begin{block}{Statistics affected by standardization}
 \[
-  C_{s, xx} = X^T_{s}X_{s},~~ c_{s,xy} = X_s^Ty, ~~~c_x = \mathbbm{1}_{n}^TX_s/n
+  C_{s, xx} = X^T_{s}X_{s},~~ c_{s,xy} = X_s^Ty, ~~~c_{s, x} = \mathbbm{1}_{n}^TX_s/n
 \]
 \end{block}
 
@@ -353,7 +420,7 @@ Processor}\label{method-based-on-a-signle-processor}
   \(\mathcal{C}(y, X)\)
 \end{itemize}
 
-\begin{block}{key step}
+\begin{block}{Key step}
 \[
 c_{s,k,xy} = V_k^Tc_{s,xy} = V_k^TVDU^Ty= D_kU_k^Ty ~\Rightarrow ~U_k^Ty = D^{-1}_kc_{s,k,xy}    
 \]
@@ -361,15 +428,18 @@ c_{s,k,xy} = V_k^Tc_{s,xy} = V_k^TVDU^Ty= D_kU_k^Ty ~\Rightarrow ~U_k^Ty = D^{-1
 
 \end{frame}
 
+\section{PCA on Big Data}\label{pca-on-big-data}
+
+\subsection{}\label{section}
+
 \begin{frame}{Back to PCA regression}
 
 \[
   X_s = UDV^T
 \]
 
-Since n is large, it's not avaiable to calculate U. However, we can only
-use \(V\) and \(D\) to get the estimated coefficients and variance
-value.
+Since n is large, it's not available to calculate U. However, we can
+only use \(V\) and \(D\) to get the estimated coefficients and variance.
 
 \begin{block}{PCA regression based on sufficient statistics}
 
@@ -389,16 +459,13 @@ value.
 
 \end{frame}
 
-\subsection{Parallel Computation with Distributed
-Systems}\label{parallel-computation-with-distributed-systems}
+\begin{frame}{Parallel Computation with Distributed Systems}
 
-\section{Simulation}\label{simulation}
-
-\begin{frame}{Setting up}
+\includegraphics{./Alg_2.png}
 
 \end{frame}
 
-\begin{frame}{Reference}
+\begin{frame}{Thank you}
 
 \end{frame}
 

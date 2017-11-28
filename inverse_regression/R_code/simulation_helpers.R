@@ -1,3 +1,5 @@
+library(tidyverse)
+library(data.table)
 #### get the slice position of the 
 #### return the break points for each slice
 slice_method <- function(slice, n){
@@ -35,19 +37,34 @@ slice_data_with_index <- function(x, y, slice_number){
 #### generate the simulation data based on the given profile 
 #### return a list of data_file names
 
-generate_simulation <- function(n, p, sim_string, slice_number, root_path) {
-  glue(sim_string) %>% parse(text = .) %>% eval()
+generate_simulation <- function(n = NULL, p = NULL, sim_string, slice_number, root_path) {
+  exp <- glue::glue(sim_string) %>% parse(text = .) 
+  eval(exp) # need to be careful of the envir of "eval" and usage of pipe 
   y_names <- names(y)
-  file_list <- paste0(root_path, deparse(substitute(sim_string)), "_", y_names, ".csv")
+  file_path <- paste0(root_path, names(sim_string), "_", y_names, ".csv")
   
   cat("write the simulation data into disk...\n")
-  for(i in length(y)) {
+  for(i in 1:length(y)) {
     y_i <- y[[i]] %>% as.numeric(.) # data.table need the y to be a vector instead of matrix
-    slice_data_with_index(x, y_i, slice_number) %>% write.csv(., file = file_list[i], row.names = FALSE)
+    slice_data_with_index(x, y_i, slice_number) %>% write.csv(., file = file_path[i], row.names = FALSE)
   }
   
   cat("Done\n")
   
-  file_list
+  paste0(names(sim_string), "_", y_names)
   }
 
+cut_data_mac <- function(input_file, block, root_path) {
+  for (f in input_file) {
+    paste0("Spliting the inputfile ",f, "\n") %>% cat(.)
+    file_path <- paste0(root_path, f, ".csv")
+    cmd_header <- "head -n 1 {file_path} > {root_path}mega_{f}"
+    glue::glue(cmd_header) %>% system(command = .)
+    cmd_split <- "gsplit -n l/{block} --numeric-suffixes=1 {file_path} {root_path}{f}_sim_block_ --verbose"
+    glue::glue(cmd_split) %>% system(command = .)
+    cmd_delete_header <- "sed '1d' {root_path}{f}_sim_block_01 > {root_path}tmpfile; mv {root_path}tmpfile {root_path}{f}_sim_block_01"
+    glue::glue(cmd_delete_header) %>% system(command = .)
+     cat("Done\n")
+  }
+  
+}
