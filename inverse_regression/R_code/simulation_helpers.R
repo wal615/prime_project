@@ -1,5 +1,6 @@
 library(tidyverse)
 library(data.table)
+library(dr)
 #### get the slice position of the 
 #### return the break points for each slice
 slice_method <- function(slice, n){
@@ -52,8 +53,7 @@ generate_simulation <- function(n = NULL, p = NULL, sim_string,
   exp <- glue::glue(sim_string) %>% parse(text = .) 
   eval(exp) # need to be careful of the envir of "eval" and usage of pipe 
   y_names <- names(y)
-  file_path <- paste0(root_path, names(sim_string), "_", y_names, ".csv")
-  
+  file_path <- paste0(root_path, data_name, "_", y_names, ".csv")
   cat("write the simulation data into disk...\n")
   for(i in 1:length(y)) {
     y_i <- y[[i]] %>% as.numeric(.) # data.table need the y to be a vector instead of matrix
@@ -62,7 +62,7 @@ generate_simulation <- function(n = NULL, p = NULL, sim_string,
   
   cat("Done\n")
   
-  paste0(names(sim_string), "_", y_names)
+  paste0(data_name, "_", y_names)
   }
 
 cut_data_mac <- function(input_file, block, root_path) {
