@@ -8,6 +8,7 @@ section-titles: false                            # Provides slide headings
 safe-columns: true   # Enables special latex macros for columns.
 header-includes:
    - \usepackage{amsmath, bbm}
+bibliography: bibliography.bib
 output: 
    uiucthemes::beamer_illinois: 
        toc: true
@@ -15,8 +16,8 @@ output:
 ---
 
 ---
-nocite: | 
-  @ref1, @ref2, @ref3, @ref4
+notice: | 
+  @ref5
 ...
 
 # Introduction
@@ -97,7 +98,7 @@ The PCA approach is applied to a linear regression
 
 Where $\epsilon_{s,k} \sim N(0, \sigma^2_{s,k}\pmb{I}_n)$ 
 
-#### LSE and their varaince
+#### LSE and their variance
 \[
   \hat{\alpha}_s = \bar{Y},~~ \hat{\beta}_{s,k} = D_k^{-1}U_k^Ty  ~~\textcolor{red}{(PCs~are~ Orthogonal)}
 \]
@@ -192,7 +193,7 @@ Since n is large, it's not available to calculate U. However, we can only use $V
 
 #### PCA regression based on sufficient statistics
 
-1. $D$, $V$ can be calculated by $C_{s, xx} = X_sX_s^T = VD^2V^T$
+1. $D$, $V$ can be calculated by $C_{s, xx} = X_s^TX_s = VD^2V^T$
 1. $U_k^Ty = D^{-1}_kc_{s,k,xy}$, so $\hat{\beta}_{s,k} = D^{-2}_kc_{s,k,xy}$
 1. $\mathbb{V}(\hat{\sigma}_{s,k}^2) = [c_{yy}-c_{yy}/n - c_{s,k,xy}^TD^{-2}_kc_{s,k,xy}]/(n-k)$
 
@@ -202,4 +203,11 @@ Since n is large, it's not available to calculate U. However, we can only use $V
 knitr::include_graphics("./Alg_2.png") 
 ```
 
-### Thank you
+### 
+\begin{center}
+\Huge Thank you
+\end{center}
+
+### Reference
+
+

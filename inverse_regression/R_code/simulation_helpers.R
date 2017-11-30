@@ -34,10 +34,21 @@ slice_data_with_index <- function(x, y, slice_number){
         data.frame(.) 
 }
 
+#### order the data by y and append a columan for group 
+#### return a data.frame ordered by y and appended a group colomn
+#### Using the slice function from dr package
+slice_data_with_index_dr <- function(x, y, slice_number){
+  slice <- dr.slices(y, slice_number)$slice.indicator %>% letters[.]
+  data.frame(x = x, y = y, slice = slice)
+}
+
+
 #### generate the simulation data based on the given profile 
 #### return a list of data_file names
 
-generate_simulation <- function(n = NULL, p = NULL, sim_string, slice_number, root_path) {
+generate_simulation <- function(n = NULL, p = NULL, sim_string, 
+                                slice_number, root_path, 
+                                slice_method = slice_data_with_index) {
   exp <- glue::glue(sim_string) %>% parse(text = .) 
   eval(exp) # need to be careful of the envir of "eval" and usage of pipe 
   y_names <- names(y)
@@ -46,7 +57,7 @@ generate_simulation <- function(n = NULL, p = NULL, sim_string, slice_number, ro
   cat("write the simulation data into disk...\n")
   for(i in 1:length(y)) {
     y_i <- y[[i]] %>% as.numeric(.) # data.table need the y to be a vector instead of matrix
-    slice_data_with_index(x, y_i, slice_number) %>% write.csv(., file = file_path[i], row.names = FALSE)
+    slice_method(x, y_i, slice_number) %>% write.csv(., file = file_path[i], row.names = FALSE)
   }
   
   cat("Done\n")
