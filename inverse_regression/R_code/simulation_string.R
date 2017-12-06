@@ -21,5 +21,7 @@ data(mussels)
 y <- list(y = mussels$M)
 x <- data.matrix(mussels[,-3])
 data_name <- 'mussles'
+p <- ncol(x)
+n <- nrow(x)
 cat('Simulation data generating')
 "

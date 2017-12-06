@@ -1,7 +1,3 @@
-prefix <- "sim_block"
-suffix <- formatC(1:5,flag=0,width=2)
-sep <- "_"
-slice_levels <- letters[1:8]
 library(foreach)
 library(tidyverse)
 
@@ -45,21 +41,6 @@ A1self<-function(A) {   ## A: p*p non-negative matrix
 
 
 
-#### get the slice position of the 
-#### return the break points for each slice
-slice_method <- function(slice, n){
-  hslice<-matrix(0,2,slice);  ## i^th slice is hslice[1,i]~hslice[2,i]
-  hslice[1,1]<-1;
-  hslice[2,slice]<-n;
-  for(i in 1:(slice-1)) { 
-    hslice[2,i]<-floor(n*i/slice);
-    hslice[1,i+1]<-hslice[2,i]+1;
-  }
-  hslice
-}
-
-
-
 #### generate file_list 
 #### the return file is a character object
 generate_file_list <- function(prefix = NULL, suffix = NULL, sep =NULL, location, file_name = NA) {
@@ -88,21 +69,33 @@ list_sum <- function(x, y) list (
   total_number_slice = x$total_number_slice + y$total_number_slice
   )
 
-calculate_sufficient_data_block <- function(input_file, slice_level, header){
+calculate_sufficient_data_block <- function(input_file, slice_levels, header){
   
   result <- foreach::foreach(f = input_file, .verbose = TRUE, .combine = list_sum) %dopar% {
-    block_data <- read.table(f, header = FALSE, col.names = header, sep = ",")
+    block_data <- read.table(f, header = FALSE, col.names = header, sep = ",", stringsAsFactors = FALSE)
     x_location <- grep("x", header)
     slice_location <- grep("slice", header)
     x <- block_data[,x_location] %>% data.matrix(.)
     slice <- block_data[,slice_location]
     sum_x_x_t <- crossprod(x)
-    tem_table <- data.table::data.table(x, slice)
-    
-    sum_h <- tem_table[, lapply(.SD, sum), keyby = slice][, slice:=NULL] %>% data.matrix(.)
+
+    # generate the sum_h matrix, in case a block not including all slice leves
+    missing_slice <- subset(slice_levels, !(slice_levels %in% unique(slice)))
+    if (length(missing_slice)>0) {
+       slice <- append(slice, missing_slice)
+       x <- matrix(0, nrow = length(missing_slice), ncol = ncol(x)) %>% 
+              rbind(x, .)
+    }
+
     # using keyby, so sum_h sorted based on slice
+    tem_table <- data.table::data.table(x, slice)
+    sum_h <- tem_table[, lapply(.SD, sum), keyby = slice][, slice:=NULL] %>% data.matrix(.)
     
-    total_number_slice <- table(slice) %>% as.numeric(.)
+    # in case a block does not include all slice levels
+    tem_total <- table(slice)
+    tem_total[missing_slice] <- 0
+    total_number_slice <- as.numeric(tem_total)
+    
     result_b <- list(sum_x_x_t = sum_x_x_t, sum_h = sum_h, total_number_slice = total_number_slice)
   }
   
@@ -144,12 +137,13 @@ calculate_SIR_direction <- function(slice_mean, weight, sig_xx_2){
 }
 
 ## self-defined function for SIR, based on Li(1991)
-## output: eigenvalues, eigenvectors, matrix v 
+## output: eigenvalues, eigenvectors, matrix v, total number: case, the number of slice leves 
 ## read the data block_by_block and calcuate the sufficient statistcs
 ## based on Zhang (2016)
-SIR_blocks <- function (input_file, slice_level, header) {
-  sufficient_stat <- calculate_sufficient_data_block(input_file, slice_level, header)
+SIR_blocks <- function (input_file, slice_levels, header) {
+  sufficient_stat <- calculate_sufficient_data_block(input_file, slice_levels, header)
   m_h <- calculate_slice_mean(sufficient_stat)
   result <- calculate_SIR_direction(slice_mean = m_h, sig_xx_2 = sufficient_stat$sig_xx_2, weight = sufficient_stat$total_number_slice/sum(sufficient_stat$total_number_slice) )
-  result
+  result <- append(result, list(cases = sum(sufficient_stat$total_number_slice), slice_number = length(slice_levels)))
+  result 
 }

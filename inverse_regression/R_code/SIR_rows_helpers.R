@@ -97,15 +97,6 @@ calculate_sufficient_data <- function(x, slice){
   list (sum_x_x_t = sum_x_x_t, sum_h = sum_h, total_number_slice = total_number_slice, sig_xx_2 = sig_xx_2)
 }
 
-#### read data from file 
-sufficient_stat_each_row <- function (x, x_slice, slice_level){
-  x_x_t <- crossprod(x)
-  sum_h <- matrix(0, nrow = length(slice_level), ncol = length(x))      
-  sum_h[match(x_slice, slice_level),] <- x
-  # return which slice this rows belong to 
-  slice_indicator <- match(slice_level, x_slice, nomatch = 0)
-  list(x_x_t = x_x_t, sum_h = sum_h, slice_indicator = slice_indicator)
-}
 
 #### Calculate the sufficient data for each row
 #### return a list of 3 sufficient statistics 
@@ -175,5 +166,7 @@ SIR_rows <- function (input_file, ncol, slice_level) {
   sufficient_stat <- calculate_sufficient_data_disk(input_file, ncol, slice_level)
   m_h <- calculate_slice_mean(sufficient_stat)
   result <- calculate_SIR_direction(slice_mean = m_h, sig_xx_2 = sufficient_stat$sig_xx_2, weight = sufficient_stat$total_number_slice/sum(sufficient_stat$total_number_slice) )
+  result <- append(result, list(cases = sum(sufficient_stat$total_number_slice), slice_number = length(slice_levels)))
+
   result
 }
