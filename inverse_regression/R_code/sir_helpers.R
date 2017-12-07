@@ -110,6 +110,11 @@ read_header <- function(input_file) {
   read.csv(input_file, header = T) %>% colnames(.)
 }
 
+prepare_input <- function(sim_name) {
+     paste0(root_path, sim_name,"_mega.csv") %>% 
+    read.table(., header = TRUE, sep = ",", stringsAsFactors = FALSE)
+}
+
 
 list_sum <- function(x, y) list (
   sum_x_x_t = x$sum_x_x_t + y$sum_x_x_t,
@@ -139,7 +144,7 @@ calculate_sufficient_data_block <- function(input_file, slice_levels, header, ..
     tem_table <- data.table::data.table(x, slice)
     sum_h <- tem_table[, lapply(.SD, sum), keyby = slice][, slice:=NULL] %>% data.matrix(.)
     
-    # in case a block does not include all slice levels
+    # in case a block does not include all slice levels, insert the number of missing slice as 0
     tem_total <- table(slice)
     tem_total[missing_slice] <- 0
     total_number_slice <- as.numeric(tem_total)
@@ -157,44 +162,25 @@ calculate_sufficient_data_block <- function(input_file, slice_levels, header, ..
 
 
 
-#### Calculate the mean for each slice 
-calculate_slice_mean <- function(sufficient_stat) {
-  # Calculate the sum of x*x_t and x_bar and x_bar_each_slice
-  n_h <- sufficient_stat$total_number_slice
-  sum_h <- sufficient_stat$sum_h
-  m_h_original <- sum_h/n_h
-  m_x <- colSums(sum_h)/sum(n_h)
-  sig_xx_2 <- sufficient_stat$sig_xx_2
-  
-  # (m_h* - m_x)^t * sig_xx_1/2 = slice mean 
-  m_h <- (m_h_original - matrix(m_x, nrow(m_h_original), ncol(m_h_original),byrow = TRUE)) %*% sig_xx_2
-  m_h
-}
-
-#### calculate the weighted covariance matrix 
-calculate_SIR_direction <- function(slice_mean, weight, sig_xx_2){
-  
-  # v <- sum of p_h * m_h *m_h_t, which can be done in matrix format
-  v <- t(slice_mean) %*% sweep(slice_mean, 1, weight, "*")
-  v_egien<-eigen(v)
-  v_eigenvalues<-v_egien$values
-  v_eigenvectors<-sig_xx_2%*%v_egien$vectors
-  stat <- apply(v_eigenvectors, 2, function(x) sqrt(sum(x^2)))
-  v_eigenvectors_scale <- sweep(v_eigenvectors, 2, STATS = stat, FUN = "/")
-  list(v = v, v_eigenvectors_scale = v_eigenvectors_scale, eigenvalues = v_eigenvalues)
-}
 
 ## self-defined function for SIR, based on Li(1991)
 ## output: eigenvalues, eigenvectors, matrix v, total number: case, the number of slice leves 
 ## read the data block_by_block and calcuate the sufficient statistcs
 ## based on Zhang (2016)
-SIR_blocks <- function (input_file, slice_levels, header, ...) {
+SIR_blocks <- function (group_name, slice_levels, block, root_path, ...) {
+  
+  input_file <- generate_file_list(prefix = paste0(group_name, "_sim_block"), 
+                                suffix = formatC(1:block,flag=0,width=2), 
+                                sep = "_", location = root_path)
+  header <- read_header(input_file = paste0(root_path, "header_", group_name))
+  
   sufficient_stat <- calculate_sufficient_data_block(input_file, slice_levels, header, ...)
   m_h <- calculate_slice_mean(sufficient_stat)
   result <- calculate_SIR_direction(slice_mean = m_h, sig_xx_2 = sufficient_stat$sig_xx_2, weight = sufficient_stat$total_number_slice/sum(sufficient_stat$total_number_slice) )
   result <- append(result, list(cases = sum(sufficient_stat$total_number_slice), slice_number = length(slice_levels)))
   result 
 }
+ 
 
 ###############################################################################################
 

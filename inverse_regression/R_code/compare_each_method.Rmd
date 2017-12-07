@@ -20,8 +20,9 @@ library(dr)
 # Comparison the block method with dr package and result 
 
 ```{r, echo=FALSE, collapse=TRUE}
-slice_number <- 8 
-block <- 5
+prepare_input("Li_2009") %>% attach(.)
+SIR_blocks(group_name = data_list[1], slice_levels = letters[1:slice_number], block = block, root_path = root_path, .verbose = TRUE)
+
 result_list <- list()
 
 for (i in 1:length(sliced_data_name[[1]])) {
@@ -35,7 +36,7 @@ inputfile <- generate_file_list(prefix = paste0(prefix, "_sim_block"),
                                 sep = "_", location = root_path
                                 )
 
-header <- read_header(input_file = paste0(root_path, "mega_", prefix))
+header <- read_header(input_file = paste0(root_path, "header_", prefix))
 sir_block <- SIR_blocks(input_file = inputfile, slice_levels, header = header, .verbose = TRUE)
 
 ## rows
@@ -53,31 +54,4 @@ result_list
 result_list <- list()
 
 
-for (i in 1:length(sliced_data_name[[2]])) {
-  
-  prefix <- sliced_data_name[[2]][i]
-  slice_level <- letters[1:slice_number] 
-  
-  ## block
-  inputfile <- generate_file_list(prefix = paste0(prefix, "_sim_block"), 
-                                  suffix = formatC(1:block,flag=0,width=2), 
-                                  sep = "_", location = root_path
-  )
-  
-  header <- read_header(input_file = paste0(root_path, "header_", prefix))
-  sir_block <- SIR_blocks(input_file = inputfile, slice_levels, header = header)
-  
-  ## rows
-  inputfile <- paste0(root_path, prefix, ".csv")
-  sir_row <- SIR_rows(inputfile, ncol = 4, slice_levels)
-  
-  ## dir
-  input_data <- read.csv(inputfile)
-  sir_dr <- dr(y ~., data = input_data[, -ncol(input_data)], method = "sir", nslice = slice_number)
-  result_list[[i]] <- list(block = sir_block$eigenvalues, row = sir_row$eigenvalues, dr = sir_dr$evalues)
-}                    
-
-cat("result for", sliced_data_name[[2]], "\n")
-
-result_list
 ```
