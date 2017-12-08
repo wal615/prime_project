@@ -110,9 +110,9 @@ read_header <- function(input_file) {
   read.csv(input_file, header = T) %>% colnames(.)
 }
 
-prepare_input <- function(sim_name) {
-     paste0(root_path, sim_name,"_mega.csv") %>% 
-    read.table(., header = TRUE, sep = ",", stringsAsFactors = FALSE)
+prepare_input <- function(sim_name, root_path) {
+     paste0(root_path, sim_name,"_mega.rds") %>% 
+    readRDS(.)
 }
 
 

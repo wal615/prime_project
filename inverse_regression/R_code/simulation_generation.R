@@ -4,7 +4,7 @@ root_path <- "../sim_data/"
 source("./simulation_helpers.R")
 source("./simulation_string.R")
 
-n = 1000
+n = 1000000
 p = 6
 slice_number <- 8 
 block <- 5

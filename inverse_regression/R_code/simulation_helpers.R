@@ -110,12 +110,12 @@ generate_simulation <- function(n = NULL,
 
   cat("write the mega data into disk...\n")
 
-  data.frame(n = n, p = p, 
+  list(n = n, p = p, 
              data_name = data_name, 
              slice_number = slice_number, 
              block = block, 
              data_list = paste0(data_name, "_", y_names)) %>% 
-  write.csv(., file = paste0(root_path, data_name, "_mega", ".csv"), row.names = FALSE)
+  saveRDS(object = . , file = paste0(root_path, data_name, "_mega", ".rds"))
   
   cat("Done\n")
   
