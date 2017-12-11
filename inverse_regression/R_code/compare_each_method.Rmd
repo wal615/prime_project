@@ -8,7 +8,7 @@ output: html_document
 
 ```{r, include=FALSE}
 setwd("~/dev/projects/inverse_regression/R_code/")
-root_path <- "../sim_data/"
+root_path <- "../../../dr_sim_data/"
 
 ####################################################################
 source("sir_helpers.R")
@@ -20,7 +20,7 @@ library(dr)
 # Comparison the block method with dr package and result 
 
 ```{r, include=FALSE}
-input <- prepare_input("Li_2009", root_path)
+input <- prepare_input("4_Li_2009", root_path)
 
 result_block <- mapply(FUN = SIR_blocks, 
                 group_name = input$data_list, 

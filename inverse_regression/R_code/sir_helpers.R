@@ -148,7 +148,6 @@ calculate_sufficient_data_block <- function(input_file, slice_levels, header, ..
     tem_total <- table(slice)
     tem_total[missing_slice] <- 0
     total_number_slice <- as.numeric(tem_total)
-    
     result_b <- list(sum_x_x_t = sum_x_x_t, sum_h = sum_h, total_number_slice = total_number_slice)
   }
   

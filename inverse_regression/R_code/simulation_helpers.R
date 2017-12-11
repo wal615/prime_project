@@ -6,7 +6,7 @@ library(dr)
 #### return a data.frame ordered by y and appended a group colomn
 #### Using the slice function from dr package
 slice_data_with_index_dr <- function(x, y, slice_number){
-  slice <- dr.slices(y, slice_number)$slice.indicator %>% letters[.]
+  slice <- dr.slices.arc(y, slice_number)$slice.indicator %>% letters[.]
   data.frame(x = x, y = y, slice = slice)
 }
 

@@ -1,17 +1,16 @@
-setwd("~/dev/projects/inverse_regression/R_code/")
-root_path <- "../../../dr_sim_data/"
+root_path <- "../../../../dr_sim_data/"
 
-source("./simulation_helpers.R")
-source("./simulation_string.R")
+source("../simulation_helpers.R")
+source("../simulation_string.R")
 
-n = 10000
-p = 6
+n <- 10^(3:6)
 slice_number <- 8 
 block <- 5
 file_list <- c(Li_2009)
 
-mapply(FUN = generate_simulation, sim_string = file_list, n = c(n, 0), p = c(p, 0), 
+mapply(FUN = generate_simulation, n = n, p = rep(6,4), 
        MoreArgs = list(root_path = root_path,
+           		      sim_string = file_list,
            		    slice_number = slice_number, 
    				    slice_method = slice_data_with_index_dr, 
        				  cut_method = cut_data_mac),
@@ -24,6 +23,3 @@ mapply(FUN = generate_simulation, sim_string = file_list, n = c(n, 0), p = c(p, 
 # for (i in (1:length(sliced_data_name))) {
 #   cut_data_mac(input_file = sliced_data_name[[i]], root_path = root_path, block = 5)
 # }
-
-
-
