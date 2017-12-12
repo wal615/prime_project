@@ -10,10 +10,10 @@ file_list <- c(Li_2009)
 
 mapply(FUN = generate_simulation, n = n, p = rep(6,4), 
        MoreArgs = list(root_path = root_path,
-           		      sim_string = file_list,
-           		    slice_number = slice_number, 
-   				    slice_method = slice_data_with_index_dr, 
-       				  cut_method = cut_data_mac),
+           		        sim_string = file_list,
+           		      slice_number = slice_number, 
+   				          slice_method = slice_data_with_index_dr, 
+       				        cut_method = cut_data_mac),
        SIMPLIFY = TRUE)
 
 # for (i in 1:length(file_list)) {
