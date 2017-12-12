@@ -13,7 +13,7 @@ mapply(FUN = generate_simulation, n = n, p = rep(6,4),
            		        sim_string = file_list,
            		      slice_number = slice_number, 
    				          slice_method = slice_data_with_index_dr, 
-       				        cut_method = cut_data_mac),
+       				        cut_method = cut_data_linux),
        SIMPLIFY = TRUE)
 
 # for (i in 1:length(file_list)) {
