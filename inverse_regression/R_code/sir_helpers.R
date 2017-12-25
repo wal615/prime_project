@@ -3,7 +3,7 @@ library(tidyverse)
 
 ###############################################################################################
 
-### helper functions for slice inverse regression ###
+### shared helper functions for slice inverse regression ###
  
 ###############################################################################################
 
@@ -68,7 +68,7 @@ calculate_SIR_direction <- function(slice_mean, weight, sig_xx_2){
 }
 
 #### chi_square test for sir 
-dr_test_sir<-function(object,numdir=4,...) {
+dr_test_sir<-function(object,numdir=4) {
 #compute the sir test statistic for the first numdir directions
     e<-sort(object$eigenvalues)
     p<-length(object$eigenvalues)
@@ -86,6 +86,57 @@ dr_test_sir<-function(object,numdir=4,...) {
     dimnames(z)<-list(rr,c("Stat","df","p.value")) 
     z
 }
+
+#### the number of selected direction against the number of sample size
+# plot_dr_test <- function (object)
+
+#### performancce the inverse regression with across different sample size n
+#### return a nested list of eigenvalues and eigenvectors and other values for each sample_size
+
+dr_main <- function(group_name, dr_method, root_path) {
+    input <- prepare_input(group_name, root_path)
+    result_block <- mapply(FUN = dr_method,
+                    group_name = input$data_list,
+                      MoreArgs = list(slice_levels = letters[1:input$slice_number],
+                                             block = input$block,
+                                         root_path = root_path),
+                      SIMPLIFY = FALSE)
+    names(result_block) <- input$data_list
+    result_block
+  }
+
+#### performs a direction test for the given fitted inverse regresson methods 
+#### the object is expected to be a nested list
+dr_test_main <- function (object, size_seq, test_method) {
+  dr_test_all <- list()
+  for (i in 1:length(size_seq)) {
+    test_result <- mapply(test_method, object = object[[i]], SIMPLIFY = FALSE, USE.NAMES = TRUE)  
+    test_result$log_n <- size_seq[i]
+    dr_test_all[[i]] <- test_result
+    names(dr_test_all)[i] <- names(object)[i]
+  }
+
+  dr_test_all
+  
+}
+
+plot_test_result <- function (object, p_value) {
+  num_log_n <- length(object)
+  n_sim <- length(object[[1]]) - 1 # the last element of the object[[1]] is the n_log   
+
+  for (j in (1:n_sim)) {
+    n_direct <- numeric(num_log_n)
+    log_n <- numeric(num_log_n)
+    for(i in (1:num_log_n)){
+      # all the location is based the output of direction test 
+      n_direct[i] <- sum(object[[i]][[j]][,3] < p_value)
+      log_n[i] <- object[[i]]$log_n
+    }
+    plot(log_n, n_direct, sub = names(object[[1]])[j]) # the object is a nested list
+  }
+    
+}
+
 
 ###############################################################################################
 

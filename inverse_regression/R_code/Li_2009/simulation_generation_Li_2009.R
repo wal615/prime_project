@@ -2,18 +2,19 @@ root_path <- "../../../../dr_sim_data/"
 
 source("../simulation_helpers.R")
 source("../simulation_string.R")
-
-n <- 10^(3:6)
+size_seq <- seq(3,4,0.25) 
+n <- 10^(size_seq)
 slice_number <- 8 
 block <- 5
 file_list <- c(Li_2009)
 
-mapply(FUN = generate_simulation, n = n, p = rep(6,4), 
+mapply(FUN = generate_simulation, n = n, 
        MoreArgs = list(root_path = root_path,
-           		        sim_string = file_list,
-           		      slice_number = slice_number, 
-   				          slice_method = slice_data_with_index_dr, 
-       				        cut_method = cut_data_mac),
+           		      sim_string = file_list,
+           		    slice_number = slice_number, 
+   				    slice_method = slice_data_with_index_dr, 
+       				  cut_method = cut_data_mac,
+       				           p = 6),
        SIMPLIFY = TRUE)
 
 # for (i in 1:length(file_list)) {

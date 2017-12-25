@@ -14,41 +14,58 @@ root_path <- "../../../../dr_sim_data/"
 source("../sir_helpers.R")
 source("simulation_generation_Li_2009.R")
 library(dr)
+size_seq <- seq(3,4,0.25) 
 #####################################################################
 ```
 
 # Comparison the block method with dr package and result 
 
-```{r, include=FALSE}
+```{r, echo=FALSE}
+##### calcuate results for methods
+## calcuate the sir results by block_sir
 library(doParallel)
 registerDoParallel(4)
-for (i in 3:6) {
-input <- prepare_input(paste0(i, "_Li_2009"), root_path)
 
-result_block <- mapply(FUN = SIR_blocks, 
-                group_name = input$data_list, 
-                  MoreArgs = list(slice_levels = letters[1:input$slice_number], 
-                                         block = input$block, 
-                                     root_path = root_path),
-                  SIMPLIFY = FALSE)
+result_block <- mapply(FUN = dr_main, 
+                       group_name = paste0(size_seq, "_Li_2009"), 
+                       MoreArgs = list(dr_method = SIR_blocks,
+                                       root_path = root_path),
+                       SIMPLIFY = FALSE)
 
-test_result_block <- mapply(dr_test_sir, object = result_block, SIMPLIFY = FALSE)
+## calculate the test result of the block_sir method
+test_block <- dr_test_main(result_block, size_seq, test_method = dr_test_sir)
 
-## dir
+## calcuate the sir results by dr function
+result_dr_all <- list()
+
+for (i in size_seq) {
+  input <- prepare_input(sim_name = paste0(i, "_Li_2009"), root_path)
 result_dr <- list()
-for( f in input$data_list){
-  input_data <- read.csv(paste0(root_path, f, ".csv"))
-  result_dr <- append(result_dr, list(dr(y ~., data = input_data[, -ncol(input_data)], method = "sir", nslice = input$slice_number, slice.function=dr.slices.arc)))
-}
+  for( f in input$data_list){
+    input_data <- read.csv(paste0(root_path, f, ".csv"))
+    result_dr <- append(result_dr, 
+                        list(dr(y ~., 
+                                data = input_data[, -ncol(input_data)], 
+                                method = "sir", 
+                                nslice = input$slice_number,
+                                slice.function=dr.slices.arc)))
+  }
 names(result_dr) <- input$data_list
-
-test_result_dr <- mapply(dr.test, object = result_dr, SIMPLIFY = FALSE)
-
-for ( i in 1:length(input$data_list)) {
-  print(test_result_block[i])
-  print(test_result_dr[i])
-  cat("#########################################################\n")
+result_dr_all <- append(result_dr_all, result_dr)
 }
 
-}
+## calculate the test result of the dr.test method
+test_dr <- mapply(dr.test, object = result_dr_all, SIMPLIFY = FALSE)  
+
+##### compare the results
+test_block[[1]][[1]] - test_dr[[1]]
+last(test_block)[[length(last(test_block))-1]] - last(test_dr)
+
+# test_result_dr <- mapply(dr.test, object = result_dr, SIMPLIFY = FALSE)
+# 
+# for ( i in 1:length(input$data_list)) {
+#   print(test_result_block[i])
+#   print(test_result_dr[i])
+#   cat("#########################################################\n")
+# }
 ```
