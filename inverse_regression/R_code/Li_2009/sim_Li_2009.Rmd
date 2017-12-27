@@ -58,7 +58,10 @@ result_dr_all <- append(result_dr_all, result_dr)
 test_dr <- mapply(dr.test, object = result_dr_all, SIMPLIFY = FALSE)  
 
 ##### compare the results
+
+## the first simulation result compare
 test_block[[1]][[1]] - test_dr[[1]]
+## the last simulation result compare
 last(test_block)[[length(last(test_block))-1]] - last(test_dr)
 
 # test_result_dr <- mapply(dr.test, object = result_dr, SIMPLIFY = FALSE)
