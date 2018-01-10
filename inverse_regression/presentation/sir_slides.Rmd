@@ -4,7 +4,7 @@ short-title: "SIR"
 author: "Xuelong Wang"
 date: '`r format(Sys.Date(), "%B %d, %Y")`'      # Month DD, YYYY (Main Slide)
 short-date: '`r format(Sys.Date(), "%m/%d/%Y")`' # MM/DD/YYYY (Lower Right)
-section-titles: false                            # Provides slide headings
+section-titles: true                           # Provides slide headings
 safe-columns: true   # Enables special latex macros for columns.
 header-includes:
    - \usepackage{txfonts, amsmath, bbm, graphicx}
@@ -16,12 +16,11 @@ output:
 
 ---
 notice: | 
-  @ref5
+  @ref6
 ...
 
 # Introduction
 
-## Introduction
 
 ### Regression Analysis
 - Study the relationship of a response variable y and its explanatory variable x
@@ -37,8 +36,6 @@ notice: |
 - We need to reduce the dimension of x so that it's easier for visualizing data and fitting models  
 
 # A Model for dimension reduction
-
-## A Model for dimension reduction
 
 ### A Model for dimension reduction 
 \begin{block}{Model Settings}
@@ -73,8 +70,6 @@ $f$ is an arbitrary unknown function on $\mathcal{R}^{p+1}$ \\
 
 
 # Inverse Regression 
-
-## Inverse Regression
 
 ### Inverse Regression
 
@@ -140,7 +135,6 @@ That leads to Sliced Inverse Regression Method
 
 # Sliced Inverse Regression Method
 
-## Sliced Inverse Regression Method
 
 ### Sliced Inverse Regression Method
 
@@ -166,8 +160,6 @@ That leads to Sliced Inverse Regression Method
 
 # Simulation 
 
-## Simulation 
-
 ### Simulation 1
 \begin{exampleblock}{Simulation settings}
 \begin{align*}
@@ -190,7 +182,7 @@ knitr::include_graphics("./pic/result_1.png")
 
 - Repeat the simulation 100 times to generate the empirical distribution of ${\hat{\beta}}'s$  
 
-- Since we want to compare two directions, $\beta$ and $\hat{\beta}$ are standardized 
+- $\beta$ and $\hat{\beta}$ are standardized 
 
 
 ### Simulation 2
@@ -203,7 +195,7 @@ y &= \frac{x_1}{0.5 + {(x_2 + 1.5)}^2} + \sigma \cdot \epsilon
     \item $n = 400$
     \item $\sigma = (0.5, ~1) $
     \item The number of slice $H = (5, 10, 20)$ 
-    \item Two component $\beta_1 = (1,0,0,0,0), ~ \beta_2 = (0,1,0,0,0)$
+    \item Two components $\beta_1 = (1,0,0,0,0), ~ \beta_2 = (0,1,0,0,0)$
 \end{itemize}
 \end{exampleblock}
 
@@ -217,7 +209,7 @@ R^2(\hat{b}) = \max_{\beta\in \mathcal{B}}\frac{(\hat{b}\Sigma_{xx}\beta')^2}{\h
 Squared correlation coefficient between the bx and $\beta_1x, \dots , \beta_kx$
 Invariant under affine transformation of x
 
-#### Criterion of the subspace $B$
+#### Criterion of the subspace $\mathcal{B}$
 \[
 R^2(\hat{\mathcal{B}}) = \frac{\sum_{k=1}^{K}R^2(\hat{b}_k)}{K}
 \]
