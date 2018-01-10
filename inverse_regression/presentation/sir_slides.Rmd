@@ -1,0 +1,215 @@
+---
+title: 'Sliced Inverse Regression For Dimension Reduction (Ker-Chau Li)'
+short-title: "SIR"
+author: "Xuelong Wang"
+date: '`r format(Sys.Date(), "%B %d, %Y")`'      # Month DD, YYYY (Main Slide)
+short-date: '`r format(Sys.Date(), "%m/%d/%Y")`' # MM/DD/YYYY (Lower Right)
+section-titles: false                            # Provides slide headings
+safe-columns: true   # Enables special latex macros for columns.
+header-includes:
+   - \usepackage{amsmath, bbm, graphicx}
+bibliography: bibliography.bib
+output: 
+   uiucthemes::beamer_illinois: 
+       toc: true
+       pandoc_args: "--self-contained"
+---
+
+---
+notice: | 
+  @ref5
+...
+
+# Introduction
+
+## Introduction
+
+### Regression Anlysis
+- Study the relationship of a response variable y and its explanatory variable x
+- Parametric model  
+   + e.g. Linear Regression  
+- Nonparametric model  
+   + e.g. Locall smoothing  
+
+### Curse of Dimensionality
+- When the dimension of x gets higher, the number of observation gets much smaller
+- Standard methods probably will break down due to the sparseness of data
+- We need to reduce the dimemsion of x so that it's easier for visualized data and fitting model  
+
+# Model
+
+## Model
+
+### Model 
+\begin{block}{Model Settings}
+\[
+  y = f(\beta_1x, \dots, \beta_kx, \epsilon),
+\]
+$x$ is explanatory variable, column vectors on $R^p$,\\   
+$\beta's$ is unknown row vectors, \\
+$\epsilon$ is independent of $x$, \\
+$f$ is an arbitrary unkonw function on $R^{p+1}$ \\
+\end{block}
+\[ (\beta_1x, \dots, \beta_kx)' \]
+
+- Projection of the $x\in R^p$ into $R^k$, we assume that k is much smaller than p
+- Captures all we need to know about y
+
+### Model
+\begin{block}{Effective dimension-reduction}
+Effective dimension-reduction directions (e.d.r) : any linear combination of $\beta's$ \\
+$B = Span(\beta)$: The linear space spaned by $\beta's$\\
+\end{block}
+
+Note: Since $f$ is arbitrary, only the $B$ can be identified
+
+- Inverse Regression one of the methods of estimating the Effective dimension-reduction directions
+
+
+# Inverse Regression 
+
+## Inverse Regression
+
+### Inverse Regression
+
+#### Inverse Regression
+- Regress x against of y
+- From one p-dimenstion problem to p One-dimenstion regression problems
+
+### Inverse Regression Curve
+
+#### Inverse Regression Curve
+\[
+  E(x|y) \in R^p
+\] is a curve as y varies,
+\[
+  E(E(x|y)) = E(x)
+\] is the center of $E(x|y)$,
+
+\[ E(x|y) - E(x)\] is the centered inverse regression curve
+
+- With certain conditions, the centred inverse curve is related with the e.d.r.
+
+### Inverse Regression
+
+#### Assumption 
+\[
+  y = f(\beta_1x, \dots, \beta_kx, \epsilon), \Leftrightarrow y|\beta indepndent x  
+\]
+
+#### Condition 3.1 
+For any $b$ in $R^p$, 
+\[E(bx|\beta_1x, \dots, \beta_kx) = c_0 + c_1\beta_1x, \dots, c_k\beta_kx\]
+
+
+### e.d.r and Inverser Regression Curve
+
+\begin{block}{Theorem 3.1} 
+Under the previous Conditions,
+\[ E(x|y) - E(x) \subset Span(\beta_k\Sigma_{xx}),k = 1, \dots, K\]
+The centered inverse regression curve is contained in the linear subsapce spannned by $\beta_k\Sigma_{xx}$
+\end{block}
+
+### e.d.r and Inverser Regression Curve
+\begin{block}{Corollary 3.1} 
+\[ z = \Sigma_{xx}^{-1/2}[x-E(x)] \]
+x is the standardized 
+
+\[ f(\beta_1x, \dots, \beta_kx, \epsilon) \Rightarrow f(\eta_1x, \dots, \eta_kx, \epsilon) \Rightarrow \beta_k = \eta_k \Sigma_{xx}^{-1/2}\]
+
+\[E(z|y) - E(z) \subset Span(\eta_k), k=1 ,\dots, K\]
+\end{block}
+
+### An Important consequence 
+
+- The covariance matrix $cov(E(z|y))$ is degenerate in any direction which is orthogonal to the $\eta's$
+- ${\eta_k}^{'}s( k =1, \dots, K)$ associated with largest K eigenvalues of  $cov(E(z|y))$
+
+#### How to estimate the $cov(E(z|y))$
+That leads to Sliced Inverse Regression Method
+
+# Sliced Inverse Regression Method
+
+## Sliced Inverse Regression Method
+
+### Sliced Inverse Regression Method
+
+1. Standardize x 
+    + $z_i = \Sigma_{xx}^{-1/2}(x_i - \bar{x})(i = 1, \dots, n)$
+
+2. Divide the range of y into H slices, $I_1, \dots , I_H$
+    + $\hat{p}_h = (1/n)\sum_{i=1}^n(I_{y_i\in I_h})$
+
+3. Calcuate the sample mean for each slice
+    + $\hat{m}_h = (1/n\hat{p}_h) \sum_{y_i \in I_h}z_i$ 
+
+4. Conduct a (weighted) principle component analysis on covariance matrix
+    + $\hat{V} = \sum_{h=1}^{H} \hat{p}_h\hat{m}_h\hat{m}_h'$
+
+5. Select the K largest eigenvectors (row vectors) 
+    + $\hat{\eta}_k (k = 1, ... , K)$
+
+6. Transform the eigenvectors back to original scale 
+    + $\hat{\beta}_k = \hat{\eta}_k \hat{\Sigma}_{xx}^{-1/2}$
+
+
+
+# Simulation 
+
+## Simulation 
+
+### Simulation 1
+\begin{exampleblock}{Simulation settings}
+\begin{align*}
+y &= x_1 + x_2 + x_3 + x_4 + 0x_5 + \epsilon 
+\end{align*}
+\begin{itemize}
+    \item $n = 100$
+    \item Only one component $\beta = (1,1,1,1,0)$
+    \item Normalized target $\beta^* = (0.5, 0.5, 0.5, 0.5, 0)$
+    \item The number of slice $H = (5, 10, 20)$
+\end{itemize}
+\end{exampleblock}
+
+
+### Simulation 1 results
+
+```{r, echo=FALSE, out.height= 0.1}
+knitr::include_graphics("./pic/result_1.png") 
+```
+- Repeat the simulation 100 times to generate the emprical distribution of $\beta's$
+
+
+### Simulation 2
+\begin{exampleblock}{Simulation settings}
+\begin{align*}
+y &= x_1(x_1 + x_2 + 1) + \sigma \cdot \epsilon \\
+y &= \frac{x_1}{0.5 + {(x_2 + 1.5)}^2} + \sigma \cdot \epsilon
+\end{align*}
+\begin{itemize}
+    \item $n = 400$
+    \item $\sigma = (0.5, ~1) $
+    \item The number of slice $H = (5, 10, 20)$ 
+    \item Two component $\beta_1 = (1,0,0,0,0), ~ \beta_2 = (0,1,0,0,0)$
+\end{itemize}
+\end{exampleblock}
+
+
+### Simulation 1 results
+
+```{r, echo=FALSE, }
+knitr::include_graphics("./pic/result_2.png")
+knitr::include_graphics("./pic/result_3.png")
+```
+
+- Repeat the simulation 100 times to generate the emprical distribution of $\beta's$
+
+
+###
+\begin{center}
+\Huge Thank you
+\end{center}
+
+### Reference
+
+
