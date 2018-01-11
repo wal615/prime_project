@@ -238,7 +238,7 @@ knitr::include_graphics("./pic/result_3.png")
 ### Graphics 
 ![Response surface of simulation 3](./pic/surface.png){height=100px}
 
-#### How to visulize the data?
+#### How to visualize the data?
 \href{http://www.stat.ucla.edu/~kcli/sir-plot.pdf}{Directions found by SIR} 
 
 ###
