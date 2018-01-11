@@ -171,7 +171,7 @@ That leads to Sliced Inverse Regression Method
 y &= x_1 + x_2 + x_3 + x_4 + 0x_5 + \epsilon 
 \end{align*}
 \begin{itemize}
-    \item $n = 100$
+    \item $n = 100,~ p=5$
     \item Only one component $\beta = (1,1,1,1,0)$
     \item Normalized target $\beta^* = (0.5, 0.5, 0.5, 0.5, 0)$
     \item The number of slice $H = (5, 10, 20)$
@@ -197,10 +197,10 @@ y &= x_1(x_1 + x_2 + 1) + \sigma \cdot \epsilon \\
 y &= \frac{x_1}{0.5 + {(x_2 + 1.5)}^2} + \sigma \cdot \epsilon
 \end{align*}
 \begin{itemize}
-    \item $n = 400$
+    \item $n = 400, ~p=10$
     \item $\sigma = (0.5, ~1) $
     \item The number of slice $H = (5, 10, 20)$ 
-    \item Two components $\beta_1 = (1,0,0,0,0), ~ \beta_2 = (0,1,0,0,0)$
+    \item Two components $\beta_1 = (1,0,0,\dots,0), ~ \beta_2 = (0,1,0,\dots,0)$
 \end{itemize}
 \end{exampleblock}
 
