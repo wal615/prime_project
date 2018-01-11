@@ -23,7 +23,7 @@ notice: |
 
 
 ### Regression Analysis
-- Study the relationship of a response variable y and its explanatory variable x
+- Study the relationship of a response y and its covariates x
 - Use the information of x to explain y 
 - Parametric model  
     + Linear Regression model 
@@ -33,7 +33,7 @@ notice: |
 ### Curse of Dimensionality
 - When the dimension of x gets higher, observations are far away from each other
 - Standard methods probably will break down due to the sparseness of data
-- We need to reduce the dimension of x so that it's easier for visualizing data and fitting models  
+- One solustion is reducing the demension of x  
 
 # A Model for dimension reduction
 
@@ -45,28 +45,28 @@ notice: |
 $x$ is explanatory variable, column vectors on $\mathcal{R}^p$,\\   
 $\beta's$ are unknown row vectors, \\
 $\epsilon$ is independent of $x$, \\
-$f$ is an arbitrary unknown function on $\mathcal{R}^{p+1}$ \\
+$f$ is an arbitrary unknown function on $\mathcal{R}^{k+1}$ \\
 \end{block}
-- $(\beta_1x, \dots, \beta_kx)'$ is the projection of the $x\in \mathcal{R}^p$ into $\mathcal{R}^K$, $K<p$  
+- $(\beta_1x, \dots, \beta_kx)'$ is the projection of the $x\in \mathcal{R}^p$ into $\mathcal{R}^K$, $K<<p$  
 - Captures all we need to know about y  
 
 ### A Model for dimension reduction
 
 \begin{block}{Effective dimension-reduction}
 \begin{enumerate}
-  \item Effective dimension-reduction directions (e.d.r)
+  \item Effective dimension-reduction direction (e.d.r)
     \begin{itemize}
-      \item Any Linear combination of $\beta's$
+      \item A Linear combination of $\beta's$
     \end{itemize}
   \item A Linear space  $\mathcal{B}$:
     \begin{itemize}
-     \item Spanned by $\beta's$ $\Leftrightarrow~Span(\beta)~$
+     \item Spanned by $\beta's$ $(Span(\beta))~\Leftrightarrow~$ All the possible linear combination of $\beta's$
     \end{itemize}
 \end{enumerate}
 \end{block}
 
 - Since $f$ is arbitrary, only the $\mathcal{B}$ can be identified  
-- Inverse Regression one of the methods of estimating the Effective dimension-reduction directions
+- Inverse Regression is one of the methods of estimating the Effective dimension-reduction space ($\mathcal{B}$)
 
 
 # Inverse Regression 
@@ -97,11 +97,11 @@ $f$ is an arbitrary unknown function on $\mathcal{R}^{p+1}$ \\
 
 Conditional Independence
 \[
-  y = f(\beta_1x, \dots, \beta_kx, \epsilon) \Leftrightarrow y|\beta x       \Perp x  
+  y = f(\beta_1x, \dots, \beta_kx, \epsilon) \Leftrightarrow (y \Perp x) |\beta x  
 \]
 
 #### Condition 3.1 
-
+Linear Condition  
 For any $b$ in $\mathcal{R}^p$, 
 \[E(b\boldsymbol{x}|\beta_1\boldsymbol{x} = \beta_1x, \dots, \beta_k\boldsymbol{x} = \beta_kx) = c_0 + c_1\beta_1x, \dots, c_k\beta_kx\]
 
@@ -135,8 +135,13 @@ That leads to Sliced Inverse Regression Method
 
 # Sliced Inverse Regression Method
 
+### Slice Inverse Regression Method
+   
+![](./pic/sir_method.png){width=500px}
 
-### Sliced Inverse Regression Method
+
+
+### Sliced Inverse Regression Method with detials
 
 1. Standardize x 
     + $z_i = \Sigma_{xx}^{-1/2}(x_i - \bar{x})(i = 1, \dots, n)$
@@ -230,6 +235,11 @@ knitr::include_graphics("./pic/result_3.png")
 
 - Repeat the simulation 100 times to generate the empirical distribution of $\beta's$
 
+### Graphics 
+![Response surface of simulation 3](./pic/surface.png){height=100px}
+
+#### How to visulize the data?
+\href{http://www.stat.ucla.edu/~kcli/sir-plot.pdf}{Directions found by SIR} 
 
 ###
 \begin{center}
