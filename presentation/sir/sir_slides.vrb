@@ -1,0 +1,26 @@
+\frametitle{A toy example}
+
+\begin{exampleblock}{Simulation settings}
+\[
+    y = x_1 + x_2
+\]
+\end{exampleblock}
+
+\begin{block}{What will be the best direction to visualize data?}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{myimages<-}\KeywordTok{list.files}\NormalTok{(}\StringTok{"./pic/"}\NormalTok{, }\DataTypeTok{pattern =} \StringTok{"toy"}\NormalTok{, }\DataTypeTok{full.names =} \OtherTok{TRUE}\NormalTok{)}
+\NormalTok{knitr::}\KeywordTok{include_graphics}\NormalTok{(myimages)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics[width=0.3\linewidth]{./pic//toy_1}
+\includegraphics[width=0.3\linewidth]{./pic//toy_2}
+\includegraphics[width=0.3\linewidth]{./pic//toy_3}
+\includegraphics[height=0.10417in]{./pic/toy_1.png}
+\includegraphics{./pic/toy_2.png}!\{height=10px\}
+\href{./pic/toy_3.png}{Response surface of simulation 3}
+
+\end{block}
+

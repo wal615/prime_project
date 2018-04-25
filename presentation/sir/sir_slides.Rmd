@@ -24,33 +24,42 @@ notice: |
 
 ### Regression Analysis
 - Study the relationship of a response y and its covariates x
-- Use the information of x to explain y 
-- Parametric model  
-    + Linear Regression model 
-- Nonparametric model  
-    + Local smoothing (kNN)  
+- Use the information of x to explain y (Forward Rregression)
 
-### Curse of Dimensionality
+### Curse of Dimensionality and Dimension Reduction
 - When the dimension of x gets higher, observations are far away from each other
 - Standard methods probably will break down due to the sparseness of data
 - One solustion is reducing the demension of x  
 
+### A toy example 
+\begin{exampleblock}{Simulation settings}
+\[
+    y = x_1 + x_2
+\]
+\end{exampleblock}
+
+#### What will be the best direction to visualize data? 
+```{r, echo = FALSE, out.width="32%"}
+myimages<-list.files("./pic/", pattern = "toy", full.names = TRUE)
+knitr::include_graphics(myimages)
+```
+
 # A Model for dimension reduction
 
-### A Model for dimension reduction 
+### Model structure  
 \begin{block}{Model Settings}
 \[
-  y = f(\beta_1x, \dots, \beta_kx, \epsilon)
+  Y = f(X,\epsilon) = f(\beta_1X, \dots, \beta_kX, \epsilon)
 \]
 $x$ is explanatory variable, column vectors on $\mathcal{R}^p$,\\   
 $\beta's$ are unknown row vectors, \\
-$\epsilon$ is independent of $x$, \\
-$f$ is an arbitrary unknown function on $\mathcal{R}^{k+1}$ \\
+$\epsilon$ is independent of $X$, \\
+$f$ is an \textcolor{red}{arbitrary unknown} function on $\mathcal{R}^{k+1}$ \\
 \end{block}
-- $(\beta_1x, \dots, \beta_kx)'$ is the projection of the $x\in \mathcal{R}^p$ into $\mathcal{R}^K$, $K<<p$  
-- Captures all we need to know about y  
+- $(\beta_1X, \dots, \beta_kX)'$ is the projection of the $X\in \mathcal{R}^p$ into $\mathcal{R}^K$, $K<<p$  
+- \textcolor{red}{Lower dimension projection of X contains most of the information}
 
-### A Model for dimension reduction
+### The space spaned by $\beta's$
 
 \begin{block}{Effective dimension-reduction}
 \begin{enumerate}
@@ -65,7 +74,8 @@ $f$ is an arbitrary unknown function on $\mathcal{R}^{k+1}$ \\
 \end{enumerate}
 \end{block}
 
-- Since $f$ is arbitrary, only the $\mathcal{B}$ can be identified  
+- Since $f$ is arbitrary, $f$ and $\beta's$ are not Estimable
+- Only the $\mathcal{B}$ can be identified  
 - Inverse Regression is one of the methods of estimating the Effective dimension-reduction space ($\mathcal{B}$)
 
 
@@ -74,21 +84,21 @@ $f$ is an arbitrary unknown function on $\mathcal{R}^{k+1}$ \\
 ### Inverse Regression
 
 #### Inverse Regression
-- Regress x against of y
-- Use the information of y to explain x 
+- Regress x against of y 
+- Use the information of y to explain x (Inverse Regression) 
 - From one p-dimension problem to p One-dimension regression problems
 
 ### Inverse Regression Curve
 
 
 \begin{block}{Inverse Regression Curve}
-\[E(x|y) \in \mathcal{R}^p\]
+\[E(X|Y) \in \mathcal{R}^p\]
 \end{block}
 
 #### Centered Inverse Regression Curve
-\[ E(x|y) - E(x)\]
+\[ E(X|Y) - E(X)\]
 
-- $E[E(x|y)] = E(x)$ is the center  
+- $E[E(X|Y)] = E(X)$ is the center  
 - With certain conditions, the centered inverse curve is related with the e.d.r.!  
 
 ### Conditions
@@ -97,13 +107,13 @@ $f$ is an arbitrary unknown function on $\mathcal{R}^{k+1}$ \\
 
 Conditional Independence
 \[
-  y = f(\beta_1x, \dots, \beta_kx, \epsilon) \Leftrightarrow (y \Perp x) |\beta x  
+  y = f(\beta_1X, \dots, \beta_kX, \epsilon) \Leftrightarrow (Y \Perp X) |\beta_1X, \dots, \beta_kX  
 \]
 
 #### Condition 3.1 
 Linear Condition  
 For any $b$ in $\mathcal{R}^p$, 
-\[E(b\boldsymbol{x}|\beta_1\boldsymbol{x} = \beta_1x, \dots, \beta_k\boldsymbol{x} = \beta_kx) = c_0 + c_1\beta_1x, \dots, c_k\beta_kx\]
+\[E(bX|\beta_1X = \beta_1x, \dots, \beta_kX = \beta_kx) = c_0 + c_1\beta_1x, \dots, c_k\beta_kx\]
 
 
 ### Centered Inverse Regression Curve and e.d.r

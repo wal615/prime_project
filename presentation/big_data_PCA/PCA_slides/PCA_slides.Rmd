@@ -12,13 +12,38 @@ bibliography: bibliography.bib
 output: 
    uiucthemes::beamer_illinois: 
        toc: true
-       keep_tex: true
 ---
 
 ---
 notice: | 
-  @ref5
+  @Yang_2016
 ...
+
+# PCA on Big Data
+
+## PCA on Big Data
+
+### PCA on Big Data
+
+#### Big Data Issue 
+- The sample size is too large that it cannot be loaded into memory or even hard disk 
+- The number of predictors is much larger than the number of observation (p >> n)
+
+### Solution
+
+#### For large sample size
+- @Zhang_2016 introduced a method which only read data row-by-row and records the sufficient statistics vector $\mathcal{C}_0$. After scanning the data, the PCA result can be recovered by the sufficient statistics.
+- The paper also used parallel computation to reduce the computation time
+- @HALKO_2011 also proposed a algorithm to approximate the PCA result on streaming data. The goal is to construct a low-rank approximation $U\Sigma V^T$ to any given real matrix A. More details can be found at the paper in the reference page.
+
+### Solution
+
+#### For large sample p 
+
+- For the p>>n problem, @Yang_2010 introduced the Stratified Population, e.g. $S_1, \dots, S_k$ subpopulation with probabilities $\pi_1, \dots, \pi_k$ to be selected. The author also introduced Dual eigen-analysis and models which is based on the Stratified Population.
+
+
+
 
 # Introduction
 
@@ -181,7 +206,7 @@ c_{s,k,xy} = V_k^Tc_{s,xy} = V_k^TVDU^Ty= D_kU_k^Ty ~\Rightarrow ~U_k^Ty = D^{-1
 \]
 \end{block}
 
-# PCA on Big Data
+# PCA by sufficient statisics
 ##
 ### Back to PCA regression
 
@@ -202,6 +227,7 @@ Since n is large, it's not available to calculate U. However, we can only use $V
 ```{r, echo=FALSE}
 knitr::include_graphics("./Alg_2.png") 
 ```
+
 
 ### 
 \begin{center}
