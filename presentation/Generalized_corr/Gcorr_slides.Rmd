@@ -146,7 +146,7 @@ A $(1-\alpha)$ level, two-side interval is defined as following:
 ![](./figure/rank_heart_diseas.png){width=70%}
 
 - $n =30$, $p = 6319$
-- bootstrap sample is 400
+- Number of bootstrap runs is 400
 - $\alpha = 0.02$ cutoff value is $p/4$
 - ranking is based on $\hat{r}_{+}(j)$
 - Note: There is a marked jump in the length of the predict intervals

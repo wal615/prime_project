@@ -1,0 +1,171 @@
+\documentclass{beamer}
+\usepackage{lmodern}
+%
+% Choose how your presentation looks.
+%
+% For more themes, color themes and font themes, see:
+% http://deic.uab.es/~iblanes/beamer_gallery/index_by_theme.html
+%
+\mode<presentation>
+{
+  \usetheme{default}      % or try Darmstadt, Madrid, Warsaw, ...
+  \usecolortheme{default} % or try albatross, beaver, crane, ...
+  \usefonttheme{default}  % or try serif, structurebold, ...
+  \setbeamertemplate{navigation symbols}{}
+  \setbeamertemplate{caption}[numbered]
+} 
+
+\usepackage[english]{babel}
+\usepackage[utf8x]{inputenc}
+
+\title[Avant Internship Review]{Avant Internship Review}
+\author{Ben Wang}
+\institute{Avant}
+\date{\today}
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+% Uncomment these lines for an automatically generated outline.
+%\begin{frame}{Outline}
+%  \tableofcontents
+%\end{frame}
+
+
+\section{DQF}
+
+\begin{frame}{Data Quality Framework}
+Project 1: Handling NaNs
+    \begin{block}{Problem}
+		\begin{itemize}
+		\item Tradelines hourly check reported false positive alters 
+		\item  NaNs in the report tables
+		\end{itemize}
+    \end{block}
+
+    \begin{block}{Root Cause}
+		\begin{itemize}
+		\item Merged two tables based on a categorical key 
+		\item Used NULL values when right table didn't contain a key
+        \end{itemize}
+    \end{block}
+
+    \begin{block}{Solution}
+		\begin{itemize}
+		\item Added a NaN-handling step 
+		\item replaced all NaNs with 0
+		\end{itemize}
+    \end{block}
+\end{frame}
+
+\begin{frame}{Data Quality Framework}
+Project 2: Created Data Quality Checks for Credit Decision and Product Decision
+    \begin{block}{My work}
+		\begin{itemize}
+		\item Wrote SQL queries to select inputs and calculate summary
+        statistics 
+		\item Merged the queries into DQF to create garden jobs 
+		\end{itemize}
+    \end{block}
+
+    \begin{block}{Difficulty}
+		\begin{itemize}
+		\item All inputs nested in to one column as a String 
+        \end{itemize}
+    \end{block}
+
+    \begin{block}{Solution}
+		\begin{itemize}
+		\item Used $plit\_part$ and $substring$ to phrase inputs into individual
+        into different variables 
+		\end{itemize}
+    \end{block}
+\end{frame}
+\section{Direct Mail}
+\begin{frame}{Direct Mail}
+Project 3: Fixed garden jobs that create suppression files 
+    \begin{block}{Problem}
+		\begin{itemize}
+		\item Decline garden job could not finish  
+		\end{itemize}
+    \end{block}
+
+    \begin{block}{Root Cause}
+		\begin{itemize}
+		\item The job's query was interrupted by followers 
+        \end{itemize}
+    \end{block}
+
+    \begin{block}{Solution}
+		\begin{itemize}
+		\item Read the origina lquery and document the locical structure in
+        Conflunece 
+		\item Translate query to Hive sql
+        \item Validate results of Psql and Hive query
+		\end{itemize}
+    \end{block}
+\end{frame}
+\section{Introduction}
+
+\begin{frame}{}
+
+\begin{itemize}
+  \item Your introduction goes here!
+  \item Use \texttt{itemize} to organize your main points.
+\end{itemize}
+
+\vskip 1cm
+
+\begin{block}{Examples}
+Some examples of commonly used commands and features are included, to help you get started.
+\end{block}
+
+\end{frame}
+
+\section{Some \LaTeX{} Examples}
+
+\subsection{Tables and Figures}
+
+\begin{frame}{Tables and Figures}
+
+\begin{itemize}
+\item Use \texttt{tabular} for basic tables --- see Table~\ref{tab:widgets}, for example.
+\item You can upload a figure (JPEG, PNG or PDF) using the files menu. 
+\item To include it in your document, use the \texttt{includegraphics} command (see the comment below in the source code).
+\end{itemize}
+
+% Commands to include a figure:
+%\begin{figure}
+%\includegraphics[width=\textwidth]{your-figure's-file-name}
+%\caption{\label{fig:your-figure}Caption goes here.}
+%\end{figure}
+
+\begin{table}
+\centering
+\begin{tabular}{l|r}
+Item & Quantity \\\hline
+Widgets & 42 \\
+Gadgets & 13
+\end{tabular}
+\caption{\label{tab:widgets}An example table.}
+\end{table}
+
+\end{frame}
+
+\subsection{Mathematics}
+
+\begin{frame}{Readable Mathematics}
+
+Let $X_1, X_2, \ldots, X_n$ be a sequence of independent and identically distributed random variables with $\text{E}[X_i] = \mu$ and $\text{Var}[X_i] = \sigma^2 < \infty$, and let
+$$S_n = \frac{X_1 + X_2 + \cdots + X_n}{n}
+      = \frac{1}{n}\sum_{i}^{n} X_i$$
+denote their mean. Then as $n$ approaches infinity, the random variables $\sqrt{n}(S_n - \mu)$ converge in distribution to a normal $\mathcal{N}(0, \sigma^2)$.
+
+\end{frame}
+
+\end{document}
+
+\end{document}

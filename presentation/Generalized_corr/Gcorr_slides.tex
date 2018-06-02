@@ -245,7 +245,7 @@ Correlation}\label{solution-generalized-correlation}
 \begin{block}{Generalized Correlation coefficient between $X_{ij}$ and $Y_i$}
 
 \[
-  \sup\limits_{h \in \mathcal{H}} \frac{cov\{h(X_{ij}), Y_i\}}{\sqrt{var\{h(X_{ij})\}, var(Y_i)}}
+  \sup\limits_{h \in \mathcal{H}} \frac{cov\{h(X_{ij}), Y_i\}}{\sqrt{var\{h(X_{ij})\} \cdot var(Y_i)}}
 \]
 Estimated by,
 \[
@@ -300,7 +300,7 @@ The maximizer of $\hat{\psi}_j$ is the solution to least squares problem in $\ma
 
 \begin{block}{Reduction of $\hat{\psi}_j$ in the size of squared error}
 \[
-  \hat{\varphi}_j = \sum^n\limits_{i = 1} (Y_i - \hat{Y})^2 - \inf\limits_{h \in \mathcal{H}}\sum^n\limits_{i = 1}\{Y_i - h(X_{ij})\}^2
+  \hat{\varphi}_j = \sum^n\limits_{i = 1} (Y_i - \bar{Y})^2 - \inf\limits_{h \in \mathcal{H}}\sum^n\limits_{i = 1}\{Y_i - h(X_{ij})\}^2
 \]
 Since $\hat{\varphi}_j$ keeps the relative relation of $\hat{\psi}_j$, we can use $\hat{\varphi}_j$'s for ranking
 \end{block}
@@ -368,7 +368,7 @@ A \((1-\alpha)\) level, two-side interval is defined as following:
 \item
   \(n =30\), \(p = 6319\)
 \item
-  bootstrap sample is 400
+  Number of bootstrap runs is 400
 \item
   \(\alpha = 0.02\) cutoff value is \(p/4\)
 \item
