@@ -1,0 +1,226 @@
+---
+title: "Simulation result"
+output: html_document
+---
+```{r, include=FALSE}
+knitr::opts_knit$set(root.dir = "~/dev/projects/Chen_environmental_study/")
+options(width = 100)
+```
+
+```{r, include=FALSE}
+load("./result/simulation_result_reproduce")
+```
+
+# Reproduce the simulation result from the proposal
+The following results basically mimic the results from the proposal 
+
+## Simulation setting up
+
+### PCB data with no intercation effect and no interaction in the model
+
+#### simulation procedure
+
+\[
+  y_i = \sum^m_{j = 1}z_j*\beta^{(main)}_j ~+~ \epsilon_i
+\]
+where $\beta_j \sim N(0, 0.5)$ and $z_j$'s are the standardized covariates
+
+#### model 
+
+\[ 
+  y_i = \mu + x_{i1}\beta_1, \dots, + x_im\beta_m + \epsilon_i
+\]
+
+Where m is the number of covariates.
+
+#### Result
+
+```{r,echo=FALSE}
+result_list$PCB_no_inter_m
+```
+
+- second row is standard deviation
+
+
+### PCB data with no intercation effect but with interaction in the model
+
+#### simulation procedure
+
+\[
+  y_i = \sum^m_{j = 1}z_j*\beta^{(main)}_j + z_j~+~ \epsilon_i
+\]
+where $\beta_j \sim N(0, 0.5)$ and $z_j$'s are the standardized covariates
+
+#### model 
+
+\[ 
+  y_i = \mu + x_{i1}\beta_1, \dots, + x_im\beta_m + x_{i1}x_{i2}\gamma_{12}, \dots, + x_{i(m-1)}x_{im}\gamma_{(m-1)m} + \epsilon_i
+\]
+
+#### Result
+
+```{r,echo=FALSE}
+result_list$PCB_no_inter
+```
+
+### PCB data with intercation effect AND with interaction in the model
+
+#### simulation procedure
+
+\[
+  y_i = \sum^m_{j = 1}z_j*\beta^{(main)}_j + \sum^{m(m-1)/2}_{j=1}z^{(inter)}_j\beta^{(inter)}_j ~+~ \epsilon_i
+\]
+where $\beta^{(main)}_j \sim N(0, 0.5)$ and $z_j$'s are the standardized covariates
+$\beta^{(inter)}_j \sim N(0, 0.1)$ and $z^{(inter)}_j$ are interaction terms of the standardized covariates
+
+
+#### model 
+
+\[ 
+  y_i = \mu + x_{i1}\beta_1, \dots, + x_im\beta_m + x_{i1}x_{i2}\gamma_{12}, \dots, + x_{i(m-1)}x_{im}\gamma_{(m-1)m} + \epsilon_i
+\]
+
+#### Result
+
+```{r,echo=FALSE}
+result_list$PCB_with_inter
+```
+
+### Simulated Independent data with intercation effect AND with interaction in the model
+
+#### simulation procedure
+
+\[
+  y_i = \sum^m_{j = 1}z_j*\beta^{(main)}_j + \sum^{m(m-1)/2}_{j=1}z^{(inter)}_j\beta^{(inter)}_j ~+~ \epsilon_i
+\]
+
+- $\beta^{(main)}_j \sim N(0, 0.5)$      
+- $z_j$'s are the standardized covariates  
+- The original covarites is $X \sim N(0, I_m)$  
+- $\beta^{(inter)}_j \sim N(0, 0.1)$ and $z^{(inter)}_j$ are interaction terms of the standardized covariates  
+
+
+#### model 
+
+\[ 
+  y_i = \mu + x_{i1}\beta_1, \dots, + x_im\beta_m + x_{i1}x_{i2}\gamma_{12}, \dots, + x_{i(m-1)}x_{im}\gamma_{(m-1)m} + \epsilon_i
+\]
+
+#### Result
+
+```{r,echo=FALSE}
+result_list$b_norm_uncorr
+```
+
+### Simulated correlated data with intercation effect AND with interaction in the model
+
+#### simulation procedure
+
+\[
+  y_i = \sum^m_{j = 1}z_j*\beta^{(main)}_j + \sum^{m(m-1)/2}_{j=1}z^{(inter)}_j\beta^{(inter)}_j ~+~ \epsilon_i
+\]
+
+- $\beta^{(main)}_j \sim N(0, 0.5)$      
+- $z_j$'s are the standardized covariates  
+- The original covarites is $X \sim N(0, 2J_m+I_m)$  
+- $\beta^{(inter)}_j \sim N(0, 0.1)$ and $z^{(inter)}_j$ are interaction terms of the standardized covariates  
+
+
+#### model 
+
+\[ 
+  y_i = \mu + x_{i1}\beta_1, \dots, + x_im\beta_m + x_{i1}x_{i2}\gamma_{12}, \dots, + x_{i(m-1)}x_{im}\gamma_{(m-1)m} + \epsilon_i
+\]
+
+#### Result
+
+```{r,echo=FALSE}
+result_list$b_norm_corr
+```
+
+
+# Simulating different values for $\beta's$
+
+## simulation setting up 
+The simulation is almost same as previous ones, the only different part is that the true values of $\beta's$ are not fixed. In other words, both $\beta$ and $\epsilon$ are simulated more than once. 
+
+More specifically,  
+\[
+  y_i = \sum^m_{j = 1}z_j*\beta^{(main)}_j + \epsilon_i
+\]
+
+- simulated 50 for each j, $\beta^{(main)}_j \sim N(0, 0.5)$
+- given a set fixed values of $\beta^{(main)}_j$, simulated 5 values for $\epsilon_i$
+- similar way is also applied to the interaction case
+
+The reason to also generate simulating different values for $\beta$ is for getting an averaged evaluation of the performance of GCTA and proposed method. 
+
+
+
+## result 
+
+- Following is an example of the result
+- Each TWO rows represents a different $\beta's$ value and its corresponding sample standard deviation  
+- Note that the estimated standard deviation is large than previous simulation, one reason may be the smaller sample size (from 100 to 5). 
+
+```{r, echo=FALSE}
+rm(result_list)
+load("./result/simulation_with_beta_rep")
+head(result_list$PCB_no_inter_m)
+```
+### Summarized the result
+We used MSE to summarized the performance of the across the different $\beta's$ value.
+
+- following is the results for different setup
+- If the simulation covariates are independent, uncorrelated covariates can reduce MSE a lot under some conditions. However, if they are dependent the proposed method cannot give a good estimation
+
+#### MSE of estimated variance 
+```{r, echo=FALSE}
+sum_fn <- function(x) {
+  x <- x[x[,1]!=0,]
+  c(colMeans((x[,c(3,4)] -x[,c(1,2)])^2), colMeans((x[,c(5,6)] -x[,c(1,2)])^2))}
+lapply(FUN = sum_fn, X = result_list)
+```
+
+
+# Another thought
+
+There is another thought about how to estimate the variance when one considering the interaction terms. 
+
+Basically, we combine the main effect and their two-way interaction as the covariates matrix T, and use T as the main effect's covariates to fit the model and the estimated main effect variance $\hat\sigma_{\beta} = \hat\sigma_{\beta} + \hat\sigma_{\gamma}$  
+
+#### simulation procedure
+
+The simulation procedure is same as before
+
+
+#### model 
+
+The only difference is treating both the main effect and interaction effects as main effect and uncorrlated together. 
+
+\[ 
+  y_i = \mu + t_{i1}\beta_1, \dots, + t_im\beta_m + t_{m+1}\beta_{m+1}, \dots, + t_{m+m(m-1)/2}\beta_{m+m(m-1)/2} + \epsilon_i
+\]
+
+#### MSE of the variance main effect
+- Following is the MSE of the main effect by using the fitting method above
+- From the theoriatical point of view, this may not be make sence.
+- There is an improvement for the proposed method under the dependent normal covariates case. 
+
+```{r, echo = FALSE}
+rm(list = ls())
+load("./result/GCTA_combined_main_and_interaction")
+sum_fn <- function(x) {
+  x <- x[x[,1]!=0,]
+  x[,1] <- x[,1] + x[,2] # sum main and inter vairance
+  c(colMeans((x[,c(3), drop = FALSE] - x[,1, drop = FALSE])^2), colMeans((x[,c(5), drop = FALSE] - x[,1, drop = FALSE])^2))}
+lapply(FUN = sum_fn, X = result_list)
+
+# plot_fn <- function(x) {
+#   x <- x[x[,1]!=0,]
+#   hist(x[,1], xlim=c(-10,10), col="red", breaks = 25)
+#   hist(x[,2], add=TRUE, col=rgb(0, 1, 0, 0.5) )
+# }
+# 
+# lapply(FUN = plot_fn, X = result_list)
+```
