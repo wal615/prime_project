@@ -81,7 +81,7 @@ Yang=function(y,x,interact=0){
 
 std_fn <- function(b,p){
   for(k in 1:p){
-    b[,k]=rank(b[,k]) # why used the rank intead of original value? 
+    # b[,k]=rank(b[,k]) # why used the rank intead of original value? 
     me=mean(b[,k])
     std=sqrt(var(b[,k]))
     b[,k]=(b[,k]-me)/std
@@ -90,3 +90,15 @@ std_fn <- function(b,p){
   b
 }
 
+##################################################################################
+## cox_box transformation function
+##################################################################################
+
+
+box_cox_tran <- function(y) {
+  bc <- MASS::boxcox(y~1, plotit = FALSE)
+  lambda <- bc$x[which.max(bc$y)]  # find the optimal lambda based on lm model
+  if(lambda == 0) bc_y <- log(y) 
+    else bc_y <- (y^lambda - 1)/lambda
+  bc_y
+}
