@@ -71,7 +71,7 @@ Yang=function(y,x,interact=0){
 }
 
 library("sas7bdat")
-# a=read.sas7bdat("C:/Users/shiyar/Downloads/pcbs1000nomiss.sas7bdat")
+library(tidyverse)
 a=read.sas7bdat("~/dev/projects/Chen_environmental_study/R_code/pcbs1000nomiss.sas7bdat")
 a=data.matrix(a[,2:35], rownames.force = NA)
 
@@ -81,14 +81,18 @@ b=a
 # cat("box-cox transformation (lambda = 2) with interaction in the models\n")
 # b= MASS::boxcox(lm(a[,1]~1))
 
-# set.seed(1014)
+set.seed(1014)
 nrep=100
 result=array(0,c(nrep,6))
 # 1. Generate health outcome
 n=dim(b)[1]
 p=dim(b)[2]
 for(k in 1:p){
-    b[,k]=rank(b[,k])
+    b[,k]=rank(b[,k]) # using ranking to improve the normality
+    # emprircal_cdf <- ecdf(b[,k]) # empricial dist
+    # b[,k][which.min(b[,k])] <- b[,k][which.min(b[,k])] + 0.0001 # modify the max and min values to avoid Inf
+    # b[,k][which.max(b[,k])] <- b[,k][which.max(b[,k])] - 0.0001
+    # b[,k] <- emprircal_cdf(b[,k]) %>% qnorm(.)
     me=mean(b[,k])
     std=sqrt(var(b[,k]))
     b[,k]=(b[,k]-me)/std
@@ -107,7 +111,7 @@ for(i in 1:n){
     }
 
 for(irep in 1:nrep){
- # print(c(irep,irep,nrep))
+ print(c(irep,nrep))
  
  y=signalm+signali+rnorm(n,sd=4)
  

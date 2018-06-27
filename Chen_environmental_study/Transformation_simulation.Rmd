@@ -15,7 +15,7 @@ options(width = 100)
 library(ggplot2)
 library(tidyverse)
 library(sas7bdat)
-
+load("./result/simulation_log_sqrt_tranformation")
 #####################################################################################
 ## calculate MSE for the result 
 #####################################################################################
@@ -30,47 +30,98 @@ sum_fn <- function(x) {
 plot_fn <- function(x, names) {
     x <- x[x[,1]!=0,]
     g1<- ggplot(tidyr::gather(data.frame(x[,c(1,3,5)])), aes(value, fill = key, y = ..density..)) +
-    geom_histogram(alpha = 0.2, position = "identity", binwidth =  0.1) +
+    geom_histogram(alpha = 0.2, position = "identity", binwidth =  0.5) +
     geom_density(alpha = 0.2) +
+    xlim(-30,50)+
     ggtitle(paste0("main_total_effect_",names))
   
     g2 <- ggplot(tidyr::gather(data.frame(x[,c(2,4,6)])), aes(value, fill = key, y = ..density..)) +
-    geom_histogram(alpha = 0.2, position = "identity", binwidth =  0.1) +
+    geom_histogram(alpha = 0.2, position = "identity", binwidth =  0.5) +
     geom_density(alpha = 0.2) +
+    xlim(0,40)+
     ggtitle(paste0("interaction_total_effect_",names))
+    
     gridExtra::grid.arrange(g1, g2, ncol=2)
 }
 ```
-# Transformation
 
+# Transformation methods
 
-- Based the density and histogram plots, the covariates' distributions are left skewed (heavy tail)
+- Based the density and histogram plots, the most of the empirical distributions of individual PCB covariate are __right__ skewed (heavy tail)
 - I have tried 3 different transformation methods `log`, `square root` and `box-cox`
-- Transformation is made __BEFORE__ the simulation of main and interaction signals
-- Before applying the transformation methods to PCB data, Standardization step was modified to deal with real value instead of __Rank__. Because any monotone transformation will not have any difference on the result if we use rank. 
+- Transformation is made __BEFORE__ the process of main and interaction signals simulation
 
-# Simulation Result
-- The following tables are about the MSE of estimated variance
-- Histogram plots are about the distribution of the true variances, GCTA estimated variances and Proposed methods'
+# models
+For all of the following results, the model is same. 
+\[
+  y_i = \sum^m_{j = 1}z_j*\beta^{(main)}_j + \sum^{m(m-1)/2}_{k=2}z^{(inter)}_k\beta^{(inter)}_k ~+~ \epsilon_i
+\]
 
-```{r, echo=FALSE}
-load("./result/simulation_log_sqrt_tranformation")
+# Steps
+1. All 3 transformation methods apply to the data with original scale
+2. Standardizing the transformed data to $E(Z_j) = 0, Var(Z_i) = 1$
+3. For the proposed method, the input data Z also is transformed into Uncorrelated by SVD method
+4. Using the RMEL method to estimated the variances of main effect and interact effect
 
-for (j in 1:length(result_list)){
-  cat(names(result_list)[j],"\n")
-  
-  print(sum_fn(result_list[[j]]))
-  
-  plot_fn(result_list[[j]],names(result_list)[j])
-}
 
-# lapply(FUN = sum_fn, X = result_list)
-# lapply(X = result_list, plot_fn, )
+# Simulation Result for each method
+- For main and interaction effects ($\beta^{(main)}$ and $\beta^{(inter)}$), 50 groups of values are randomly generated from 2 normal distributions 
+- Given a fixed main and interaction effect, 20 values of $y_i$ are generated to calculated the estimated variances
+- The following tables are about the MSE of estimated variance (averaging across different values of $\beta's$ )
+- Histogram plots are about the empirical distribution of the true variances, GCTA estimator and Proposed underestimation
+
+
+## No tranformation
+- In this case, no transformation is applied to PCB data. This could be considered as the reference result
+- It seems that the there is a bias for both GCTA and proposed estimators of interaction effect  
+```{r, echo = FALSE, warning=FALSE, }
+  cat("MSE of PCB\n")
+  print(sum_fn(result_list$PCB))
+  plot_fn(result_list$PCB,"PCB")
 ```
 
-- It seems that after changing the standardization method, the MSE is much larger than when using the rank as the covariates values, especially for the interaction total effect estimation  
-- one possible reason is that during each simulation iteration, the interaction signals are much larger than using ranks as the covariates  
-- The `log` and `box-cox` transformation methods could reduce the method MSE
+## Log tranformation
+- In this case, $log_e$ transformation applied to each column of PCB data.
+- Based on the MSE table, Log transformation reduce the MSE a lot
+- However, at least based on this simulation result GCTA method's result is better than proposed method
+- From the histograms, after transformation both methods can predict the main effect well
+- But for the interaction effect, the proposed method seems to have a bias which I will make a further study.
+
+```{r, echo = FALSE, warning=FALSE, }
+  cat("MES of PCB_log\n")
+  print(sum_fn(result_list$PCB_log))
+  plot_fn(result_list$PCB_log,"PCB_log")
+```
+
+## Cox-Box tranformation
+- In this case, Cox-Box transformation is applied to each column of PCB data.
+\[
+ y(\lambda)=\begin{cases}
+               \frac{y^\lambda - 1}{\lambda}, \lambda \neq 0\\
+               log{(y)} , \lambda = 0
+            \end{cases}
+\]
+- The choosing of $\lambda$ is based on a linear model $y = \beta_0$, where $\beta_0$ is the intercept.
+
+- The result is similar with log transformation's result
+
+```{r, echo = FALSE, warning=FALSE, }
+  cat("MSE of PCB_cox\n")
+  print(sum_fn(result_list$PCB_cox))
+  plot_fn(result_list$PCB_cox,"PCB_cox")
+```
+
+## Square root transformation
+
+- In this case, square root transformation is applied to PCB data. 
+- MSE is reduced by using square root transformation but not as much as log or cox-box transformation
+- The histogram is similar with the original scale data's result
+
+```{r, echo = FALSE, warning=FALSE, }
+  cat("MSE of PCB_sqrt\n")
+  print(sum_fn(result_list$PCB_sqrt))
+  plot_fn(result_list$PCB_sqrt,"PCB_sqrt")
+```
 
 
 <!-- # Histgram of covariates -->

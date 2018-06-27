@@ -49,7 +49,7 @@ where $\beta_j \sim N(0, 0.5)$ and $z_j$'s are the standardized covariates
 #### model 
 
 \[ 
-  y_i = \mu + x_{i1}\beta_1, \dots, + x_im\beta_m + \epsilon_i
+  y_i = \mu + z_{i1}\beta_1, \dots, + z_im\beta_m + \epsilon_i
 \]
 
 Where m is the number of covariates.
@@ -60,7 +60,7 @@ Where m is the number of covariates.
 result_list$PCB_no_inter_m
 ```
 
-- second row is standard deviation
+- second row is standard deviation of each estimators
 
 
 ### PCB data with no intercation effect but with interaction in the model
@@ -68,14 +68,14 @@ result_list$PCB_no_inter_m
 #### simulation procedure
 
 \[
-  y_i = \sum^m_{j = 1}z_j*\beta^{(main)}_j + z_j~+~ \epsilon_i
+  y_i = \sum^m_{j = 1}z_j*\beta^{(main)}_j + \epsilon_i
 \]
 where $\beta_j \sim N(0, 0.5)$ and $z_j$'s are the standardized covariates
 
 #### model 
 
 \[ 
-  y_i = \mu + x_{i1}\beta_1, \dots, + x_im\beta_m + x_{i1}x_{i2}\gamma_{12}, \dots, + x_{i(m-1)}x_{im}\gamma_{(m-1)m} + \epsilon_i
+  y_i = \mu + z_{i1}\beta_1, \dots, + z_im\beta_m + z_{i1}z_{i2}\gamma_{12}, \dots, + z_{i(m-1)}z_{im}\gamma_{(m-1)m} + \epsilon_i
 \]
 
 #### Result
@@ -98,7 +98,7 @@ $\beta^{(inter)}_j \sim N(0, 0.1)$ and $z^{(inter)}_j$ are interaction terms of 
 #### model 
 
 \[ 
-  y_i = \mu + x_{i1}\beta_1, \dots, + x_im\beta_m + x_{i1}x_{i2}\gamma_{12}, \dots, + x_{i(m-1)}x_{im}\gamma_{(m-1)m} + \epsilon_i
+  y_i = \mu + z_{i1}\beta_1, \dots, + z_im\beta_m + z_{i1}z_{i2}\gamma_{12}, \dots, + z_{i(m-1)}z_{im}\gamma_{(m-1)m} + \epsilon_i
 \]
 
 #### Result
@@ -124,7 +124,7 @@ result_list$PCB_with_inter
 #### model 
 
 \[ 
-  y_i = \mu + x_{i1}\beta_1, \dots, + x_im\beta_m + x_{i1}x_{i2}\gamma_{12}, \dots, + x_{i(m-1)}x_{im}\gamma_{(m-1)m} + \epsilon_i
+  y_i = \mu + z_{i1}\beta_1, \dots, + z_im\beta_m + z_{i1}z_{i2}\gamma_{12}, \dots, + z_{i(m-1)}z_{im}\gamma_{(m-1)m} + \epsilon_i
 \]
 
 #### Result
@@ -150,7 +150,7 @@ result_list$b_norm_uncorr
 #### model 
 
 \[ 
-  y_i = \mu + x_{i1}\beta_1, \dots, + x_im\beta_m + x_{i1}x_{i2}\gamma_{12}, \dots, + x_{i(m-1)}x_{im}\gamma_{(m-1)m} + \epsilon_i
+  y_i = \mu + z_{i1}\beta_1, \dots, + z_im\beta_m + z_{i1}z_{i2}\gamma_{12}, \dots, + z_{i(m-1)}z_{im}\gamma_{(m-1)m} + \epsilon_i
 \]
 
 #### Result

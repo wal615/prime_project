@@ -1,7 +1,14 @@
+library(sas7bdat)
+library(MASS)
+library(tidyverse)
+library(foreach)
+library(doRNG)
+library(doParallel)
+
 ##################################################################################
 ## YANG's REML function
 ##################################################################################
-
+# interact parameter indicates if the model includes interaction terms (interact == 0) 
 Yang=function(y,x,interact=0){  
   ## data y[1:nr], x[1:nr,1:nc]
   nr=dim(x)[1]
@@ -76,12 +83,92 @@ Yang=function(y,x,interact=0){
 }
 
 ##################################################################################
-## standardized function function
+## multiple simulation fitting function
 ##################################################################################
+# assume that b is aleardy standardized and normalized
 
-std_fn <- function(b,p){
+compare_corr_GCTA <- function(b, 
+                              brep, 
+                              nrep,
+                              interaction = 0, 
+                              interaction_m = 0, 
+                              seed = 0, 
+                              cores = 1) {
+  if (cores == 1) 
+    foreach::registerDoSEQ() 
+    else 
+      doParallel::registerDoParallel(cores = cores) # setting cores
+  
+  n=dim(b)[1]
+  p=dim(b)[2]
+  
+  if(seed != 0) set.seed(seed) # set seed for foreach
+  
+  result_raw <- foreach(ibrep = 1:brep, .combine = rbind, .verbose = TRUE) %dorng%   {
+    
+    result_tmp <- matrix(0, nrow = nrep, ncol = 6)
+
+    # Generate betas
+    betam=rnorm(p, m=0, sd=0.5) # main_effect ~ N(0,0.5)
+    betam[2*c(1:17)]=0  # mimic the zero coefficients
+    
+    if(interaction==0) {
+      betai <- 0
+    } else {
+      betai <- matrix(rnorm(p*p,m=0,sd=0.1),ncol=p) # interaction_effect ~ N(0,0.1)
+      betai[lower.tri(betai, diag = TRUE)] <- 0 # the number of interaction terms is {p*(p-1)}/2
+    } 
+    
+    # Generate the signals
+    signalm=b%*%betam
+    signali <- if(interaction == 0){
+      rep(0,n) } else {
+        apply(X = b, MARGIN = 1, FUN = function(x) t(x)%*%betai%*%x)
+      } 
+    result_tmp[, 1]=var(signalm)
+    result_tmp[, 2]=var(signali)
+    
+    # Estimating total effects
+    for(irep in 1:nrep){
+
+      # Generate health outcome fixed random effects
+      y=signalm+signali+rnorm(n,sd=4)
+      
+      fit=Yang(y,b,interact = interaction_m)
+      result_tmp[irep,3] <- fit$G
+      result_tmp[irep,4] <- fit$RACT
+      
+      # transform covariates into uncorrelated (proposed method)
+      Sigma=cov(b,b)
+      # Compute Sigma^{-1/2}
+      Seign=eigen(Sigma)
+      Sinvsqrt=Seign$vectors %*% diag(1/sqrt(Seign$values)) %*% t(Seign$vectors)
+      x=b%*%Sinvsqrt
+      #cor(X,X)
+      
+      # Call the GCTA method
+      fit=Yang(y,x,interact = interaction_m)
+      result_tmp[irep,5] <- fit$G
+      result_tmp[irep,6] <- fit$RACT
+    }
+
+    result_tmp <- rbind(apply(result_tmp, 2, mean), apply(result_tmp, 2,sd))
+    result_tmp
+    
+  }
+  attributes(result_raw)$rng <- NULL # rm the random sampling info
+  # result_raw <- matrix(result_raw, nrow = 1)
+  colnames(result_raw) <- c("true_main", "true_interaction", "GCTA_main", "GCTA_interaction", "pro_main", "pro_interaction")
+  result_raw
+}
+
+##################################################################################
+## standardized function with tranformation features
+##################################################################################
+# default 
+std_fn <- function(b, p, tran_FUN = null_tran, ...){
+  b <- apply(b, 2, tran_FUN, ...)
   for(k in 1:p){
-    # b[,k]=rank(b[,k]) # why used the rank intead of original value? 
     me=mean(b[,k])
     std=sqrt(var(b[,k]))
     b[,k]=(b[,k]-me)/std
@@ -91,9 +178,16 @@ std_fn <- function(b,p){
 }
 
 ##################################################################################
-## cox_box transformation function
+## Rank transformation function
 ##################################################################################
 
+null_tran <- function(y) {
+  y
+}
+
+##################################################################################
+## cox_box transformation function
+##################################################################################
 
 box_cox_tran <- function(y) {
   bc <- MASS::boxcox(y~1, plotit = FALSE)
@@ -101,4 +195,23 @@ box_cox_tran <- function(y) {
   if(lambda == 0) bc_y <- log(y) 
     else bc_y <- (y^lambda - 1)/lambda
   bc_y
+}
+
+##################################################################################
+## Rank transformation function
+##################################################################################
+
+rank_tran <- function(y) {
+  rank(y)
+}
+
+##################################################################################
+## Normal quantile transformation function
+##################################################################################
+
+norm_quantile_tran <- function(y) {
+  emprircal_cdf <- ecdf(y) # empricial dist 
+    y[which.min(y)] <- y[which.min(y)] + 0.0001 # modify the max and min values to avoid Inf 
+    y[which.max(y)] <- y[which.max(y)] - 0.0001
+    y <- emprircal_cdf(y) %>% qnorm(.) 
 }

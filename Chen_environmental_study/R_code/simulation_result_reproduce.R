@@ -31,15 +31,15 @@ compare_corr_GCTA <- function(b,
   result_raw <- foreach(ibrep = 1:brep, .combine = rbind, .verbose = TRUE) %dorng%   {
     
     result_tmp <- matrix(0, nrow = nrep, ncol = 6)
-    
-    # 1. Generate health outcome
+
+    # Generate betas
     betam=rnorm(p, m=0, sd=0.5) # main_effect ~ N(0,0.5)
-    betam[2*c(1:17)]=0  # miminc the zero coeficients
+    betam[2*c(1:17)]=0  # mimic the zero coefficients
     
     if(interaction==0) {
       betai <- 0
     } else {
-      betai <- matrix(rnorm(p*p,m=0,sd=0.1),ncol=p)
+      betai <- matrix(rnorm(p*p,m=0,sd=0.1),ncol=p) # interaction_effect ~ N(0,0.1)
       betai[lower.tri(betai, diag = TRUE)] <- 0 # the number of interaction terms is {p*(p-1)}/2
     } 
     
@@ -52,16 +52,17 @@ compare_corr_GCTA <- function(b,
     result_tmp[, 1]=var(signalm)
     result_tmp[, 2]=var(signali)
     
-    # Iterations with fixed random effects
+    # Estimating total effects
     for(irep in 1:nrep){
+
+      # Generate health outcome fixed random effects
       y=signalm+signali+rnorm(n,sd=4)
       
       fit=Yang(y,b,interact = interaction_m)
       result_tmp[irep,3] <- fit$G
       result_tmp[irep,4] <- fit$RACT
       
-      # Estimating total effects
-      # transform covariates into uncorrelated
+      # transform covariates into uncorrelated (proposed method)
       Sigma=cov(b,b)
       # Compute Sigma^{-1/2}
       Seign=eigen(Sigma)
