@@ -4,8 +4,9 @@ author: "Xuelong Wang"
 date: "`r Sys.Date()`"
 output: 
   html_document: 
+    fig_caption: yes
     fig_width: 15
-    theme: readable
+    theme: united
 ---
 
 ```{r, include=FALSE}
@@ -15,14 +16,53 @@ options(width = 100)
 library(ggplot2)
 library(tidyverse)
 library(sas7bdat)
+library(printr)
+
 load("./result/simulation_log_sqrt_tranformation")
+
+#####################################################################################
+## figures number function
+#####################################################################################
+# A function for captioning and referencing images
+fig <- local({
+    i <- 0
+    ref <- list()
+    list(
+        cap=function(refName, text) {
+            i <<- i + 1
+            ref[[refName]] <<- i
+            paste("Figure ", i, ": ", text, sep="")
+        },
+        ref=function(refName) {
+            ref[[refName]]
+        })
+})
+
+#####################################################################################
+## figures number function
+#####################################################################################
+# A function for captioning and referencing tables
+
+tab <- local({
+    i <- 0
+    ref <- list()
+    list(
+        cap=function(refName, text) {
+            i <<- i + 1
+            ref[[refName]] <<- i
+            paste("Table ", i, ": ", text, sep="")
+        },
+        ref=function(refName) {
+            ref[[refName]]
+        })
+})
+
 #####################################################################################
 ## calculate MSE for the result 
 #####################################################################################
 sum_fn <- function(x) {
   x <- x[x[,1]!=0,]
   c(colMeans((x[,c(3,4)] -x[,c(1,2)])^2), colMeans((x[,c(5,6)] -x[,c(1,2)])^2))}
-#####################################################################################
 
 #####################################################################################
 ## plot function
@@ -65,35 +105,68 @@ For all of the following results, the model is same.
 
 
 # Simulation Result for each method
-- For main and interaction effects ($\beta^{(main)}$ and $\beta^{(inter)}$), 50 groups of values are randomly generated from 2 normal distributions 
+- For main and interaction effects ($\beta^{(main)}$ and $\beta^{(inter)}$), 80 groups of values are randomly generated from 2 normal distributions 
 - Given a fixed main and interaction effect, 20 values of $y_i$ are generated to calculated the estimated variances
 - The following tables are about the MSE of estimated variance (averaging across different values of $\beta's$ )
-- Histogram plots are about the empirical distribution of the true variances, GCTA estimator and Proposed underestimation
+- Histogram plots are about the empirical distribution of the true variances, GCTA estimator and Proposed estimation
 
 
-## No tranformation
-- In this case, no transformation is applied to PCB data. This could be considered as the reference result
-- It seems that the there is a bias for both GCTA and proposed estimators of interaction effect  
-```{r, echo = FALSE, warning=FALSE, }
-  cat("MSE of PCB\n")
-  print(sum_fn(result_list$PCB))
+## No transformation
+- In this case, no transformation is applied to PCB data. This could be considered as a reference result
+
+```{r, echo=FALSE}
+out_table <- t(sum_fn(result_list$PCB))
+rownames(out_table) <- "MSE"
+
+knitr::kable(x = out_table, 
+             row.names = TRUE,
+             format = "html",
+             caption = tab$cap("original scale","MSE of estimated varaince under original scale"))  %>% 
+  kableExtra::kable_styling(full_width = FALSE)
+```
+- In the Table `r tab$ref("original scale")`, "GCTA_main" and "GCTA_interaction" stands for the estimation of GCTA method. 
+- "pro_main" and "pro_interaction" stand for the estimation of proposed method. 
+- MSE is calculated by $\sum(\sigma^2_{estimation} - \sigma^2_{true})^2/n$
+- n in our case is 80
+
+```{r , echo = FALSE, warning=FALSE, fig.cap=fig$cap("Original scale", "Histogram of Main and Interaction variance with original scale data")}
   plot_fn(result_list$PCB,"PCB")
 ```
 
-## Log tranformation
-- In this case, $log_e$ transformation applied to each column of PCB data.
-- Based on the MSE table, Log transformation reduce the MSE a lot
-- However, at least based on this simulation result GCTA method's result is better than proposed method
-- From the histograms, after transformation both methods can predict the main effect well
-- But for the interaction effect, the proposed method seems to have a bias which I will make a further study.
+- In figure `r fig$ref("Original scale")`, left hand-side is the histogram of main effect variance and right hand-side is for interaction effect variance. 
+- GCTA_mian (in pink) represents the estimated main effect's variance by GCTA method 
+- pro_main (in green) represents the estimated main effect's variance by proposed method which is GCTA method with uncorrelated procedure
+- True_main (in blue) represents the real variance of the main effect  
+- It seems that the there is a bias for both GCTA and proposed estimators of interaction effect
 
-```{r, echo = FALSE, warning=FALSE, }
-  cat("MES of PCB_log\n")
-  print(sum_fn(result_list$PCB_log))
+
+## Log transformation
+- In this case, $log$ transformation applied to each column of PCB data.
+
+```{r, echo=FALSE}
+out_table <- t(sum_fn(result_list$PCB_log))
+rownames(out_table) <- "MSE"
+
+knitr::kable(x = out_table, 
+             row.names = TRUE,
+             format = "html",
+             caption = tab$cap("log","MSE of estimated variance under log transformation"))  %>% 
+  kableExtra::kable_styling(full_width = FALSE)
+```
+
+- In the Table `r tab$ref("log")`, Log transformation reduce the MSE a lot
+- However, at least based on this simulation result GCTA method's result is better than proposed method
+
+```{r , echo = FALSE, warning=FALSE, fig.cap=fig$cap("log", "Histogram of Main and Interaction variance with log transformed data")}
   plot_fn(result_list$PCB_log,"PCB_log")
 ```
 
-## Cox-Box tranformation
+- In figure `r fig$ref("log")`,after transformation both methods can predict the main effect well
+
+- But for the interaction effect, the proposed method seems to have a bias which I will make a further study.
+
+
+## Cox-Box transformation
 - In this case, Cox-Box transformation is applied to each column of PCB data.
 \[
  y(\lambda)=\begin{cases}
@@ -103,28 +176,51 @@ For all of the following results, the model is same.
 \]
 - The choosing of $\lambda$ is based on a linear model $y = \beta_0$, where $\beta_0$ is the intercept.
 
-- The result is similar with log transformation's result
 
-```{r, echo = FALSE, warning=FALSE, }
-  cat("MSE of PCB_cox\n")
-  print(sum_fn(result_list$PCB_cox))
+```{r, echo=FALSE}
+out_table <- t(sum_fn(result_list$PCB_cox))
+rownames(out_table) <- "MSE"
+
+knitr::kable(x = out_table, 
+             row.names = TRUE,
+             format = "html",
+             caption = tab$cap("cox","MSE of estimated variance under cox-box transformation"))  %>% 
+  kableExtra::kable_styling(full_width = FALSE)
+```
+
+```{r , echo = FALSE, warning=FALSE, fig.cap=fig$cap("cox", "Histogram of Main and Interaction variance with cox-box transformed data")}
   plot_fn(result_list$PCB_cox,"PCB_cox")
 ```
+
+- The result is similar with log transformation's result
+
+
 
 ## Square root transformation
 
 - In this case, square root transformation is applied to PCB data. 
-- MSE is reduced by using square root transformation but not as much as log or cox-box transformation
-- The histogram is similar with the original scale data's result
 
-```{r, echo = FALSE, warning=FALSE, }
-  cat("MSE of PCB_sqrt\n")
-  print(sum_fn(result_list$PCB_sqrt))
-  plot_fn(result_list$PCB_sqrt,"PCB_sqrt")
+
+```{r, echo=FALSE}
+out_table <- t(sum_fn(result_list$PCB_cox))
+rownames(out_table) <- "MSE"
+
+knitr::kable(x = out_table, 
+             row.names = TRUE,
+             format = "html",
+             caption = tab$cap("sqrt","MSE of estimated variance under square root transformation"))  %>% 
+  kableExtra::kable_styling(full_width = FALSE)
 ```
 
+- In the Table `r tab$ref("sqrt")`, MSE is reduced by using square root transformation but not as much as log or cox-box transformation
 
-<!-- # Histgram of covariates -->
+```{r , echo = FALSE, warning=FALSE, fig.cap=fig$cap("sqrt", "Histogram of Main and Interaction variance with square root transformed data")}
+  plot_fn(result_list$PCB_cox,"PCB_cox")
+```
+
+- In the figure `r fig$ref("sqrt")`, the histogram is similar with the original scale data's result
+
+<!-- # Histogram of covariates -->
 
 <!-- ## Original scale -->
 <!-- ```{r, echo=FALSE} -->
