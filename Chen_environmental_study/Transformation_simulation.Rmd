@@ -5,7 +5,7 @@ date: "`r Sys.Date()`"
 output: 
   html_document: 
     fig_caption: yes
-    fig_width: 15
+    fig_width: 18
     theme: united
 ---
 
@@ -73,12 +73,14 @@ plot_fn <- function(x, names) {
     geom_histogram(alpha = 0.2, position = "identity", binwidth =  0.5) +
     geom_density(alpha = 0.2) +
     xlim(-30,50)+
+    labs(fill="Methods")+
     ggtitle(paste0("main_total_effect_",names))
   
     g2 <- ggplot(tidyr::gather(data.frame(x[,c(2,4,6)])), aes(value, fill = key, y = ..density..)) +
     geom_histogram(alpha = 0.2, position = "identity", binwidth =  0.5) +
     geom_density(alpha = 0.2) +
     xlim(0,40)+
+    labs(fill="Methods")+
     ggtitle(paste0("interaction_total_effect_",names))
     
     gridExtra::grid.arrange(g1, g2, ncol=2)
@@ -88,27 +90,31 @@ plot_fn <- function(x, names) {
 # Transformation methods
 
 - Based the density and histogram plots, the most of the empirical distributions of individual PCB covariate are __right__ skewed (heavy tail)
-- I have tried 3 different transformation methods `log`, `square root` and `box-cox`
-- Transformation is made __BEFORE__ the process of main and interaction signals simulation
+- I have tried 5 different transformation methods  `square root`, `log`, `box-cox`, `rank` and `quantile`
+- Transformation is made __BEFORE__ generating the main and interaction signals
 
-# models
-For all of the following results, the model is same. 
+# Simulation and Models
 \[
-  y_i = \sum^m_{j = 1}z_j*\beta^{(main)}_j + \sum^{m(m-1)/2}_{k=2}z^{(inter)}_k\beta^{(inter)}_k ~+~ \epsilon_i
+  y_i = \sum^m_{j = 1}z_j\beta^{(main)}_j + \sum^{m(m-1)/2}_{k=2}z^{(inter)}_k\beta^{(inter)}_k ~+~ \epsilon_i
 \]
 
+- Where $\beta^{(main)} \sim N(0, 0.5)$ and $\beta^{(intercation)} \sim N(0,0.1)$ are random effects
+- During the simulation, the interaction coefficients are not zero and generated from a normal distribution
+- For main and interaction effects ($\beta^{(main)}$ and $\beta^{(inter)}$), 80 groups of values are randomly generated
+- Given a fixed main and interaction effect, 20 values of $y_i$ are randomly generated to calculated the estimated variances
+- For all of the following results, the model is same. 
+
 # Steps
-1. All 3 transformation methods apply to the data with original scale
-2. Standardizing the transformed data to $E(Z_j) = 0, Var(Z_i) = 1$
-3. For the proposed method, the input data Z also is transformed into Uncorrelated by SVD method
+1. All 5 transformation methods are applied to the PCB data directly
+2. Standardizing the transformed data into Z, where $E(Z_j) = 0, Var(Z_i) = 1$
+3. For the proposed method, the input data Z is also transformed into __Uncorrelated__ by SVD method
 4. Using the RMEL method to estimated the variances of main effect and interact effect
 
 
 # Simulation Result for each method
-- For main and interaction effects ($\beta^{(main)}$ and $\beta^{(inter)}$), 80 groups of values are randomly generated from 2 normal distributions 
-- Given a fixed main and interaction effect, 20 values of $y_i$ are generated to calculated the estimated variances
+
 - The following tables are about the MSE of estimated variance (averaging across different values of $\beta's$ )
-- Histogram plots are about the empirical distribution of the true variances, GCTA estimator and Proposed estimation
+- Histogram plots are about the empirical distribution of the true variances, GCTA estimator and Proposed estimator
 
 
 ## No transformation
@@ -139,6 +145,29 @@ knitr::kable(x = out_table,
 - True_main (in blue) represents the real variance of the main effect  
 - It seems that the there is a bias for both GCTA and proposed estimators of interaction effect
 
+## Square root transformation
+
+- In this case, square root transformation is applied to PCB data. 
+
+
+```{r, echo=FALSE}
+out_table <- t(sum_fn(result_list$PCB_sqrt))
+rownames(out_table) <- "MSE"
+
+knitr::kable(x = out_table, 
+             row.names = TRUE,
+             format = "html",
+             caption = tab$cap("sqrt","MSE of estimated variance under square root transformation"))  %>% 
+  kableExtra::kable_styling(full_width = FALSE)
+```
+
+- In the Table `r tab$ref("sqrt")`, MSE is reduced by using square root transformation but not as much as log or cox-box transformation
+
+```{r , echo = FALSE, warning=FALSE, fig.cap=fig$cap("sqrt", "Histogram of Main and Interaction variance with square root transformed data")}
+  plot_fn(result_list$PCB_sqrt,"PCB_sqrt")
+```
+
+- In the figure `r fig$ref("sqrt")`, the histogram is similar with the original scale data's result
 
 ## Log transformation
 - In this case, $log$ transformation applied to each column of PCB data.
@@ -196,29 +225,58 @@ knitr::kable(x = out_table,
 
 
 
-## Square root transformation
 
-- In this case, square root transformation is applied to PCB data. 
+## Rank tranformation
 
+```{r, include = FALSE}
+load("./result/simulation_rank_quantile_tranformation")
+```
+- In this case, the ranks of each covariate are used to replace real values.
 
 ```{r, echo=FALSE}
-out_table <- t(sum_fn(result_list$PCB_cox))
+out_table <- t(sum_fn(result_list$PCB_rank))
 rownames(out_table) <- "MSE"
 
 knitr::kable(x = out_table, 
              row.names = TRUE,
              format = "html",
-             caption = tab$cap("sqrt","MSE of estimated variance under square root transformation"))  %>% 
+             caption = tab$cap("rank","MSE of estimated variance under rank transformation"))  %>% 
+  kableExtra::kable_styling(full_width = FALSE)
+```
+- In the Table `r tab$ref("rank")`, MSE is reduced by using rank transformation. 
+- Compared with other methods, Using rank transformation seems to give the __BEST__ result in term of MSE
+
+
+```{r , echo = FALSE, warning=FALSE, fig.cap=fig$cap("rank", "Histogram of Main and Interaction variance with rank transformed data")}
+  plot_fn(result_list$PCB_rank,"PCB_rank")
+```
+
+- In the figure `r fig$ref("rank")`, for the main effect, both GCTA and proposed methods are able to give a good estimations for the signals' variance. 
+- However, for the intercation effect, the proposed method seems to have a bais in estimating the interaction variance. 
+
+## Quantile tranformation
+- In this case, normal quantile are used the replace the orignal value for each variable of PCB data
+
+* the Normal quantile Procedure is 
+    1. Calculate the empirical precentails for each column of PCB data 
+    1. Using the precentails to find the corresponding quantile value based on a Standard Normal distrbution.
+    1. Using the normal quantiles to replace the real values of PCB data column by column 
+
+
+```{r, echo=FALSE}
+out_table <- t(sum_fn(result_list$PCB_quantile))
+rownames(out_table) <- "MSE"
+
+knitr::kable(x = out_table, 
+             row.names = TRUE,
+             format = "html",
+             caption = tab$cap("quantile","MSE of estimated variance under quantile transformation"))  %>% 
   kableExtra::kable_styling(full_width = FALSE)
 ```
 
-- In the Table `r tab$ref("sqrt")`, MSE is reduced by using square root transformation but not as much as log or cox-box transformation
-
-```{r , echo = FALSE, warning=FALSE, fig.cap=fig$cap("sqrt", "Histogram of Main and Interaction variance with square root transformed data")}
-  plot_fn(result_list$PCB_cox,"PCB_cox")
+```{r , echo = FALSE, warning=FALSE, fig.cap=fig$cap("quantile", "Histogram of Main and Interaction variance with quantile transformed data")}
+  plot_fn(result_list$PCB_quantile,"PCB_quantile")
 ```
-
-- In the figure `r fig$ref("sqrt")`, the histogram is similar with the original scale data's result
 
 <!-- # Histogram of covariates -->
 

@@ -9,7 +9,7 @@ library(doRNG)
 library(doParallel)
 
 ##################################################################################
-## mutiple simulation fitting function
+## multiple simulation fitting function
 ##################################################################################
 
 compare_corr_GCTA <- function(b, 
