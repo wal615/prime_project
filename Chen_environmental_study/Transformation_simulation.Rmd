@@ -7,6 +7,8 @@ output:
     fig_caption: yes
     fig_width: 18
     theme: united
+    toc: true
+    number_sections: true
 ---
 
 ```{r, include=FALSE}
@@ -20,7 +22,7 @@ library(printr)
 
 load("./result/simulation_log_sqrt_tranformation")
 
-#####################################################################################
+get#####################################################################################
 ## figures number function
 #####################################################################################
 # A function for captioning and referencing images
@@ -85,6 +87,25 @@ plot_fn <- function(x, names) {
     
     gridExtra::grid.arrange(g1, g2, ncol=2)
 }
+
+box_plot_fn <- function(x, names){
+  x <- x[x[,1]!=0,]
+  g1 <- ggplot(tidyr::gather(data.frame(x[,c(1,3,5)])), aes(x = key, y = value, color = key)) + 
+    geom_boxplot() +
+    ylim(-30,50)+
+    labs(color ="Methods")+
+    labs(x = "method", y = "Variance")+
+    ggtitle(paste0("main_total_effect_",names))
+  
+  g2 <- ggplot(tidyr::gather(data.frame(x[,c(2,4,6)])), aes(x = key, y = value, color = key)) + 
+    geom_boxplot() +
+    ylim(0, 40)+
+    labs(color ="Methods")+
+    labs(x = "method", y = "Variance")+
+    ggtitle(paste0("interaction_total_effect_",names))
+    
+  gridExtra::grid.arrange(g1, g2, ncol=2)
+}
 ```
 
 # Transformation methods
@@ -101,7 +122,7 @@ plot_fn <- function(x, names) {
 - Where $\beta^{(main)} \sim N(0, 0.5)$ and $\beta^{(intercation)} \sim N(0,0.1)$ are random effects
 - During the simulation, the interaction coefficients are not zero and generated from a normal distribution
 - For main and interaction effects ($\beta^{(main)}$ and $\beta^{(inter)}$), 80 groups of values are randomly generated
-- Given a fixed main and interaction effect, 20 values of $y_i$ are randomly generated to calculated the estimated variances
+- Given a fixed main and interaction effect, responses are generated 20 times in order to get a averaged estimators of main and interaction variance
 - For all of the following results, the model is same. 
 
 # Steps
@@ -135,12 +156,16 @@ knitr::kable(x = out_table,
 - MSE is calculated by $\sum(\sigma^2_{estimation} - \sigma^2_{true})^2/n$
 - n in our case is 80
 
+```{r , echo = FALSE, warning=FALSE, fig.cap=fig$cap("Original scale_box", "Box-plot of Main and Interaction variance with original scale data")}
+  box_plot_fn(result_list$PCB,"PCB")
+```
+
 ```{r , echo = FALSE, warning=FALSE, fig.cap=fig$cap("Original scale", "Histogram of Main and Interaction variance with original scale data")}
   plot_fn(result_list$PCB,"PCB")
 ```
 
 - In figure `r fig$ref("Original scale")`, left hand-side is the histogram of main effect variance and right hand-side is for interaction effect variance. 
-- GCTA_mian (in pink) represents the estimated main effect's variance by GCTA method 
+- GCTA_main (in pink) represents the estimated main effect's variance by GCTA method 
 - pro_main (in green) represents the estimated main effect's variance by proposed method which is GCTA method with uncorrelated procedure
 - True_main (in blue) represents the real variance of the main effect  
 - It seems that the there is a bias for both GCTA and proposed estimators of interaction effect
@@ -163,11 +188,16 @@ knitr::kable(x = out_table,
 
 - In the Table `r tab$ref("sqrt")`, MSE is reduced by using square root transformation but not as much as log or cox-box transformation
 
+```{r , echo = FALSE, warning=FALSE, fig.cap=fig$cap("sqrt_box", "Box-plot of Main and Interaction variance with square root transformed data")}
+  box_plot_fn(result_list$PCB_sqrt,"PCB_sqrt")
+```
+
 ```{r , echo = FALSE, warning=FALSE, fig.cap=fig$cap("sqrt", "Histogram of Main and Interaction variance with square root transformed data")}
   plot_fn(result_list$PCB_sqrt,"PCB_sqrt")
 ```
 
 - In the figure `r fig$ref("sqrt")`, the histogram is similar with the original scale data's result
+
 
 ## Log transformation
 - In this case, $log$ transformation applied to each column of PCB data.
@@ -185,6 +215,10 @@ knitr::kable(x = out_table,
 
 - In the Table `r tab$ref("log")`, Log transformation reduce the MSE a lot
 - However, at least based on this simulation result GCTA method's result is better than proposed method
+
+```{r , echo = FALSE, warning=FALSE, fig.cap=fig$cap("log", "Box-plot of Main and Interaction variance with log transformed data")}
+  box_plot_fn(result_list$PCB_log,"PCB_log")
+```
 
 ```{r , echo = FALSE, warning=FALSE, fig.cap=fig$cap("log", "Histogram of Main and Interaction variance with log transformed data")}
   plot_fn(result_list$PCB_log,"PCB_log")
@@ -217,6 +251,10 @@ knitr::kable(x = out_table,
   kableExtra::kable_styling(full_width = FALSE)
 ```
 
+```{r , echo = FALSE, warning=FALSE, fig.cap=fig$cap("cox_box", "Box-plot of Main and Interaction variance with cox-box transformed data")}
+  box_plot_fn(result_list$PCB_cox,"PCB_cox")
+```
+
 ```{r , echo = FALSE, warning=FALSE, fig.cap=fig$cap("cox", "Histogram of Main and Interaction variance with cox-box transformed data")}
   plot_fn(result_list$PCB_cox,"PCB_cox")
 ```
@@ -247,19 +285,23 @@ knitr::kable(x = out_table,
 - Compared with other methods, Using rank transformation seems to give the __BEST__ result in term of MSE
 
 
+```{r , echo = FALSE, warning=FALSE, fig.cap=fig$cap("rank", "Box-plot of Main and Interaction variance with rank transformed data")}
+  box_plot_fn(result_list$PCB_rank,"PCB_rank")
+```
+
 ```{r , echo = FALSE, warning=FALSE, fig.cap=fig$cap("rank", "Histogram of Main and Interaction variance with rank transformed data")}
   plot_fn(result_list$PCB_rank,"PCB_rank")
 ```
 
 - In the figure `r fig$ref("rank")`, for the main effect, both GCTA and proposed methods are able to give a good estimations for the signals' variance. 
-- However, for the intercation effect, the proposed method seems to have a bais in estimating the interaction variance. 
+- However, for the interaction effect, the proposed method seems to have a bias in estimating the interaction variance. 
 
-## Quantile tranformation
-- In this case, normal quantile are used the replace the orignal value for each variable of PCB data
+## Normal Quantile tranformation
+- In this case, normal quantile are used the replace the original value for each variable of PCB data
 
 * the Normal quantile Procedure is 
     1. Calculate the empirical precentails for each column of PCB data 
-    1. Using the precentails to find the corresponding quantile value based on a Standard Normal distrbution.
+    1. Using the precentails to find the corresponding quantile value based on a Standard Normal distribution.
     1. Using the normal quantiles to replace the real values of PCB data column by column 
 
 
@@ -274,8 +316,8 @@ knitr::kable(x = out_table,
   kableExtra::kable_styling(full_width = FALSE)
 ```
 
-```{r , echo = FALSE, warning=FALSE, fig.cap=fig$cap("quantile", "Histogram of Main and Interaction variance with quantile transformed data")}
-  plot_fn(result_list$PCB_quantile,"PCB_quantile")
+```{r , echo = FALSE, warning=FALSE, fig.cap=fig$cap("quantile", "Box-plot of Main and Interaction variance with quantile transformed data")}
+  box_plot_fn(result_list$PCB_quantile,"PCB_quantile")
 ```
 
 <!-- # Histogram of covariates -->

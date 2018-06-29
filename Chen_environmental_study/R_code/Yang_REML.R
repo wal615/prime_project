@@ -128,10 +128,10 @@ compare_corr_GCTA <- function(b,
     result_tmp[, 1]=var(signalm)
     result_tmp[, 2]=var(signali)
     
-    # Estimating total effects
+    # Estimating total effects with iterations
     for(irep in 1:nrep){
 
-      # Generate health outcome fixed random effects
+      # Generate health outcome given fixed random effects
       y=signalm+signali+rnorm(n,sd=4)
       
       fit=Yang(y,b,interact = interaction_m)
@@ -178,7 +178,7 @@ std_fn <- function(b, p, tran_FUN = null_tran, ...){
 }
 
 ##################################################################################
-## Rank transformation function
+## Null transformation function
 ##################################################################################
 
 null_tran <- function(y) {
@@ -211,7 +211,7 @@ rank_tran <- function(y) {
 
 norm_quantile_tran <- function(y) {
   emprircal_cdf <- ecdf(y) # empricial dist 
-    y[which.min(y)] <- y[which.min(y)] + 0.0001 # modify the max and min values to avoid Inf 
-    y[which.max(y)] <- y[which.max(y)] - 0.0001
-    y <- emprircal_cdf(y) %>% qnorm(.) 
+  y[which.min(y)] <- y[which.min(y)] + 0.0001 # modify the max and min values to avoid Inf 
+  y[which.max(y)] <- y[which.max(y)] - 0.0001
+  y <- emprircal_cdf(y) %>% qnorm(.) 
 }
