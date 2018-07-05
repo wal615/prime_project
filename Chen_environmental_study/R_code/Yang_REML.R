@@ -109,7 +109,6 @@ compare_corr_GCTA <- function(b,
     result_tmp <- matrix(0, nrow = nrep, ncol = 6)
 
     # Generate betas
-    browser()
     betam=rnorm(p, mean =0, sd =0.5) # main_effect ~ N(0,0.5)
     betam[2*c(1:17)]=0  # mimic the zero coefficients
     
