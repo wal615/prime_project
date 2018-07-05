@@ -38,7 +38,7 @@ result_list <- mapply(FUN = compare_corr_GCTA,
                       b = data_list,
                       interaction = interaction_list,
                       interaction_m = interaction_m_list,
-                      MoreArgs = list(brep = 5, nrep = 2, seed = 123, cores = 10),
+                      MoreArgs = list(brep = 50, nrep = 20, seed = 123, cores = 1),
                       SIMPLIFY = FALSE)
 
-save(result_list, file = "./result/simulation_result_reproduce")
+save(result_list, file = "./result/simulation_result_reproduce_with_rep_beta")
