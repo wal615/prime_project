@@ -104,12 +104,13 @@ compare_corr_GCTA <- function(b,
   
   if(seed != 0) set.seed(seed) # set seed for foreach
   
-  result_raw <- foreach(ibrep = 1:brep, .combine = rbind, .verbose = TRUE) %dorng%   {
+  result_raw <- foreach(ibrep = 1:brep, .combine = rbind, .verbose = FALSE) %dorng%   {
     
     result_tmp <- matrix(0, nrow = nrep, ncol = 6)
 
     # Generate betas
-    betam=rnorm(p, m=0, sd=0.5) # main_effect ~ N(0,0.5)
+    browser()
+    betam=rnorm(p, mean =0, sd =0.5) # main_effect ~ N(0,0.5)
     betam[2*c(1:17)]=0  # mimic the zero coefficients
     
     if(interaction==0) {

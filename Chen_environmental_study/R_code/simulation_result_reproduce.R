@@ -9,10 +9,10 @@ library(doRNG)
 library(doParallel)
 
 a=read.sas7bdat("~/dev/projects/Chen_environmental_study/R_code/pcbs1000nomiss.sas7bdat")
-b=data.matrix(a[,2:35], rownames.force = NA)
-b_norm=matrix(rnorm(1000*34),ncol=34) # simulated covariates
-b_norm_uncorr <- mvrnorm(n = 1000, mu = rep(0,34), Sigma = diag(rep(1,34)))
-b_norm_corr <- mvrnorm(n = 1000, mu = rep(0,34), Sigma = diag(rep(1,34)) + matrix(rep(2,34*34), nrow = 34))
+b=data.matrix(a[,2:35], rownames.force = NA) %>% std_fn(., 34, tran_FUN = rank_tran)
+b_norm=matrix(rnorm(1000*34),ncol=34) %>% std_fn(., 34, tran_FUN = rank_tran) # simulated covariates
+b_norm_uncorr <- mvrnorm(n = 1000, mu = rep(0,34), Sigma = diag(rep(1,34))) %>% std_fn(., 34, tran_FUN = rank_tran)
+b_norm_corr <- mvrnorm(n = 1000, mu = rep(0,34), Sigma = diag(rep(1,34)) + matrix(rep(2,34*34), nrow = 34)) %>% std_fn(., 34, tran_FUN = rank_tran)
 #b=log(b)
 
 data_list <- list(PCB_no_inter_m = b, 

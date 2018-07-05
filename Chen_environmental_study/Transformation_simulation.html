@@ -11,7 +11,7 @@
 
 <meta name="author" content="Xuelong Wang" />
 
-<meta name="date" content="2018-06-28" />
+<meta name="date" content="2018-07-05" />
 
 <title>Transformation_simulation</title>
 
@@ -120,28 +120,33 @@ $(document).ready(function () {
 
 <h1 class="title toc-ignore">Transformation_simulation</h1>
 <h4 class="author"><em>Xuelong Wang</em></h4>
-<h4 class="date"><em>2018-06-28</em></h4>
+<h4 class="date"><em>2018-07-05</em></h4>
 
 </div>
 
 <div id="TOC">
 <ul>
-<li><a href="#transformation-methods"><span class="toc-section-number">1</span> Transformation methods</a></li>
-<li><a href="#simulation-and-models"><span class="toc-section-number">2</span> Simulation and Models</a></li>
-<li><a href="#steps"><span class="toc-section-number">3</span> Steps</a></li>
-<li><a href="#simulation-result-for-each-method"><span class="toc-section-number">4</span> Simulation Result for each method</a><ul>
-<li><a href="#no-transformation"><span class="toc-section-number">4.1</span> No transformation</a></li>
-<li><a href="#square-root-transformation"><span class="toc-section-number">4.2</span> Square root transformation</a></li>
-<li><a href="#log-transformation"><span class="toc-section-number">4.3</span> Log transformation</a></li>
-<li><a href="#cox-box-transformation"><span class="toc-section-number">4.4</span> Cox-Box transformation</a></li>
-<li><a href="#rank-tranformation"><span class="toc-section-number">4.5</span> Rank tranformation</a></li>
-<li><a href="#normal-quantile-tranformation"><span class="toc-section-number">4.6</span> Normal Quantile tranformation</a></li>
+<li><a href="#reproduce-the-proposal-result-with-different-betas-values"><span class="toc-section-number">1</span> Reproduce the proposal result with different beta’s values</a></li>
+<li><a href="#transformation-methods"><span class="toc-section-number">2</span> Transformation methods</a></li>
+<li><a href="#simulation-and-models"><span class="toc-section-number">3</span> Simulation and Models</a></li>
+<li><a href="#steps"><span class="toc-section-number">4</span> Steps</a></li>
+<li><a href="#simulation-result-for-each-method"><span class="toc-section-number">5</span> Simulation Result for each method</a><ul>
+<li><a href="#no-transformation"><span class="toc-section-number">5.1</span> No transformation</a></li>
+<li><a href="#square-root-transformation"><span class="toc-section-number">5.2</span> Square root transformation</a></li>
+<li><a href="#log-transformation"><span class="toc-section-number">5.3</span> Log transformation</a></li>
+<li><a href="#cox-box-transformation"><span class="toc-section-number">5.4</span> Cox-Box transformation</a></li>
+<li><a href="#rank-tranformation"><span class="toc-section-number">5.5</span> Rank tranformation</a></li>
+<li><a href="#normal-quantile-tranformation"><span class="toc-section-number">5.6</span> Normal Quantile tranformation</a></li>
 </ul></li>
 </ul>
 </div>
 
+<div id="reproduce-the-proposal-result-with-different-betas-values" class="section level1">
+<h1><span class="header-section-number">1</span> Reproduce the proposal result with different beta’s values</h1>
+<pre><code></code></pre>
+</div>
 <div id="transformation-methods" class="section level1">
-<h1><span class="header-section-number">1</span> Transformation methods</h1>
+<h1><span class="header-section-number">2</span> Transformation methods</h1>
 <ul>
 <li>Based the density and histogram plots, the most of the empirical distributions of individual PCB covariate are <strong>right</strong> skewed (heavy tail)</li>
 <li>I have tried 5 different transformation methods <code>square root</code>, <code>log</code>, <code>box-cox</code>, <code>rank</code> and <code>quantile</code></li>
@@ -149,7 +154,7 @@ $(document).ready(function () {
 </ul>
 </div>
 <div id="simulation-and-models" class="section level1">
-<h1><span class="header-section-number">2</span> Simulation and Models</h1>
+<h1><span class="header-section-number">3</span> Simulation and Models</h1>
 <p><span class="math display">\[
   y_i = \sum^m_{j = 1}z_j\beta^{(main)}_j + \sum^{m(m-1)/2}_{k=2}z^{(inter)}_k\beta^{(inter)}_k ~+~ \epsilon_i
 \]</span></p>
@@ -162,7 +167,7 @@ $(document).ready(function () {
 </ul>
 </div>
 <div id="steps" class="section level1">
-<h1><span class="header-section-number">3</span> Steps</h1>
+<h1><span class="header-section-number">4</span> Steps</h1>
 <ol style="list-style-type: decimal">
 <li>All 5 transformation methods are applied to the PCB data directly</li>
 <li>Standardizing the transformed data into Z, where <span class="math inline">\(E(Z_j) = 0, Var(Z_i) = 1\)</span></li>
@@ -171,13 +176,13 @@ $(document).ready(function () {
 </ol>
 </div>
 <div id="simulation-result-for-each-method" class="section level1">
-<h1><span class="header-section-number">4</span> Simulation Result for each method</h1>
+<h1><span class="header-section-number">5</span> Simulation Result for each method</h1>
 <ul>
 <li>The following tables are about the MSE of estimated variance (averaging across different values of <span class="math inline">\(\beta's\)</span> )</li>
 <li>Histogram plots are about the empirical distribution of the true variances, GCTA estimator and Proposed estimator</li>
 </ul>
 <div id="no-transformation" class="section level2">
-<h2><span class="header-section-number">4.1</span> No transformation</h2>
+<h2><span class="header-section-number">5.1</span> No transformation</h2>
 <ul>
 <li>In this case, no transformation is applied to PCB data. This could be considered as a reference result</li>
 </ul>
@@ -251,7 +256,7 @@ Figure 2: Histogram of Main and Interaction variance with original scale data
 </ul>
 </div>
 <div id="square-root-transformation" class="section level2">
-<h2><span class="header-section-number">4.2</span> Square root transformation</h2>
+<h2><span class="header-section-number">5.2</span> Square root transformation</h2>
 <ul>
 <li>In this case, square root transformation is applied to PCB data.</li>
 </ul>
@@ -317,7 +322,7 @@ Figure 4: Histogram of Main and Interaction variance with square root transforme
 </ul>
 </div>
 <div id="log-transformation" class="section level2">
-<h2><span class="header-section-number">4.3</span> Log transformation</h2>
+<h2><span class="header-section-number">5.3</span> Log transformation</h2>
 <ul>
 <li>In this case, <span class="math inline">\(log\)</span> transformation applied to each column of PCB data.</li>
 </ul>
@@ -385,7 +390,7 @@ Figure 6: Histogram of Main and Interaction variance with log transformed data
 </ul>
 </div>
 <div id="cox-box-transformation" class="section level2">
-<h2><span class="header-section-number">4.4</span> Cox-Box transformation</h2>
+<h2><span class="header-section-number">5.4</span> Cox-Box transformation</h2>
 <ul>
 <li>In this case, Cox-Box transformation is applied to each column of PCB data. <span class="math display">\[
  y(\lambda)=\begin{cases}
@@ -454,7 +459,7 @@ Figure 8: Histogram of Main and Interaction variance with cox-box transformed da
 </ul>
 </div>
 <div id="rank-tranformation" class="section level2">
-<h2><span class="header-section-number">4.5</span> Rank tranformation</h2>
+<h2><span class="header-section-number">5.5</span> Rank tranformation</h2>
 <ul>
 <li>In this case, the ranks of each covariate are used to replace real values.</li>
 </ul>
@@ -522,7 +527,7 @@ Figure 10: Histogram of Main and Interaction variance with rank transformed data
 </ul>
 </div>
 <div id="normal-quantile-tranformation" class="section level2">
-<h2><span class="header-section-number">4.6</span> Normal Quantile tranformation</h2>
+<h2><span class="header-section-number">5.6</span> Normal Quantile tranformation</h2>
 <ul>
 <li><p>In this case, normal quantile are used the replace the original value for each variable of PCB data</p></li>
 <li>the Normal quantile Procedure is
