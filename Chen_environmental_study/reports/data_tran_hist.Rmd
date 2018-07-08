@@ -1,0 +1,110 @@
+---
+title: "data_tran_hist"
+author: "Xuelong Wang"
+date: "`r Sys.Date()`"
+output: 
+  html_document: 
+    fig_caption: yes
+    fig_height: 15
+    theme: united
+    toc: true
+    number_sections: true
+---
+
+```{r, include=FALSE}
+knitr::opts_knit$set(root.dir = "~/dev/projects/Chen_environmental_study/")
+# source("./R_code/Yang_REML.R")
+options(width = 100)
+library(ggplot2)
+library(tidyverse)
+library(sas7bdat)
+library(printr)
+
+#####################################################################################
+## figures number function
+#####################################################################################
+# A function for captioning and referencing images
+fig <- local({
+    i <- 0
+    ref <- list()
+    list(
+        cap=function(refName, text) {
+            i <<- i + 1
+            ref[[refName]] <<- i
+            paste("Figure ", i, ": ", text, sep="")
+        },
+        ref=function(refName) {
+            ref[[refName]]
+        })
+})
+
+#####################################################################################
+## figures number function
+#####################################################################################
+# A function for captioning and referencing tables
+
+tab <- local({
+    i <- 0
+    ref <- list()
+    list(
+        cap=function(refName, text) {
+            i <<- i + 1
+            ref[[refName]] <<- i
+            paste("Table ", i, ": ", text, sep="")
+        },
+        ref=function(refName) {
+            ref[[refName]]
+        })
+})
+```
+
+```{r, echo = FALSE}
+setwd("~/dev/projects/Chen_environmental_study/")
+source("./R_code/Yang_REML.R")
+
+library(sas7bdat)
+library(MASS)
+library(tidyverse)
+library(ggplot2)
+
+
+a=read.sas7bdat("~/dev/projects/Chen_environmental_study/R_code/pcbs1000nomiss.sas7bdat")
+a=data.matrix(a[,2:35], rownames.force = NA)
+b <- a 
+b_rank <- std_fn(b, ncol(b), tran_FUN = rank_tran) 
+b_quantile <- std_fn(b, ncol(b), tran_FUN = norm_quantile_tran) 
+
+```
+
+# hist plot of quantile tranformation
+```{r, echo=FALSE, fig.height = 30}
+melted_data <- reshape2::melt(b_quantile)
+colnames(melted_data) <- c("ID", "PCB_var","value")
+ggplot(melted_data, aes(x = value, y = ..density..)) +
+  geom_histogram(alpha = 0.2, position = "identity", binwidth =  0.5) +
+  geom_density(alpha = 0.2) +
+  facet_grid(PCB_var ~ .)
+```
+
+
+# hist plot of quantile tranformation with out columns with bad result
+```{r, echo=FALSE, fig.height = 30}
+non_normal_index <- match(c("LBX157", "LBX167", "LBX189","LBX128"), colnames(b_quantile))
+b_quantile <- b_quantile[,-non_normal_index] 
+melted_data <- reshape2::melt(b_quantile)
+colnames(melted_data) <- c("ID", "PCB_var","value")
+ggplot(melted_data, aes(x = value, y = ..density..)) +
+  geom_histogram(alpha = 0.2, position = "identity", binwidth =  0.5) +
+  geom_density(alpha = 0.2) +
+  facet_grid(PCB_var ~ .)
+```
+
+# hist plot of quantile tranformation
+```{r, echo=FALSE, fig.height = 30}
+melted_data <- reshape2::melt(b_rank)
+colnames(melted_data) <- c("ID", "PCB_var","value")
+ggplot(melted_data, aes(x = value, y = ..density..)) +
+  geom_histogram(alpha = 0.2, position = "identity", binwidth =  0.5) +
+  geom_density(alpha = 0.2) +
+  facet_grid(PCB_var ~ .)
+```

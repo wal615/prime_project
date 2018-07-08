@@ -90,6 +90,7 @@ Yang=function(y,x,interact=0){
 compare_corr_GCTA <- function(b, 
                               brep, 
                               nrep,
+                              uncorr_method = NULL,
                               interaction = 0, 
                               interaction_m = 0, 
                               seed = 0, 
@@ -110,7 +111,7 @@ compare_corr_GCTA <- function(b,
 
     # Generate betas
     betam=rnorm(p, mean =0, sd =0.5) # main_effect ~ N(0,0.5)
-    betam[2*c(1:17)]=0  # mimic the zero coefficients
+    betam[2*c(1:round(p/2,0))]=0  # mimic the zero coefficients
     
     if(interaction==0) {
       betai <- 0
@@ -138,13 +139,10 @@ compare_corr_GCTA <- function(b,
       result_tmp[irep,3] <- fit$G
       result_tmp[irep,4] <- fit$RACT
       
-      # transform covariates into uncorrelated (proposed method)
-      Sigma=cov(b,b)
-      # Compute Sigma^{-1/2}
-      Seign=eigen(Sigma)
-      Sinvsqrt=Seign$vectors %*% diag(1/sqrt(Seign$values)) %*% t(Seign$vectors)
-      x=b%*%Sinvsqrt
-      #cor(X,X)
+      # uncorrelated data 
+      if(is.null(uncorr_method) == TRUE) 
+        x <- uncorr_fn(b)
+        else x <- uncorr_fn(b, uncorr_method)
       
       # Call the GCTA method
       fit=Yang(y,x,interact = interaction_m)
@@ -176,6 +174,7 @@ std_fn <- function(b, p, tran_FUN = null_tran, ...){
   }
   b
 }
+
 
 ##################################################################################
 ## Null transformation function
@@ -214,4 +213,21 @@ norm_quantile_tran <- function(y) {
   y[which.min(y)] <- y[which.min(y)] + 0.0001 # modify the max and min values to avoid Inf 
   y[which.max(y)] <- y[which.max(y)] - 0.0001
   y <- emprircal_cdf(y) %>% qnorm(.) 
+}
+
+##################################################################################
+## uncorrelated function
+##################################################################################
+uncorr_fn <- function(input_data, uncorr_method = SVD_method , ...) {
+  res <- uncorr_method(input_data, ...)
+  res$uncorr_data
+}
+
+SVD_method <- function(input_data) {
+  Sigma=cov(input_data,input_data)
+  # Compute Sigma^{-1/2}
+  Seign=eigen(Sigma)
+  Sinvsqrt=Seign$vectors %*% diag(1/sqrt(Seign$values)) %*% t(Seign$vectors)
+  uncorr_data=input_data%*%Sinvsqrt  
+  list(uncorr_data = uncorr_data)
 }
