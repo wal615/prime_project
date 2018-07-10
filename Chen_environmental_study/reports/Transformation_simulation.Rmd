@@ -9,18 +9,17 @@ output:
     theme: united
     toc: true
     number_sections: true
+editor_options: 
+  chunk_output_type: console
 ---
 
-```{r, include=FALSE}
+```{r setup, include=FALSE}
 knitr::opts_knit$set(root.dir = "~/dev/projects/Chen_environmental_study/")
-source("./R_code/Yang_REML.R")
 options(width = 100)
 library(ggplot2)
 library(tidyverse)
 library(sas7bdat)
 library(printr)
-
-load("./result/simulation_log_sqrt_tranformation")
 
 #####################################################################################
 ## figures number function
@@ -108,9 +107,9 @@ box_plot_fn <- function(x, names){
 }
 ```
 
-# Reproduce the proposal result with different beta's values
-
-```{}
+```{r loading result, include=FALSE}
+source("./R_code/Yang_REML.R")
+load("./result/simulation_log_sqrt_tranformation")
 ```
 
 # Transformation methods
@@ -325,4 +324,6 @@ knitr::kable(x = out_table,
   box_plot_fn(result_list$PCB_quantile,"PCB_quantile")
 ```
 
-
+```{r , echo = FALSE, warning=FALSE, fig.cap=fig$cap("quantile", "Histogram of Main and Interaction variance with quantile transformed data")}
+  plot_fn(result_list$PCB_quantile,"PCB_quantile")
+```

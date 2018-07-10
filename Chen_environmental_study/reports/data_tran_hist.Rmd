@@ -13,7 +13,6 @@ output:
 
 ```{r, include=FALSE}
 knitr::opts_knit$set(root.dir = "~/dev/projects/Chen_environmental_study/")
-# source("./R_code/Yang_REML.R")
 options(width = 100)
 library(ggplot2)
 library(tidyverse)
@@ -58,7 +57,7 @@ tab <- local({
 })
 ```
 
-```{r, echo = FALSE}
+```{r, include = FALSE}
 setwd("~/dev/projects/Chen_environmental_study/")
 source("./R_code/Yang_REML.R")
 
@@ -66,7 +65,9 @@ library(sas7bdat)
 library(MASS)
 library(tidyverse)
 library(ggplot2)
+```
 
+```{r, echo = FALSE}
 
 a=read.sas7bdat("~/dev/projects/Chen_environmental_study/R_code/pcbs1000nomiss.sas7bdat")
 a=data.matrix(a[,2:35], rownames.force = NA)
@@ -76,7 +77,9 @@ b_quantile <- std_fn(b, ncol(b), tran_FUN = norm_quantile_tran)
 
 ```
 
-# hist plot of quantile tranformation
+# Normal quantile tranformation
+
+## hist plot of quantile tranformation
 ```{r, echo=FALSE, fig.height = 30}
 melted_data <- reshape2::melt(b_quantile)
 colnames(melted_data) <- c("ID", "PCB_var","value")
@@ -87,9 +90,9 @@ ggplot(melted_data, aes(x = value, y = ..density..)) +
 ```
 
 
-# hist plot of quantile tranformation with out columns with bad result
+## hist plot of quantile tranformation with out columns with bad result
 ```{r, echo=FALSE, fig.height = 30}
-non_normal_index <- match(c("LBX157", "LBX167", "LBX189","LBX128"), colnames(b_quantile))
+non_normal_index <- match(c("LBX157", "LBX167", "LBX189","LBX128", "LBX195", "LBX151", "LBX172", "LBX156", "LBX177", "LBX178", "LBX194"), colnames(b_quantile))
 b_quantile <- b_quantile[,-non_normal_index] 
 melted_data <- reshape2::melt(b_quantile)
 colnames(melted_data) <- c("ID", "PCB_var","value")
@@ -99,8 +102,22 @@ ggplot(melted_data, aes(x = value, y = ..density..)) +
   facet_grid(PCB_var ~ .)
 ```
 
-# hist plot of quantile tranformation
+# rank tranformation
+
+## hist plot of rank tranformation
 ```{r, echo=FALSE, fig.height = 30}
+melted_data <- reshape2::melt(b_rank)
+colnames(melted_data) <- c("ID", "PCB_var","value")
+ggplot(melted_data, aes(x = value, y = ..density..)) +
+  geom_histogram(alpha = 0.2, position = "identity", binwidth =  0.5) +
+  geom_density(alpha = 0.2) +
+  facet_grid(PCB_var ~ .)
+```
+
+## hist plot of rank tranformation with out columns with bad result
+```{r, echo=FALSE, fig.height = 30}
+non_normal_index <- match(c("LBX157", "LBX167", "LBX189","LBX128", "LBX195", "LBX151", "LBX172", "LBX156", "LBX177", "LBX178", "LBX194"), colnames(b_rank))
+b_rank <- b_rank[,-non_normal_index] 
 melted_data <- reshape2::melt(b_rank)
 colnames(melted_data) <- c("ID", "PCB_var","value")
 ggplot(melted_data, aes(x = value, y = ..density..)) +

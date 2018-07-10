@@ -1,0 +1,270 @@
+---
+title: "Removing_non_normaly_covariates_simulation"
+author: "Xuelong Wang"
+date: "`r Sys.Date()`"
+output: 
+  html_document: 
+    fig_caption: yes
+    fig_width: 20
+    theme: united
+    toc: true
+    number_sections: true
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_knit$set(root.dir = "~/dev/projects/Chen_environmental_study/")
+options(width = 100)
+library(ggplot2)
+library(tidyverse)
+library(sas7bdat)
+library(printr)
+
+#####################################################################################
+## figures number function
+#####################################################################################
+# A function for captioning and referencing images
+fig <- local({
+    i <- 0
+    ref <- list()
+    list(
+        cap=function(refName, text) {
+            i <<- i + 1
+            ref[[refName]] <<- i
+            paste("Figure ", i, ": ", text, sep="")
+        },
+        ref=function(refName) {
+            ref[[refName]]
+        })
+})
+
+#####################################################################################
+## figures number function
+#####################################################################################
+# A function for captioning and referencing tables
+
+tab <- local({
+    i <- 0
+    ref <- list()
+    list(
+        cap=function(refName, text) {
+            i <<- i + 1
+            ref[[refName]] <<- i
+            paste("Table ", i, ": ", text, sep="")
+        },
+        ref=function(refName) {
+            ref[[refName]]
+        })
+})
+
+#####################################################################################
+## calculate MSE for the result 
+#####################################################################################
+sum_fn <- function(x) {
+  x <- x[x[,1]!=0,]
+  c(colMeans((x[,c(3,4)] -x[,c(1,2)])^2), colMeans((x[,c(5,6)] -x[,c(1,2)])^2))}
+
+#####################################################################################
+## plot function
+#####################################################################################
+plot_fn <- function(x, names) {
+    x <- x[x[,1]!=0,]
+    g1<- ggplot(tidyr::gather(data.frame(x[,c(1,3,5)])), aes(value, fill = key, y = ..density..)) +
+    geom_histogram(alpha = 0.2, position = "identity", binwidth =  0.5) +
+    geom_density(alpha = 0.2) +
+    xlim(-20,20)+
+    scale_fill_discrete(name="Methods",
+                        labels=c("Original GCTA", "Proposed Method", "True value"))+
+    theme(legend.title = element_text(size=25), plot.title = element_text(size = 30, face = "bold"))+
+    ggtitle(paste0("main_total_effect_",names))
+  
+  
+    g2 <- ggplot(tidyr::gather(data.frame(x[,c(2,4,6)])), aes(value, fill = key, y = ..density..)) +
+    geom_histogram(alpha = 0.2, position = "identity", binwidth =  0.5) +
+    geom_density(alpha = 0.2) +
+    xlim(0,20)+
+    scale_fill_discrete(name="Methods",
+                        labels=c("Original GCTA", "Proposed Method", "True value"))+
+    theme(legend.title = element_text(size=25), plot.title = element_text(size = 30, face = "bold"))+
+    ggtitle(paste0("interaction_total_effect_",names))
+    
+    gridExtra::grid.arrange(g1, g2, ncol=2)
+}
+
+box_plot_fn <- function(x, names){
+  x <- x[x[,1]!=0,]
+  g1 <- ggplot(tidyr::gather(data.frame(x[,c(1,3,5)])), aes(x = key, y = value, color = key)) + 
+    geom_boxplot() +
+    ylim(-20,20)+
+    labs(x = "method", y = "Variance")+
+    scale_color_discrete(name="Methods",
+                        labels=c("Original GCTA", "Proposed Method", "True value"))+
+    theme(legend.title = element_text(size=25), plot.title = element_text(size = 30, face = "bold"))+
+    ggtitle(paste0("main_total_effect_",names))
+  
+  g2 <- ggplot(tidyr::gather(data.frame(x[,c(2,4,6)])), aes(x = key, y = value, color = key)) + 
+    geom_boxplot() +
+    ylim(0, 20)+
+    labs(x = "method", y = "Variance")+
+    scale_color_discrete(name="Methods",
+                        labels=c("Original GCTA", "Proposed Method", "True value"))+
+    theme(legend.title = element_text(size=25), plot.title = element_text(size = 30, face = "bold"))+
+    ggtitle(paste0("interaction_total_effect_",names))
+    
+  gridExtra::grid.arrange(g1, g2, ncol=2)
+}
+```
+
+```{r loading result, include=FALSE}
+source("./R_code/Yang_REML.R")
+load("./result/simulation_rank_quantile_tranformation_non_normal_subset")
+```
+
+# Tranformation results 
+
+The followings are the empirical density graphs of the covariates, which are selected based on their graphs shape. Those density graphs are not closed to a normal distribution
+
+```{r tranformation result, echo = FALSE, fig.height=15, fig.width=15}
+
+a=read.sas7bdat("~/dev/projects/Chen_environmental_study/R_code/pcbs1000nomiss.sas7bdat")
+a=data.matrix(a[,2:35], rownames.force = NA)
+b <- a 
+b_rank <- std_fn(b, ncol(b), tran_FUN = rank_tran) 
+b_quantile <- std_fn(b, ncol(b), tran_FUN = norm_quantile_tran) 
+
+non_normal_index <- match(c("LBX157", "LBX167", "LBX189","LBX128", "LBX195", "LBX151", "LBX172", "LBX156", "LBX177", "LBX178", "LBX194"), colnames(a))
+```
+
+## Orignal scale
+
+```{r original scale, echo=FALSE, fig.height=15, fig.width=15}
+b <- b[,non_normal_index] 
+melted_data <- reshape2::melt(b)
+colnames(melted_data) <- c("ID", "PCB_var","value")
+ggplot(melted_data, aes(x = value, y = ..density..)) +
+  geom_histogram(alpha = 0.2, position = "identity", binwidth =  0.5) +
+  geom_density(alpha = 0.2) +
+  facet_wrap(PCB_var ~ ., nrow = 3, scales = "free_y")
+
+```
+
+## After the rank tranformation
+
+```{r rank, echo=FALSE, fig.height=15, fig.width=15}
+b_rank <- b_rank[,non_normal_index] 
+melted_data <- reshape2::melt(b_rank)
+colnames(melted_data) <- c("ID", "PCB_var","value")
+ggplot(melted_data, aes(x = value, y = ..density..)) +
+  geom_histogram(alpha = 0.2, position = "identity", binwidth =  0.5) +
+  geom_density(alpha = 0.2) +
+  facet_wrap(PCB_var ~ ., nrow = 3)
+```
+
+## After the normal quantile transformation
+```{r qunatile, echo=FALSE, fig.height=15, fig.width=15}
+b_quantile <- b_quantile[,non_normal_index] 
+melted_data <- reshape2::melt(b_quantile)
+colnames(melted_data) <- c("ID", "PCB_var","value")
+ggplot(melted_data, aes(x = value, y = ..density..)) +
+  geom_histogram(alpha = 0.2, position = "identity", binwidth =  0.5) +
+  geom_density(alpha = 0.2) +
+  facet_wrap(PCB_var ~ ., nrow = 3)
+```
+
+
+# Simulation result on the subset of PCB data
+
+## rank tranformation
+
+### On PCB (removing 7 variables)
+
+```{r, echo=FALSE}
+load("./result/simulation_rank_quantile_tranformation_non_normal_subset_7")
+out_table <- t(sum_fn(result_list$PCB_rank))
+rownames(out_table) <- "MSE"
+
+knitr::kable(x = out_table, 
+             row.names = TRUE,
+             format = "html",
+             caption = tab$cap("rank","MSE of estimated variance under rank transformation"))  %>% 
+  kableExtra::kable_styling(full_width = FALSE)
+```
+
+
+```{r , echo = FALSE, warning=FALSE, fig.cap=fig$cap("rank_box", "Box-plot of Main and Interaction variance with rank transformed data")}
+  box_plot_fn(result_list$PCB_rank,"PCB_rank")
+```
+
+```{r , echo = FALSE, warning=FALSE, fig.cap=fig$cap("rank_hist", "Histogram of Main and Interaction variance with rank transformed data")}
+  plot_fn(result_list$PCB_rank,"PCB_rank")
+```
+
+### On PCB (removing 11 variables)
+
+```{r, echo=FALSE}
+load("./result/simulation_rank_quantile_tranformation_non_normal_subset_11")
+out_table <- t(sum_fn(result_list$PCB_rank))
+rownames(out_table) <- "MSE"
+
+knitr::kable(x = out_table, 
+             row.names = TRUE,
+             format = "html",
+             caption = tab$cap("rank","MSE of estimated variance under rank transformation"))  %>% 
+  kableExtra::kable_styling(full_width = FALSE)
+```
+
+
+```{r , echo = FALSE, warning=FALSE, fig.cap=fig$cap("rank_box", "Box-plot of Main and Interaction variance with rank transformed data")}
+  box_plot_fn(result_list$PCB_rank,"PCB_rank")
+```
+
+```{r , echo = FALSE, warning=FALSE, fig.cap=fig$cap("rank_hist", "Histogram of Main and Interaction variance with rank transformed data")}
+  plot_fn(result_list$PCB_rank,"PCB_rank")
+```
+
+## Normal quantile tranformation with subset
+
+### On PCB (removing 7 variables)
+
+```{r, echo=FALSE}
+load("./result/simulation_rank_quantile_tranformation_non_normal_subset_7")
+out_table <- t(sum_fn(result_list$PCB_quantile))
+rownames(out_table) <- "MSE"
+
+knitr::kable(x = out_table, 
+             row.names = TRUE,
+             format = "html",
+             caption = tab$cap("quantile","MSE of estimated variance under quantile transformation"))  %>% 
+  kableExtra::kable_styling(full_width = FALSE)
+```
+
+```{r , echo = FALSE, warning=FALSE, fig.cap=fig$cap("quantile_transformation_box", "Box-plot of Main and Interaction variance with quantile transformed data")}
+  box_plot_fn(result_list$PCB_quantile,"PCB_quantile")
+```
+
+```{r , echo = FALSE, warning=FALSE, fig.cap=fig$cap("quantile_transformation_hist", "Histogram of Main and Interaction variance with quantile transformed data")}
+  plot_fn(result_list$PCB_quantile,"PCB_quantile")
+```
+
+### On PCB (removing 11 variables)
+
+```{r, echo=FALSE}
+load("./result/simulation_rank_quantile_tranformation_non_normal_subset_11")
+out_table <- t(sum_fn(result_list$PCB_quantile))
+rownames(out_table) <- "MSE"
+
+knitr::kable(x = out_table, 
+             row.names = TRUE,
+             format = "html",
+             caption = tab$cap("quantile","MSE of estimated variance under quantile transformation"))  %>% 
+  kableExtra::kable_styling(full_width = FALSE)
+```
+
+```{r , echo = FALSE, warning=FALSE, fig.cap=fig$cap("quantile_transformation_box", "Box-plot of Main and Interaction variance with quantile transformed data")}
+  box_plot_fn(result_list$PCB_quantile,"PCB_quantile")
+```
+
+```{r , echo = FALSE, warning=FALSE, fig.cap=fig$cap("quantile_transformation_hist", "Histogram of Main and Interaction variance with quantile transformed data")}
+  plot_fn(result_list$PCB_quantile,"PCB_quantile")
+```

@@ -111,7 +111,7 @@ compare_corr_GCTA <- function(b,
 
     # Generate betas
     betam=rnorm(p, mean =0, sd =0.5) # main_effect ~ N(0,0.5)
-    betam[2*c(1:round(p/2,0))]=0  # mimic the zero coefficients
+    betam[2*c(1:floor(p/2))]=0  # mimic the zero coefficients
     
     if(interaction==0) {
       betai <- 0
