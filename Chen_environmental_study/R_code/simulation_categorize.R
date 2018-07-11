@@ -50,7 +50,7 @@ result_list <- mapply(FUN = compare_corr_GCTA,
                       b = data_list_cut,
                       interaction = interaction_list,
                       interaction_m = interaction_m_list,
-                      MoreArgs = list(brep = 2, nrep = 2, seed = 123, cores = 2),
+                      MoreArgs = list(brep = 80, nrep = 20, seed = 123, cores = 2),
                       SIMPLIFY = FALSE)
 
 save(result_list, file = "./result/simulation_cut_2_5")
@@ -59,7 +59,7 @@ result_list <- mapply(FUN = compare_corr_GCTA,
                       b = data_list_quantile,
                       interaction = interaction_list,
                       interaction_m = interaction_m_list,
-                      MoreArgs = list(brep = 2, nrep = 2, seed = 123, cores = 2),
+                      MoreArgs = list(brep = 80, nrep = 20, seed = 123, cores = 2),
                       SIMPLIFY = FALSE)
 
 save(result_list, file = "./result/simulation_quantile_2_5")
