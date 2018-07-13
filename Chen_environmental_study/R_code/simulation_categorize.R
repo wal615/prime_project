@@ -21,29 +21,29 @@ cut_fn <- function(x, by) {
 a=read.sas7bdat("~/dev/projects/Chen_environmental_study/R_code/pcbs1000nomiss.sas7bdat")
 a=data.matrix(a[,2:35], rownames.force = NA)
 b <- a 
-## cut with 2 interval
-b_cut_2 <- apply(b,2,FUN = function(x) cut(x,2, 1:2) %>% as.character(.) %>% as.numeric)
-b_cut_2 <- std_fn(b_cut_2, ncol(b_cut_2), tran_FUN = null_tran)
-
-## cut with 5 interval
-b_cut_5 <- apply(b,2,FUN = function(x) cut(x,5, 1:5) %>% as.character(.) %>% as.numeric)
-b_cut_5 <- std_fn(b_cut_5, ncol(b_cut_5), tran_FUN = null_tran)
-
-data_list_cut <- list(b_cut_2 = b_cut_2,
-                  b_cut_5 = b_cut_5)
-
-interaction_list <- list(1,1)
-interaction_m_list <- list(1,1)
-
-
-result_list <- mapply(FUN = compare_corr_GCTA,
-                      b = data_list_cut,
-                      interaction = interaction_list,
-                      interaction_m = interaction_m_list,
-                      MoreArgs = list(brep = 80, nrep = 20, seed = 123, cores = 2),
-                      SIMPLIFY = FALSE)
-
-save(result_list, file = "./result/simulation_cut_2_5")
+### cut with 2 interval
+#b_cut_2 <- apply(b,2,FUN = function(x) cut(x,2, 1:2) %>% as.character(.) %>% as.numeric)
+#b_cut_2 <- std_fn(b_cut_2, ncol(b_cut_2), tran_FUN = null_tran)
+#
+### cut with 5 interval
+#b_cut_5 <- apply(b,2,FUN = function(x) cut(x,5, 1:5) %>% as.character(.) %>% as.numeric)
+#b_cut_5 <- std_fn(b_cut_5, ncol(b_cut_5), tran_FUN = null_tran)
+#
+#data_list_cut <- list(b_cut_2 = b_cut_2,
+#                  b_cut_5 = b_cut_5)
+#
+#interaction_list <- list(1,1)
+#interaction_m_list <- list(1,1)
+#
+#
+#result_list <- mapply(FUN = compare_corr_GCTA,
+#                      b = data_list_cut,
+#                      interaction = interaction_list,
+#                      interaction_m = interaction_m_list,
+#                      MoreArgs = list(brep = 80, nrep = 20, seed = 123, cores = 2),
+#                      SIMPLIFY = FALSE)
+#
+#save(result_list, file = "./result/simulation_cut_2_5")
 
 
 
