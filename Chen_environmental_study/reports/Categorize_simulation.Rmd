@@ -7,6 +7,7 @@ output:
     fig_caption: yes
     fig_width: 20
     theme: united
+    keep_md: true
     toc: true
     number_sections: true
 editor_options: 
@@ -118,7 +119,6 @@ box_plot_fn <- function(x, names){
 
 ```{r loading result, include=FALSE}
 source("./R_code/Yang_REML.R")
-
 ```
 
 # Tranformation results 
@@ -129,7 +129,7 @@ source("./R_code/Yang_REML.R")
 ## rank tranformation
 
 ```{r, echo=FALSE}
-load("./result/simulation_quantile_2_5")
+load("./result/simulation_quantile_2_5_10")
 out_table <- t(sum_fn(result_list$b_quantile_2))
 rownames(out_table) <- "MSE"
 
@@ -152,7 +152,6 @@ knitr::kable(x = out_table,
 ## Categorize into 5 levels
 
 ```{r, echo=FALSE}
-load("./result/simulation_quantile_2_5")
 out_table <- t(sum_fn(result_list$b_quantile_5))
 rownames(out_table) <- "MSE"
 
@@ -170,4 +169,26 @@ knitr::kable(x = out_table,
 
 ```{r , echo = FALSE, warning=FALSE, fig.cap=fig$cap("b_quantile_5_hist", "Histogram of Main and Interaction variance with 5 categories for each covariate")}
   plot_fn(result_list$b_quantile_5,"b_quantile_5")
+```
+
+## Categorize into 10 levels
+
+```{r, echo=FALSE}
+out_table <- t(sum_fn(result_list$b_quantile_10))
+rownames(out_table) <- "MSE"
+
+knitr::kable(x = out_table, 
+             row.names = TRUE,
+             format = "html",
+             caption = tab$cap("rank","MSE of estimated variance with 10 categories for each covariate"))  %>% 
+  kableExtra::kable_styling(full_width = FALSE)
+```
+
+
+```{r , echo = FALSE, warning=FALSE, fig.cap=fig$cap("b_quantile_10_box", "Box-plot of Main and Interaction variance with 10 categories for each covariate")}
+  box_plot_fn(result_list$b_quantile_10,"b_quantile_10")
+```
+
+```{r , echo = FALSE, warning=FALSE, fig.cap=fig$cap("b_quantile_10_hist", "Histogram of Main and Interaction variance with 10 categories for each covariate")}
+  plot_fn(result_list$b_quantile_10,"b_quantile_10")
 ```
