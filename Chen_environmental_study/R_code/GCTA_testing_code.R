@@ -98,18 +98,25 @@ for(k in 1:p){
     b[,k]=(b[,k]-me)/std
 }
 
-betam=rnorm(p, m=0, sd=0.5)
-betai=matrix(rnorm(p*p,m=0,sd=0.1),ncol=p) # beta for interaction
-betam[2*c(1:17)]=0
-for(k in 1:p){
-  betai[k,k]=0
-}
-signalm=b%*%betam
-signali=rep(0,n)
-for(i in 1:n){
-   signali[i]=t(b[i,])%*%betai%*%b[i,]
-    }
+b_inter <- (data.frame(b)) %>% model.matrix(~.*.+0, data = .)
 
+# betam=rnorm(p, m=0, sd=0.5)
+# betai=matrix(rnorm(p*p,m=0,sd=0.1),ncol=p) # beta for interaction
+# betam[2*c(1:17)]=0
+# for(k in 1:p){
+#   betai[k,k]=0
+# }
+# signalm=b%*%betam
+# 
+# signali=rep(0,n)
+# for(i in 1:n){
+#    signali[i]=t(b[i,])%*%betai%*%b[i,]
+#     }
+
+betaa=c(rnorm(p, m=0, sd=0.5), rnorm(595 - p, m=0, sd=0.5))
+signala=b_inter%*%betaa
+signalm = signala[1:34]
+signali = signala[-(1:34)]
 for(irep in 1:nrep){
  print(c(irep,nrep))
  
