@@ -105,7 +105,7 @@ compare_corr_GCTA <- function(b,
   
   if(seed != 0) set.seed(seed) # set seed for foreach
   
-  result_raw <- foreach(ibrep = 1:brep, .combine = rbind, .verbose = FALSE) %dorng%   {
+  result_raw <- foreach(ibrep = 1:brep, .combine = rbind, .verbose = TRUE) %dorng%   {
     
     result_tmp <- matrix(0, nrow = nrep, ncol = 6)
 
@@ -185,6 +185,22 @@ null_tran <- function(y) {
 }
 
 ##################################################################################
+## log transformation function
+##################################################################################
+
+log_tran <- function(y) {
+  log(y)
+}
+
+##################################################################################
+## square root transformation function
+##################################################################################
+
+sqrt_tran <- function(y) {
+  sqrt(y)
+}
+
+##################################################################################
 ## cox_box transformation function
 ##################################################################################
 
@@ -213,6 +229,20 @@ norm_quantile_tran <- function(y) {
   y[which.min(y)] <- y[which.min(y)] + 0.0001 # modify the max and min values to avoid Inf 
   y[which.max(y)] <- y[which.max(y)] - 0.0001
   y <- emprircal_cdf(y) %>% qnorm(.) 
+}
+
+##################################################################################
+## Categorized transformation function
+##################################################################################
+
+categorized_tran <- function(x, by) {
+  breaks <- c(quantile(x, probs = seq(0, 1, by = by))) %>% unique(.)
+  cut(x = x, 
+      breaks = breaks,
+      labels = 1:(length(breaks)-1), 
+      include.lowest = TRUE) %>% 
+    as.character(.) %>%
+    as.numeric(.)
 }
 
 ##################################################################################

@@ -23,15 +23,6 @@ data_list <- list(PCB_rank = b_rank,
 interaction_list <- list(1,1)
 interaction_m_list <- list(1,1)
 
-# cat("testing...\n")
-# 
-# test <- compare_corr_GCTA(b = data_list[[1]],
-#                           interaction = interaction_list[[1]],
-#                           interaction_m = interaction_m_list[[2]],
-#                           brep = 2,
-#                           nrep = 10,
-#                           seed = 1,
-#                           cores = 1)
 
 result_list <- mapply(FUN = compare_corr_GCTA,
                       b = data_list,
