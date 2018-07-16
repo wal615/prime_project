@@ -39,7 +39,7 @@ interaction_list <- as.list(rep(1,length(data_list_fixed_full)))
 interaction_m_list <- as.list(rep(1,length(data_list_fixed_full)))
 
 result_list <- mapply(FUN = compare_corr_GCTA,
-                      b = data_list_quantile,
+                      b = data_list_fixed_full,
                       interaction = interaction_list,
                       interaction_m = interaction_m_list,
                       MoreArgs = list(brep = 1, nrep = 100, seed = 123, cores = 1),
