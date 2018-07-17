@@ -94,7 +94,9 @@ compare_corr_GCTA <- function(b,
                               interaction = 0, 
                               interaction_m = 0, 
                               seed = 0, 
-                              cores = 1) {
+                              cores = 1,
+                              interm_result = FALSE,
+                              interm_result_path = NULL) {
   if (cores == 1) 
     foreach::registerDoSEQ() 
     else 
@@ -149,14 +151,19 @@ compare_corr_GCTA <- function(b,
       result_tmp[irep,5] <- fit$G
       result_tmp[irep,6] <- fit$RACT
     }
-
-    result_tmp <- rbind(apply(result_tmp, 2, mean), apply(result_tmp, 2,sd))
-    result_tmp
     
+    
+    if (interm_result == TRUE) {
+      interm_result_table <- data.frame(b, attributes(b)[-(1:2)]) # extract the attributes which has unique infomration about the data
+      write.csv(interm_result_table, file = paste0(interm_result_path, paste(unlist(attributes(b)[-(1:2)]), collapse = "_"),"_",ibrep,".csv"))
+    }
+    
+    result_final <- rbind(apply(result_tmp, 2, mean), apply(result_tmp, 2,sd))
+    result_final
   }
   attributes(result_raw)$rng <- NULL # rm the random sampling info
   # result_raw <- matrix(result_raw, nrow = 1)
-  colnames(result_raw) <- c("true_main", "true_interaction", "GCTA_main", "GCTA_interaction", "pro_main", "pro_interaction")
+  colnames(result_raw) <- c("true_main", "true_interaction", "GCTA_main", "GCTA_interaction", "prop_main", "prop_interaction")
   result_raw
 }
 
@@ -164,14 +171,14 @@ compare_corr_GCTA <- function(b,
 ## standardized function with tranformation features
 ##################################################################################
 # default 
-std_fn <- function(b, p, tran_FUN = null_tran, ...){
+std_fn <- function(b, p, tran_FUN = null_tran, additional = NULL,...){
   b <- apply(b, 2, tran_FUN, ...)
   for(k in 1:p){
     me=mean(b[,k])
     std=sqrt(var(b[,k]))
     b[,k]=(b[,k]-me)/std
-    # b[,k]=(b[,k]-mean(b[,k]))/sqrt(var(b[,k]))
   }
+  if (!is.null(additional)) attributes(b) <- append(attributes(b), additional)
   b
 }
 

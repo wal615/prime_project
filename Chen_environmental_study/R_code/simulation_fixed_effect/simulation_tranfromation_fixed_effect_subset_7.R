@@ -19,14 +19,14 @@ non_normal_index <- match(c("LBX157", "LBX167", "LBX189","LBX128", "LBX195", "LB
 b <- a[,-non_normal_index[1:7]] 
 
 ## Transromation with full data
-b_null_full <- std_fn(b, ncol(b), tran_FUN = null_tran) 
-b_rank_full <- std_fn(b, ncol(b), tran_FUN = rank_tran) 
-b_quantile_full <- std_fn(b, ncol(b), tran_FUN = norm_quantile_tran) 
-b_log_full <- std_fn(b, ncol(b), tran_FUN = log_tran)
-b_sqrt_full <- std_fn(b, ncol(b), tran_FUN = sqrt_tran)
-b_cat_10_full <- std_fn(b, ncol(b), tran_FUN = categorized_tran, by = 0.1)
-b_cat_5_full <- std_fn(b, ncol(b), tran_FUN = categorized_tran, by = 0.2)
-b_cat_2_full <- std_fn(b, ncol(b), tran_FUN = categorized_tran, by = 0.5)
+b_null_full <- std_fn(b, ncol(b), tran_FUN = null_tran, list(tran = "null", subset = "sub7")) 
+b_rank_full <- std_fn(b, ncol(b), tran_FUN = rank_tran, list(tran = "rank", subset = "sub7")) 
+b_quantile_full <- std_fn(b, ncol(b), tran_FUN = norm_quantile_tran, list(tran = "norm_quan", subset = "sub7")) 
+b_log_full <- std_fn(b, ncol(b), tran_FUN = log_tran, list(tran = "log", subset = "sub7"))
+b_sqrt_full <- std_fn(b, ncol(b), tran_FUN = sqrt_tran, list(tran = "sqrt", subset = "sub7"))
+b_cat_10_full <- std_fn(b, ncol(b), tran_FUN = categorized_tran, by = 0.1, list(tran = "cate", by = "0.1", subset = "sub7"))
+b_cat_5_full <- std_fn(b, ncol(b), tran_FUN = categorized_tran, by = 0.2, list(tran = "cate", by = "0.2", subset = "sub7"))
+b_cat_2_full <- std_fn(b, ncol(b), tran_FUN = categorized_tran, by = 0.5, list(tran = "cate", by = "0.5", subset = "sub7"))
 
 data_list_fixed_full <- list(b_null_full  = b_null_full,
                              b_rank_full = b_rank_full,
@@ -44,7 +44,9 @@ result_list <- mapply(FUN = compare_corr_GCTA,
                       b = data_list_fixed_full,
                       interaction = interaction_list,
                       interaction_m = interaction_m_list,
-                      MoreArgs = list(brep = 3, nrep = 100, seed = 123, cores = 3),
+                      MoreArgs = list(brep = 3, nrep = 100, seed = 123, cores = 3, 
+                                      interm_result = TRUE, 
+                                      interm_result_path = "~/dev/projects/Chen_environmental_study/result/inter_result/"),
                       SIMPLIFY = FALSE)
 
 save(result_list, file = "./result/simulation_fixed_sub7_8tran")
