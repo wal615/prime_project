@@ -154,7 +154,7 @@ compare_corr_GCTA <- function(b,
     
     
     if (interm_result == TRUE) {
-      interm_result_table <- data.frame(b, attributes(b)[-(1:2)]) # extract the attributes which has unique infomration about the data
+      interm_result_table <- data.frame(result_tmp, attributes(b)[-(1:2)]) # extract the attributes which has unique infomration about the data
       write.csv(interm_result_table, file = paste0(interm_result_path, paste(unlist(attributes(b)[-(1:2)]), collapse = "_"),"_",ibrep,".csv"))
     }
     
