@@ -1,0 +1,201 @@
+---
+title: "Simulation Fixed Effect"
+author: "Xuelong Wang"
+date: "`r Sys.Date()`"
+output: 
+  pdf_document:
+    toc: true
+    number_sections: true
+    keep_tex: true
+    fig_width: 12
+    fig_height: 6
+header-includes:
+    - \usepackage{float,amsmath, bbm, siunitx, bm}
+    - \floatplacement{figure}{H}
+    - \newcommand{\indep}{\rotatebox[origin=c]{90}{$\models$}}
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(data.table)
+library(ggplot2)
+knitr::opts_chunk$set(echo = FALSE)
+
+data_clean_fn <- function(x) {
+  y = fread(x); 
+  y <- y[,-1]; 
+  names(y)[1:6] <- c("true_main", "true_interaction", "GCTA_main", "GCTA_interaction", "prop_main", "prop_interaction")
+  y_tmp <- tidyr::gather(data.frame(y[,1:6]));
+  y_final <- cbind(y_tmp, y[,7:ncol(y)])
+  }
+```
+
+# Motivation
+
+Based on the previous simulation results, the interaction effect estimation is biased. One possible reason is that we consider the $\beta's$ as random effects, which will affect the covariance structure of the signals. More specifically, 
+If $\beta$ is fixed, then we have following
+\[
+  Var(X\beta) = \beta^T\Sigma_{X}\beta,
+\]
+Where $\Sigma_{X} = Var(X)$. We can see that the X's covariance has an affect on the signal's variance. 
+
+However, if we consider $\beta$ as an random effect, then $Var(X\beta)$ is not only related with $X$ but also with $\beta's$ covariance. Therefore, in the following simulation the $\beta$ is fixed and there is no average out summary across different values of $\beta$. 
+
+# Simulation result 
+
+## Setup
+In the following simulation, I just randomly generated 3 different sets of values for $\beta$ (main and interaction) . Give each set of $\beta's$, the values of y is generated 100 times and thus 100 estimations of variance of main effects and interaction effects. 
+
+## Full data
+
+### Averaged estimation
+
+```{r full data, results='asis'}
+load("~/dev/projects/Chen_environmental_study/result/simulation_fixed_full_8tran")
+for(i in 1:length(result_list)){
+  
+out_table <- result_list[[i]]
+knitr::kable(x = out_table,
+             format = "latex",
+             caption = strsplit(names(result_list)[i], split = "_")[[1]][-1] %>% paste(.,collapse = "-"))  %>% 
+  kableExtra::kable_styling(full_width = FALSE, 
+                            latex_options = c("striped", "hold_position"), 
+                            stripe_color = "gray!80")  %>%
+  print(.)
+}
+```
+
+\clearpage
+
+### Histgram of 100 iterations
+
+```{r Histgram full data}
+
+input_file <- list.files("~/dev/projects/Chen_environmental_study/result/inter_result/")  %>% paste0("~/dev/projects/Chen_environmental_study/result/inter_result/",.)
+
+file_path <- input_file[grepl(c("full_1"),input_file, perl=TRUE)]
+input_table <- lapply(file_path, FUN = data_clean_fn ) %>% rbindlist(., fill = TRUE)
+input_table[,("by") := as.character(input_table[["by"]])]
+```
+
+```{r full_main}
+ggplot(data = input_table[grepl("main",key, perl=TRUE)], aes(x = key, y = value, fill = key)) +
+  geom_violin(alpha = 0.2) +
+  geom_boxplot(alpha = 0.7) +
+  facet_wrap(facets = vars(tran,by,subset), ncol = 4, scales = "free") +
+  ggtitle(paste0("Main effect full dataset")) 
+  
+```
+
+```{r full_inter}
+ggplot(data = input_table[grepl("interaction",key, perl=TRUE)], aes(x = key, y = value, fill = key)) +
+  geom_violin(alpha = 0.2) +
+  geom_boxplot(alpha = 0.7) +
+  facet_wrap(facets = vars(tran,by,subset), ncol = 4, scales = "free") +
+  ggtitle(paste0("Interaction effect full dataset")) 
+```
+
+
+## Remove 7 subset data
+
+### Averaged estimation
+
+```{r sub7 data, results='asis'}
+load("~/dev/projects/Chen_environmental_study/result/simulation_fixed_sub7_8tran")
+for(i in 1:length(result_list)){
+  
+out_table <- result_list[[i]]
+knitr::kable(x = out_table,
+             format = "latex",
+             caption = strsplit(names(result_list)[i], split = "_")[[1]][-1] %>% paste(.,collapse = "-"))  %>% 
+  kableExtra::kable_styling(full_width = FALSE, 
+                            latex_options = c("striped", "hold_position"), 
+                            stripe_color = "gray!80")  %>%
+  print(.)
+}
+```
+
+\clearpage
+
+### Histgram of 100 iterations
+
+```{r Histgram sub7 data}
+
+input_file <- list.files("~/dev/projects/Chen_environmental_study/result/inter_result/")  %>% paste0("~/dev/projects/Chen_environmental_study/result/inter_result/",.)
+
+file_path <- input_file[grepl(c("sub7_1"),input_file, perl=TRUE)]
+input_table <- lapply(file_path, FUN = data_clean_fn ) %>% rbindlist(., fill = TRUE)
+input_table[,("by") := as.character(input_table[["by"]])]
+```
+
+```{r sub7_main}
+ggplot(data = input_table[grepl("main",key, perl=TRUE)], aes(x = key, y = value, fill = key)) +
+  geom_violin(alpha = 0.2) +
+  geom_boxplot(alpha = 0.7) +
+  facet_wrap(facets = vars(tran,by,subset), ncol = 4, scales = "free") +
+  ggtitle(paste0("Main effect sub7 dataset")) 
+  
+```
+
+```{r sub7_inter}
+ggplot(data = input_table[grepl("interaction",key, perl=TRUE)], aes(x = key, y = value, fill = key)) +
+  geom_violin(alpha = 0.2) +
+  geom_boxplot(alpha = 0.7) +
+  facet_wrap(facets = vars(tran,by,subset), ncol = 4, scales = "free") +
+  ggtitle(paste0("Interaction effect sub7 dataset")) 
+```
+
+## Remove 11 subset data
+
+### Averaged estimation
+
+```{r sub11 data, results='asis'}
+load("~/dev/projects/Chen_environmental_study/result/simulation_fixed_sub11_8tran")
+for(i in 1:length(result_list)){
+  
+out_table <- result_list[[i]]
+knitr::kable(x = out_table,
+             format = "latex",
+             caption = strsplit(names(result_list)[i], split = "_")[[1]][-1] %>% paste(.,collapse = "-"))  %>% 
+  kableExtra::kable_styling(full_width = FALSE, 
+                            latex_options = c("striped", "hold_position"), 
+                            stripe_color = "gray!80")  %>%
+  print(.)
+}
+```
+
+\clearpage
+
+### Histgram of 100 iterations
+
+```{r Histgram sub11 data}
+
+input_file <- list.files("~/dev/projects/Chen_environmental_study/result/inter_result/")  %>% paste0("~/dev/projects/Chen_environmental_study/result/inter_result/",.)
+
+file_path <- input_file[grepl(c("sub11_1"),input_file, perl=TRUE)]
+input_table <- lapply(file_path, FUN = data_clean_fn ) %>% rbindlist(., fill = TRUE)
+input_table[,("by") := as.character(input_table[["by"]])]
+```
+
+```{r sub11_main}
+ggplot(data = input_table[grepl("main",key, perl=TRUE)], aes(x = key, y = value, fill = key)) +
+  geom_violin(alpha = 0.2) +
+  geom_boxplot(alpha = 0.7) +
+  facet_wrap(facets = vars(tran,by,subset), ncol = 4, scales = "free") +
+  ggtitle(paste0("Main effect sub11 dataset")) 
+  
+```
+
+```{r sub11_inter}
+ggplot(data = input_table[grepl("interaction",key, perl=TRUE)], aes(x = key, y = value, fill = key)) +
+  geom_violin(alpha = 0.2) +
+  geom_boxplot(alpha = 0.7) +
+  facet_wrap(facets = vars(tran,by,subset), ncol = 4, scales = "free") +
+  ggtitle(paste0("Interaction effect sub11 dataset")) 
+```
+
+# Conclusion
+
+# Further work
