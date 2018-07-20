@@ -154,8 +154,10 @@ compare_corr_GCTA <- function(b,
     
     
     if (interm_result == TRUE) {
-      interm_result_table <- data.frame(result_tmp, attributes(b)[-(1:2)]) # extract the attributes which has unique infomration about the data
-      write.csv(interm_result_table, file = paste0(interm_result_path, paste(unlist(attributes(b)[-(1:2)]), collapse = "_"),"_",ibrep,".csv"))
+      common_attr_index <- match(c("dim", "dimnames"), names(attributes(b))) %>% na.omit(.)
+      interm_result_table <- data.frame(result_tmp, attributes(b)[-common_attr_index]) # extract the attributes which has unique infomration about the data
+      
+      write.csv(interm_result_table, file = paste0(interm_result_path, paste(unlist(attributes(b)[-common_attr_index]), collapse = "_"),"_",ibrep,".csv"))
     }
     
     result_final <- rbind(apply(result_tmp, 2, mean), apply(result_tmp, 2,sd))
