@@ -28,22 +28,23 @@ b_norm_corr <- mapply(FUN = mvrnorm,
                       SIMPLIFY = FALSE)
 
 
-addtional <- lapply(p, FUN = function(x) list(cor = x, tran = "rank"))
+addtional <- lapply(p, FUN = function(x) list(cor = x, tran = "category", by = "0.2"))
 
-b_norm_corr_rank <- mapply(FUN = std_fn,
+b_norm_corr_category <- mapply(FUN = std_fn,
                            b = b_norm_corr,
                            additional = addtional,
                            MoreArgs = list(p = 34, 
-                                           tran_FUN = rank_tran),
+                                           tran_FUN = categorized_tran,
+                                           by = 0.2),
                            SIMPLIFY = FALSE)
 
-names(b_norm_corr_rank) <- paste0(names(b_norm_corr_rank), "_rank")
+names(b_norm_corr_category) <- paste0(names(b_norm_corr_category), "_category")
 
-interaction_list <- as.list(rep(1,length(b_norm_corr_rank)))
-interaction_m_list <- as.list(rep(1,length(b_norm_corr_rank)))
+interaction_list <- as.list(rep(1,length(b_norm_corr_category)))
+interaction_m_list <- as.list(rep(1,length(b_norm_corr_category)))
 
 result_list <- mapply(FUN = compare_corr_GCTA,
-                      b = b_norm_corr_rank,
+                      b = b_norm_corr_category,
                       interaction = interaction_list,
                       interaction_m = interaction_m_list,
                       MoreArgs = list(brep = 3, nrep = 100, seed = 123, cores = 3, 
@@ -51,5 +52,5 @@ result_list <- mapply(FUN = compare_corr_GCTA,
                                       interm_result_path = "~/dev/projects/Chen_environmental_study/result/inter_result/norm_cor/"),
                       SIMPLIFY = FALSE)
 
-save(result_list, file = "./result/simulation_norm_core_rank")
+save(result_list, file = "./result/simulation_norm_core_category")
 
