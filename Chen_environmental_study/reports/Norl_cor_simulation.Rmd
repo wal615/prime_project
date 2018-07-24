@@ -46,7 +46,7 @@ data_clean_fn <- function(x) {
 ### Averaged estimation
 
 ```{r full data, results='asis'}
-load("~/dev/projects/Chen_environmental_study/result/simulation_norm_core_rank")
+load("~/dev/projects/Chen_environmental_study/result/simulation_norm_core_null")
 for(i in 1:length(result_list)){
   
 out_table <- result_list[[i]]
@@ -72,7 +72,7 @@ knitr::kable(x = out_table,
 
 input_file <- list.files("~/dev/projects/Chen_environmental_study/result/inter_result/norm_cor/")  %>% paste0("~/dev/projects/Chen_environmental_study/result/inter_result/norm_cor/",.)
 
-file_path <- input_file[grepl(c("rank_1"),input_file, perl=TRUE)]
+file_path <- input_file[grepl(c("null_1"),input_file, perl=TRUE)]
 input_table <- lapply(file_path, FUN = data_clean_fn ) %>% rbindlist(., fill = TRUE)
 input_table[,("cor") := as.character(input_table[["cor"]])] # chage the formate into character so that it can print out correctly
 ```
