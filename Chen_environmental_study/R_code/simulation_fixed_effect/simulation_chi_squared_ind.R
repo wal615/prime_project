@@ -18,10 +18,10 @@ b_norm_ind <- mvrnorm(n = n,
                       mu = mu)
 b_chi_ind <- b_norm_ind^2
 
-additional <- list(dist = "Chi_ind")
+additional <- list(dist = "Chi_ind", tran = "null")
 b_chi_ind_null <- std_fn(b = b_chi_ind,
-                    p = 34,
-                    additional = additional) %>% list(.)
+                         p = 34,
+                         additional = additional) %>% list(.)
 
 names(b_chi_ind_null) <- paste0(names(b_chi_ind_null), "_null")
 
