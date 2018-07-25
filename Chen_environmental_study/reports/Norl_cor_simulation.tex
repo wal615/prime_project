@@ -82,7 +82,7 @@
   \postauthor{\par}
       \predate{\centering\large\emph}
   \postdate{\par}
-    \date{2018-07-23}
+    \date{2018-07-25}
 
 \usepackage{booktabs}
 \usepackage{longtable}
@@ -122,7 +122,7 @@
 
 \begin{table}[!h]
 
-\caption{\label{tab:full data}correlation-0.1-null}
+\caption{\label{tab:full data norm}correlation-0.1-null}
 \centering
 \begin{tabular}[t]{r|r|r|r|r|r}
 \hiderowcolors
@@ -151,7 +151,7 @@ true\_main & GCTA\_main & prop\_main & true\_interaction & GCTA\_interaction & p
 
 \begin{table}[!h]
 
-\caption{\label{tab:full data}correlation-0.2-null}
+\caption{\label{tab:full data norm}correlation-0.2-null}
 \centering
 \begin{tabular}[t]{r|r|r|r|r|r}
 \hiderowcolors
@@ -180,7 +180,7 @@ true\_main & GCTA\_main & prop\_main & true\_interaction & GCTA\_interaction & p
 
 \begin{table}[!h]
 
-\caption{\label{tab:full data}correlation-0.3-null}
+\caption{\label{tab:full data norm}correlation-0.3-null}
 \centering
 \begin{tabular}[t]{r|r|r|r|r|r}
 \hiderowcolors
@@ -209,7 +209,7 @@ true\_main & GCTA\_main & prop\_main & true\_interaction & GCTA\_interaction & p
 
 \begin{table}[!h]
 
-\caption{\label{tab:full data}correlation-0.4-null}
+\caption{\label{tab:full data norm}correlation-0.4-null}
 \centering
 \begin{tabular}[t]{r|r|r|r|r|r}
 \hiderowcolors
@@ -238,7 +238,7 @@ true\_main & GCTA\_main & prop\_main & true\_interaction & GCTA\_interaction & p
 
 \begin{table}[!h]
 
-\caption{\label{tab:full data}correlation-0.5-null}
+\caption{\label{tab:full data norm}correlation-0.5-null}
 \centering
 \begin{tabular}[t]{r|r|r|r|r|r}
 \hiderowcolors
@@ -267,7 +267,7 @@ true\_main & GCTA\_main & prop\_main & true\_interaction & GCTA\_interaction & p
 
 \begin{table}[!h]
 
-\caption{\label{tab:full data}correlation-0.6-null}
+\caption{\label{tab:full data norm}correlation-0.6-null}
 \centering
 \begin{tabular}[t]{r|r|r|r|r|r}
 \hiderowcolors
@@ -296,7 +296,7 @@ true\_main & GCTA\_main & prop\_main & true\_interaction & GCTA\_interaction & p
 
 \begin{table}[!h]
 
-\caption{\label{tab:full data}correlation-0.7-null}
+\caption{\label{tab:full data norm}correlation-0.7-null}
 \centering
 \begin{tabular}[t]{r|r|r|r|r|r}
 \hiderowcolors
@@ -325,7 +325,7 @@ true\_main & GCTA\_main & prop\_main & true\_interaction & GCTA\_interaction & p
 
 \begin{table}[!h]
 
-\caption{\label{tab:full data}correlation-0.8-null}
+\caption{\label{tab:full data norm}correlation-0.8-null}
 \centering
 \begin{tabular}[t]{r|r|r|r|r|r}
 \hiderowcolors
@@ -354,7 +354,7 @@ true\_main & GCTA\_main & prop\_main & true\_interaction & GCTA\_interaction & p
 
 \begin{table}[!h]
 
-\caption{\label{tab:full data}correlation-0.9-null}
+\caption{\label{tab:full data norm}correlation-0.9-null}
 \centering
 \begin{tabular}[t]{r|r|r|r|r|r}
 \hiderowcolors
@@ -389,6 +389,48 @@ iterations}\label{histgram-of-100-iterations}
 \includegraphics{Norl_cor_simulation_files/figure-latex/normal_main-1.pdf}
 
 \includegraphics{Norl_cor_simulation_files/figure-latex/normal_inter-1.pdf}
+
+\subsubsection{Averaged estimation}\label{averaged-estimation-1}
+
+\rowcolors{2}{gray!80}{white}
+
+\begin{table}[!h]
+
+\caption{\label{tab:full data chi}-null}
+\centering
+\begin{tabular}[t]{r|r|r|r|r|r}
+\hiderowcolors
+\hline
+\multicolumn{3}{c|}{Main} & \multicolumn{3}{|c}{Interaction} \\
+\cline{1-3} \cline{4-6}
+true\_main & GCTA\_main & prop\_main & true\_interaction & GCTA\_interaction & prop\_interaction\\
+\hline
+\showrowcolors
+3.206260 & 2.4278846 & 2.3987387 & 6.053616 & 2.7948026 & 3.2127886\\
+\hline
+0.000000 & 0.4877009 & 0.4836191 & 0.000000 & 0.6241777 & 0.6946283\\
+\hline
+4.184742 & 3.7079258 & 3.6457226 & 5.662183 & 5.0952825 & 5.4150564\\
+\hline
+0.000000 & 0.6460932 & 0.6383936 & 0.000000 & 1.0122512 & 1.0203281\\
+\hline
+2.751369 & 2.0729482 & 2.2093535 & 5.967688 & 3.0214403 & 2.9723835\\
+\hline
+0.000000 & 0.4635415 & 0.4757792 & 0.000000 & 0.6891246 & 0.7034145\\
+\hline
+\end{tabular}
+\end{table}
+
+\rowcolors{2}{white}{white}
+
+\clearpage
+
+\subsubsection{Histgram of 100
+iterations}\label{histgram-of-100-iterations-1}
+
+\includegraphics{Norl_cor_simulation_files/figure-latex/chi_main-1.pdf}
+
+\includegraphics{Norl_cor_simulation_files/figure-latex/chi_inter-1.pdf}
 
 \section{Conclusion}\label{conclusion}
 

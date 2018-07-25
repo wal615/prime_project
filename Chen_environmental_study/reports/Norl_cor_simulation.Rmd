@@ -42,10 +42,9 @@ data_clean_fn <- function(x) {
 ## Setup
 
 
-
 ### Averaged estimation
 
-```{r full data, results='asis'}
+```{r full data norm, results='asis'}
 load("~/dev/projects/Chen_environmental_study/result/simulation_norm_core_null")
 for(i in 1:length(result_list)){
   
@@ -68,7 +67,7 @@ knitr::kable(x = out_table,
 
 ### Histgram of 100 iterations
 
-```{r Histgram full data}
+```{r Histgram full data norm}
 
 input_file <- list.files("~/dev/projects/Chen_environmental_study/result/inter_result/norm_cor/")  %>% paste0("~/dev/projects/Chen_environmental_study/result/inter_result/norm_cor/",.)
 
@@ -95,6 +94,56 @@ ggplot(data = input_table[grepl("interaction",key, perl=TRUE)], aes(x = key, y =
 ```
 
 
+
+
+
+### Averaged estimation
+
+```{r full data chi, results='asis'}
+load("~/dev/projects/Chen_environmental_study/result/simulation_chi_ind_null")
+for(i in 1:length(result_list)){
+  
+out_table <- result_list[[i]]
+
+out_table <- out_table[,c(1,3,5,2,4,6)]
+
+knitr::kable(x = out_table,
+             format = "latex",
+             caption = gsub("_", "-", names(result_list)[i]))  %>% # replace _ by - b/c latex 
+  kableExtra::add_header_above(., c("Main" = 3, "Interaction" = 3)) %>% 
+  kableExtra::kable_styling(., full_width = FALSE,
+                            latex_options = c("striped", "hold_position"),
+                            stripe_color = "gray!80")  %>%
+  print(.)
+}
+```
+
+\clearpage
+
+### Histgram of 100 iterations
+
+```{r Histgram full data chi}
+
+input_file <- list.files("~/dev/projects/Chen_environmental_study/result/inter_result/chi_ind/")  %>% paste0("~/dev/projects/Chen_environmental_study/result/inter_result/chi_ind/",.)
+
+file_path <- input_file[grepl(c("null_1"),input_file, perl=TRUE)]
+input_table <- lapply(file_path, FUN = data_clean_fn ) %>% rbindlist(., fill = TRUE)
+```
+
+```{r chi_main}
+ggplot(data = input_table[grepl("main",key, perl=TRUE)], aes(x = key, y = value, fill = key)) +
+  geom_violin(alpha = 0.2) +
+  geom_boxplot(alpha = 0.7) +
+  ggtitle(paste0("Main_effect_Chi_ind")) 
+  
+```
+
+```{r chi_inter}
+ggplot(data = input_table[grepl("interaction",key, perl=TRUE)], aes(x = key, y = value, fill = key)) +
+  geom_violin(alpha = 0.2) +
+  geom_boxplot(alpha = 0.7) +
+  ggtitle(paste0("Interactive_effect_Chi_ind")) 
+```
 
 
 # Conclusion
