@@ -34,15 +34,59 @@ data_clean_fn <- function(x) {
 ```
 
 # Motivation
+Some theoretical results suggest that if the covariates follows normal distributions, then even they are not indepedent to each, we still can use the proposed method to estimate the interaction effect unbaisly.
 
+## Model 
+\[
+  y_i = \alpha + \sum_{j = 1}^p x_j\beta_j + \sum_{j \neq k} \gamma_{ji}x_jx_k + \epsilon_i.
+\]
+Matrix form
+\[
+  y_i = X_i^T\beta + X_i^T\Gamma X_i + \epsilon_i,
+\]
+Where 
+
+- $X_i = (x_{i1}, \dots x_{ip})^T$, in our case assumpe $X \sim N(0, \Sigma_p)$   
+- $\epsilon \indep x_{ji}$  
+- $\beta = (\beta_1, \dots, \beta_p)^T$ is fixed  
+- $\Gamma$ is a $p \times p$ matrix with diagonal elements equal to 0.  
+
+
+
+## Goal of the study 
+\begin{align*}
+Var(Y_i) &= Var(X_i^T\beta + X_i^T\Gamma X_i) + Var(\epsilon_i) \\
+         &= Var(X_i^T\beta) + Var(X_i^T\Gamma X_i) + Cov(X_i^T\beta, X_i^T\Gamma X_i) + Var(\epsilon_i) \\
+\end{align*}
+
+\begin{align*}
+Cov(X_i^T\beta, X_i^T\Gamma X_i) &= E[(X_i^T\beta - E(X_i^T\beta))(X_i^T\Gamma X_i - E(X_i^T\Gamma X_i))]\\
+    &= E[X_i^T\beta(X_i^T\Gamma X_i - E(X_i^T\Gamma X_i)) \\
+    &= E[X_i^T\beta(X_i^T\Gamma X_i - trace(\Gamma\Sigma_p))] \\
+    &= E[X_i^T\beta \cdot X_i^T\Gamma X_i] \\
+    &= E[(\sum_m(x_{im}\beta_m))(\sum_j\sum_k\gamma_{jk}x_{ij} x_{ik}) ] \\
+    & = 0 \tag*{Note that $\gamma_{jj} = 0$}
+\end{align*}
 
 
 # Simulation result 
 
 ## Setup
 
+\[
+X \sim N(0, \Sigma_p)
+\]
+Where 
+\[
+\Sigma_p = \begin{bmatrix}
+               1 & \dots  & \rho \\
+               \vdots & \ddots & \vdots \\
+               \rho & \dots  & 1
+           \end{bmatrix}
+\]
+$\rho = \{0.1, \dots, 0.9 \}$
 
-### Averaged estimation
+### Averaged estimation Correlated-Normal
 
 ```{r full data norm, results='asis'}
 load("~/dev/projects/Chen_environmental_study/result/simulation_norm_core_null")
@@ -65,7 +109,7 @@ knitr::kable(x = out_table,
 
 \clearpage
 
-### Histgram of 100 iterations
+### Histgram of 100 iterations Correlated-Normal
 
 ```{r Histgram full data norm}
 
@@ -93,11 +137,11 @@ ggplot(data = input_table[grepl("interaction",key, perl=TRUE)], aes(x = key, y =
   ggtitle(paste0("Interactive_effect_Normal_cor")) 
 ```
 
+\clearpage
 
 
 
-
-### Averaged estimation
+### Averaged estimation Indepdent Chi-squared 
 
 ```{r full data chi, results='asis'}
 load("~/dev/projects/Chen_environmental_study/result/simulation_chi_ind_null")
@@ -120,7 +164,7 @@ knitr::kable(x = out_table,
 
 \clearpage
 
-### Histgram of 100 iterations
+### Histgram of 100 iterations Indepdent Chi-squared
 
 ```{r Histgram full data chi}
 

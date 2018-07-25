@@ -112,11 +112,64 @@
 }
 \section{Motivation}\label{motivation}
 
+Some theoretical results suggest that if the covariates follows normal
+distributions, then even they are not indepedent to each, we still can
+use the proposed method to estimate the interaction effect unbaisly.
+
+\subsection{Model}\label{model}
+
+\[
+  y_i = \alpha + \sum_{j = 1}^p x_j\beta_j + \sum_{j \neq k} \gamma_{ji}x_jx_k + \epsilon_i.
+\] Matrix form \[
+  y_i = X_i^T\beta + X_i^T\Gamma X_i + \epsilon_i,
+\] Where
+
+\begin{itemize}
+\tightlist
+\item
+  \(X_i = (x_{i1}, \dots x_{ip})^T\), in our case assumpe
+  \(X \sim N(0, \Sigma_p)\)\\
+\item
+  \(\epsilon \indep x_{ji}\)\\
+\item
+  \(\beta = (\beta_1, \dots, \beta_p)^T\) is fixed\\
+\item
+  \(\Gamma\) is a \(p \times p\) matrix with diagonal elements equal to
+  0.
+\end{itemize}
+
+\subsection{Goal of the study}\label{goal-of-the-study}
+
+\begin{align*}
+Var(Y_i) &= Var(X_i^T\beta + X_i^T\Gamma X_i) + Var(\epsilon_i) \\
+         &= Var(X_i^T\beta) + Var(X_i^T\Gamma X_i) + Cov(X_i^T\beta, X_i^T\Gamma X_i) + Var(\epsilon_i) \\
+\end{align*}
+
+\begin{align*}
+Cov(X_i^T\beta, X_i^T\Gamma X_i) &= E[(X_i^T\beta - E(X_i^T\beta))(X_i^T\Gamma X_i - E(X_i^T\Gamma X_i))]\\
+    &= E[X_i^T\beta(X_i^T\Gamma X_i - E(X_i^T\Gamma X_i)) \\
+    &= E[X_i^T\beta(X_i^T\Gamma X_i - trace(\Gamma\Sigma_p))] \\
+    &= E[X_i^T\beta \cdot X_i^T\Gamma X_i] \\
+    &= E[(\sum_m(x_{im}\beta_m))(\sum_j\sum_k\gamma_{jk}x_{ij} x_{ik}) ] \\
+    & = 0 \tag*{Note that $\gamma_{jj} = 0$}
+\end{align*}
+
 \section{Simulation result}\label{simulation-result}
 
 \subsection{Setup}\label{setup}
 
-\subsubsection{Averaged estimation}\label{averaged-estimation}
+\[
+X \sim N(0, \Sigma_p)
+\] Where \[
+\Sigma_p = \begin{bmatrix}
+               1 & \dots  & \rho \\
+               \vdots & \ddots & \vdots \\
+               \rho & \dots  & 1
+           \end{bmatrix}
+\] \(\rho = \{0.1, \dots, 0.9 \}\)
+
+\subsubsection{Averaged estimation
+Correlated-Normal}\label{averaged-estimation-correlated-normal}
 
 \rowcolors{2}{gray!80}{white}
 
@@ -383,14 +436,17 @@ true\_main & GCTA\_main & prop\_main & true\_interaction & GCTA\_interaction & p
 
 \clearpage
 
-\subsubsection{Histgram of 100
-iterations}\label{histgram-of-100-iterations}
+\subsubsection{Histgram of 100 iterations
+Correlated-Normal}\label{histgram-of-100-iterations-correlated-normal}
 
 \includegraphics{Norl_cor_simulation_files/figure-latex/normal_main-1.pdf}
 
 \includegraphics{Norl_cor_simulation_files/figure-latex/normal_inter-1.pdf}
 
-\subsubsection{Averaged estimation}\label{averaged-estimation-1}
+\clearpage
+
+\subsubsection{Averaged estimation Indepdent
+Chi-squared}\label{averaged-estimation-indepdent-chi-squared}
 
 \rowcolors{2}{gray!80}{white}
 
@@ -425,8 +481,8 @@ true\_main & GCTA\_main & prop\_main & true\_interaction & GCTA\_interaction & p
 
 \clearpage
 
-\subsubsection{Histgram of 100
-iterations}\label{histgram-of-100-iterations-1}
+\subsubsection{Histgram of 100 iterations Indepdent
+Chi-squared}\label{histgram-of-100-iterations-indepdent-chi-squared}
 
 \includegraphics{Norl_cor_simulation_files/figure-latex/chi_main-1.pdf}
 
