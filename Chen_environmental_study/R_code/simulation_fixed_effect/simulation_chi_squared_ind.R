@@ -32,7 +32,7 @@ result_list <- mapply(FUN = compare_corr_GCTA,
                       b = b_chi_ind_null,
                       interaction = interaction_list,
                       interaction_m = interaction_m_list,
-                      MoreArgs = list(brep = 3, nrep = 100, seed = 123, cores = 3, 
+                      MoreArgs = list(brep = 8, nrep = 100, seed = 123, cores = 8, 
                                       interm_result = TRUE, 
                                       interm_result_path = "~/dev/projects/Chen_environmental_study/result/inter_result/chi_ind/"),
                       SIMPLIFY = FALSE)
