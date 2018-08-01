@@ -14,7 +14,7 @@ library(doParallel)
 test_result <-simulation_fn(n = 1000,
                             p = 34,
                             brep = 200,
-                            nrep = 10,
+                            nrep = 20,
                             interaction = 1, 
                             interaction_m = 1,
                             seed = 123,

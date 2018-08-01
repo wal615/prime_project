@@ -193,16 +193,11 @@ simulation_fn <- function(n,
 
   if(seed != 0) set.seed(seed) # set seed for foreach
   
-  # Generate betas
+  # Generate main betas
   betam=rnorm(p, mean =0, sd =0.5) # main_effect ~ N(0,0.5)
   betam[2*c(1:floor(p/2))]=0  # mimic the zero coefficients
   
-  if(interaction==0) {
-    betai <- 0
-  } else {
-    betai <- matrix(rnorm(p*p,m=0,sd=0.1),ncol=p) # interaction_effect ~ N(0,0.1)
-    betai[lower.tri(betai, diag = TRUE)] <- 0 # the number of interaction terms is {p*(p-1)}/2
-  } 
+   
 
   result_raw <- foreach(ibrep = 1:brep, .combine = rbind, .verbose = TRUE) %dorng%   {
     result_tmp <- matrix(0, nrow = nrep, ncol = 6)
@@ -213,6 +208,14 @@ simulation_fn <- function(n,
     b <- mvrnorm(n = n,
                  mu = rep(0,p),
                  Sigma = Sigma)
+    
+    # Generate interaction gammas
+    if(interaction==0) {
+      betai <- 0
+    } else {
+      betai <- matrix(rnorm(p*p,m=0,sd=0.1),ncol=p) # interaction_effect ~ N(0,0.1)
+      betai[lower.tri(betai, diag = TRUE)] <- 0 # the number of interaction terms is {p*(p-1)}/2
+    }
     
     # Generate the signals
     signalm=b%*%betam
