@@ -56,7 +56,7 @@ Where
 ## Goal of the study 
 \begin{align*}
 Var(Y_i) &= Var(X_i^T\beta + X_i^T\Gamma X_i) + Var(\epsilon_i) \\
-         &= Var(X_i^T\beta) + Var(X_i^T\Gamma X_i) + Cov(X_i^T\beta, X_i^T\Gamma X_i) + Var(\epsilon_i) \\
+         &= Var(X_i^T\beta) + Var(X_i^T\Gamma X_i) + 2Cov(X_i^T\beta, X_i^T\Gamma X_i) + Var(\epsilon_i) \\
 \end{align*}
 
 \begin{align*}
