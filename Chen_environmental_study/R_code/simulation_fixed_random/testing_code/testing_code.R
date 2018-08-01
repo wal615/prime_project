@@ -22,17 +22,17 @@ test_result <-simulation_fn(n = 1000,
 
 
 save(test_result, file = "./result/simulation_fixed_random_test")
-load(file = "./result/simulation_fixed_random_test")
-
-main <- test_result[test_result[,1] != 0, c(1,3,5)] %>% data.frame(.)
-tidyr::gather(main, key = "effect", value = "value") %>%
-  ggplot(., aes(x = effect, y = value, fill = effect)) +
-  geom_violin()+
-  geom_boxplot()
-
-inter <- test_result[test_result[,1] != 0, c(2,4,6)] %>% data.frame(.)
-  tidyr::gather(inter, key = "effect", value = "value") %>%
-  ggplot(., aes(x = effect, y = value, fill = effect)) +
-  geom_violin()+
-  geom_boxplot()
+# load(file = "./result/simulation_fixed_random_test")
+# 
+# main <- test_result[test_result[,1] != 0, c(1,3,5)] %>% data.frame(.)
+# tidyr::gather(main, key = "effect", value = "value") %>%
+#   ggplot(., aes(x = effect, y = value, fill = effect)) +
+#   geom_violin()+
+#   geom_boxplot()
+# 
+# inter <- test_result[test_result[,1] != 0, c(2,4,6)] %>% data.frame(.)
+#   tidyr::gather(inter, key = "effect", value = "value") %>%
+#   ggplot(., aes(x = effect, y = value, fill = effect)) +
+#   geom_violin()+
+#   geom_boxplot()
 

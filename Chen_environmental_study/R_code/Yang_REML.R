@@ -193,21 +193,20 @@ simulation_fn <- function(n,
 
   if(seed != 0) set.seed(seed) # set seed for foreach
   
-  # Generate main betas
-  betam=rnorm(p, mean =0, sd =0.5) # main_effect ~ N(0,0.5)
-  betam[2*c(1:floor(p/2))]=0  # mimic the zero coefficients
-  
-   
 
   result_raw <- foreach(ibrep = 1:brep, .combine = rbind, .verbose = TRUE) %dorng%   {
     result_tmp <- matrix(0, nrow = nrep, ncol = 6)
     
-    # Generate covarite =s  
+    # Generate covarites  
     Sigma <- matrix(rep(0.6,34^2), ncol = 34)
     diag(Sigma) <- 1
     b <- mvrnorm(n = n,
                  mu = rep(0,p),
                  Sigma = Sigma)
+    
+    # Generate main betas
+    betam=rnorm(p, mean =0, sd =0.5) # main_effect ~ N(0,0.5)
+    betam[2*c(1:floor(p/2))]=0  # mimic the zero coefficients
     
     # Generate interaction gammas
     if(interaction==0) {
