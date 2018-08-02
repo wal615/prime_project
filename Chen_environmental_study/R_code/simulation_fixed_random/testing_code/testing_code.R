@@ -2,6 +2,7 @@
 
 setwd("~/dev/projects/Chen_environmental_study/")
 source("./R_code/Yang_REML.R")
+source("./R_code/simulation_fixed_random/normal_fixed_random_simulation_helpers.R")
 
 library(sas7bdat)
 library(MASS)
@@ -11,28 +12,40 @@ library(doRNG)
 library(doParallel)
 
 
-test_result <-simulation_fn(n = 1000,
-                            p = 34,
-                            brep = 200,
-                            nrep = 20,
-                            interaction = 1, 
-                            interaction_m = 1,
-                            seed = 123,
-                            cores = 10)
+n <- 1000
+p <- 34
+rho <- seq(0.1,0.9,0.1)
+Sigma_str <- as.list(numeric(9))
+names(Sigma_str) <- paste0("correlation_", rho)
+
+for(i in (1:length(Sigma_str))){
+  cor_str <- matrix(rep(rho[i],34^2), ncol = 34)
+  diag(cor_str) <- 1
+  Sigma_str[[i]] <- cor_str
+}
+
+
+
+
+test_result <- mapply(FUN = simulation_fn, 
+                      Sigma = Sigma_str[1:5],
+                      MoreArgs = list(n = n,
+                                      p = p, 
+                                      main_fixed = TRUE, 
+                                      inter_fixed = FALSE, 
+                                      generate_data = generate_norm,
+                                      brep = 5,
+                                      nrep = 2,
+                                      seed = 123,
+                                      cores = 2,
+                                      interaction = 1,
+                                      interaction_m = 1),
+                      SIMPLIFY = FALSE)
+  
+  
+  
 
 
 save(test_result, file = "./result/simulation_fixed_random_test")
-# load(file = "./result/simulation_fixed_random_test")
-# 
-# main <- test_result[test_result[,1] != 0, c(1,3,5)] %>% data.frame(.)
-# tidyr::gather(main, key = "effect", value = "value") %>%
-#   ggplot(., aes(x = effect, y = value, fill = effect)) +
-#   geom_violin()+
-#   geom_boxplot()
-# 
-# inter <- test_result[test_result[,1] != 0, c(2,4,6)] %>% data.frame(.)
-#   tidyr::gather(inter, key = "effect", value = "value") %>%
-#   ggplot(., aes(x = effect, y = value, fill = effect)) +
-#   geom_violin()+
-#   geom_boxplot()
+
 
