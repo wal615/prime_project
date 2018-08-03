@@ -82,7 +82,7 @@
   \postauthor{\par}
       \predate{\centering\large\emph}
   \postdate{\par}
-    \date{2018-08-02}
+    \date{2018-08-03}
 
 \usepackage{float,amsmath, bbm, siunitx, bm}
 \floatplacement{figure}{H}
@@ -133,10 +133,13 @@ decorrelation.
 \subsection{Adding the interactive
 terms}\label{adding-the-interactive-terms}
 
-\subsubsection{Issues}\label{issues}
+From the model point of view, it actually doesn't change a lot. We can
+consider the interactive term as another part of covariates. However,
+since the interactive effects have a strong relation with main effect,
+that causes the estimation of variance of interactive effect
+complicated.
 
-To estimating the interactive effects is more complicated than the main
-effects.
+\subsubsection{Issues}\label{issues}
 
 \begin{align*}
 Var(Y_i) &= Var(X_i^T\beta + X_i^T\Gamma X_i) + Var(\epsilon_i) \\
@@ -158,7 +161,7 @@ Var(Y_i) &= Var(X_i^T\beta + X_i^T\Gamma X_i) + Var(\epsilon_i) \\
 
 \subsubsection{Solutions}\label{solutions}
 
-For the first issues, there are basic two different approach.
+For the first issue, there are basic two different approach.
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
@@ -172,10 +175,17 @@ For the first issues, there are basic two different approach.
   variables, then the correlation should also be round zero.
 \end{enumerate}
 
-For the second issues, the simulation suggests that the it can work well
-under the normal distribution setup. Thus, the main idea is to first
-transform the covariates into normal-like distribution and applied the
-proposed method.
+For the second issue, the simulation studies shows that the the proposed
+method can work well under the normal distribution setup. So it suggests
+that the Independence assumption may not be that restricted, at least
+under the Normal distribution. One guess is that under normal
+distribution the covariates of main and interactive is zero
+\(Cov(X_i^T\beta, X_i^T\Gamma X_i) = 0\), which means they are
+un-correlated. Although un-correlation can not guarantee independence,
+it shows non-linear relation between main and interactive effects.
+
+Thus, the main idea is to first transform the covariates into
+normal-like distribution and applied the proposed method.
 
 \section{Simulation}\label{simulation}
 
@@ -248,13 +258,13 @@ Simulation result
 \begin{figure}
 \centering
 \includegraphics{Simulation_report_files/figure-latex/main_fixed_fixed_normal-1.pdf}
-\caption{main effect of normal fixed main and interactoin}
+\caption{main effect of normal fixed main and interaction}
 \end{figure}
 
 \begin{figure}
 \centering
 \includegraphics{Simulation_report_files/figure-latex/inter_fixed_fixed_normal-1.pdf}
-\caption{interactive effect of normal fixed main and interactoin}
+\caption{interactive effect of normal fixed main and interaction}
 \end{figure}
 
 \clearpage
@@ -276,13 +286,13 @@ Simulation result
 \begin{figure}
 \centering
 \includegraphics{Simulation_report_files/figure-latex/main_fixed_random_normal-1.pdf}
-\caption{main effect of normal fixed main and interactoin}
+\caption{main effect of normal fixed main and random interaction}
 \end{figure}
 
 \begin{figure}
 \centering
 \includegraphics{Simulation_report_files/figure-latex/inter_fixed_random_normal-1.pdf}
-\caption{interactive effect of normal fixed main and interactoin}
+\caption{interactive effect of normal fixed main and random interaction}
 \end{figure}
 
 \clearpage
@@ -305,13 +315,13 @@ random}{\textbackslash{}beta is random and \textbackslash{}Gamma is random}}\lab
 \begin{figure}
 \centering
 \includegraphics{Simulation_report_files/figure-latex/main_random_random_normal-1.pdf}
-\caption{main effect of normal fixed main and interactoin}
+\caption{main effect of normal random main and interaction}
 \end{figure}
 
 \begin{figure}
 \centering
 \includegraphics{Simulation_report_files/figure-latex/inter_random_random_normal-1.pdf}
-\caption{interactive effect of normal fixed main and interactoin}
+\caption{interactive effect of normal random main and interaction}
 \end{figure}
 
 \section{Conclusion}\label{conclusion}

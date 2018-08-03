@@ -36,10 +36,9 @@ The approach of the proposed method is to uncorrelated the observed covariates b
 How to reduce the correlation (the linear transformation) is important part of the proposed method. Because we want to the decorrelated the covariates so that they become independent. We don't want to pick up to much noise during the decorrelation procedure. This is not the main topic of this simulation, but we will do a more details study on the decorrelation. 
 
 ## Adding the interactive terms
+From the model point of view, it actually doesn't change a lot. We can consider the interactive term as another part of covariates. However, since the interactive effects have a strong relation with main effect, that causes the estimation of variance of interactive effect complicated. 
 
 ### Issues
-
-To estimating the interactive effects is more complicated than the main effects. 
 
 \begin{align*}
 Var(Y_i) &= Var(X_i^T\beta + X_i^T\Gamma X_i) + Var(\epsilon_i) \\
@@ -53,13 +52,15 @@ Var(Y_i) &= Var(X_i^T\beta + X_i^T\Gamma X_i) + Var(\epsilon_i) \\
 
 ### Solutions 
 
-For the first issues, there are basic two different approach. 
+For the first issue, there are basic two different approach. 
 
 1. If X or after some transformation follows normal distributions, then the $Cov(X_i^T\beta, X_i^T\Gamma X_i)$ will be zero. More specifically, as long as the 3rd moments are 0 the correlation of main and interactive effect should be zero.
 
 1. If we assume $\beta's$ or $\Gamma's$ are independent random variables, then the correlation should also be round zero. 
 
-For the second issues, the simulation suggests that the it can work well under the normal distribution setup. Thus, the main idea is to first transform the covariates into normal-like distribution and applied the proposed method.
+For the second issue, the simulation studies shows that the the proposed method can work well under the normal distribution setup. So it suggests that the Independence assumption may not be that restricted, at least under the Normal distribution. One guess is that under normal distribution the covariates of main and interactive is zero $Cov(X_i^T\beta, X_i^T\Gamma X_i) = 0$, which means they are un-correlated. Although un-correlation can not guarantee independence, it shows non-linear relation between main and interactive effects. 
+
+Thus, the main idea is to first transform the covariates into normal-like distribution and applied the proposed method.
 
 # Simulation 
 
@@ -106,13 +107,13 @@ The estimation and true values
 
 Simulation result
 
-```{r main_fixed_fixed_normal, fig.cap = "main effect of normal fixed main and interactoin"}
+```{r main_fixed_fixed_normal, fig.cap = "main effect of normal fixed main and interaction"}
 
 plot_fixed_fixed_main
 
 ```
 
-```{r inter_fixed_fixed_normal, fig.cap = "interactive effect of normal fixed main and interactoin"}
+```{r inter_fixed_fixed_normal, fig.cap = "interactive effect of normal fixed main and interaction"}
 
 plot_fixed_fixed_inter
 
@@ -133,13 +134,13 @@ plot_fixed_fixed_inter
 
 Simulation result
 
-```{r main_fixed_random_normal, fig.cap = "main effect of normal fixed main and interactoin"}
+```{r main_fixed_random_normal, fig.cap = "main effect of normal fixed main and random interaction"}
 
 plot_fixed_random_main
 
 ```
 
-```{r inter_fixed_random_normal, fig.cap = "interactive effect of normal fixed main and interactoin"}
+```{r inter_fixed_random_normal, fig.cap = "interactive effect of normal fixed main and random interaction"}
 
 plot_fixed_random_inter
 
@@ -162,13 +163,13 @@ plot_fixed_random_inter
                          &= E(Var(X_i^T\Gamma X_i|X_i = x_i))
 \end{align*}
 
-```{r main_random_random_normal, fig.cap = "main effect of normal fixed main and interactoin"}
+```{r main_random_random_normal, fig.cap = "main effect of normal random main and interaction"}
 
 plot_random_random_main
 
 ```
 
-```{r inter_random_random_normal, fig.cap = "interactive effect of normal fixed main and interactoin"}
+```{r inter_random_random_normal, fig.cap = "interactive effect of normal random  main and interaction"}
 
 plot_random_random_inter
 
