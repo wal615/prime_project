@@ -24,7 +24,7 @@
 \usepackage[margin=1in]{geometry}
 \usepackage{hyperref}
 \hypersetup{unicode=true,
-            pdftitle={Simulation Fixed Effect},
+            pdftitle={Simulation of fixed and random effect},
             pdfauthor={Xuelong Wang},
             pdfborder={0 0 0},
             breaklinks=true}
@@ -74,7 +74,7 @@
 
 \setlength{\droptitle}{-2em}
 
-  \title{Simulation Fixed Effect}
+  \title{Simulation of fixed and random effect}
     \pretitle{\vspace{\droptitle}\centering\huge}
   \posttitle{\par}
     \author{Xuelong Wang}
@@ -82,7 +82,7 @@
   \postauthor{\par}
       \predate{\centering\large\emph}
   \postdate{\par}
-    \date{2018-07-31}
+    \date{2018-08-03}
 
 \usepackage{float,amsmath, bbm, siunitx, bm}
 \floatplacement{figure}{H}
@@ -119,7 +119,7 @@ The approach of the proposed method is to uncorrelated the observed
 covariates by using a linear transformation, i.e. \(Z = XA^{-1}\). Given
 \(X \sim N(0, \Sigma)\), we can using the proposed method to get a
 independent covariates. Thus, this method should work well when X's
-columns are correlated to each other, which is also supported the
+columns are correlated to each other, which is also supported by
 simulation results on the main effects with normal correlated
 distributions.
 
@@ -133,10 +133,13 @@ decorrelation.
 \subsection{Adding the interactive
 terms}\label{adding-the-interactive-terms}
 
-\subsubsection{Issues}\label{issues}
+From the model point of view, it actually doesn't change a lot. We can
+consider the interactive term as another part of covariates. However,
+since the interactive effects have a strong relation with main effect,
+that causes the estimation of variance of interactive effect
+complicated.
 
-To estimating the interactive effects is more complicated than the main
-effects.
+\subsubsection{Issues}\label{issues}
 
 \begin{align*}
 Var(Y_i) &= Var(X_i^T\beta + X_i^T\Gamma X_i) + Var(\epsilon_i) \\
@@ -158,7 +161,7 @@ Var(Y_i) &= Var(X_i^T\beta + X_i^T\Gamma X_i) + Var(\epsilon_i) \\
 
 \subsubsection{Solutions}\label{solutions}
 
-For the first issues, there are basic two different approach.
+For the first issue, there are basic two different approach.
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
@@ -172,19 +175,45 @@ For the first issues, there are basic two different approach.
   variables, then the correlation should also be round zero.
 \end{enumerate}
 
-For the second issues, the simulation suggests that the it can work well
-under the normal distribution setup. Thus, the main idea is to first
-transform the covariates into normal-like distribution and applied the
-proposed method.
+For the second issue, the simulation studies shows that the the proposed
+method can work well under the normal distribution setup. So it suggests
+that the Independence assumption may not be that restricted, at least
+under the Normal distribution. One guess is that under normal
+distribution the covariates of main and interactive is zero
+\(Cov(X_i^T\beta, X_i^T\Gamma X_i) = 0\), which means they are
+un-correlated. Although un-correlation can not guarantee independence,
+it shows non-linear relation between main and interactive effects.
+
+Thus, the main idea is to first transform the covariates into
+normal-like distribution and applied the proposed method.
 
 \section{Simulation}\label{simulation}
 
 To get a better and larger picture of how well the proposed method's
 estimations, we conduct a series simulation with different setup.
 
-The main factors are 1. Distribution of X 1. Independence and Dependence
-of X 1. Fixed or Random of main effect \(\beta's\) 1. Fixed or Random of
-interaction effect \(\Gamma's\)
+The main factors are
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Distribution of X\\
+\item
+  Independence and Dependence of X\\
+\item
+  Fixed or Random of main effect \(\beta's\)\\
+\item
+  Fixed or Random of interaction effect \(\Gamma's\)
+\end{enumerate}
+
+\subsection{Simulation procedure}\label{simulation-procedure}
+
+\begin{figure}
+\centering
+\includegraphics{./simulation_workflow.png}
+\caption{Simulation workflow}
+\end{figure}
 
 \section{X follows Normal
 distributions}\label{x-follows-normal-distributions}
@@ -224,6 +253,22 @@ The estimation and true values
     Var(X_i^T\Gamma X_i) = 2tr(\Gamma \Sigma \Gamma \Sigma) + 0
 \end{align*}
 
+Simulation result
+
+\begin{figure}
+\centering
+\includegraphics{Simulation_report_files/figure-latex/main_fixed_fixed_normal-1.pdf}
+\caption{main effect of normal fixed main and interaction}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics{Simulation_report_files/figure-latex/inter_fixed_fixed_normal-1.pdf}
+\caption{interactive effect of normal fixed main and interaction}
+\end{figure}
+
+\clearpage
+
 \subsubsection{\texorpdfstring{\(\beta\) is fixed and \(\Gamma\) is
 random}{\textbackslash{}beta is fixed and \textbackslash{}Gamma is random}}\label{beta-is-fixed-and-gamma-is-random}
 
@@ -236,8 +281,48 @@ random}{\textbackslash{}beta is fixed and \textbackslash{}Gamma is random}}\labe
                          &= E(Var(X_i^T\Gamma X_i|X_i = x_i))
 \end{align*}
 
+Simulation result
+
+\begin{figure}
+\centering
+\includegraphics{Simulation_report_files/figure-latex/main_fixed_random_normal-1.pdf}
+\caption{main effect of normal fixed main and random interaction}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics{Simulation_report_files/figure-latex/inter_fixed_random_normal-1.pdf}
+\caption{interactive effect of normal fixed main and random interaction}
+\end{figure}
+
+\clearpage
+
 \subsubsection{\texorpdfstring{\(\beta\) is random and \(\Gamma\) is
 random}{\textbackslash{}beta is random and \textbackslash{}Gamma is random}}\label{beta-is-random-and-gamma-is-random}
+
+\begin{align*}
+    Var(X_i^T\beta) &= E(Var(X_i^T\beta|X_i = x_i)) + Var(E(X_i^T\beta|X_i = x_i))\\
+                    &= E(Var(X_i^T\beta|X_i = x_i)) + 0 \\
+                    &= E(X_i^T \Sigma_{\beta} X_i)  \tag*{If $\Sigma_{\beta} = I_p$}\\
+                    &= E(X_i^TX_i)
+\end{align*}
+
+\begin{align*}
+    Var(X_i^T\Gamma X_i) &= E(Var(X_i^T\Gamma X_i|X_i = x_i)) + Var(E(X_i^T\Gamma X_i|X_i = x_i)) \\ 
+                         &= E(Var(X_i^T\Gamma X_i|X_i = x_i))
+\end{align*}
+
+\begin{figure}
+\centering
+\includegraphics{Simulation_report_files/figure-latex/main_random_random_normal-1.pdf}
+\caption{main effect of normal random main and interaction}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics{Simulation_report_files/figure-latex/inter_random_random_normal-1.pdf}
+\caption{interactive effect of normal random main and interaction}
+\end{figure}
 
 \section{Conclusion}\label{conclusion}
 
