@@ -109,13 +109,13 @@ Simulation result
 
 ```{r main_fixed_fixed_normal, fig.cap = "main effect of normal fixed main and interaction"}
 
-plot_fixed_fixed_main
+plot_normal_fixed_fixed_main
 
 ```
 
 ```{r inter_fixed_fixed_normal, fig.cap = "interactive effect of normal fixed main and interaction"}
 
-plot_fixed_fixed_inter
+plot_normal_fixed_fixed_inter
 
 ```
 
@@ -136,13 +136,13 @@ Simulation result
 
 ```{r main_fixed_random_normal, fig.cap = "main effect of normal fixed main and random interaction"}
 
-plot_fixed_random_main
+plot_normal_fixed_random_main
 
 ```
 
 ```{r inter_fixed_random_normal, fig.cap = "interactive effect of normal fixed main and random interaction"}
 
-plot_fixed_random_inter
+plot_normal_fixed_random_inter
 
 ```
 
@@ -165,13 +165,84 @@ plot_fixed_random_inter
 
 ```{r main_random_random_normal, fig.cap = "main effect of normal random main and interaction"}
 
-plot_random_random_main
+plot_normal_random_random_main
 
 ```
 
 ```{r inter_random_random_normal, fig.cap = "interactive effect of normal random  main and interaction"}
 
-plot_random_random_inter
+plot_normal_random_random_inter
+
+```
+
+# X follows Chi-square distribution
+
+```{r load chi graphs, include=FALSE}
+source("./chi_correlated_fixed_random_graph.R")
+```
+
+In this case, we choose a long-tail distribution. Since the 3rd moment of Chi-square is no longer 0, so the $Cov(X_i^T\beta, X_i^T\Gamma X_i)$ cannot be zero also. The following simulation is trying to study how this non-zero term affect the performance of the proposed and original GCTA method. 
+
+## Independent 
+
+## Dependent
+
+The procedure of the data generation is following:
+
+1. Generate a vector dependent random variable $Z ~ N(0, \Sigma_{p*})$
+1. Square each elements of Z, $Z^2 = (Z_1^2, \dots, Z_{p*}^2)^T$
+1. Divid $p*$ into $p$ group and let $X_i = \sum_{k\in i} Z_{k}^2$, where $i$ all elements in the Ith group. 
+1. Let $X = (X_1^2, \dots, X_{p}^2)^T$
+
+### $\beta$ is fixed and $\Gamma$ is fixed 
+
+Simulation result
+
+```{r main_fixed_fixed_chi, fig.cap = "main effect of chi fixed main and interaction"}
+
+plot_chi_fixed_fixed_main
+
+```
+
+```{r inter_fixed_fixed_chi, fig.cap = "interactive effect of chi fixed main and interaction"}
+
+plot_chi_fixed_fixed_inter
+
+```
+
+\clearpage
+
+### $\beta$ is fixed and $\Gamma$ is random 
+
+
+Simulation result
+
+```{r main_fixed_random_chi, fig.cap = "main effect of chi fixed main and random interaction"}
+
+plot_chi_fixed_random_main
+
+```
+
+```{r inter_fixed_random_chi, fig.cap = "interactive effect of chi fixed main and random interaction"}
+
+plot_chi_fixed_random_inter
+
+```
+
+\clearpage
+
+### $\beta$ is random and $\Gamma$ is random 
+
+
+```{r main_random_random_chi, fig.cap = "main effect of chi random main and interaction"}
+
+plot_chi_random_random_main
+
+```
+
+```{r inter_random_random_chi, fig.cap = "interactive effect of chi random  main and interaction"}
+
+plot_chi_random_random_inter
 
 ```
 

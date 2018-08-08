@@ -82,7 +82,7 @@
   \postauthor{\par}
       \predate{\centering\large\emph}
   \postdate{\par}
-    \date{2018-08-03}
+    \date{2018-08-07}
 
 \usepackage{float,amsmath, bbm, siunitx, bm}
 \floatplacement{figure}{H}
@@ -322,6 +322,88 @@ random}{\textbackslash{}beta is random and \textbackslash{}Gamma is random}}\lab
 \centering
 \includegraphics{Simulation_report_files/figure-latex/inter_random_random_normal-1.pdf}
 \caption{interactive effect of normal random main and interaction}
+\end{figure}
+
+\section{X follows Chi-square
+distribution}\label{x-follows-chi-square-distribution}
+
+In this case, we choose a long-tail distribution. Since the 3rd moment
+of Chi-square is no longer 0, so the
+\(Cov(X_i^T\beta, X_i^T\Gamma X_i)\) cannot be zero also. The following
+simulation is trying to study how this non-zero term affect the
+performance of the proposed and original GCTA method.
+
+\subsection{Independent}\label{independent-1}
+
+\subsection{Dependent}\label{dependent}
+
+The procedure of the data generation is following:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Generate a vector dependent random variable \(Z ~ N(0, \Sigma_{p*})\)
+\item
+  Square each elements of Z, \(Z^2 = (Z_1^2, \dots, Z_{p*}^2)^T\)
+\item
+  Divid \(p*\) into \(p\) group and let \(X_i = \sum_{k\in i} Z_{k}^2\),
+  where \(i\) all elements in the Ith group.
+\item
+  Let \(X = (X_1^2, \dots, X_{p}^2)^T\)
+\end{enumerate}
+
+\subsubsection{\texorpdfstring{\(\beta\) is fixed and \(\Gamma\) is
+fixed}{\textbackslash{}beta is fixed and \textbackslash{}Gamma is fixed}}\label{beta-is-fixed-and-gamma-is-fixed-1}
+
+Simulation result
+
+\begin{figure}
+\centering
+\includegraphics{Simulation_report_files/figure-latex/main_fixed_fixed_chi-1.pdf}
+\caption{main effect of chi fixed main and interaction}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics{Simulation_report_files/figure-latex/inter_fixed_fixed_chi-1.pdf}
+\caption{interactive effect of chi fixed main and interaction}
+\end{figure}
+
+\clearpage
+
+\subsubsection{\texorpdfstring{\(\beta\) is fixed and \(\Gamma\) is
+random}{\textbackslash{}beta is fixed and \textbackslash{}Gamma is random}}\label{beta-is-fixed-and-gamma-is-random-1}
+
+Simulation result
+
+\begin{figure}
+\centering
+\includegraphics{Simulation_report_files/figure-latex/main_fixed_random_chi-1.pdf}
+\caption{main effect of chi fixed main and random interaction}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics{Simulation_report_files/figure-latex/inter_fixed_random_chi-1.pdf}
+\caption{interactive effect of chi fixed main and random interaction}
+\end{figure}
+
+\clearpage
+
+\subsubsection{\texorpdfstring{\(\beta\) is random and \(\Gamma\) is
+random}{\textbackslash{}beta is random and \textbackslash{}Gamma is random}}\label{beta-is-random-and-gamma-is-random-1}
+
+\begin{figure}
+\centering
+\includegraphics{Simulation_report_files/figure-latex/main_random_random_chi-1.pdf}
+\caption{main effect of chi random main and interaction}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics{Simulation_report_files/figure-latex/inter_random_random_chi-1.pdf}
+\caption{interactive effect of chi random main and interaction}
 \end{figure}
 
 \section{Conclusion}\label{conclusion}
