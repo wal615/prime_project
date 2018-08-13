@@ -23,7 +23,7 @@ generate_inter <- function(p, interaction) {
 ##################################################################################
 ## generate correlated chi-sqaure
 ##################################################################################
-generate_chi <- function(n, p, rho) {
+generate_chi <- function(n, p, rho, combine = FALSE) {
   # generate individual chi_square
   p_normal <- p*10
   cor_str <- matrix(rep(rho,p_normal^2), ncol = p_normal)
@@ -36,10 +36,16 @@ generate_chi <- function(n, p, rho) {
   # combine different chi square to get dfferent degree of freedom
   index_list <- split(sample(p_normal), ceiling(seq_along(1:p_normal)/10))
   
-  b <- lapply(X = index_list, FUN = function(data, index) {rowSums(data[,index])}, data = x) %>%
-                Reduce(cbind, x = .)
+  b <- lapply(X = index_list, 
+              FUN = function(data, index) {rowSums(data[,index])}, data = x) %>%
+       Reduce(cbind, x = .)
   
-  attributes(b) <- append(attributes(b), list(x_dist = "chi", corr = rho))
+  if(combine) b <- model.matrix(~.*.+0, data.frame(b)) 
+  
+  attributes(b) <- append(attributes(b), 
+                          list(x_dist = "chi", 
+                               corr = rho, 
+                               combine = combine))
   b
 }
 
@@ -52,6 +58,7 @@ generate_chi <- function(n, p, rho) {
 simulation_fn <- function(n,
                           p,
                           rho,
+                          combine = FALSE,
                           main_fixed = TRUE,
                           inter_fixed = TRUE,
                           generate_data,
@@ -86,16 +93,19 @@ simulation_fn <- function(n,
   result_raw <- foreach(ibrep = 1:brep, .combine = rbind, .verbose = TRUE) %dorng%   {
     result_tmp <- matrix(0, nrow = nrep, ncol = 6)
     # Generate covariates  
-    b_raw <- generate_data(n, p, rho)
+    b_raw <- generate_data(n, p, rho, combine = combine)
     
     # Standardized covariates
-    additional = list(main_fixed = main_fixed, inter_fixed = inter_fixed)
+    # combined the all the attributes to b so we could plot them by the attributes
+    additional = list(main_fixed = main_fixed, 
+                      inter_fixed = inter_fixed,
+                      x_dist = attributes(b_raw)$x_dist,
+                      corr = attributes(b_raw)$corr,
+                      combine = attributes(b_raw)$combine)
     b <- std_fn(b = b_raw,
-                p = p,
+                p = ncol(b_raw),
                 tran_FUN = null_tran,
                 additional = additional)
-    attr(b, which = "x_dist") <- attributes(b_raw)$x_dist
-    attr(b, which = "corr") <- attributes(b_raw)$corr # combined the all the attributes to b so we could plot them by the attributes
     
     # Generate main betas
     if(!main_fixed){
@@ -108,8 +118,13 @@ simulation_fn <- function(n,
     }
     
     # Generate the signals
-    signalm=b%*%betam
-    signali <- if(interaction == 0){
+    if(combine == TRUE) {
+      beta <- c(betam, betai[upper.tri(betai, diag = FALSE)])
+      signalm <- b%*%beta
+    } else {
+      signalm=b%*%betam
+      }
+    signali <- if(interaction == 0 | combine == TRUE){
       rep(0,n) } else {
         apply(X = b, MARGIN = 1, FUN = function(x) t(x)%*%betai%*%x)
       } 
@@ -139,14 +154,14 @@ simulation_fn <- function(n,
     
     
     if (interm_result == TRUE) {
-      common_attr_index <- match(c("dim", "dimnames"), names(attributes(b))) %>% na.omit(.)
+      common_attr_index <- match(c("dim", "dimnames", "assign"), names(attributes(b))) %>% na.omit(.)
       interm_result_table <- data.frame(result_tmp, attributes(b)[-common_attr_index]) # extract the attributes which has unique infomration about the data
       
       write.csv(interm_result_table, file = paste0(interm_result_path, paste(unlist(attributes(b)[-common_attr_index]), collapse = "_"),"_",ibrep,".csv"))
     }
     
     result_final <- rbind(apply(result_tmp, 2, mean), apply(result_tmp, 2,sd))
-    common_attr_index <- match(c("dim", "dimnames"), names(attributes(b))) %>% na.omit(.)
+    common_attr_index <- match(c("dim", "dimnames", "assign"), names(attributes(b))) %>% na.omit(.)
     result_final <- data.frame(result_final, attributes(b)[-common_attr_index]) ## adding attributes as plot categories
     
   }

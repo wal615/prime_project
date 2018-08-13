@@ -19,6 +19,7 @@ rho <- seq(0.1,0.9,0.1) %>% as.list(.)
 
 result_list_fixed_fixed <- mapply(FUN = simulation_fn,
                                   rho = rho,
+                                  combine = TRUE,
                                   MoreArgs = list(n = n,
                                                   p = p,
                                                   main_fixed = TRUE,
@@ -29,13 +30,14 @@ result_list_fixed_fixed <- mapply(FUN = simulation_fn,
                                                   seed = 123,
                                                   cores = 10,
                                                   interaction = 1,
-                                                  interaction_m = 1),
+                                                  interaction_m = 0),
                                   SIMPLIFY = FALSE)
-save(result_list_fixed_fixed, file = "./result/simulation_fixed_random/chi_square/simulation_result_list_fixed_fixed")
+save(result_list_fixed_fixed, file = "./result/simulation_fixed_random/chi_square/simulation_result_list_fixed_fixed_combine")
 
 
 result_list_fixed_random <- mapply(FUN = simulation_fn, 
                                    rho = rho,
+                                   combine = TRUE,
                                    MoreArgs = list(n = n,
                                                    p = p, 
                                                    main_fixed = TRUE, 
@@ -46,12 +48,13 @@ result_list_fixed_random <- mapply(FUN = simulation_fn,
                                                    seed = 123,
                                                    cores = 10,
                                                    interaction = 1,
-                                                   interaction_m = 1),
+                                                   interaction_m = 0),
                                    SIMPLIFY = FALSE)
-save(result_list_fixed_random, file = "./result/simulation_fixed_random/chi_square/simulation_result_list_fixed_random")
+save(result_list_fixed_random, file = "./result/simulation_fixed_random/chi_square/simulation_result_list_fixed_random_combine")
 
 result_list_random_random <- mapply(FUN = simulation_fn, 
                                     rho = rho,
+                                    combine = TRUE,
                                     MoreArgs = list(n = n,
                                                     p = p, 
                                                     main_fixed = FALSE, 
@@ -62,6 +65,6 @@ result_list_random_random <- mapply(FUN = simulation_fn,
                                                     seed = 123,
                                                     cores = 10,
                                                     interaction = 1,
-                                                    interaction_m = 1),
+                                                    interaction_m = 0),
                                     SIMPLIFY = FALSE)
-save(result_list_random_random, file = "./result/simulation_fixed_random/chi_square/simulation_result_list_random_random")
+save(result_list_random_random, file = "./result/simulation_fixed_random/chi_square/simulation_result_list_random_random_combine")

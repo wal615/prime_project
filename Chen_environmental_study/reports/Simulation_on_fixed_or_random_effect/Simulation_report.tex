@@ -82,7 +82,7 @@
   \postauthor{\par}
       \predate{\centering\large\emph}
   \postdate{\par}
-    \date{2018-08-07}
+    \date{2018-08-12}
 
 \usepackage{float,amsmath, bbm, siunitx, bm}
 \floatplacement{figure}{H}
@@ -405,6 +405,29 @@ random}{\textbackslash{}beta is random and \textbackslash{}Gamma is random}}\lab
 \includegraphics{Simulation_report_files/figure-latex/inter_random_random_chi-1.pdf}
 \caption{interactive effect of chi random main and interaction}
 \end{figure}
+
+\subsection{Combine the main and interaction
+effect}\label{combine-the-main-and-interaction-effect}
+
+Based on the simulation result of the Chi-square distribution, the
+estimation of main and effect are not bad, which means the bias of the
+estimations are not large. However, there does exist some bias because
+of the non-zero covariate term (\(Cov(X_i^T\beta, X_i^T\Gamma X_i)\)).
+
+One possible solustion or walk-around method is to estimate the total
+variance of signal instead of main and interactive variance separately.
+Therefore, we don't have to worry about the covariance term between the
+main and interative terms.
+
+More specifically, we treat main and interactive covariates as a long
+vector and try to estimate its corresponding variance.
+
+\[
+  Var(X^T \beta + X^T\Gamma X) = Var \left( [X_{main}, X_{inter}]^T \begin{bmatrix}
+    \beta \\
+    \gamma
+\end{bmatrix}\right)
+\]
 
 \section{Conclusion}\label{conclusion}
 

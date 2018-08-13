@@ -246,6 +246,21 @@ plot_chi_random_random_inter
 
 ```
 
+## Combine the main and interaction effect
+
+Based on the simulation result of the Chi-square distribution, the estimation of main and effect are not bad, which means the bias of the estimations are not large. However, there does exist some bias because of the non-zero covariance term ($Cov(X_i^T\beta, X_i^T\Gamma X_i)$). 
+
+One possible solustion or walk-around method is to estimate the total variance of signal instead of main and interactive variance separately. Therefore, we don't have to worry about the covariance term between the main and interative terms. 
+
+More specifically, we treat main and interactive covariates as a long vector and try to estimate its corresponding variance. 
+
+\[
+  Var(X^T \beta + X^T\Gamma X) = Var \left( [X_{main}, X_{inter}]^T \begin{bmatrix}
+    \beta \\
+    \gamma
+\end{bmatrix}\right)
+\]
+
 # Conclusion
 
 # Further work 
