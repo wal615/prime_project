@@ -90,7 +90,7 @@ simulation_fn <- function(n,
     betai <- generate_inter(p, interaction)
   }
   
-  result_raw <- foreach(ibrep = 1:brep, .combine = rbind, .verbose = TRUE) %dorng%   {
+  result_raw <- foreach(ibrep = 1:brep, .combine = rbind, .verbose = TRUE, .errorhandling = "remove") %dorng%   {
     result_tmp <- matrix(0, nrow = nrep, ncol = 6)
     # Generate covariates  
     b_raw <- generate_data(n, p, rho, combine = combine)
