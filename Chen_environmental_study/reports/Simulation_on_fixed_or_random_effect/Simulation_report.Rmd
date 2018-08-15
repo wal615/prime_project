@@ -18,7 +18,7 @@ editor_options:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE, comment = FALSE, message = FALSE, fig.height = 10)
+knitr::opts_chunk$set(echo = FALSE, comment = FALSE, message = FALSE, warning = FALSE, fig.height = 10)
 ```
 
 # Motivation
@@ -46,19 +46,19 @@ Var(Y_i) &= Var(X_i^T\beta + X_i^T\Gamma X_i) + Var(\epsilon_i) \\
 \end{align*}
 
 1. There is an additional terms $Cov(X_i^T\beta, X_i^T\Gamma X_i)$
-1. The main effect $X_i$ and $X_i X_j$ are not independent and cannot be independent anymore
+1. The main effect $X_i$ and $X_i X_j$ are dependent and cannot be independent anymore. Besides, $X_i X_j$ and $X_i X_{j'}$ are dependent.
 1. In order to keep the variance structure, we can only apply the linear transformation on the main effects, not the interactive effects.   
 
 
 ### Solutions 
 
-For the first issue, there are basic two different approach. 
+For the 1st issue, there are basic two different approach. 
 
-1. If X or after some transformation follows normal distributions, then the $Cov(X_i^T\beta, X_i^T\Gamma X_i)$ will be zero. More specifically, as long as the 3rd moments are 0 the correlation of main and interactive effect should be zero.
+1. If X or after some transformation follows normal distributions, then the $Cov(Z_i^T\beta, Z_i^T\Gamma Z_i)$ will be zero. More specifically, as long as the 3rd moments are 0 the correlation of main and interactive effect should be zero.
 
-1. If we assume $\beta's$ or $\Gamma's$ are independent random variables, then the correlation should also be round zero. 
+1. If we assume $\beta's$ or $\Gamma's$ are independent random variables, then the correlation should also be round zero. Because we assume  $\beta \indep \Gamma$
 
-For the second issue, the simulation studies shows that the the proposed method can work well under the normal distribution setup. So it suggests that the Independence assumption may not be that restricted, at least under the Normal distribution. One guess is that under normal distribution the covariates of main and interactive is zero $Cov(X_i^T\beta, X_i^T\Gamma X_i) = 0$, which means they are un-correlated. Although un-correlation can not guarantee independence, it shows non-linear relation between main and interactive effects. 
+For the 2nd issue, the simulation studies shows that the the proposed method can work well under the normal distribution setup. So it suggests that the Independence assumption may not be that restricted, at least under the Normal distribution. One guess is that under normal distribution the covariates of main and interactive is zero $Cov(X_i^T\beta, X_i^T\Gamma X_i) = 0$, which means they are un-correlated. Although un-correlation can not guarantee independence, it shows non-linear relation between main and interactive effects. 
 
 Thus, the main idea is to first transform the covariates into normal-like distribution and applied the proposed method.
 
@@ -69,12 +69,14 @@ To get a better and larger picture of how well the proposed method's estimations
 The main factors are  
 
 1. Distribution of X  
-1. Independence and Dependence of X  
+1. Independence or Dependence of X  
 1. Fixed or Random of main effect $\beta's$  
 1. Fixed or Random of interaction effect $\Gamma's$   
 
 ## Simulation procedure
 ![Simulation workflow](./simulation_workflow.png)
+
+\newpage
 
 # X follows Normal distributions
 
@@ -93,6 +95,8 @@ Based on the previous simulation (from the Proposal), if X is normal and indepen
 
 If the X's are normal but correlated with each other, then it's not easy to estimate the interactive correctly. Based on previous simulation's results, the proposed method can work much better than the original GCTA when $\beta$, the main effect, is fixed. However when the main coefficients are not fixed then there is a big bias for the interaction estimation of proposed method. A guess is that if the $\beta$ is not linear transformation of may affect the $Var(X_i^T\Gamma X_i)$. 
 
+\newpage
+
 ### $\beta$ is fixed and $\Gamma$ is fixed 
 
 The estimation and true values
@@ -107,13 +111,13 @@ The estimation and true values
 
 Simulation result
 
-```{r main_fixed_fixed_normal, fig.cap = "main effect of normal fixed main and interaction"}
+```{r main_fixed_fixed_normal, fig.cap = "Main Effect of normal fixed main and interaction"}
 
 plot_normal_fixed_fixed_main
 
 ```
 
-```{r inter_fixed_fixed_normal, fig.cap = "interactive effect of normal fixed main and interaction"}
+```{r inter_fixed_fixed_normal, fig.cap = "Interactive Effect of normal fixed main and interaction"}
 
 plot_normal_fixed_fixed_inter
 
@@ -134,13 +138,13 @@ plot_normal_fixed_fixed_inter
 
 Simulation result
 
-```{r main_fixed_random_normal, fig.cap = "main effect of normal fixed main and random interaction"}
+```{r main_fixed_random_normal, fig.cap = "Main Effect of normal fixed main and random interaction"}
 
 plot_normal_fixed_random_main
 
 ```
 
-```{r inter_fixed_random_normal, fig.cap = "interactive effect of normal fixed main and random interaction"}
+```{r inter_fixed_random_normal, fig.cap = "Interactive Effect of normal fixed main and random interaction"}
 
 plot_normal_fixed_random_inter
 
@@ -163,17 +167,19 @@ plot_normal_fixed_random_inter
                          &= E(Var(X_i^T\Gamma X_i|X_i = x_i))
 \end{align*}
 
-```{r main_random_random_normal, fig.cap = "main effect of normal random main and interaction"}
+```{r main_random_random_normal, fig.cap = "Main Effect of normal random main and interaction"}
 
 plot_normal_random_random_main
 
 ```
 
-```{r inter_random_random_normal, fig.cap = "interactive effect of normal random  main and interaction"}
+```{r inter_random_random_normal, fig.cap = "Interactive Effect of normal random  main and interaction"}
 
 plot_normal_random_random_inter
 
 ```
+
+\newpage
 
 # X follows Chi-square distribution
 
@@ -189,22 +195,24 @@ In this case, we choose a long-tail distribution. Since the 3rd moment of Chi-sq
 
 The procedure of the data generation is following:
 
-1. Generate a vector dependent random variable $Z ~ N(0, \Sigma_{p*})$
+1. Generate a vector dependent random variable $Z \sim N(0, \Sigma_{p*})$
 1. Square each elements of Z, $Z^2 = (Z_1^2, \dots, Z_{p*}^2)^T$
 1. Divid $p*$ into $p$ group and let $X_i = \sum_{k\in i} Z_{k}^2$, where $i$ all elements in the Ith group. 
 1. Let $X = (X_1^2, \dots, X_{p}^2)^T$
+
+\newpage
 
 ### $\beta$ is fixed and $\Gamma$ is fixed 
 
 Simulation result
 
-```{r main_fixed_fixed_chi, fig.cap = "main effect of chi fixed main and interaction"}
+```{r main_fixed_fixed_chi, fig.cap = "Main Effect of chi fixed main and interaction"}
 
 plot_chi_fixed_fixed_main
 
 ```
 
-```{r inter_fixed_fixed_chi, fig.cap = "interactive effect of chi fixed main and interaction"}
+```{r inter_fixed_fixed_chi, fig.cap = "Interactive Effect of chi fixed main and interaction"}
 
 plot_chi_fixed_fixed_inter
 
@@ -217,13 +225,13 @@ plot_chi_fixed_fixed_inter
 
 Simulation result
 
-```{r main_fixed_random_chi, fig.cap = "main effect of chi fixed main and random interaction"}
+```{r main_fixed_random_chi, fig.cap = "Main Effect of chi fixed main and random interaction"}
 
 plot_chi_fixed_random_main
 
 ```
 
-```{r inter_fixed_random_chi, fig.cap = "interactive effect of chi fixed main and random interaction"}
+```{r inter_fixed_random_chi, fig.cap = "Interactive Effect of chi fixed main and random interaction"}
 
 plot_chi_fixed_random_inter
 
@@ -234,19 +242,25 @@ plot_chi_fixed_random_inter
 ### $\beta$ is random and $\Gamma$ is random 
 
 
-```{r main_random_random_chi, fig.cap = "main effect of chi random main and interaction"}
+```{r main_random_random_chi, fig.cap = "Main Effect of chi random main and interaction"}
 
 plot_chi_random_random_main
 
 ```
 
-```{r inter_random_random_chi, fig.cap = "interactive effect of chi random  main and interaction"}
+```{r inter_random_random_chi, fig.cap = "Interactive Effect of chi random  main and interaction"}
 
 plot_chi_random_random_inter
 
 ```
 
+\newpage
+
 ## Combine the main and interaction effect
+
+```{r load chi combine graphs, include=FALSE}
+source("./chi_correlated_combined_fixed_random_graph.R")
+```
 
 Based on the simulation result of the Chi-square distribution, the estimation of main and effect are not bad, which means the bias of the estimations are not large. However, there does exist some bias because of the non-zero covariance term ($Cov(X_i^T\beta, X_i^T\Gamma X_i)$). 
 
@@ -254,12 +268,66 @@ One possible solustion or walk-around method is to estimate the total variance o
 
 More specifically, we treat main and interactive covariates as a long vector and try to estimate its corresponding variance. 
 
+\begin{align*}
+  Var(Y_i) &= Var(X_i^T\beta + X_i^T \Gamma X_i) + Var(\epsilon_i) \\
+           &= Var(X_i^T\beta + X_{i,inter}^T \gamma) + Var(\epsilon_i) \\
+           &= \begin{bmatrix}   
+                  X_i \\        
+                  X_{i,inter}   
+              \end{bmatrix}^T     
+              \begin{bmatrix}
+                \beta \\
+                \gamma
+              \end{bmatrix} + Var(\epsilon_i) \\
+           &= Var(X_{i,total}^T \beta_{total}) + Var(\epsilon_i)
+\end{align*}
+
+The big difference of this approch is that the interaction terms are also standardized and decorrelated.
+
+Do we still have the following equation hold? 
+
 \[
-  Var(X^T \beta + X^T\Gamma X) = Var \left( [X_{main}, X_{inter}]^T \begin{bmatrix}
-    \beta \\
-    \gamma
-\end{bmatrix}\right)
-\]
+  Var(X_{i,total}^T \beta_{total}) =  Var(Z_{i,total}^T \alpha_{total}) 
+\] 
+
+\newpage
+
+### $\beta$ is fixed and $\Gamma$ is fixed 
+
+Simulation result
+
+```{r main_fixed_fixed_chi_combine, fig.cap = "Total effect of chi fixed main and interaction"}
+
+plot_chi_fixed_fixed_main_combine
+
+```
+
+
+\clearpage
+
+### $\beta$ is fixed and $\Gamma$ is random 
+
+
+Simulation result
+
+```{r main_fixed_random_chi_combine, fig.cap = "Total effect of chi fixed main and random interaction"}
+
+plot_chi_fixed_random_main_combine
+
+```
+
+
+\clearpage
+
+### $\beta$ is random and $\Gamma$ is random 
+
+
+```{r main_random_random_chi_combine, fig.cap = "Total effect of chi random main and interaction"}
+
+plot_chi_random_random_main_combine
+
+```
+
 
 # Conclusion
 

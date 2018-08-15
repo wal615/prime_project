@@ -11,6 +11,7 @@ plot_chi_fixed_fixed_main <- tidyr::gather(main, ends_with("main"), key = "metho
   ggplot(., aes(x = method, y = value, fill = method)) +
   geom_violin(alpha = 0.2) +
   geom_boxplot(alpha = 0.7) +
+  scale_y_continuous(trans='log10') +
   facet_wrap(facets = vars(main_fixed, inter_fixed, corr), ncol =3 , scales = "free", labeller  = "label_both")
 
 inter <- table_fixed_fixed[true_main != 0, -c(1,3,5)]
@@ -18,6 +19,7 @@ plot_chi_fixed_fixed_inter <- tidyr::gather(inter, ends_with("interaction"), key
   ggplot(., aes(x = method, y = value, fill = method)) +
   geom_violin(alpha = 0.2) +
   geom_boxplot(alpha = 0.7) +
+  scale_y_continuous(trans='log10') +
   facet_wrap(facets = vars(main_fixed, inter_fixed, corr), ncol =3 , scales = "free", labeller  = "label_both")
 
 
@@ -30,6 +32,7 @@ plot_chi_fixed_random_main <- tidyr::gather(main, ends_with("main"), key = "meth
   ggplot(., aes(x = method, y = value, fill = method)) +
   geom_violin(alpha = 0.2) +
   geom_boxplot(alpha = 0.7) +
+  scale_y_continuous(trans='log10') +
   facet_wrap(facets = vars(main_fixed, inter_fixed, corr), ncol =3 , scales = "free", labeller  = "label_both")
 
 inter <- table_fixed_random[true_main != 0, -c(1,3,5)]
@@ -37,6 +40,7 @@ plot_chi_fixed_random_inter <- tidyr::gather(inter, ends_with("interaction"), ke
   ggplot(., aes(x = method, y = value, fill = method)) +
   geom_violin(alpha = 0.2) +
   geom_boxplot(alpha = 0.7) +
+  scale_y_continuous(trans='log10') +
   facet_wrap(facets = vars(main_fixed, inter_fixed, corr), ncol =3 , scales = "free", labeller  = "label_both")
 
 
@@ -49,6 +53,7 @@ plot_chi_random_random_main <- tidyr::gather(main, ends_with("main"), key = "met
   ggplot(., aes(x = method, y = value, fill = method)) +
   geom_violin(alpha = 0.2) +
   geom_boxplot(alpha = 0.7) +
+  scale_y_continuous(trans='log10') +
   facet_wrap(facets = vars(main_fixed, inter_fixed, corr), ncol =3 , scales = "free", labeller  = "label_both")
 
 inter <- table_random_random[true_main != 0, -c(1,3,5)]
@@ -56,5 +61,6 @@ plot_chi_random_random_inter <- tidyr::gather(inter, ends_with("interaction"), k
   ggplot(., aes(x = method, y = value, fill = method)) +
   geom_violin(alpha = 0.2) +
   geom_boxplot(alpha = 0.7) +
+  scale_y_continuous(trans='log10') +
   facet_wrap(facets = vars(main_fixed, inter_fixed, corr), ncol =3 , scales = "free", labeller  = "label_both")
 

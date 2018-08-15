@@ -21,7 +21,7 @@ generate_inter <- function(p, interaction) {
 }
 
 ##################################################################################
-## generate correlated chi-sqaure
+## generate correlated chi-square
 ##################################################################################
 generate_chi <- function(n, p, rho, combine = FALSE) {
   # generate individual chi_square
@@ -33,7 +33,7 @@ generate_chi <- function(n, p, rho, combine = FALSE) {
                Sigma = cor_str)
   x <- x^2
   
-  # combine different chi square to get dfferent degree of freedom
+  # combine different chi square to get different degree of freedom
   index_list <- split(sample(p_normal), ceiling(seq_along(1:p_normal)/10))
   
   b <- lapply(X = index_list, 
@@ -166,7 +166,6 @@ simulation_fn <- function(n,
     
   }
   attributes(result_raw)$rng <- NULL # rm the random sampling info
-  # result_raw <- matrix(result_raw, nrow = 1)
   colnames(result_raw)[1:6] <- c("true_main", "true_interaction", "GCTA_main", "GCTA_interaction", "prop_main", "prop_interaction")
   result_raw
 }

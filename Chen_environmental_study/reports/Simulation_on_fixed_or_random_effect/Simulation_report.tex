@@ -82,7 +82,7 @@
   \postauthor{\par}
       \predate{\centering\large\emph}
   \postdate{\par}
-    \date{2018-08-12}
+    \date{2018-08-15}
 
 \usepackage{float,amsmath, bbm, siunitx, bm}
 \floatplacement{figure}{H}
@@ -152,8 +152,9 @@ Var(Y_i) &= Var(X_i^T\beta + X_i^T\Gamma X_i) + Var(\epsilon_i) \\
 \item
   There is an additional terms \(Cov(X_i^T\beta, X_i^T\Gamma X_i)\)
 \item
-  The main effect \(X_i\) and \(X_i X_j\) are not independent and cannot
-  be independent anymore
+  The main effect \(X_i\) and \(X_i X_j\) are dependent and cannot be
+  independent anymore. Besides, \(X_i X_j\) and \(X_i X_{j'}\) are
+  dependent.
 \item
   In order to keep the variance structure, we can only apply the linear
   transformation on the main effects, not the interactive effects.
@@ -161,21 +162,22 @@ Var(Y_i) &= Var(X_i^T\beta + X_i^T\Gamma X_i) + Var(\epsilon_i) \\
 
 \subsubsection{Solutions}\label{solutions}
 
-For the first issue, there are basic two different approach.
+For the 1st issue, there are basic two different approach.
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
 \item
   If X or after some transformation follows normal distributions, then
-  the \(Cov(X_i^T\beta, X_i^T\Gamma X_i)\) will be zero. More
+  the \(Cov(Z_i^T\beta, Z_i^T\Gamma Z_i)\) will be zero. More
   specifically, as long as the 3rd moments are 0 the correlation of main
   and interactive effect should be zero.
 \item
   If we assume \(\beta's\) or \(\Gamma's\) are independent random
-  variables, then the correlation should also be round zero.
+  variables, then the correlation should also be round zero. Because we
+  assume \(\beta \indep \Gamma\)
 \end{enumerate}
 
-For the second issue, the simulation studies shows that the the proposed
+For the 2nd issue, the simulation studies shows that the the proposed
 method can work well under the normal distribution setup. So it suggests
 that the Independence assumption may not be that restricted, at least
 under the Normal distribution. One guess is that under normal
@@ -200,7 +202,7 @@ The main factors are
 \item
   Distribution of X\\
 \item
-  Independence and Dependence of X\\
+  Independence or Dependence of X\\
 \item
   Fixed or Random of main effect \(\beta's\)\\
 \item
@@ -214,6 +216,8 @@ The main factors are
 \includegraphics{./simulation_workflow.png}
 \caption{Simulation workflow}
 \end{figure}
+
+\newpage
 
 \section{X follows Normal
 distributions}\label{x-follows-normal-distributions}
@@ -240,6 +244,8 @@ coefficients are not fixed then there is a big bias for the interaction
 estimation of proposed method. A guess is that if the \(\beta\) is not
 linear transformation of may affect the \(Var(X_i^T\Gamma X_i)\).
 
+\newpage
+
 \subsubsection{\texorpdfstring{\(\beta\) is fixed and \(\Gamma\) is
 fixed}{\textbackslash{}beta is fixed and \textbackslash{}Gamma is fixed}}\label{beta-is-fixed-and-gamma-is-fixed}
 
@@ -258,13 +264,13 @@ Simulation result
 \begin{figure}
 \centering
 \includegraphics{Simulation_report_files/figure-latex/main_fixed_fixed_normal-1.pdf}
-\caption{main effect of normal fixed main and interaction}
+\caption{Main Effect of normal fixed main and interaction}
 \end{figure}
 
 \begin{figure}
 \centering
 \includegraphics{Simulation_report_files/figure-latex/inter_fixed_fixed_normal-1.pdf}
-\caption{interactive effect of normal fixed main and interaction}
+\caption{Interactive Effect of normal fixed main and interaction}
 \end{figure}
 
 \clearpage
@@ -286,13 +292,13 @@ Simulation result
 \begin{figure}
 \centering
 \includegraphics{Simulation_report_files/figure-latex/main_fixed_random_normal-1.pdf}
-\caption{main effect of normal fixed main and random interaction}
+\caption{Main Effect of normal fixed main and random interaction}
 \end{figure}
 
 \begin{figure}
 \centering
 \includegraphics{Simulation_report_files/figure-latex/inter_fixed_random_normal-1.pdf}
-\caption{interactive effect of normal fixed main and random interaction}
+\caption{Interactive Effect of normal fixed main and random interaction}
 \end{figure}
 
 \clearpage
@@ -315,14 +321,16 @@ random}{\textbackslash{}beta is random and \textbackslash{}Gamma is random}}\lab
 \begin{figure}
 \centering
 \includegraphics{Simulation_report_files/figure-latex/main_random_random_normal-1.pdf}
-\caption{main effect of normal random main and interaction}
+\caption{Main Effect of normal random main and interaction}
 \end{figure}
 
 \begin{figure}
 \centering
 \includegraphics{Simulation_report_files/figure-latex/inter_random_random_normal-1.pdf}
-\caption{interactive effect of normal random main and interaction}
+\caption{Interactive Effect of normal random main and interaction}
 \end{figure}
+
+\newpage
 
 \section{X follows Chi-square
 distribution}\label{x-follows-chi-square-distribution}
@@ -343,7 +351,8 @@ The procedure of the data generation is following:
 \def\labelenumi{\arabic{enumi}.}
 \tightlist
 \item
-  Generate a vector dependent random variable \(Z ~ N(0, \Sigma_{p*})\)
+  Generate a vector dependent random variable
+  \(Z \sim N(0, \Sigma_{p*})\)
 \item
   Square each elements of Z, \(Z^2 = (Z_1^2, \dots, Z_{p*}^2)^T\)
 \item
@@ -353,6 +362,8 @@ The procedure of the data generation is following:
   Let \(X = (X_1^2, \dots, X_{p}^2)^T\)
 \end{enumerate}
 
+\newpage
+
 \subsubsection{\texorpdfstring{\(\beta\) is fixed and \(\Gamma\) is
 fixed}{\textbackslash{}beta is fixed and \textbackslash{}Gamma is fixed}}\label{beta-is-fixed-and-gamma-is-fixed-1}
 
@@ -361,13 +372,13 @@ Simulation result
 \begin{figure}
 \centering
 \includegraphics{Simulation_report_files/figure-latex/main_fixed_fixed_chi-1.pdf}
-\caption{main effect of chi fixed main and interaction}
+\caption{Main Effect of chi fixed main and interaction}
 \end{figure}
 
 \begin{figure}
 \centering
 \includegraphics{Simulation_report_files/figure-latex/inter_fixed_fixed_chi-1.pdf}
-\caption{interactive effect of chi fixed main and interaction}
+\caption{Interactive Effect of chi fixed main and interaction}
 \end{figure}
 
 \clearpage
@@ -380,13 +391,13 @@ Simulation result
 \begin{figure}
 \centering
 \includegraphics{Simulation_report_files/figure-latex/main_fixed_random_chi-1.pdf}
-\caption{main effect of chi fixed main and random interaction}
+\caption{Main Effect of chi fixed main and random interaction}
 \end{figure}
 
 \begin{figure}
 \centering
 \includegraphics{Simulation_report_files/figure-latex/inter_fixed_random_chi-1.pdf}
-\caption{interactive effect of chi fixed main and random interaction}
+\caption{Interactive Effect of chi fixed main and random interaction}
 \end{figure}
 
 \clearpage
@@ -397,14 +408,16 @@ random}{\textbackslash{}beta is random and \textbackslash{}Gamma is random}}\lab
 \begin{figure}
 \centering
 \includegraphics{Simulation_report_files/figure-latex/main_random_random_chi-1.pdf}
-\caption{main effect of chi random main and interaction}
+\caption{Main Effect of chi random main and interaction}
 \end{figure}
 
 \begin{figure}
 \centering
 \includegraphics{Simulation_report_files/figure-latex/inter_random_random_chi-1.pdf}
-\caption{interactive effect of chi random main and interaction}
+\caption{Interactive Effect of chi random main and interaction}
 \end{figure}
+
+\newpage
 
 \subsection{Combine the main and interaction
 effect}\label{combine-the-main-and-interaction-effect}
@@ -412,7 +425,7 @@ effect}\label{combine-the-main-and-interaction-effect}
 Based on the simulation result of the Chi-square distribution, the
 estimation of main and effect are not bad, which means the bias of the
 estimations are not large. However, there does exist some bias because
-of the non-zero covariate term (\(Cov(X_i^T\beta, X_i^T\Gamma X_i)\)).
+of the non-zero covariance term (\(Cov(X_i^T\beta, X_i^T\Gamma X_i)\)).
 
 One possible solustion or walk-around method is to estimate the total
 variance of signal instead of main and interactive variance separately.
@@ -422,12 +435,65 @@ main and interative terms.
 More specifically, we treat main and interactive covariates as a long
 vector and try to estimate its corresponding variance.
 
+\begin{align*}
+  Var(Y_i) &= Var(X_i^T\beta + X_i^T \Gamma X_i) + Var(\epsilon_i) \\
+           &= Var(X_i^T\beta + X_{i,inter}^T \gamma) + Var(\epsilon_i) \\
+           &= \begin{bmatrix}   
+                  X_i \\        
+                  X_{i,inter}   
+              \end{bmatrix}^T     
+              \begin{bmatrix}
+                \beta \\
+                \gamma
+              \end{bmatrix} + Var(\epsilon_i) \\
+           &= Var(X_{i,total}^T \beta_{total}) + Var(\epsilon_i)
+\end{align*}
+
+The big difference of this approch is that the interaction terms are
+also standardized and decorrelated.
+
+Do we still have the following equation hold?
+
 \[
-  Var(X^T \beta + X^T\Gamma X) = Var \left( [X_{main}, X_{inter}]^T \begin{bmatrix}
-    \beta \\
-    \gamma
-\end{bmatrix}\right)
+  Var(X_{i,total}^T \beta_{total}) =  Var(Z_{i,total}^T \alpha_{total}) 
 \]
+
+\newpage
+
+\subsubsection{\texorpdfstring{\(\beta\) is fixed and \(\Gamma\) is
+fixed}{\textbackslash{}beta is fixed and \textbackslash{}Gamma is fixed}}\label{beta-is-fixed-and-gamma-is-fixed-2}
+
+Simulation result
+
+\begin{figure}
+\centering
+\includegraphics{Simulation_report_files/figure-latex/main_fixed_fixed_chi_combine-1.pdf}
+\caption{Total effect of chi fixed main and interaction}
+\end{figure}
+
+\clearpage
+
+\subsubsection{\texorpdfstring{\(\beta\) is fixed and \(\Gamma\) is
+random}{\textbackslash{}beta is fixed and \textbackslash{}Gamma is random}}\label{beta-is-fixed-and-gamma-is-random-2}
+
+Simulation result
+
+\begin{figure}
+\centering
+\includegraphics{Simulation_report_files/figure-latex/main_fixed_random_chi_combine-1.pdf}
+\caption{Total effect of chi fixed main and random interaction}
+\end{figure}
+
+\clearpage
+
+\subsubsection{\texorpdfstring{\(\beta\) is random and \(\Gamma\) is
+random}{\textbackslash{}beta is random and \textbackslash{}Gamma is random}}\label{beta-is-random-and-gamma-is-random-2}
+
+\begin{figure}
+\centering
+\includegraphics{Simulation_report_files/figure-latex/main_random_random_chi_combine-1.pdf}
+\caption{Total effect of chi random main and interaction}
+\end{figure}
 
 \section{Conclusion}\label{conclusion}
 
