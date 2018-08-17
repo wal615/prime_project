@@ -25,7 +25,7 @@ generate_inter <- function(p, interaction) {
 ##################################################################################
 generate_chi <- function(n, p, rho, combine = FALSE) {
   # generate individual chi_square
-  p_normal <- p*10
+  p_normal <- p*3
   cor_str <- matrix(rep(rho,p_normal^2), ncol = p_normal)
   diag(cor_str) <- 1
   x <- mvrnorm(n = n,
@@ -34,10 +34,15 @@ generate_chi <- function(n, p, rho, combine = FALSE) {
   x <- x^2
   
   # combine different chi square to get different degree of freedom
-  index_list <- split(sample(p_normal), ceiling(seq_along(1:p_normal)/10))
+  len_index <- 0
+  while(len_index < p) {
+    index_p <- sample(1:p, p_normal, replace = TRUE)  
+    len_index <- unique(index_p) %>% length(.)
+  } # make sure we sample all p different groups with replacement
+  index_list <- split(1:p_normal, index_p)
   
   b <- lapply(X = index_list, 
-              FUN = function(data, index) {rowSums(data[,index])}, data = x) %>%
+              FUN = function(data, index) {rowSums(data[,index, drop = FALSE])}, data = x) %>%
        Reduce(cbind, x = .)
   
   if(combine) b <- model.matrix(~.*.+0, data.frame(b)) 
