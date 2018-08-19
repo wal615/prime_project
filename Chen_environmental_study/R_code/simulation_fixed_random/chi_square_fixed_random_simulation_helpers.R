@@ -23,9 +23,9 @@ generate_inter <- function(p, interaction) {
 ##################################################################################
 ## generate correlated chi-square
 ##################################################################################
-generate_chi <- function(n, p, rho, combine = FALSE) {
+generate_chi <- function(n, p, rho, chi_coef = 1, combine = FALSE) {
   # generate individual chi_square
-  p_normal <- p*3
+  p_normal <- p*chi_coef
   cor_str <- matrix(rep(rho,p_normal^2), ncol = p_normal)
   diag(cor_str) <- 1
   x <- mvrnorm(n = n,
@@ -34,7 +34,9 @@ generate_chi <- function(n, p, rho, combine = FALSE) {
   x <- x^2
   
   # combine different chi square to get different degree of freedom
-  len_index <- 0
+  if(chi_coef == 1) {len_index <- p; index_p <- sample(1:p)}
+    else len_index <- 0
+  
   while(len_index < p) {
     index_p <- sample(1:p, p_normal, replace = TRUE)  
     len_index <- unique(index_p) %>% length(.)
@@ -50,7 +52,8 @@ generate_chi <- function(n, p, rho, combine = FALSE) {
   attributes(b) <- append(attributes(b), 
                           list(x_dist = "chi", 
                                corr = rho, 
-                               combine = combine))
+                               combine = combine,
+                               chi_coef = chi_coef))
   b
 }
 
@@ -62,20 +65,18 @@ generate_chi <- function(n, p, rho, combine = FALSE) {
 
 simulation_fn <- function(n,
                           p,
-                          rho,
                           combine = FALSE,
                           main_fixed = TRUE,
                           inter_fixed = TRUE,
                           generate_data,
+                          gene_args,
                           brep, 
                           nrep,
                           uncorr_method = NULL,
                           interaction = 0, 
                           interaction_m = 0, 
                           seed = 0, 
-                          cores = 1,
-                          interm_result = FALSE,
-                          interm_result_path = NULL) {
+                          cores = 1) {
   if (cores == 1) 
     foreach::registerDoSEQ() 
   else 
@@ -98,7 +99,7 @@ simulation_fn <- function(n,
   result_raw <- foreach(ibrep = 1:brep, .combine = rbind, .verbose = TRUE, .errorhandling = "remove") %dorng%   {
     result_tmp <- matrix(0, nrow = nrep, ncol = 6)
     # Generate covariates  
-    b_raw <- generate_data(n, p, rho, combine = combine)
+    b_raw <- do.call(generate_data, gene_args)
     
     # Standardized covariates
     # combined the all the attributes to b so we could plot them by the attributes
@@ -106,7 +107,8 @@ simulation_fn <- function(n,
                       inter_fixed = inter_fixed,
                       x_dist = attributes(b_raw)$x_dist,
                       corr = attributes(b_raw)$corr,
-                      combine = attributes(b_raw)$combine)
+                      combine = attributes(b_raw)$combine,
+                      df = attributes(b_raw)$chi_coef)
     b <- std_fn(b = b_raw,
                 p = ncol(b_raw),
                 tran_FUN = null_tran,
@@ -157,14 +159,8 @@ simulation_fn <- function(n,
       result_tmp[irep,6] <- fit$RACT
     }
     
-    
-    if (interm_result == TRUE) {
-      common_attr_index <- match(c("dim", "dimnames", "assign"), names(attributes(b))) %>% na.omit(.)
-      interm_result_table <- data.frame(result_tmp, attributes(b)[-common_attr_index]) # extract the attributes which has unique infomration about the data
-      
-      write.csv(interm_result_table, file = paste0(interm_result_path, paste(unlist(attributes(b)[-common_attr_index]), collapse = "_"),"_",ibrep,".csv"))
-    }
-    
+
+    # save the result
     result_final <- rbind(apply(result_tmp, 2, mean), apply(result_tmp, 2,sd))
     common_attr_index <- match(c("dim", "dimnames", "assign"), names(attributes(b))) %>% na.omit(.)
     result_final <- data.frame(result_final, attributes(b)[-common_attr_index]) ## adding attributes as plot categories
