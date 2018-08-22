@@ -1,0 +1,84 @@
+---
+title: "Simulation of PCB with resampling"
+author: "Xuelong Wang"
+date: "`r Sys.Date()`"
+output: 
+  pdf_document:
+    toc: true
+    number_sections: true
+    keep_tex: true
+    fig_width: 12
+    fig_height: 6
+header-includes:
+    - \usepackage{float,amsmath, bbm, siunitx, bm}
+    - \floatplacement{figure}{H}
+    - \newcommand{\indep}{\rotatebox[origin=c]{90}{$\models$}}
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, comment = FALSE, message = FALSE, warning = FALSE, fig.height = 10)
+```
+
+# Motivation
+Based on the simulation studies, we found the proposed method could work well even if the covariates' distributions are correlated and long tail. More specifically, the proposed method can estimate the main and interactive effect's variance without much bias. Thus, we have some reason to believe that the proposed method could also work well on the PCB data. 
+
+We want to conduct the previous simulation studies on PCB data. However, there is a issue to be solved. One of the assumptions of GCTA method is that the covariates are random variables. Thus, the covariates $X$ are randomly sampled for each iteration during the simulation procedure. But it cannot be available for PCB data, because we only have one set of data with 1000 observations. 
+
+# Re-sampling procedure
+
+To solve the problem mentioned above, we could used the resampling PCB's observations without replacement to mimic the randomization of the covariates. Although those re-sampled data is not the true random variable, it more or less can give as an idea that how well the proposed method can work on the PCB data. 
+
+## Bootstrap VS Resampling
+Resampling method can keep the observed covariance structure of the PCB data. However, since the bootstrap using sampling with replacement, it cannot keep the original structure. 
+
+\[
+  X = \begin{bmatrix}   
+        x_1\\
+        x_2\\
+        x_3
+      \end{bmatrix},
+  \Sigma = \begin{bmatrix}   
+        \sigma_{11} ~ \sigma_{12} ~ \sigma_{13}\\
+        \sigma_{21} ~ \sigma_{22} ~ \sigma_{23}\\
+        \sigma_{31} ~ \sigma_{32} ~ \sigma_{33}\\
+      \end{bmatrix}
+\]
+
+\[
+  X_{resample} = \begin{bmatrix}   
+        x_1\\
+        x_2\\
+      \end{bmatrix},
+  \Sigma = \begin{bmatrix}   
+        \sigma_{11} ~ \sigma_{12}\\
+        \sigma_{21} ~ \sigma_{22}
+      \end{bmatrix}
+\]
+
+\[
+  X_{bootstrap} = \begin{bmatrix}   
+        x_1\\
+        x_2\\
+        x_2
+      \end{bmatrix},
+  \Sigma = \begin{bmatrix}   
+        \sigma_{11} ~ \sigma_{12} ~ \sigma_{12}\\
+        \sigma_{21} ~ \sigma_{22} ~ \sigma_{22}\\
+        \sigma_{21} ~ \sigma_{22} ~ \sigma_{22}\\
+      \end{bmatrix}
+\]
+
+## re-sample size 
+We need to find an appropriate sample size which is not too large to reduce the randomization or too sample to increase the estimations variation.
+
+\[
+  m = \sqrt{n}
+\]
+
+# Simulation result 
+
+# Conclusion
+
+# Further work 

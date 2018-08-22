@@ -292,39 +292,79 @@ Do we still have the following equation hold?
 
 \newpage
 
-### $\beta$ is fixed and $\Gamma$ is fixed 
+### $\beta$ is fixed and $\Gamma$ is fixed (Chi df = 10)
 
 Simulation result
 
-```{r main_fixed_fixed_chi_combine, fig.cap = "Total effect of chi fixed main and interaction"}
+```{r main_fixed_fixed_chi_combine_df_10, fig.cap = "Total effect of chi fixed main and interaction"}
 
-plot_chi_fixed_fixed_main_combine
+plot_chi_fixed_fixed_main_combine_df_10
 
 ```
 
 
 \clearpage
 
-### $\beta$ is fixed and $\Gamma$ is random 
+### $\beta$ is fixed and $\Gamma$ is random (Chi df = 10)
 
 
 Simulation result
 
-```{r main_fixed_random_chi_combine, fig.cap = "Total effect of chi fixed main and random interaction"}
+```{r main_fixed_random_chi_combine_df_10, fig.cap = "Total effect of chi fixed main and random interaction"}
 
-plot_chi_fixed_random_main_combine
+plot_chi_fixed_random_main_combine_df_10
 
 ```
 
 
 \clearpage
 
-### $\beta$ is random and $\Gamma$ is random 
+### $\beta$ is random and $\Gamma$ is random (Chi df = 10)
 
 
-```{r main_random_random_chi_combine, fig.cap = "Total effect of chi random main and interaction"}
+```{r main_random_random_chi_combine_df_10, fig.cap = "Total effect of chi random main and interaction"}
 
-plot_chi_random_random_main_combine
+plot_chi_random_random_main_combine_df_10
+
+```
+
+\newpage
+
+## Combine the main and interaction effect with df = 1
+
+### $\beta$ is fixed and $\Gamma$ is fixed (Chi df = 1)
+
+Simulation result
+
+```{r main_fixed_fixed_chi_combine_df_1, fig.cap = "Total effect of chi fixed main and interaction"}
+
+plot_chi_fixed_fixed_main_combine_df_1
+
+```
+
+
+\clearpage
+
+### $\beta$ is fixed and $\Gamma$ is random (Chi df = 1)
+
+
+Simulation result
+
+```{r main_fixed_random_chi_combine_df_1, fig.cap = "Total effect of chi fixed main and random interaction"}
+
+plot_chi_fixed_random_main_combine_df_1
+
+```
+
+
+\clearpage
+
+### $\beta$ is random and $\Gamma$ is random (Chi df = 1)
+
+
+```{r main_random_random_chi_combine_df_1, fig.cap = "Total effect of chi random main and interaction"}
+
+plot_chi_random_random_main_combine_df_1
 
 ```
 
