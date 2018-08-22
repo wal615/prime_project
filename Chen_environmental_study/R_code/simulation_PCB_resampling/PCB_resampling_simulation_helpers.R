@@ -24,17 +24,20 @@ generate_inter <- function(p, interaction) {
 ##################################################################################
 ## generate correlated chi-square
 ##################################################################################
-generate_PCB <- function(pro) {
+generate_PCB <- function(pro, combine = FALSE) {
   # read the PCB data
   a <- read.sas7bdat("~/dev/projects/Chen_environmental_study/R_code/pcbs1000nomiss.sas7bdat")
   b <- data.matrix(a[,2:35], rownames.force = NA)
   n <- nrow(b)
   index <- sample(1:n, round(pro*n,0), replace = FALSE)
-  
   b <- b[index,]
+  
+  if(combine) b <- model.matrix(~.*.+0, data.frame(b)) 
+  
   attributes(b) <- append(attributes(b), 
                           list(x_dist = "PCB", 
-                               pro = pro))
+                               pro = pro,
+                               combine= combine))
   b
 }
 
@@ -46,6 +49,7 @@ generate_PCB <- function(pro) {
 
 simulation_fn <- function(n,
                           p,
+                          tran_fun,
                           combine = FALSE,
                           main_fixed = TRUE,
                           inter_fixed = TRUE,
@@ -90,7 +94,7 @@ simulation_fn <- function(n,
                       pro = attributes(b_raw)$pro)
     b <- std_fn(b = b_raw,
                 p = ncol(b_raw),
-                tran_FUN = rank_tran,
+                tran_FUN = tran_fun,
                 additional = additional)
     
     # Generate main betas
