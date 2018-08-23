@@ -58,6 +58,7 @@ simulation_fn <- function(n,
                           brep, 
                           nrep,
                           uncorr_method = NULL,
+                          main_effect_only = FALSE,
                           interaction = 0, 
                           interaction_m = 0, 
                           seed = 0, 
@@ -97,6 +98,8 @@ simulation_fn <- function(n,
                 tran_FUN = tran_fun,
                 additional = additional)
     
+    att_b <- attributes(b)
+    
     # Generate main betas
     if(!main_fixed){
       betam <- generate_main(p)
@@ -106,20 +109,43 @@ simulation_fn <- function(n,
     if(!inter_fixed){
       betai <- generate_inter(p, interaction)
     }
-    
     # Generate the signals
-    if(combine == TRUE) {
-      beta <- c(betam, betai[upper.tri(betai, diag = FALSE)])
-      signalm <- b%*%beta
+    if (combine == TRUE) {
+      signalm <- b[,1:p]%*%betam
+      signali <- b[,-(1:p)]%*%betai[upper.tri(betai, diag = FALSE)]
+      signal_combine <- signalm + signali 
     } else {
-      signalm=b%*%betam
-      }
-    signali <- if(interaction == 0 | combine == TRUE){
-      rep(0,n) } else {
-        apply(X = b, MARGIN = 1, FUN = function(x) t(x)%*%betai%*%x)
-      } 
+      signalm <- b%*%betam
+      signali <- apply(X = b, MARGIN = 1, FUN = function(x) t(x)%*%betai%*%x)
+    }
+    
     result_tmp[, 1]=var(signalm)
     result_tmp[, 2]=var(signali)
+    
+    if(combine == TRUE & main_effect_only == FALSE){
+      result_tmp[, 1]=var(signal_combine)
+    }
+    
+    if(combine == TRUE & main_effect_only == TRUE){
+      result_tmp[, 1]=var(signal_combine)
+      result_tmp[, 2]=var(signalm)
+      b <- b[, 1:p]
+    }
+      
+    # if(combine == TRUE) {
+    #   beta <- c(betam, betai[upper.tri(betai, diag = FALSE)])
+    #   signalm <- b%*%beta
+    # } else {
+    #   signalm=b%*%betam
+    #   }
+    # signali <- if(interaction == 0 | combine == TRUE){
+    #   rep(0,n) } else {
+    #     apply(X = b, MARGIN = 1, FUN = function(x) t(x)%*%betai%*%x)
+    #   } 
+    # result_tmp[, 1]=var(signalm)
+    # result_tmp[, 2]=var(signali)
+    
+    
     
     # Estimating total effects with iterations
     for(irep in 1:nrep){
@@ -145,12 +171,20 @@ simulation_fn <- function(n,
 
     # save the result
     result_final <- rbind(apply(result_tmp, 2, mean), apply(result_tmp, 2,sd))
-    common_attr_index <- match(c("dim", "dimnames", "assign"), names(attributes(b))) %>% na.omit(.)
-    result_final <- data.frame(result_final, attributes(b)[-common_attr_index]) ## adding attributes as plot categories
+    common_attr_index <- match(c("dim", "dimnames", "assign"), names(att_b)) %>% na.omit(.)
+    result_final <- data.frame(result_final, att_b[-common_attr_index]) ## adding attributes as plot categories
     
   }
   attributes(result_raw)$rng <- NULL # rm the random sampling info
   colnames(result_raw)[1:6] <- c("true_main", "true_interaction", "GCTA_main", "GCTA_interaction", "prop_main", "prop_interaction")
+  
+  if(combine == TRUE & main_effect_only == FALSE){
+    colnames(result_raw)[1:6] <- c("true_total", "true_interaction", "GCTA_total", "GCTA_interaction", "prop_total", "prop_interaction")
+  }
+  
+  if(combine == TRUE & main_effect_only == TRUE){
+    colnames(result_raw)[1:6] <- c("true_total", "true_main", "GCTA_total", "GCTA_main", "prop_total", "prop_main")
+  }
   result_raw
 }
 
