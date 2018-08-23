@@ -16,7 +16,7 @@ library(doParallel)
 p <- 34
 pro <- seq(0.6,0.9,0.1)
 n <- round(1000*pro, 0)
-combine = FALSE
+combine = TRUE
 gene_args <- data.frame(pro = pro, combine = combine)
 gene_args <- gene_args %>% split(x = ., f = seq(nrow(gene_args))) # generate a list from each row of a dataframe
 
@@ -26,17 +26,18 @@ result_list_fixed_fixed <- mapply(FUN = simulation_fn,
                                   MoreArgs = list(p = p,
                                                   tran_fun = null_tran,
                                                   combine = combine,
+                                                  main_effect_only = TRUE,
                                                   main_fixed = TRUE,
                                                   inter_fixed = TRUE,
                                                   generate_data = generate_PCB,
-                                                  brep = 200,
-                                                  nrep = 20,
+                                                  brep = 2,
+                                                  nrep = 2,
                                                   seed = 123,
-                                                  cores = 10,
+                                                  cores = 1,
                                                   interaction = 1,
                                                   interaction_m = 0),
                                   SIMPLIFY = FALSE)
-save(result_list_fixed_fixed, file = "./result/PCB_resampling/simulation_result_list_fixed_fixed")
+save(result_list_fixed_fixed, file = "./result/PCB_resampling/simulation_result_list_fixed_fixed_main")
 
 
 result_list_fixed_random <- mapply(FUN = simulation_fn,
