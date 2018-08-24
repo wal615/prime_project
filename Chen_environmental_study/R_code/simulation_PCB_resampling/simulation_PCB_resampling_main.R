@@ -34,9 +34,9 @@ result_list_fixed_fixed_main <- mapply(FUN = simulation_fn,
                                                   seed = 123,
                                                   cores = 8,
                                                   interaction = 1,
-                                                  interaction_m = 1),
+                                                  interaction_m = 0),
                                   SIMPLIFY = FALSE)
-save(result_list_fixed_fixed_main, file = "./result/PCB_resampling/simulation_result_list_fixed_fixed_main")
+save(result_list_fixed_fixed_main, file = "./result/PCB_resampling/simulation_result_list_fixed_fixed_main_no_interaction")
 
 
 result_list_fixed_random_main <- mapply(FUN = simulation_fn,
@@ -53,9 +53,9 @@ result_list_fixed_random_main <- mapply(FUN = simulation_fn,
                                                    seed = 123,
                                                    cores = 8,
                                                    interaction = 1,
-                                                   interaction_m = 1),
+                                                   interaction_m = 0),
                                    SIMPLIFY = FALSE)
-save(result_list_fixed_random_main, file = "./result/PCB_resampling/simulation_result_list_fixed_random_main")
+save(result_list_fixed_random_main, file = "./result/PCB_resampling/simulation_result_list_fixed_random_main_no_interaction")
 
 result_list_random_random_main <- mapply(FUN = simulation_fn,
                                     n = n,
@@ -71,6 +71,6 @@ result_list_random_random_main <- mapply(FUN = simulation_fn,
                                                     seed = 123,
                                                     cores = 8,
                                                     interaction = 1,
-                                                    interaction_m = 1),
+                                                    interaction_m = 0),
                                     SIMPLIFY = FALSE)
-save(result_list_random_random_main, file = "./result/PCB_resampling/simulation_result_list_random_random_main")
+save(result_list_random_random_main, file = "./result/PCB_resampling/simulation_result_list_random_random_main_no_interaction")

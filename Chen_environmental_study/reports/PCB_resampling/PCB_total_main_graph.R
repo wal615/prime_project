@@ -25,7 +25,7 @@ plot_chi_fixed_fixed_total <- tidyr::gather(main, ends_with("total"), key = "met
   geom_violin(alpha = 0.2) +
   geom_boxplot(alpha = 0.7) +
   facet_wrap(facets = vars(main_fixed, inter_fixed, pro), ncol =3 , scales = "free", labeller  = "label_both")+
-  ggtitle("total effect with fixed main and fixed interactive") +
+  ggtitle("Total effect with fixed main and fixed interactive") +
   theme(plot.title = element_text(hjust = 0.5))
 
 ## generating graph for the fixed_random simuation
