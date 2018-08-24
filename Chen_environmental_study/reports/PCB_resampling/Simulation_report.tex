@@ -82,7 +82,7 @@
   \postauthor{\par}
       \predate{\centering\large\emph}
   \postdate{\par}
-    \date{2018-08-22}
+    \date{2018-08-24}
 
 \usepackage{float,amsmath, bbm, siunitx, bm}
 \floatplacement{figure}{H}
@@ -169,10 +169,51 @@ reduce the randomization or too sample to increase the estimations
 variation.
 
 \[
-  m = \sqrt{n}
+  m = p * n, \text{ where $p = (0.6 - 0.9)$}
 \]
 
 \section{Simulation result}\label{simulation-result}
+
+\subsection{Total effect estimation}\label{total-effect-estimation}
+
+\begin{figure}
+\centering
+\includegraphics{Simulation_report_files/figure-latex/Total effect fixed fixed-1.pdf}
+\caption{Total effect estimation with fixed main and fixed interaction}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics{Simulation_report_files/figure-latex/Total effect fixed random-1.pdf}
+\caption{Total effect estimation with fixed main and random interaction}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics{Simulation_report_files/figure-latex/Total effect random random-1.pdf}
+\caption{Total effect estimation with random main and random
+interaction}
+\end{figure}
+
+\subsection{Main effect estimation}\label{main-effect-estimation}
+
+\begin{figure}
+\centering
+\includegraphics{Simulation_report_files/figure-latex/main effect fixed fixed-1.pdf}
+\caption{Main effect estimation with fixed main and fixed interaction}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics{Simulation_report_files/figure-latex/main effect fixed random-1.pdf}
+\caption{Main effect estimation with fixed main and random interaction}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics{Simulation_report_files/figure-latex/main effect random random-1.pdf}
+\caption{Main effect estimation with random main and random interaction}
+\end{figure}
 
 \section{Conclusion}\label{conclusion}
 

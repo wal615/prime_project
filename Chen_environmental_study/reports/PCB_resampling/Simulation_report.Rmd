@@ -74,10 +74,54 @@ Resampling method can keep the observed covariance structure of the PCB data. Ho
 We need to find an appropriate sample size which is not too large to reduce the randomization or too sample to increase the estimations variation.
 
 \[
-  m = \sqrt{n}
+  m = p * n, \text{ where $p = (0.6 - 0.9)$}
 \]
 
 # Simulation result 
+
+```{r load graph, include=FALSE}
+source("./PCB_total_main_graph.R")
+```
+
+## Total effect estimation
+
+```{r Total effect fixed fixed, fig.cap = "Total effect estimation with fixed main and fixed interaction"}
+
+plot_PCB_fixed_fixed_total
+
+```
+
+```{r Total effect fixed random, fig.cap = "Total effect estimation with fixed main and random interaction"}
+
+plot_PCB_fixed_random_total
+
+```
+
+```{r Total effect random random, fig.cap = "Total effect estimation with random main and random interaction"}
+
+plot_PCB_random_random_total
+
+```
+
+## Main effect estimation
+
+```{r main effect fixed fixed, fig.cap = "Main effect estimation with fixed main and fixed interaction"}
+
+plot_PCB_fixed_fixed_main
+
+```
+
+```{r main effect fixed random, fig.cap = "Main effect estimation with fixed main and random interaction"}
+
+plot_PCB_fixed_random_main
+
+```
+
+```{r main effect random random, fig.cap = "Main effect estimation with random main and random interaction"}
+
+plot_PCB_random_random_main
+
+```
 
 # Conclusion
 
