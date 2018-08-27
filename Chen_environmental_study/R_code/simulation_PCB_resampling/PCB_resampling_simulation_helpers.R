@@ -1,4 +1,5 @@
 library("sas7bdat")
+library("MASS")
 ##################################################################################
 ## generate main effect
 ##################################################################################
@@ -22,12 +23,36 @@ generate_inter <- function(p, interaction) {
 }
 
 ##################################################################################
-## generate correlated chi-square
+## subset PCB data
 ##################################################################################
 generate_PCB <- function(pro, combine = FALSE) {
   # read the PCB data
   a <- read.sas7bdat("~/dev/projects/Chen_environmental_study/R_code/pcbs1000nomiss.sas7bdat")
   b <- data.matrix(a[,2:35], rownames.force = NA)
+  n <- nrow(b)
+  index <- sample(1:n, round(pro*n,0), replace = FALSE)
+  b <- b[index,]
+  
+  if(combine) b <- model.matrix(~.*.+0, data.frame(b)) 
+  
+  attributes(b) <- append(attributes(b), 
+                          list(x_dist = "PCB", 
+                               pro = pro,
+                               combine= combine))
+  b
+}
+
+##################################################################################
+## subset of chi-square
+##################################################################################
+generate_chi_sub <- function(pro, combine = FALSE) {
+  # generate a chi-square
+  cor_str <- matrix(rep(0.5,34^2), ncol = 34)
+  diag(cor_str) <- 1
+  x <- mvrnorm(n = 1000,
+               mu = rep(0,34),
+               Sigma = cor_str)
+  b <- x^2
   n <- nrow(b)
   index <- sample(1:n, round(pro*n,0), replace = FALSE)
   b <- b[index,]
