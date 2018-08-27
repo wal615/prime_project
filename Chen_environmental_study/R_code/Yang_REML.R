@@ -271,7 +271,12 @@ SVD_method <- function(input_data) {
   Sigma=cov(input_data,input_data)
   # Compute Sigma^{-1/2}
   Seign=eigen(Sigma)
-  Sinvsqrt=Seign$vectors %*% diag(1/sqrt(Seign$values)) %*% t(Seign$vectors)
+  
+  ## get rid of zero egienvalues
+  eign_value <- Seign$values
+  eign_value_rec_sqrt <- if_else(eign_value > 0.0001, 1/sqrt(eign_value), 0)
+  
+  Sinvsqrt=Seign$vectors %*% diag(eign_value_rec_sqrt) %*% t(Seign$vectors)
   uncorr_data=input_data%*%Sinvsqrt  
   list(uncorr_data = uncorr_data)
 }
