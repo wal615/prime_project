@@ -1,5 +1,3 @@
-# Following simulation is to test if under normal distribution, we can estimate the interaction effect unbaisly by proposed method
-
 setwd("~/dev/projects/Chen_environmental_study/")
 source("./R_code/Yang_REML.R")
 source("./R_code/simulation_PCB_resampling/PCB_resampling_simulation_helpers.R")
@@ -12,7 +10,7 @@ library(doRNG)
 library(doParallel)
 
 
-
+cores <- 15
 p <- 34
 pro <- seq(0.1,0.9,0.1)
 n <- round(1000*pro, 0)
@@ -32,7 +30,7 @@ result_list_fixed_fixed <- mapply(FUN = simulation_fn,
                                                   brep = 200,
                                                   nrep = 20,
                                                   seed = 123,
-                                                  cores = 10,
+                                                  cores = cores,
                                                   interaction = 1,
                                                   interaction_m = 0),
                                   SIMPLIFY = FALSE)
@@ -51,7 +49,7 @@ result_list_fixed_random <- mapply(FUN = simulation_fn,
                                                   brep = 200,
                                                   nrep = 20,
                                                   seed = 123,
-                                                  cores = 10,
+                                                  cores = cores,
                                                   interaction = 1,
                                                   interaction_m = 0),
                                   SIMPLIFY = FALSE)
@@ -69,7 +67,7 @@ result_list_random_random <- mapply(FUN = simulation_fn,
                                                    brep = 200,
                                                    nrep = 20,
                                                    seed = 123,
-                                                   cores = 10,
+                                                   cores = cores,
                                                    interaction = 1,
                                                    interaction_m = 0),
                                    SIMPLIFY = FALSE)

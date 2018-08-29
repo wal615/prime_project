@@ -274,7 +274,7 @@ SVD_method <- function(input_data) {
   
   ## get rid of zero egienvalues
   eign_value <- Seign$values
-  eign_value_rec_sqrt <- if_else(eign_value > 0.0001, 1/sqrt(eign_value), 0)
+  eign_value_rec_sqrt <- if_else(eign_value > 1e-15, 1/sqrt(eign_value), 0)
   
   Sinvsqrt=Seign$vectors %*% diag(eign_value_rec_sqrt) %*% t(Seign$vectors)
   uncorr_data=input_data%*%Sinvsqrt  

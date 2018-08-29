@@ -25,7 +25,7 @@ generate_inter <- function(p, interaction) {
 ##################################################################################
 ## subset PCB data
 ##################################################################################
-generate_PCB <- function(pro, combine = FALSE) {
+generate_PCB <- function(pro) {
   # read the PCB data
   a <- read.sas7bdat("~/dev/projects/Chen_environmental_study/R_code/pcbs1000nomiss.sas7bdat")
   b <- data.matrix(a[,2:35], rownames.force = NA)
@@ -33,19 +33,18 @@ generate_PCB <- function(pro, combine = FALSE) {
   index <- sample(1:n, round(pro*n,0), replace = FALSE)
   b <- b[index,]
   
-  if(combine) b <- model.matrix(~.*.+0, data.frame(b)) 
+  b <- model.matrix(~.*.+0, data.frame(b)) 
   
   attributes(b) <- append(attributes(b), 
                           list(x_dist = "PCB", 
-                               pro = pro,
-                               combine= combine))
+                               pro = pro))
   b
 }
 
 ##################################################################################
 ## subset of chi-square
 ##################################################################################
-generate_chi_sub <- function(pro, combine = FALSE) {
+generate_chi_sub <- function(pro) {
   # generate a chi-square
   cor_str <- matrix(rep(0.5,34^2), ncol = 34)
   diag(cor_str) <- 1
@@ -57,12 +56,11 @@ generate_chi_sub <- function(pro, combine = FALSE) {
   index <- sample(1:n, round(pro*n,0), replace = FALSE)
   b <- b[index,]
   
-  if(combine) b <- model.matrix(~.*.+0, data.frame(b)) 
+  b <- model.matrix(~.*.+0, data.frame(b)) 
   
   attributes(b) <- append(attributes(b), 
                           list(x_dist = "PCB", 
-                               pro = pro,
-                               combine= combine))
+                               pro = pro))
   b
 }
 
@@ -135,27 +133,20 @@ simulation_fn <- function(n,
       betai <- generate_inter(p, interaction)
     }
     # Generate the signals
-    if (combine == TRUE) {
-      signalm <- b[,1:p]%*%betam
-      signali <- b[,-(1:p)]%*%betai[upper.tri(betai, diag = FALSE)]
-      signal_combine <- signalm + signali 
-    } else {
-      signalm <- b%*%betam
-      signali <- apply(X = b, MARGIN = 1, FUN = function(x) t(x)%*%betai%*%x)
-    }
-    
-    result_tmp[, 1]=var(signalm)
+    signalm <- b[,1:p]%*%betam
+    signali <- b[,-(1:p)]%*%betai[upper.tri(betai, diag = FALSE)]
     result_tmp[, 2]=var(signali)
     
     if(combine == TRUE){
-      result_tmp[, 1]=var(signal_combine)
+      result_tmp[, 1]=var(signalm + signali)
+    } else {
+      result_tmp[, 1]=var(signalm)
+      b <- b[,1:p]
     }
     
-    
-    
+
     # Estimating total effects with iterations
     for(irep in 1:nrep){
-      
       # Generate health outcome given fixed random effects
       y=signalm+signali+rnorm(n,sd=4)
       

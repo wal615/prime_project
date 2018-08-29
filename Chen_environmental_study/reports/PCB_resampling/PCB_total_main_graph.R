@@ -18,7 +18,7 @@ plot_PCB_fixed_fixed_main <- tidyr::gather(main, ends_with("main"), key = "metho
 
 ## generating graph for the fixed_fixed simuation
 load(file = "./result/PCB_resampling/simulation_result_list_fixed_fixed_main_no_interaction")
-table_fixed_fixed <- rbindlist(result_list_fixed_fixed_main)
+table_fixed_fixed <- rbindlist(result_list_fixed_fixed_main_no_interaction)
 
 main <- table_fixed_fixed[true_main != 0, -c(2,4,6)]
 plot_PCB_fixed_fixed_main_no_interaction <- tidyr::gather(main, ends_with("main"), key = "method", value = "value") %>%
@@ -60,7 +60,7 @@ plot_PCB_fixed_random_main <- tidyr::gather(main, ends_with("main"), key = "meth
 
 ## generating graph for the fixed_random simuation
 load(file = "./result/PCB_resampling/simulation_result_list_fixed_random_main_no_interaction")
-table_fixed_random <- rbindlist(result_list_fixed_random_main)
+table_fixed_random <- rbindlist(result_list_fixed_random_main_no_interaction)
 
 main <- table_fixed_random[true_main != 0, -c(2,4,6)]
 plot_PCB_fixed_random_main_no_interaction <- tidyr::gather(main, ends_with("main"), key = "method", value = "value") %>%
@@ -103,7 +103,7 @@ plot_PCB_random_random_main <- tidyr::gather(main, ends_with("main"), key = "met
 
 ## generating graph for the random_random simuation
 load(file = "./result/PCB_resampling/simulation_result_list_random_random_main_no_interaction")
-table_random_random <- rbindlist(result_list_random_random_main)
+table_random_random <- rbindlist(result_list_random_random_main_no_interaction)
 
 main <- table_random_random[true_main != 0, -c(2,4,6)]
 plot_PCB_random_random_main_no_interaction <- tidyr::gather(main, ends_with("main"), key = "method", value = "value") %>%
