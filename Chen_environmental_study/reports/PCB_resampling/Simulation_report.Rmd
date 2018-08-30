@@ -109,21 +109,43 @@ plot_PCB_random_random_total
 
 The purpose of this simulation is try to estimate the main effect only given the true mode has interaction effect. Since we focus on the main effect and ignore the interactive effect, the model we are using to do the estimation is a wrong model. 
 
-```{r main effect fixed fixed, fig.cap = "Main effect estimation with fixed main and fixed interaction"}
+```{r main effect fixed fixed without inter, fig.cap = "Main effect estimation with fixed main and fixed interaction"}
 
 plot_PCB_fixed_fixed_main_no_interaction
 
 ```
 
-```{r main effect fixed random, fig.cap = "Main effect estimation with fixed main and random interaction"}
+```{r main effect fixed random without inter, fig.cap = "Main effect estimation with fixed main and random interaction"}
 
 plot_PCB_fixed_random_main_no_interaction
 
 ```
 
-```{r main effect random random, fig.cap = "Main effect estimation with random main and random interaction"}
+```{r main effect random random without inter, fig.cap = "Main effect estimation with random main and random interaction"}
 
 plot_PCB_random_random_main_no_interaction
+
+```
+
+\newpage 
+
+## Main effect estimation (with interaction term in the model)
+
+```{r main effect fixed fixed, fig.cap = "Main effect estimation with fixed main and fixed interaction"}
+
+plot_PCB_fixed_fixed_main
+
+```
+
+```{r main effect fixed random, fig.cap = "Main effect estimation with fixed main and random interaction"}
+
+plot_PCB_fixed_random_main
+
+```
+
+```{r main effect random random, fig.cap = "Main effect estimation with random main and random interaction"}
+
+plot_PCB_random_random_main
 
 ```
 

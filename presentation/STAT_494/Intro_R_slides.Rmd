@@ -1,0 +1,220 @@
+---
+title: 'Introduction to R and Statlab Server'
+short-title: "STAT 494"
+author: "Xuelong Wang"
+date: '`r format(Sys.Date(), "%B %d, %Y")`'      # Month DD, YYYY (Main Slide)
+short-date: '`r format(Sys.Date(), "%m/%d/%Y")`' # MM/DD/YYYY (Lower Right)
+section-titles: false                            # Provides slide headings
+safe-columns: true   # Enables special latex macros for columns.
+header-includes:
+   - \usepackage{amsmath, bbm}
+output: 
+   uiucthemes::beamer_illinois: 
+       toc: true
+       fig_height: 6
+---
+
+```{r setup, include=FALSE}
+options(width = 40)
+library(doParallel)
+library(foreach)
+library(parallel)
+library(iterators)
+```
+
+# Introduction to the Statlab Server
+
+### How to connect to the Statlab Server
+
+* Fixed IP address 131.193.178.77
+* hostname: statlab.math.uic.edu 
+* Mac users 
+    + Terminal.app
+    + ssh username@statlab.math.uic.edu
+* Windows users 
+    + PuTTY
+    + open source SSH client for windows
+    + http://www.chiark.greenend.org.uk/~sgtatham/putty/download.html
+    
+### How to use the R.Studio 
+
+* R 
+    + Using Terminal or PuTTY 
+    + just type R
+* Rstudio 
+    + Web browser e.g. Chrome 
+    + http://statlab.math.uic.edu:8787/
+* some notes about using Rstudio 
+    + save all the documents 
+    + save and delete all objects in the Global Enviroment (rm(list=ls()))
+    + using top and kill the terminate your R sessions
+
+# Introduction to R with an example
+
+### Basics concepts of R
+
+#### Object-oriented
+
+R is an object-oriented language
+
+- Everything in R is an object and each object has a class e.g. matrix, list, data.frame,etc...
+
+- For different classes, R has different operations which are called "Method"
+
+
+### An example of Linear Regression
+
+#### Mathematical equation
+
+\[
+  Y = \beta_0 + \beta_1X + \epsilon,
+\] 
+Where $\beta_0$ is the intercept and $\beta_1$ is the slope
+
+#### Goal
+
+Estimate the coefficients and prediction
+
+### Example Cars' Speed and distances to stop 
+
+```{r, eval=FALSE}
+?cars
+```
+
+#### Mathematical equation
+
+\[
+  Y_{dist} = \beta_0 + \beta_{speed}X_{speed} + \epsilon,
+\] 
+Where $\beta_0$ is the intercept and $\beta_{speed}$ is the slope
+
+#### Goal
+
+Using a car's speed to predict the distance it will use to stop
+
+- esitmate the $\beta_0$ and $\beta_{speed}$
+
+
+### Check the data
+
+```{r check data, collapse=TRUE}
+head(cars)
+class(cars)
+```
+
+### Plot X and Y together 
+
+```{r plot x and y, collapse=TRUE}
+plot(x = cars$speed, y = cars$dist)
+```
+
+### Plot a box-plot of speeds for outliers
+```{r plot speed, collapse=TRUE}
+boxplot(cars$speed, main="Speed")
+```
+
+### Plot a box-plot of distances for outliers
+```{r plot distance, collapse=TRUE, fill = TRUE}
+boxplot(cars$dist, main="Distance")
+```
+
+### Fit the model 
+
+```{r fit the model, collapse=TRUE, tidy=TRUE}
+help(lm)
+class(lm)
+linearMod <- lm(dist ~ speed, data=cars)
+class(linearMod)
+print(linearMod)
+```
+
+### plot the fitted model
+
+```{r plot the model, collapse=TRUE, tidy=TRUE}
+par(mfrow = c(2, 2))
+plot(linearMod)
+```
+
+### Using the fitted model to predict
+
+```{r prediction, collapse=TRUE, tidy=TRUE}
+help(predict)
+help(predict.lm)
+# esimation
+est <- predict(linearMod)
+est[1:5]
+# prediction
+new_data <- data.frame(speed = 200)
+pre <- predict(linearMod, newdata = new_data)
+pre
+```
+
+### plot the predicted value vs true
+
+```{r predicted vs true, collapse=TRUE, tidy=TRUE}
+plot(x = cars$speed, y = cars$dist)
+lines(x = cars$speed, linearMod$fitted.values, type='l', col='blue')
+```
+
+# Introduction to parallel computation 
+
+### *foreach* package
+
+#### An easy and starndard way of parallel comuptation
+
+- Can run a for-loop task as a set of of parallel tasks 
+
+- Take care of the communication between the tasks (cores)
+
+### Getting start Example
+
+Calculate the sum of the square $$\sum_{i=1}^{10000}\sum_{j=1}^{i} j^2$$
+There is a warning saying the loop ran sequentially   
+To run the loop parallelly,  we need to register parallel backends. 
+
+```{r, tidy = TRUE, fill =TRUE, collapse=TRUE, tidy.opts=list(width.cutoff = 50)}
+system.time(foreach(i=1:10000) %do% sum((1:i)^2))[3]
+system.time(foreach(i=1:10000) %dopar% sum((1:i)^2))[3]
+```
+
+### Parallel backends
+
+```{r, tidy = TRUE, fill =TRUE, collapse=TRUE}
+registerDoParallel()
+getDoParWorkers()
+```
+
+*registerDoParallel()* is used to register cores to parallel computation 
+
+```{r, tidy = TRUE, fill =TRUE, collapse=TRUE, tidy.opts=list(width.cutoff = 50)}
+system.time(foreach(i=1:10000) %do% sum(sqrt(1:i)))[3]
+system.time(foreach(i=1:10000) %dopar% sum(sqrt(1:i)))[3]
+```
+
+### Bootstraping example
+```{r, echo=FALSE, eval=TRUE}
+x <- iris[which(iris[,5] != "setosa"), c(1,5)]
+dopar <- system.time(r <- foreach(i = 1:10000) %dopar% {
+  ind <- sample(100, 100, replace=TRUE)
+  result1 <- glm(x[ind,2]~x[ind,1],
+                 family=binomial(logit))
+  coefficients(result1)
+  })[3]
+do <- system.time(r <- foreach(i = 1:10000) %do% {
+  ind <- sample(100, 100, replace=TRUE)
+  result1 <- glm(x[ind,2]~x[ind,1],
+                 family=binomial(logit))
+  coefficients(result1)
+  })[3]
+```
+
+```{r, tidy = TRUE, fill =TRUE, collapse=TRUE, tidy.opts=list(width.cutoff = 45)}
+dim(x)
+r <- foreach(i = 1:10000) %dopar% {
+  ind <- sample(100, 100, replace=TRUE)
+  result1 <- glm(x[ind,2]~x[ind,1], family=binomial(logit))
+  coefficients(result1)
+  }
+```
+- Escaped time for using  `r getDoParWorkers()` cores is `r dopar` seconds
+- Escaped time for using single core is `r do` seconds
