@@ -59,7 +59,7 @@ generate_chi_sub <- function(pro) {
   b <- model.matrix(~.*.+0, data.frame(b)) 
   
   attributes(b) <- append(attributes(b), 
-                          list(x_dist = "PCB", 
+                          list(x_dist = "Chi", 
                                pro = pro))
   b
 }
@@ -81,6 +81,7 @@ simulation_fn <- function(n,
                           brep, 
                           nrep,
                           uncorr_method = NULL,
+                          uncorr_args = NULL,
                           interaction = 0, 
                           interaction_m = 0, 
                           seed = 0, 
@@ -113,10 +114,10 @@ simulation_fn <- function(n,
     
     # Standardized covariates
     # combined the all the attributes to b so we could plot them by the attributes
-    additional = list(main_fixed = main_fixed, 
+    additional <- list(main_fixed = main_fixed, 
                       inter_fixed = inter_fixed,
-                      x_dist = attributes(b_raw)$x_dist,
-                      pro = attributes(b_raw)$pro)
+                      x_dist = attributes(b_raw)$x_dist)
+    additional <- append(additional, c(as.list(gene_args), as.list(uncorr_args)))
     
     b <- std_fn(b = b_raw,
                 p = ncol(b_raw),
@@ -153,11 +154,10 @@ simulation_fn <- function(n,
       fit=Yang(y,b,interact = interaction_m)
       result_tmp[irep,3] <- fit$G
       result_tmp[irep,4] <- fit$RACT
-      
       # uncorrelated data 
       if(is.null(uncorr_method) == TRUE) 
         x <- uncorr_fn(b)
-      else x <- uncorr_fn(b, uncorr_method)
+      else x <- uncorr_fn(b, uncorr_method, uncorr_args)
       
       # Call the GCTA method
       fit=Yang(y,x,interact = interaction_m)

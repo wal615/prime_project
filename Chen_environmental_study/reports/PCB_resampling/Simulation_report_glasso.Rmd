@@ -1,0 +1,44 @@
+---
+title: "Simulation of PCB with resampling"
+author: "Xuelong Wang"
+date: "`r Sys.Date()`"
+output: 
+  pdf_document:
+    toc: true
+    number_sections: true
+    keep_tex: true
+    fig_width: 12
+    fig_height: 6
+header-includes:
+    - \usepackage{float,amsmath, bbm, siunitx, bm}
+    - \floatplacement{figure}{H}
+    - \newcommand{\indep}{\rotatebox[origin=c]{90}{$\models$}}
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, comment = FALSE, message = FALSE, warning = FALSE, fig.height = 10)
+```
+
+
+
+# Decorrelation using Graphical Lasso (glasso) and motivation 
+
+Based on the previous simulation results, we found that the variance estimator of proposed method is not very stable, means variance of the estimator is large when the sample proportion is small. Thus, One possible reason for that is the decorrelation procedure of the proposed method is not that accurate. It uses the SVD method to find the inverse covariance matrix, which could be too closed to the sample date to capture the true structure of the covariance matrix. Therefore, we want to try the glasso method which add penalty to the estimated inverse covariance matrix if it's in favor of the sample data.
+
+## Main Idea of glasso
+
+\[
+  
+\]
+
+# Simulation result
+
+
+
+
+
+# Conclusion
+
+# Further work 

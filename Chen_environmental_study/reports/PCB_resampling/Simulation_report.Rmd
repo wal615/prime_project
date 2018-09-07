@@ -144,10 +144,22 @@ plot_PCB_fixed_random_main
 ```
 
 ```{r main effect random random, fig.cap = "Main effect estimation with random main and random interaction"}
-
 plot_PCB_random_random_main
-
 ```
+
+
+# Decorrelation using Graphical Lasso (glasso) and motivation 
+Based on the previous simulation results, we found that the variance estimator of proposed method is not very stable, means variance of the estimator is large when the sample proportion is small. Thus, One possible reason for that is the decorrelation procedure of the proposed method is not that accurate. It uses the SVD method to find the inverse covariance matrix, which could be too closed to the sample date to capture the true structure of the covariance matrix. Therefore, we want to try the glasso method which add penalty to the estimated inverse covariance matrix if it's in favor of the sample data.
+
+## Main Idea of glasso
+
+
+
+# Simulation result
+
+
+
+
 
 # Conclusion
 
