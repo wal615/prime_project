@@ -29,15 +29,44 @@ Based on the previous simulation results, we found that the variance estimator o
 
 ## Main Idea of glasso
 
+For the N multivariate normal observations of dimension p, with mean $\mu$ and covaraince $\Sigma$. 
+
+To estimate the precision matrix, we could maximize the penalized log-likelihood,
+
 \[
-  
+  \log{|\Theta|} - tr(S\Theta) - \rho||\Theta||_1,
 \]
+
+where  
+
+- $\Theta = \Sigma^{-1}$,   
+- $||\cdot||_1$ is for $L_1$ norm - sum of all the absolute values of each elements of $\Theta$,  
+- $S$ is the empirical covariance matrix.  
+
+Note: as other lasso method, the key assumption of glasso is the sparsity of the covariance matrix $\Sigma$
 
 # Simulation result
 
+```{r load graph, include=FALSE}
+source("./PCB_total_glasso_graph.R")
+```
 
+## Simulation result of the fixed fixed 
 
+glasso
 
+```{r fixed fixed total glasso}
+for (i in 1:length(plot_PCB_fixed_fixed_total_glasso)){
+  print(plot_PCB_fixed_fixed_total_glasso[[i]])
+}
+
+```
+
+svd
+
+```{r fixed fixed total svd}
+plot_PCB_fixed_fixed_total_svd
+```
 
 # Conclusion
 
