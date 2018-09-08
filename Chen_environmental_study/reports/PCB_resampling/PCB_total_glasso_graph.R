@@ -22,7 +22,7 @@ for (i in (1:3)){
 
 ## generating graph for the fixed_fixed simuation
 load(file = "./result/PCB_resampling/simulation_result_list_fixed_fixed_total_svd")
-table_fixed_fixed <- rbindlist(result_list_fixed_fixed)
+table_fixed_fixed <- rbindlist(result_list_fixed_fixed_total_svd)
 
 main <- table_fixed_fixed[true_total != 0, -c(2,4,6)]
 plot_PCB_fixed_fixed_total_svd <- tidyr::gather(main, ends_with("total"), key = "method", value = "value") %>%
