@@ -53,19 +53,35 @@ source("./PCB_total_glasso_graph.R")
 
 ## Simulation result of the fixed fixed 
 
-glasso
+### glasso 
 
 ```{r fixed fixed total glasso}
 for (i in 1:length(plot_PCB_fixed_fixed_total_glasso)){
   print(plot_PCB_fixed_fixed_total_glasso[[i]])
 }
-
 ```
 
-svd
+### svd
 
 ```{r fixed fixed total svd}
 plot_PCB_fixed_fixed_total_svd
+```
+
+## Simulation result of the fixed random
+
+### glasso
+
+```{r fixed random total glasso}
+for (i in 1:length(plot_PCB_fixed_random_total_glasso)){
+  print(plot_PCB_fixed_random_total_glasso[[i]])
+}
+
+```
+
+### svd
+
+```{r fixed random total svd}
+plot_PCB_fixed_random_total_svd
 ```
 
 # Conclusion
