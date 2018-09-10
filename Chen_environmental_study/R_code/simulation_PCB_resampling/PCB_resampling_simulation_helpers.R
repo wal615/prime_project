@@ -36,8 +36,7 @@ generate_PCB <- function(pro) {
   b <- model.matrix(~.*.+0, data.frame(b)) 
   
   attributes(b) <- append(attributes(b), 
-                          list(x_dist = "PCB", 
-                               pro = pro))
+                          list(x_dist = "PCB"))
   b
 }
 
@@ -121,8 +120,9 @@ simulation_fn <- function(n,
     
     b <- std_fn(b = b_raw,
                 p = ncol(b_raw),
-                tran_FUN = tran_fun,
-                additional = additional)
+                tran_FUN = tran_fun)
+    b_m <- b[,1:p]
+    b_i <- b[,-(1:p)]
     
     # Generate main betas
     if(!main_fixed){
@@ -133,16 +133,16 @@ simulation_fn <- function(n,
     if(!inter_fixed){
       betai <- generate_inter(p, interaction)
     }
+    
     # Generate the signals
-    signalm <- b[,1:p]%*%betam
-    signali <- b[,-(1:p)]%*%betai[upper.tri(betai, diag = FALSE)]
+    signalm <- b_m%*%betam
+    signali <- b_i%*%betai[upper.tri(betai, diag = FALSE)]
     result_tmp[, 2]=var(signali)
     
     if(combine == TRUE){
       result_tmp[, 1]=var(signalm + signali)
     } else {
       result_tmp[, 1]=var(signalm)
-      b <- b[,1:p]
     }
     
 
@@ -151,13 +151,12 @@ simulation_fn <- function(n,
       # Generate health outcome given fixed random effects
       y=signalm+signali+rnorm(n,sd=4)
       
-      fit=Yang(y,b,interact = interaction_m)
+      fit=Yang(y,b_final,interact = interaction_m)
       result_tmp[irep,3] <- fit$G
       result_tmp[irep,4] <- fit$RACT
+      
       # uncorrelated data 
-      if(is.null(uncorr_method) == TRUE) 
-        x <- uncorr_fn(b)
-      else x <- uncorr_fn(b, uncorr_method, uncorr_args)
+      x <- uncorr_fn(b_final, uncorr_method, uncorr_args)
       
       # Call the GCTA method
       fit=Yang(y,x,interact = interaction_m)

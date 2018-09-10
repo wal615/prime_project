@@ -1,0 +1,36 @@
+---
+title: "Simulation of fixed and random effect"
+author: "Xuelong Wang"
+date: "`r Sys.Date()`"
+output: 
+  pdf_document:
+    toc: true
+    number_sections: true
+    keep_tex: true
+    fig_width: 12
+    fig_height: 6
+header-includes:
+    - \usepackage{float,amsmath, bbm, siunitx, bm}
+    - \floatplacement{figure}{H}
+    - \newcommand{\indep}{\rotatebox[origin=c]{90}{$\models$}}
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, comment = FALSE, message = FALSE, warning = FALSE, fig.height = 10)
+```
+
+# Motivation
+The total estimation results of the Chi-square simulation is promising, but when we applied the same method on the PCB data it did not show the advantage as the Chi-square. One possible reason is the limits of the sample size. 
+
+For the Chi-square simulation, we are able to generate the covariates for each iteration. However, it is not true for the PCB data. The alternative method of the random sample is to do the re-sampling on the PCB data. But when the subet proportion is too small, the performance is not that good. So it is the re-sampling procedure affect the proposed method's result. Thus, we want to conduct a similar re-sampling simulation as PCB data on simulated Chi-square data to see if there is a significant difference on the method's result.
+
+# Simulation setup
+
+All the steps are same as before, except this time we only sample the chi-square data once, and then using subset of it to fit the model.
+
+
+# Conclusion
+
+# Further work 
