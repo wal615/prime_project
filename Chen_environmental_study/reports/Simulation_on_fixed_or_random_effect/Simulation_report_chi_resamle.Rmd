@@ -30,6 +30,27 @@ For the Chi-square simulation, we are able to generate the covariates for each i
 
 All the steps are same as before, except this time we only sample the chi-square data once, and then using subset of it to fit the model.
 
+```{r load chi resampling result, include=FALSE}
+source("./chi_correlated_combined_fixed_random_graph_resample.R")
+```
+
+## fixed main and fixed interactive effect
+
+```{r fixed fixed}
+plot_chi_fixed_random_main_combine_df_1_resample
+```
+
+## fixed main and random interactive effect
+
+```{r fixed random}
+plot_chi_fixed_random_main_combine_df_1_resample
+```
+
+## random main and random interactive effect
+
+```{r random random}
+plot_chi_random_random_main_combine_df_1_resample
+```
 
 # Conclusion
 
