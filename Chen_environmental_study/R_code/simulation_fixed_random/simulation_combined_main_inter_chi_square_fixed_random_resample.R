@@ -13,7 +13,7 @@ library(doParallel)
 
 cores <- 20
 n <- 1000
-p <- 34
+p <- 6
 gene_args <- data.frame(n =n, p = p, rho = 0.6, pro = seq(0.1,0.9,0.1), chi_coef = 1)
 gene_args <- gene_args %>% split(x = ., f = seq(nrow(gene_args))) # generate a list from each row of a dataframe
 
@@ -34,7 +34,7 @@ result_list_fixed_fixed <- mapply(FUN = simulation_fn,
                                                   interaction = 1,
                                                   interaction_m = 0),
                                   SIMPLIFY = FALSE)
-save(result_list_fixed_fixed, file = "./result/simulation_fixed_random/chi_square/simulation_result_list_fixed_fixed_combine_df_1_resample")
+save(result_list_fixed_fixed, file = "./result/simulation_fixed_random/chi_square/simulation_result_list_fixed_fixed_combine_df_1_resample_p_6")
 
 result_list_fixed_random <- mapply(FUN = simulation_fn,
                                   gene_args = gene_args,
@@ -53,7 +53,7 @@ result_list_fixed_random <- mapply(FUN = simulation_fn,
                                                   interaction = 1,
                                                   interaction_m = 0),
                                   SIMPLIFY = FALSE)
-save(result_list_fixed_random, file = "./result/simulation_fixed_random/chi_square/simulation_result_list_fixed_random_combine_df_1_resample")
+save(result_list_fixed_random, file = "./result/simulation_fixed_random/chi_square/simulation_result_list_fixed_random_combine_df_1_resample_p_6")
 
 
 result_list_random_random <- mapply(FUN = simulation_fn,
@@ -73,4 +73,4 @@ result_list_random_random <- mapply(FUN = simulation_fn,
                                                   interaction = 1,
                                                   interaction_m = 0),
                                   SIMPLIFY = FALSE)
-save(result_list_random_random, file = "./result/simulation_fixed_random/chi_square/simulation_result_list_random_random_combine_df_1_resample")
+save(result_list_random_random, file = "./result/simulation_fixed_random/chi_square/simulation_result_list_random_random_combine_df_1_resample_p_6")
