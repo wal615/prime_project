@@ -52,19 +52,19 @@ plot_chi_fixed_random_main_combine_df_1_resample
 plot_chi_random_random_main_combine_df_1_resample
 ```
 
-## fixed main and fixed interactive effect
+## fixed main and fixed interactive effect with p = 6
 
 ```{r fixed fixed p 6}
 plot_chi_fixed_random_main_combine_df_1_resample_p_6
 ```
 
-## fixed main and random interactive effect
+## fixed main and random interactive effect with p = 6
 
 ```{r fixed random p 6}
 plot_chi_fixed_random_main_combine_df_1_resample_p_6
 ```
 
-## random main and random interactive effect
+## random main and random interactive effect with p = 6
 
 ```{r random random p 6}
 plot_chi_random_random_main_combine_df_1_resample_p_6
