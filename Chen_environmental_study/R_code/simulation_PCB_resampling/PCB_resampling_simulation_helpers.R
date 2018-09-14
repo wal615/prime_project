@@ -25,10 +25,10 @@ generate_inter <- function(p, interaction) {
 ##################################################################################
 ## subset PCB data
 ##################################################################################
-generate_PCB <- function(pro) {
+generate_PCB <- function(pro, p) {
   # read the PCB data
   a <- read.sas7bdat("~/dev/projects/Chen_environmental_study/R_code/pcbs1000nomiss.sas7bdat")
-  b <- data.matrix(a[,2:35], rownames.force = NA)
+  b <- data.matrix(a[,2:(p+1)], rownames.force = NA)
   n <- nrow(b)
   index <- sample(1:n, round(pro*n,0), replace = FALSE)
   b <- b[index,]
@@ -114,8 +114,8 @@ simulation_fn <- function(n,
     # Standardized covariates
     # combined the all the attributes to b so we could plot them by the attributes
     additional <- list(main_fixed = main_fixed, 
-                      inter_fixed = inter_fixed,
-                      x_dist = attributes(b_raw)$x_dist)
+                       inter_fixed = inter_fixed,
+                       x_dist = attributes(b_raw)$x_dist)
     additional <- append(additional, c(as.list(gene_args), as.list(uncorr_args)))
     
     b <- std_fn(b = b_raw,
@@ -141,15 +141,17 @@ simulation_fn <- function(n,
     
     if(combine == TRUE){
       result_tmp[, 1]=var(signalm + signali)
+      b_final <- cbind(b_m, b_i)
     } else {
       result_tmp[, 1]=var(signalm)
+      b_final <- b_m
     }
     
-
+    
     # Estimating total effects with iterations
     for(irep in 1:nrep){
       # Generate health outcome given fixed random effects
-      y=signalm+signali+rnorm(n,sd=4)
+      y=signalm+signali+rnorm(length(signalm),sd=4)
       
       fit=Yang(y,b_final,interact = interaction_m)
       result_tmp[irep,3] <- fit$G
@@ -164,7 +166,7 @@ simulation_fn <- function(n,
       result_tmp[irep,6] <- fit$RACT
     }
     
-
+    
     # save the result
     result_final <- rbind(apply(result_tmp, 2, mean), apply(result_tmp, 2,sd))
     result_final <- data.frame(result_final, additional) ## adding attributes as plot categories
