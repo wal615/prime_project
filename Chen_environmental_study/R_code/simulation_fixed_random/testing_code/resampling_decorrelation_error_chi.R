@@ -40,7 +40,7 @@ est_cov_chi <- function(n, p, rho, chi_coef = 1) {
 
 ## estimate the true covariance correlation matrix 
 
-n <- 1000
+n <- 100
 p <- 34
 rho <- 0.6
 registerDoParallel(20)
@@ -50,7 +50,7 @@ rs <- foreach(i = 1:10000) %dopar% {
 }
 
 # it seems that the correlation is also sqaure for the chi-square distribution
-est_cov <- Reduce("+", rs)/1000
+est_cov <- Reduce("+", rs)/10000
 
 ## testing the estimation of cov of different size of sub-sampling size 
 

@@ -1,5 +1,5 @@
 ---
-title: "Simulation of fixed and random effect"
+title: "Simulation of resampling method on chi-square distribution"
 author: "Xuelong Wang"
 date: "`r Sys.Date()`"
 output: 
@@ -33,42 +33,66 @@ All the steps are same as before, except this time we only sample the chi-square
 ```{r load chi resampling result, include=FALSE}
 source("./chi_correlated_combined_fixed_random_graph_resample.R")
 ```
+## p = 34 
 
-## fixed main and fixed interactive effect 
+### fixed main and fixed interactive effect 
 
 ```{r fixed fixed}
 plot_chi_fixed_random_main_combine_df_1_resample
 ```
 
-## fixed main and random interactive effect 
+### fixed main and random interactive effect 
 
 ```{r fixed random}
 plot_chi_fixed_random_main_combine_df_1_resample
 ```
 
-## random main and random interactive effect
+### random main and random interactive effect
 
 ```{r random random}
 plot_chi_random_random_main_combine_df_1_resample
 ```
 
-## fixed main and fixed interactive effect with p = 6
+## p = 34
+
+### fixed main and fixed interactive effect with p = 6
 
 ```{r fixed fixed p 6}
 plot_chi_fixed_random_main_combine_df_1_resample_p_6
 ```
 
-## fixed main and random interactive effect with p = 6
+### fixed main and random interactive effect with p = 6
 
 ```{r fixed random p 6}
 plot_chi_fixed_random_main_combine_df_1_resample_p_6
 ```
 
-## random main and random interactive effect with p = 6
+### random main and random interactive effect with p = 6
 
 ```{r random random p 6}
 plot_chi_random_random_main_combine_df_1_resample_p_6
 ```
+
+## only decorrelated main effect
+
+### fixed main and fixed interactive effect 
+
+```{r fixed fixed decorr main}
+plot_chi_fixed_random_main_combine_df_1_resample_decorr_main
+```
+
+### fixed main and random interactive effect 
+
+```{r fixed random decorr main}
+plot_chi_fixed_random_main_combine_df_1_resample_decorr_main
+```
+
+### random main and random interactive effect
+
+```{r random random decorr main}
+plot_chi_random_random_main_combine_df_1_resample_decorr_main
+```
+
 
 
 # Conclusion

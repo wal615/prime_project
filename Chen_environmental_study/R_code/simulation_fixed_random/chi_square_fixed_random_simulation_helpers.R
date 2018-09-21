@@ -86,7 +86,7 @@ generate_chi_resample <- function(n, p, rho, chi_coef = 1, pro) {
 
 simulation_fn <- function(n,
                           p,
-                          tran_fun,
+                          tran_fun = null_tran,
                           combine = FALSE,
                           main_fixed = TRUE,
                           inter_fixed = TRUE,

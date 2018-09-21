@@ -24,7 +24,7 @@
 \usepackage[margin=1in]{geometry}
 \usepackage{hyperref}
 \hypersetup{unicode=true,
-            pdftitle={Simulation of fixed and random effect},
+            pdftitle={Simulation of resampling method on chi-square distribution},
             pdfauthor={Xuelong Wang},
             pdfborder={0 0 0},
             breaklinks=true}
@@ -74,7 +74,7 @@
 
 \setlength{\droptitle}{-2em}
 
-  \title{Simulation of fixed and random effect}
+  \title{Simulation of resampling method on chi-square distribution}
     \pretitle{\vspace{\droptitle}\centering\huge}
   \posttitle{\par}
     \author{Xuelong Wang}
@@ -82,7 +82,7 @@
   \postauthor{\par}
       \predate{\centering\large\emph}
   \postdate{\par}
-    \date{2018-09-13}
+    \date{2018-09-20}
 
 \usepackage{float,amsmath, bbm, siunitx, bm}
 \floatplacement{figure}{H}
@@ -116,35 +116,57 @@ significant difference on the method's result.
 All the steps are same as before, except this time we only sample the
 chi-square data once, and then using subset of it to fit the model.
 
-\subsection{fixed main and fixed interactive
+\subsection{p = 34}\label{p-34}
+
+\subsubsection{fixed main and fixed interactive
 effect}\label{fixed-main-and-fixed-interactive-effect}
 
 \includegraphics{Simulation_report_chi_resamle_files/figure-latex/fixed fixed-1.pdf}
 
-\subsection{fixed main and random interactive
+\subsubsection{fixed main and random interactive
 effect}\label{fixed-main-and-random-interactive-effect}
 
 \includegraphics{Simulation_report_chi_resamle_files/figure-latex/fixed random-1.pdf}
 
-\subsection{random main and random interactive
+\subsubsection{random main and random interactive
 effect}\label{random-main-and-random-interactive-effect}
 
 \includegraphics{Simulation_report_chi_resamle_files/figure-latex/random random-1.pdf}
 
-\subsection{fixed main and fixed interactive effect with p =
+\subsection{p = 34}\label{p-34-1}
+
+\subsubsection{fixed main and fixed interactive effect with p =
 6}\label{fixed-main-and-fixed-interactive-effect-with-p-6}
 
 \includegraphics{Simulation_report_chi_resamle_files/figure-latex/fixed fixed p 6-1.pdf}
 
-\subsection{fixed main and random interactive effect with p =
+\subsubsection{fixed main and random interactive effect with p =
 6}\label{fixed-main-and-random-interactive-effect-with-p-6}
 
 \includegraphics{Simulation_report_chi_resamle_files/figure-latex/fixed random p 6-1.pdf}
 
-\subsection{random main and random interactive effect with p =
+\subsubsection{random main and random interactive effect with p =
 6}\label{random-main-and-random-interactive-effect-with-p-6}
 
 \includegraphics{Simulation_report_chi_resamle_files/figure-latex/random random p 6-1.pdf}
+
+\subsection{only decorrelated main
+effect}\label{only-decorrelated-main-effect}
+
+\subsubsection{fixed main and fixed interactive
+effect}\label{fixed-main-and-fixed-interactive-effect-1}
+
+\includegraphics{Simulation_report_chi_resamle_files/figure-latex/fixed fixed decorr main-1.pdf}
+
+\subsubsection{fixed main and random interactive
+effect}\label{fixed-main-and-random-interactive-effect-1}
+
+\includegraphics{Simulation_report_chi_resamle_files/figure-latex/fixed random decorr main-1.pdf}
+
+\subsubsection{random main and random interactive
+effect}\label{random-main-and-random-interactive-effect-1}
+
+\includegraphics{Simulation_report_chi_resamle_files/figure-latex/random random decorr main-1.pdf}
 
 \section{Conclusion}\label{conclusion}
 

@@ -171,6 +171,20 @@ categorized_tran <- function(x, by) {
     as.numeric(.)
 }
 
+
+##################################################################################
+## inverse and square-root
+##################################################################################
+
+invsqrt <- function(Sigma, tol = 1e-10) {
+  ## get rid of zero egienvalues
+  Seign <- eigen(Sigma)
+  eign_value <- Seign$values
+  eign_value_rec_sqrt <- if_else(eign_value > tol, 1/sqrt(eign_value), 0)
+  Seign$vectors %*% diag(eign_value_rec_sqrt) %*% t(Seign$vectors)
+}
+
+
 ##################################################################################
 ## uncorrelated function
 ##################################################################################
@@ -184,19 +198,36 @@ uncorr_fn <- function(input_data, uncorr_method = SVD_method , uncorr_args = NUL
   res$uncorr_data
 }
 
-SVD_method <- function(input_data) {
-  Sigma=cov(input_data,input_data)
-  # Compute Sigma^{-1/2}
-  Seign=eigen(Sigma)
+##################################################################################
+## SVD method of decorrelation method
+##################################################################################
+
+SVD_method <- function(input_data, main = FALSE, inter = FALSE) {
+  # calculate the covariance matrix
+  I_m <- diag(p)
+  I_i <- diag(ncol(input_data) - p)
   
-  ## get rid of zero egienvalues
-  eign_value <- Seign$values
-  eign_value_rec_sqrt <- if_else(eign_value > 1e-15, 1/sqrt(eign_value), 0)
+  if(main == TRUE) # only decorrelating main effect
+    I_m <- cov(input_data[,1:p])
   
-  Sinvsqrt=Seign$vectors %*% diag(eign_value_rec_sqrt) %*% t(Seign$vectors)
+  if(inter == TRUE) # only decorrelating inter effect
+    I_i <- cov(input_data[,-(1:p)])
+  
+  if(any(main, inter) == TRUE)
+    Sinvsqrt <- magic::adiag(invsqrt(I_m), invsqrt(I_i))
+  else {
+    Sigma <- cov(input_data,input_data)
+    Sinvsqrt <- invsqrt(Sigma)
+  } 
+    
+  # decorrelating the input_data
   uncorr_data=input_data%*%Sinvsqrt  
   list(uncorr_data = uncorr_data)
 }
+
+##################################################################################
+## GLASSO method of decorrelation method
+##################################################################################
 
 GLASSO_method <- function(input_data, rho){
   Sigma=cov(input_data, input_data)
