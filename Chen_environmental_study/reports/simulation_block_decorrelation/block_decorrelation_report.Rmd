@@ -22,4 +22,104 @@ knitr::opts_chunk$set(echo = FALSE, comment = FALSE, message = FALSE, warning = 
 ```
 
 # Motivation
-Based on the previous resampling simulation, 
+We used resampling method to evaluate the proposed method performance. However, there is an drawback of this resampling method That is the decorrelation step is highly affected the sample size, especially when n < p. More specifically, when re-sampling size is too small, the estimated inverse covariance matrix is way off the target. Thus, that will affect the final result of the proposed method. 
+
+On possible solution is to modify the process of estimation of the covariance matrix. For instance, we could only decorrelate part of the covariate matrix i.e. the main effect part or the interactive effect part. we call it decorrelation by block. this process eventually will reduce the number of parameters we are doing to estimate of the covaraince matrix. 
+
+# Decorrelation by Block
+
+Let $X_t$ be the total covariate,
+
+\[
+  X_t = \begin{bmatrix}
+          X_m \\
+          X_i
+        \end{bmatrix}
+\]
+
+Then the covariance matrix of $X_t$ is 
+
+\[
+  Var(X_t) = \begin{bmatrix}
+              Var(X_m) & Cov(X_m, X_i) \\
+              Cov(X_i, X_m) & Var(X_i) 
+             \end{bmatrix}.
+\]
+
+Let A be the decorrelation matrix, we have 
+
+\[
+  A = \begin{bmatrix}
+       A_1 & 0 \\
+       0 & A_2 
+      \end{bmatrix},
+\]
+where $A_1 = \Sigma_{x_m}^{-1/2}$,  and $A_2 = \Sigma_{x_i}^{-1/2}$
+
+To decorrelate a vector, we could left multiple $A$ and $X_t$, 
+
+\[
+  AX_t = \begin{bmatrix}
+           A_1 & 0 \\
+           0 & A_2 
+          \end{bmatrix} * \begin{bmatrix}
+                            X_m \\
+                            X_i
+                          \end{bmatrix} = \begin{bmatrix}
+                                            A_1X_m \\
+                                            A_2X_i
+                                          \end{bmatrix}.
+\]
+
+The covariance matrix of $AX_t$ is 
+
+\[
+  Var(X_t) = Var\left(\begin{bmatrix}
+              A_1X_m \\
+              A_2X_i
+            \end{bmatrix}\right) = \begin{bmatrix}
+                                     A_1\Sigma_{x_m}A_1^T & A_1Cov(X_m, X_i)A_2^T \\
+                                     A_2Cov(X_i, X_m)A_1^2 & A_2\Sigma_{x_i}A_2^T 
+                                    \end{bmatrix} = \begin{bmatrix}
+                                                     I_m & A_1Cov(X_m, X_i)A_2^T \\
+                                                     A_2Cov(X_i, X_m)A_1^2 & I_i
+                                                    \end{bmatrix}.
+\]
+
+We could choose to only decorrelate  the main effect or interactive effect or both. The advantage is we don't care about the off diagonal values, which will reduce the sensitivity of the process on the sample size. 
+
+# Simulation result
+
+## Chi-square with only main effects decorrelated
+
+```{r load chi-square graph}
+source("./chi_square_graph.R")
+```
+
+### fixed main and fixed interactive effect
+
+```{r fixed fixed only main}
+plot_chi_fixed_fixed_main_combine_df_1_only_decorr_main
+```
+
+### fixed main and random interactive effect
+
+```{r fixed random only main}
+plot_chi_fixed_random_main_combine_df_1_only_decorr_main
+```
+
+### random main and random interactive effect
+
+```{r random random only main}
+plot_chi_random_random_main_combine_df_1_only_decorr_main
+```
+
+
+## Chi-square with both main effects and inter effects decorrelated
+
+
+### fixed main and fixed interactive effect
+
+```{r fixed fixed both main and inter}
+plot_chi_fixed_fixed_main_combine_df_1_only_decorr_main_inter
+```

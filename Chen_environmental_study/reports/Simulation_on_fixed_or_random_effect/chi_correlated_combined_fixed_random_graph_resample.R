@@ -92,7 +92,7 @@ plot_chi_fixed_fixed_main_combine_df_1_resample_decorr_main <- tidyr::gather(mai
 
 
 ## generating graph for the fixed_random simuation
-load(file = "./result/simulation_fixed_random/chi_square/simulation_result_list_fixed_random_combine_df_1_resample")
+load(file = "./result/simulation_fixed_random/chi_square/simulation_result_list_fixed_random_combine_df_1_resample_decorr_main")
 table_fixed_random <- rbindlist(result_list_fixed_random)
 
 main <- table_fixed_random[true_total != 0, -c(2,4,6)]
@@ -103,7 +103,7 @@ plot_chi_fixed_random_main_combine_df_1_resample_decorr_main <- tidyr::gather(ma
   facet_wrap(facets = vars(main_fixed, inter_fixed, pro, rho), ncol =3 , scales = "free", labeller  = "label_both")
 
 ## generating graph for the random_random simuation
-load(file = "./result/simulation_fixed_random/chi_square/simulation_result_list_random_random_combine_df_1_resample")
+load(file = "./result/simulation_fixed_random/chi_square/simulation_result_list_random_random_combine_df_1_resample_decorr_main")
 table_random_random <- rbindlist(result_list_random_random)
 
 main <- table_random_random[true_total != 0, -c(2,4,6)]
