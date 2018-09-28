@@ -1,6 +1,6 @@
 library(sas7bdat)
 library(SASxport)
-library(tidyverse)
+library(ggplot2)
 
 setwd("~/dev/projects/Chen_environmental_study/R_code/data/")
 # pcb_99_04 <- read.sas7bdat("./pops_abc.sas7bdat")
@@ -47,7 +47,7 @@ pcb_Chen <- read.sas7bdat("../pcbs1000nomiss.sas7bdat")
 ##################################
 
 # select overlap columns 
-colnames(pcb_05_06) <- colnames(pcb_05_06) %>% gsub(pattern = "LBC", replacement = "LBX", x =., fixed = TRUE)
+colnames(pcb_05_06) <- gsub(pattern = "LBC", replacement = "LBX", x =colnames(pcb_05_06), fixed = TRUE)
 colnames(pcb_05_06)[1] <- colnames(pcb_Chen)[1]
 
 col_overlap <- match(colnames(pcb_Chen), colnames(pcb_05_06))
@@ -63,11 +63,11 @@ dim(pcb_05_06_no_missing)
 
 # compare the boxplot for each column
 
-pcb_Chen_gather <- tidyr::gather(pcb_Chen[,-1], key = "variable_names", value = "values") %>% 
-  data.frame(., dataset = "Chen")
+pcb_Chen_gather <- tidyr::gather(pcb_Chen[,-1], key = "variable_names", value = "values")
+pcb_Chen_gather <-  data.frame(pcb_Chen_gather, dataset = "Chen")
 
-pcb_05_06_no_missing_gather <- tidyr::gather(pcb_05_06_no_missing[,-1], key = "variable_names", value = "values") %>% 
-  data.frame(., dataset = "pcb_05_06")
+pcb_05_06_no_missing_gather <- tidyr::gather(pcb_05_06_no_missing[,-1], key = "variable_names", value = "values")
+pcb_05_06_no_missing_gather <-  data.frame(pcb_05_06_no_missing_gather, dataset = "pcb_05_06")
 
 compare_Chen_pcb_05_06 <- as.list(numeric(4))
 

@@ -33,22 +33,22 @@ source("~/dev/projects/Chen_environmental_study/R_code/data/data_validation.R")
 
 ## sample size
 
-PCB_2000 `r nrow(pcb_chen)`
+PCB_2000 `r nrow(pcb_Chen)`
 PCB_2005 `r nrow(pcb_05_06_no_missing)`
 
 ## box-plot comparison for each covairates
-```{page 1}
+```{r page 1}
 compare_Chen_pcb_05_06[[1]]
 ```
 
-```{page 2}
+```{r page 2}
 compare_Chen_pcb_05_06[[2]]
 ```
 
-```{page 2}
-compare_Chen_pcb_05_06[[2]]
+```{r page 3}
+compare_Chen_pcb_05_06[[3]]
 ```
 
-```{page 2}
-compare_Chen_pcb_05_06[[2]]
+```{r page 4}
+compare_Chen_pcb_05_06[[4]]
 ```
