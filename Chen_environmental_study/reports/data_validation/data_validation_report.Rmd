@@ -1,0 +1,54 @@
+---
+title: "PCB data validation (before 2004 and after 2004)"
+author: "Xuelong Wang"
+date: "`r Sys.Date()`"
+output: 
+  pdf_document:
+    toc: true
+    number_sections: true
+    keep_tex: true
+    fig_width: 12
+    fig_height: 6
+header-includes:
+    - \usepackage{float,amsmath, bbm, siunitx, bm}
+    - \floatplacement{figure}{H}
+    - \newcommand{\indep}{\rotatebox[origin=c]{90}{$\models$}}
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, comment = FALSE, message = FALSE, warning = FALSE, fig.height = 10)
+```
+
+# Motivation
+To get a better model performance evaluation of the proposed method, we need make sure that the sample size $n$ is greater than the combined covaraites(main and interaction) $p$. 
+Therefore, we want to add more observations to our simuation dataset. But the format of the PCB data has changed a little after 2004 in the nhanes database. So we need to run some basic data validation steps to make sure that we can combine those data from different years together.
+
+```{r loading the graph}
+source("~/dev/projects/Chen_environmental_study/R_code/data/data_validation.R")
+```
+
+# Comparison of the 2000 and 2005 PCB data
+
+## sample size
+
+PCB_2000 `r nrow(pcb_chen)`
+PCB_2005 `r nrow(pcb_05_06_no_missing)`
+
+## box-plot comparison for each covairates
+```{page 1}
+compare_Chen_pcb_05_06[[1]]
+```
+
+```{page 2}
+compare_Chen_pcb_05_06[[2]]
+```
+
+```{page 2}
+compare_Chen_pcb_05_06[[2]]
+```
+
+```{page 2}
+compare_Chen_pcb_05_06[[2]]
+```
