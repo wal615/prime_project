@@ -58,6 +58,20 @@ plot_PCB_fixed_fixed_total_p_6 <- tidyr::gather(main, ends_with("total"), key = 
   ggtitle("Total effect with fixed main and fixed interactive") +
   theme(plot.title = element_text(hjust = 0.5))
 
+## generating graph for the fixed_fixed simuation p_33 99_04
+load(file = "./result/PCB_resampling/simulation_result_list_fixed_fixed_p_33_99_04")
+table_fixed_fixed <- rbindlist(result_list_fixed_fixed)
+
+main <- table_fixed_fixed[true_total != 0, -c(2,4,6)]
+plot_PCB_fixed_fixed_total_p_33_99_04 <- tidyr::gather(main, ends_with("total"), key = "method", value = "value") %>%
+  ggplot(., aes(x = method, y = value, fill = method)) +
+  geom_violin(alpha = 0.2) +
+  geom_boxplot(alpha = 0.7) +
+  scale_y_continuous(trans='log10') +
+  facet_wrap(facets = vars(main_fixed, inter_fixed, pro), ncol =3 , scales = "free", labeller  = "label_both")+
+  ggtitle("Total effect with fixed main and fixed interactive") +
+  theme(plot.title = element_text(hjust = 0.5))
+
 #####################################################################################################
 
 ## fixed random
@@ -116,6 +130,20 @@ plot_PCB_fixed_random_total_p_6 <- tidyr::gather(main, ends_with("total"), key =
   ggtitle("Total effect with fixed main and random interactive") +
   theme(plot.title = element_text(hjust = 0.5))
 
+## generating graph for the fixed_random simuation p_33 99_04
+load(file = "./result/PCB_resampling/simulation_result_list_fixed_random_p_33_99_04")
+table_fixed_random <- rbindlist(result_list_fixed_random)
+
+main <- table_fixed_random[true_total != 0, -c(2,4,6)]
+plot_PCB_fixed_random_total_p_33_99_04 <- tidyr::gather(main, ends_with("total"), key = "method", value = "value") %>%
+  ggplot(., aes(x = method, y = value, fill = method)) +
+  geom_violin(alpha = 0.2) +
+  geom_boxplot(alpha = 0.7) +
+  scale_y_continuous(trans='log10') +
+  facet_wrap(facets = vars(main_fixed, inter_fixed, pro), ncol =3 , scales = "free", labeller  = "label_both") +
+  ggtitle("Total effect with fixed main and random interactive") +
+  theme(plot.title = element_text(hjust = 0.5))
+
 #################################################################################################################################
 
 ### random random
@@ -166,6 +194,20 @@ table_random_random <- rbindlist(result_list_random_random)
 
 main <- table_random_random[true_total != 0, -c(2,4,6)]
 plot_PCB_random_random_total_p_6 <- tidyr::gather(main, ends_with("total"), key = "method", value = "value") %>%
+  ggplot(., aes(x = method, y = value, fill = method)) +
+  geom_violin(alpha = 0.2) +
+  geom_boxplot(alpha = 0.7) +
+  scale_y_continuous(trans='log10') +
+  facet_wrap(facets = vars(main_fixed, inter_fixed, pro), ncol =3 , scales = "free", labeller  = "label_both") +
+  ggtitle("Total effect with fixed random and random interactive") +
+  theme(plot.title = element_text(hjust = 0.5))
+
+## generating graph for the random_random simuation p_33 99_04
+load(file = "./result/PCB_resampling/simulation_result_list_random_random_p_33_99_04")
+table_random_random <- rbindlist(result_list_random_random)
+
+main <- table_random_random[true_total != 0, -c(2,4,6)]
+plot_PCB_random_random_total_p_33_99_04 <- tidyr::gather(main, ends_with("total"), key = "method", value = "value") %>%
   ggplot(., aes(x = method, y = value, fill = method)) +
   geom_violin(alpha = 0.2) +
   geom_boxplot(alpha = 0.7) +

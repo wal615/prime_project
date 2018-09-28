@@ -126,6 +126,30 @@ plot_PCB_random_random_total_p_6
 
 ```
 
+
+\newpage
+
+## Total effect estimation with p = 33 combined PCB data from 99 to 04
+
+
+```{r Total effect fixed fixed 33, fig.cap = "Total effect estimation with fixed main and fixed interaction"}
+
+plot_PCB_fixed_fixed_total_p_33_99_04
+
+```
+
+```{r Total effect fixed random 33, fig.cap = "Total effect estimation with fixed main and random interaction"}
+
+plot_PCB_fixed_random_total_p_33_99_04
+
+```
+
+```{r Total effect random random 33, fig.cap = "Total effect estimation with random main and random interaction"}
+
+plot_PCB_random_random_total_p_33_99_04
+
+```
+
 \newpage 
 
 ## Main effect estimation (without interaction term in the model)

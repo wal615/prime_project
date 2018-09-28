@@ -9,11 +9,11 @@ library(foreach)
 library(doRNG)
 library(doParallel)
 
-
+n_total <- 1665
 cores <- 15
-p <- 6
+p <- 33
 pro <- seq(0.1,0.9,0.1)
-n <- round(1000*pro, 0)
+n <- round(n_total*pro, 0)
 combine <- TRUE
 gene_args <- data.frame(pro = pro, p = p)
 gene_args <- gene_args %>% split(x = ., f = seq(nrow(gene_args))) # generate a list from each row of a dataframe
@@ -35,7 +35,7 @@ result_list_fixed_fixed <- mapply(FUN = simulation_fn,
                                                   interaction = 1,
                                                   interaction_m = 0),
                                   SIMPLIFY = FALSE)
-save(result_list_fixed_fixed, file = "./result/PCB_resampling/simulation_result_list_fixed_fixed_p_6")
+save(result_list_fixed_fixed, file = "./result/PCB_resampling/simulation_result_list_fixed_fixed_p_33_99_04")
 
 
 result_list_fixed_random <- mapply(FUN = simulation_fn,
@@ -55,7 +55,7 @@ result_list_fixed_random <- mapply(FUN = simulation_fn,
                                                   interaction = 1,
                                                   interaction_m = 0),
                                   SIMPLIFY = FALSE)
-save(result_list_fixed_random, file = "./result/PCB_resampling/simulation_result_list_fixed_random_p_6")
+save(result_list_fixed_random, file = "./result/PCB_resampling/simulation_result_list_fixed_random_p_33_99_04")
 
 result_list_random_random <- mapply(FUN = simulation_fn,
                                   gene_args = gene_args,
@@ -74,4 +74,4 @@ result_list_random_random <- mapply(FUN = simulation_fn,
                                                   interaction = 1,
                                                   interaction_m = 0),
                                   SIMPLIFY = FALSE)
-save(result_list_random_random, file = "./result/PCB_resampling/simulation_result_list_random_random_p_6")
+save(result_list_random_random, file = "./result/PCB_resampling/simulation_result_list_random_random_p_33_99_04")
