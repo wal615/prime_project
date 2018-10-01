@@ -176,7 +176,7 @@ categorized_tran <- function(x, by) {
 ## inverse and square-root
 ##################################################################################
 
-invsqrt <- function(Sigma, tol = 1e-10) {
+invsqrt <- function(Sigma, tol = 1e-15) {
   ## get rid of zero egienvalues
   Seign <- eigen(Sigma)
   eign_value <- Seign$values
