@@ -27,9 +27,10 @@ generate_inter <- function(p, interaction) {
 ##################################################################################
 generate_PCB <- function(pro, p) {
   # read the PCB data
-  a <- read.sas7bdat("~/dev/projects/Chen_environmental_study/R_code/pcbs1000nomiss.sas7bdat")
-  # a <- read.csv("~/dev/projects/Chen_environmental_study/R_code/data/pcb_99_04_no_missing.csv")
-  b <- data.matrix(a[,2:(p+1)], rownames.force = NA)
+  # a <- read.sas7bdat("~/dev/projects/Chen_environmental_study/R_code/pcbs1000nomiss.sas7bdat")
+  # b <- data.matrix(a[,2:(p+1)], rownames.force = NA)
+  a <- read.csv("~/dev/projects/Chen_environmental_study/R_code/data/pcb_99_13_no_missing.csv")
+  b <- data.matrix(a[,1:p], rownames.force = NA)
   n <- nrow(b)
   index <- sample(1:n, round(pro*n,0), replace = FALSE)
   b <- b[index,]
