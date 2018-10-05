@@ -1,0 +1,144 @@
+---
+title: "Decorrelation methods and their effects on proposed method"
+author: "Xuelong Wang"
+date: "`r Sys.Date()`"
+output: 
+  pdf_document:
+    toc: true
+    number_sections: true
+    keep_tex: true
+    fig_width: 12
+    fig_height: 6
+header-includes:
+    - \usepackage{float,amsmath, bbm, siunitx, bm}
+    - \floatplacement{figure}{H}
+    - \newcommand{\indep}{\rotatebox[origin=c]{90}{$\models$}}
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, comment = FALSE, message = FALSE, warning = FALSE, fig.height = 10)
+library(MASS)
+library(tidyverse)
+source("../../R_code/Yang_REML.R")
+```
+
+# Motivation
+Based on the previous simulation result, we found that the decorrelation step has a big influence on the final performance of the proposed method. More sepcifically, when the $n<p$ is happening then we known that the sample covariance matrix $\Sigma_{X}$ is not full rank. Therefore, $\Sigma^{-1}_X$, the inverse of  $\Sigma_{X}$, doesn't exist. So we could calculate the general inverse of the covariance matrix $\Sigma_{X}$. In such situation, I just adapted one of commonly used g-inverse -- the moore penrose inverse $\Sigma^{+}_X$ during the decorrelation procedure. But the result is not very well compared with the original method. Thus, the following is trying to discuss the reason of why this is not working. 
+
+# SVD decorrelation procedure
+
+\[
+  Var(X) = \Sigma_X = U\Lambda V^T,
+\]
+
+- $X$ is the random vector with dim as $p \times 1$,  
+- $\Sigma_X$ is $p \times p$ symmtery matrix,  
+- $U = V$ are orthogonal matrix and each column is the eigenvector  
+- $\Lambda$ is a diagonal matrix with each diagonal element as the eigenvalue.   
+
+## Assume the $\Sigma_X$ is full rank
+To decorreate the X, we could just take the reciprocal of each square root of eigenvalue as following. 
+
+\[
+  \Sigma^{-1/2}_X = U\Lambda^{-1/2}U^T,
+\]
+where $\Lambda^{-1/2} = \begin{bmatrix}
+                        e_1^{-1/2} & \dots & 0 \\
+                        \vdots & \ddots & \vdots \\
+                        0 &  \dots  & e_p^{-1/2}
+                        \end{bmatrix}$
+
+So that after transformation the $\Sigma^{-1/2}_X X$ has identity covariance matrix as following,
+
+\[
+  Var(\Sigma^{-1/2}_X X) = \Sigma^{-1/2}_X \Sigma_X\Sigma^{-1/2}_X = U\Lambda^{-1/2}U^T U\Lambda^{-1}U^T U\Lambda^{-1/2}U^T = I_p.
+\]
+
+## Assume the $\Sigma_X$ is not full rank
+
+\[
+  Var(X) = \Sigma_X = U\Lambda V^T =
+                        \begin{bmatrix}
+                         U_1 & U_2\\
+                        \end{bmatrix}
+                        \begin{bmatrix}
+                        \Lambda_1 & 0\\
+                        0 & 0
+                        \end{bmatrix}
+                        \begin{bmatrix}
+                        U_1^T \\
+                        U_2^T
+                        \end{bmatrix} = U_1\Lambda_1U_1^T,
+\]
+- $U_1$ is a $p \times r$ matrix with r < p and in most of case r = n the sample size.
+
+Then after applying the same procedure we get following, 
+
+\[
+  \Sigma^{-1/2}_X = U_1\Lambda_1^{-1/2}U_1^T,
+\]
+Note that in this case, I'm using Moore Penrose inverse. 
+
+After transformation the X we have, 
+\[
+  Var(\Sigma^{-1/2}_X X) = \Sigma^{-1/2}_X \Sigma_X\Sigma^{-1/2}_X = U_1\Lambda^{-1/2}_1U^T_1 U_1\Lambda^{-1}_1U^T_1 U_1\Lambda^{-1/2}_1U^T_1 = U_1U_1^T,  
+\]
+Note that by the property of the U we have 
+\[
+  U_1U_1^T + U_2U_2^T = I_p \\
+  (U_1U_1^T)^T U_1U_1^T = U_1U_1^T,
+\]
+Besides, $U_1U_1^T$ and $U_2U_2^T$ are indempotent and $rank(U_2U_2^T) + rank(U_1U_1^T) = p$.  
+
+So if the X is not full rank we cannot decorrelation the covariance matrix to an identity matrix.
+
+## Simulation stduy  
+
+### Simulation 1
+
+```{r, collapse=TRUE, tidy=TRUE, echo=TRUE}
+# How the singular sample covariance affect the SVD decorrelation result
+set.seed(123)
+p <- 200
+n <- 200
+Sig <- matrix(rep(0.5, 200*200), ncol = 200)
+diag(Sig) <- 1
+x_total <- mvrnorm(n, numeric(p), Sigma = Sig)
+
+x_100 <- x_total[1:100,]
+Est_sqrt_ins_cov_100 <- invsqrt(cov(x_100))
+cor(x_100%*%Est_sqrt_ins_cov_100) [1:5, 1:5] %>% round(.,4)
+cor(x_100%*%Est_sqrt_ins_cov_100) %>% abs(.) %>% sum(.)
+cor(x_100%*%Est_sqrt_ins_cov_100) %>% diag(.) %>% sum(.)
+cor(x_100%*%Est_sqrt_ins_cov_100)[cor(x_100%*%Est_sqrt_ins_cov_100) %>% 
+                                    lower.tri(., diag = FALSE)] %>% max()
+
+x_200 <- x_total
+Est_sqrt_ins_cov_200 <- invsqrt(cov(x_200))
+cor(x_200%*%Est_sqrt_ins_cov_200)[1:5,1:5] %>% round(.,4)
+cor(x_200%*%Est_sqrt_ins_cov_200) %>% abs(.) %>% sum(.)
+cor(x_200%*%Est_sqrt_ins_cov_200) %>% diag(.) %>% sum(.)
+cor(x_200%*%Est_sqrt_ins_cov_200)[cor(x_200%*%Est_sqrt_ins_cov_200) %>% 
+                                    lower.tri(., diag = FALSE)] %>% max()
+
+# if we use the inverse information of x_200
+cor(x_100%*%Est_sqrt_ins_cov_200)[1:5,1:5] %>% round(.,4)
+cor(x_100%*%Est_sqrt_ins_cov_200) %>% abs(.) %>% sum(.)
+cor(x_100%*%Est_sqrt_ins_cov_200) %>% diag(.) %>% sum(.)
+cor(x_100%*%Est_sqrt_ins_cov_200)[cor(x_100%*%Est_sqrt_ins_cov_200) %>% 
+                                    lower.tri(., diag = FALSE)] %>% max()
+```
+
+- As we expected, when $n < p$, SVD decorrelation's result is not as good as full rank case ( $n\geq p$), which means off diagonal elements are not equal or closed to zero
+- The largest correlation coefficient of $X_{100}$ is 0.28 and the for $X_{200}$ is 0.0036
+- If we use the sample variance of $X_{200}$ to decorrelate $X_{100}$, it seems there is a little improvement on the max correlation coefficient
+
+### Simulation 2
+On the PCB dataset result, I think there is some pro
+```{r collapse=TRUE, tidy=TRUE}
+x <- mvrnorm(100, numeric(200), diag(200))
+cor(x) %>% abs(.) %>% sum(.)
+max(cor(x)[lower.tri(cor(x))])
+```
