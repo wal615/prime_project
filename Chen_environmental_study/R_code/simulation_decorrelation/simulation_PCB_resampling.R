@@ -9,8 +9,8 @@ library(foreach)
 library(doRNG)
 library(doParallel)
 
-n_total <- c(100,200,300,400,500)
-cores <- 15
+n_total <- c(100,200,300,400,500, 600)
+cores <- 35
 p <- 34
 combine <- TRUE
 gene_args <- data.frame(rho = 0, p = p, n = n_total, combine = combine)
