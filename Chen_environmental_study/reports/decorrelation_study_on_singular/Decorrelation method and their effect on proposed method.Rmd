@@ -8,7 +8,7 @@ output:
     number_sections: true
     keep_tex: true
     fig_width: 12
-    fig_height: 6
+    fig_height: 4.5
 header-includes:
     - \usepackage{float,amsmath, bbm, siunitx, bm}
     - \floatplacement{figure}{H}
@@ -25,7 +25,7 @@ source("../../R_code/Yang_REML.R")
 ```
 
 # Motivation
-Based on the previous simulation result, we found that the decorrelation step has a big influence on the final performance of the proposed method. More sepcifically, when the $n<p$ is happening then we known that the sample covariance matrix $\Sigma_{X}$ is not full rank. Therefore, $\Sigma^{-1}_X$, the inverse of  $\Sigma_{X}$, doesn't exist. So we could calculate the general inverse of the covariance matrix $\Sigma_{X}$. In such situation, I just adapted one of commonly used g-inverse -- the moore penrose inverse $\Sigma^{+}_X$ during the decorrelation procedure. But the result is not very well compared with the original method. Thus, the following is trying to discuss the reason of why this is not working. 
+Based on the previous simulation result, we found that the decorrelation step has a big influence on the final performance of the proposed method. More specifically, when the $n<p$ is happening then we known that the sample covariance matrix $\Sigma_{X}$ is not full rank. Therefore, $\Sigma^{-1}_X$, the inverse of  $\Sigma_{X}$, doesn't exist. So we could calculate the general inverse of the covariance matrix $\Sigma_{X}$. In such situation, I just adapted one of commonly used g-inverse -- the Moore penrose inverse $\Sigma^{+}_X$ during the decorrelation procedure. But the result is not very well compared with the original method. Thus, the following is trying to discuss the reason of why this is not working. 
 
 # SVD decorrelation procedure
 
@@ -34,7 +34,7 @@ Based on the previous simulation result, we found that the decorrelation step ha
 \]
 
 - $X$ is the random vector with dim as $p \times 1$,  
-- $\Sigma_X$ is $p \times p$ symmtery matrix,  
+- $\Sigma_X$ is $p \times p$ symmetry matrix,  
 - $U = V$ are orthogonal matrix and each column is the eigenvector  
 - $\Lambda$ is a diagonal matrix with each diagonal element as the eigenvalue.   
 
@@ -42,18 +42,18 @@ Based on the previous simulation result, we found that the decorrelation step ha
 To decorreate the X, we could just take the reciprocal of each square root of eigenvalue as following. 
 
 \[
-  \Sigma^{-1/2}_X = U\Lambda^{-1/2}U^T,
+  \Sigma^{-\frac{1}{2}}_X = U\Lambda^{-\frac{1}{2}}U^T,
 \]
-where $\Lambda^{-1/2} = \begin{bmatrix}
-                        e_1^{-1/2} & \dots & 0 \\
+where $\Lambda^{-\frac{1}{2}} = \begin{bmatrix}
+                        e_1^{-\frac{1}{2}} & \dots & 0 \\
                         \vdots & \ddots & \vdots \\
-                        0 &  \dots  & e_p^{-1/2}
+                        0 &  \dots  & e_p^{-\frac{1}{2}}
                         \end{bmatrix}$
 
-So that after transformation the $\Sigma^{-1/2}_X X$ has identity covariance matrix as following,
+So that after transformation the $\Sigma^{-\frac{1}{2}}_X X$ has identity covariance matrix as following,
 
 \[
-  Var(\Sigma^{-1/2}_X X) = \Sigma^{-1/2}_X \Sigma_X\Sigma^{-1/2}_X = U\Lambda^{-1/2}U^T U\Lambda^{-1}U^T U\Lambda^{-1/2}U^T = I_p.
+  Var(\Sigma^{-\frac{1}{2}}_X X) = \Sigma^{-\frac{1}{2}}_X \Sigma_X\Sigma^{-\frac{1}{2}}_X = U\Lambda^{-\frac{1}{2}}U^T U\Lambda^{-1}U^T U\Lambda^{-\frac{1}{2}}U^T = I_p.
 \]
 
 ## Assume the $\Sigma_X$ is not full rank
@@ -77,17 +77,17 @@ So that after transformation the $\Sigma^{-1/2}_X X$ has identity covariance mat
 Then after applying the same procedure we get following, 
 
 \[
-  \Sigma^{-1/2}_X = U_1\Lambda_1^{-1/2}U_1^T,
+  \Sigma^{-\frac{1}{2}}_X = U_1\Lambda_1^{-\frac{1}{2}}U_1^T,
 \]
 Note that in this case, I'm using Moore Penrose inverse. 
 
 After transformation the X we have, 
 \[
-  Var(\Sigma^{-1/2}_X X) = \Sigma^{-1/2}_X \Sigma_X\Sigma^{-1/2}_X = U_1\Lambda^{-1/2}_1U^T_1 U_1\Lambda^{-1}_1U^T_1 U_1\Lambda^{-1/2}_1U^T_1 = U_1U_1^T,  
+  Var(\Sigma^{-\frac{1}{2}}_X X) = \Sigma^{-\frac{1}{2}}_X \Sigma_X\Sigma^{-\frac{1}{2}}_X = U_1\Lambda^{-\frac{1}{2}}_1U^T_1 U_1\Lambda^{-1}_1U^T_1 U_1\Lambda^{-\frac{1}{2}}_1U^T_1 = U_1U_1^T,  
 \]
 Note that by the property of the U we have 
 \[
-  U_1U_1^T + U_2U_2^T = I_p \\
+  U_1U_1^T + U_2U_2^T = I_p, ~~~~~\\
   (U_1U_1^T)^T U_1U_1^T = U_1U_1^T,
 \]
 Besides, $U_1U_1^T$ and $U_2U_2^T$ are indempotent and $rank(U_2U_2^T) + rank(U_1U_1^T) = p$.  
@@ -111,7 +111,7 @@ x_100 <- x_total[1:100,]
 Est_sqrt_ins_cov_100 <- invsqrt(cov(x_100))
 cor(x_100%*%Est_sqrt_ins_cov_100) [1:5, 1:5] %>% round(.,4)
 cor(x_100%*%Est_sqrt_ins_cov_100) %>% abs(.) %>% sum(.)
-cor(x_100%*%Est_sqrt_ins_cov_100) %>% diag(.) %>% sum(.)
+cov(x_100%*%Est_sqrt_ins_cov_100) %>% diag(.) %>% sum(.)
 cor(x_100%*%Est_sqrt_ins_cov_100)[cor(x_100%*%Est_sqrt_ins_cov_100) %>% 
                                     lower.tri(., diag = FALSE)] %>% max()
 
@@ -119,14 +119,14 @@ x_200 <- x_total
 Est_sqrt_ins_cov_200 <- invsqrt(cov(x_200))
 cor(x_200%*%Est_sqrt_ins_cov_200)[1:5,1:5] %>% round(.,4)
 cor(x_200%*%Est_sqrt_ins_cov_200) %>% abs(.) %>% sum(.)
-cor(x_200%*%Est_sqrt_ins_cov_200) %>% diag(.) %>% sum(.)
+cov(x_200%*%Est_sqrt_ins_cov_200) %>% diag(.) %>% sum(.)
 cor(x_200%*%Est_sqrt_ins_cov_200)[cor(x_200%*%Est_sqrt_ins_cov_200) %>% 
                                     lower.tri(., diag = FALSE)] %>% max()
 
 # if we use the inverse information of x_200
 cor(x_100%*%Est_sqrt_ins_cov_200)[1:5,1:5] %>% round(.,4)
 cor(x_100%*%Est_sqrt_ins_cov_200) %>% abs(.) %>% sum(.)
-cor(x_100%*%Est_sqrt_ins_cov_200) %>% diag(.) %>% sum(.)
+cov(x_100%*%Est_sqrt_ins_cov_200) %>% diag(.) %>% sum(.)
 cor(x_100%*%Est_sqrt_ins_cov_200)[cor(x_100%*%Est_sqrt_ins_cov_200) %>% 
                                     lower.tri(., diag = FALSE)] %>% max()
 ```
@@ -136,9 +136,71 @@ cor(x_100%*%Est_sqrt_ins_cov_200)[cor(x_100%*%Est_sqrt_ins_cov_200) %>%
 - If we use the sample variance of $X_{200}$ to decorrelate $X_{100}$, it seems there is a little improvement on the max correlation coefficient
 
 ### Simulation 2
-On the PCB dataset result, I think there is some pro
-```{r collapse=TRUE, tidy=TRUE}
+
+Next, I tried to evaluate the performance of the GCTA and proposed method under the $n < p$ scenario. To keep the problem simple, I just let the covariates to be independent to each other. We want to see if the original GCTA method is affected by the singular sample covariance matrix problem. If it was able to work fine, then it verify the proposed method. More specifically, If we could find a linear transformation on covariates X to make them independent or un-correlated at least in population level (although we still have the singular sample covariance matrix problem), then we could still get a unbiased estimation of the total covariates variance.
+
+#### A toy sample 
+```{r collapse=TRUE, tidy=TRUE, echo = TRUE}
 x <- mvrnorm(100, numeric(200), diag(200))
 cor(x) %>% abs(.) %>% sum(.)
 max(cor(x)[lower.tri(cor(x))])
 ```
+
+- this is to show that although the covariates are independent in population level, their sample correlation may still be large
+- the GCTA method may be effected by the this problem or not 
+
+#### Simulation set up
+
+\[
+  X = [x_1^2, \dots, x_p^2]^T
+\]
+
+- $p = 34$  
+- $x_i \stackrel{iid}{\sim} N(0,1)$  
+- So $x_i^2$ are iid chi-square with $df = 1$  
+
+We consider to estimate the total variance, so that the total covariates (combined main and interaction terms) is 595. Let the sample size n increase from 100 to 600 in order to see how the $p < n$ simulation affect the GCTA and proposed method's performance. Following is the simulation result.
+
+```{r, include=FALSE}
+source("./generate_graph_chi.R")
+```
+
+#### Simulation results
+
+```{r fixed_fixed, fig.cap = "Fixed_Fixed total independet chi with df = 1"}
+plot_chi_fixed_fixed_total_p_34_n_100_600
+```
+
+
+```{r fixed_random, fig.cap = "fixed_random total independet chi with df = 1"}
+plot_chi_fixed_random_total_p_34_n_100_600
+```
+
+
+```{r random_random, fig.cap = "random_random total independet chi with df = 1"}
+plot_chi_random_random_total_p_34_n_100_600
+```
+
+- The original GCTA method is not affected by the $p < n$ condition if the covariates are independent in the population level
+- note that actual the covariates are not perfectly independent because of the interaction terms
+- the proposed method is affected a lot by the $p <n$ situation, but it getting better when sample size is increasing
+
+# Lasso regression decorrelation procedure
+
+## Motivation 
+Based on the previous result, we find that the original GCTA is not sensitive to the $p < n$ situation. So the next question is to find a way to decorrelating the covariates so that they become uncorrelated in the population level. The SVD method seems not work well in that situation as previous simulations shows. Therefore, we look for the lasso regression method. 
+
+## Main Idea and step
+
+The main idea of lasso regression is to find a procedure of decorrelation. we could consider each covaraite as the dependent variable and select several other covariates as the independent variables. Then, we could preformance a lasso regression and use the residual as the new covariates. After doing that the residuals should be uncorrelated to each other. 
+
+\[
+  X = [X_1, \dots X_p]
+\]
+
+- X is a $n \times p$ observed covariates matrix
+- $X_i, ~~ i = 1, \dots, p$ are the columns of X
+
+1. For each $X_i$, select a group $\mathcal{A}_t$ of variable as the independent variable
+1. Conduct lasso regression and decide the final group of active variables as the independent variables $\mathcal{A}_f$, note that $\mathcal{A}_f \subset \mathcal{A}_t$
+1. Conduct a linear regression with $Y = X_i ~~ X = X_j, j\in\mathcal{A}_f$ and use the residual as the new covariate $Z_i = X_i - \hat{X_i}$
