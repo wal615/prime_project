@@ -206,7 +206,7 @@ simulation_fn <- function(
       
       # uncorrelated data 
       if(nrow(b_final) < ncol(b_final)){
-      cat("SVD_dimension reduction applied")
+      # cat("SVD_dimension reduction applied")
       b_final <- SVD_dim_reduction(b_final) # svd dimension reduction
       }
       x <- uncorr_fn(b_final, uncorr_method, uncorr_args)
