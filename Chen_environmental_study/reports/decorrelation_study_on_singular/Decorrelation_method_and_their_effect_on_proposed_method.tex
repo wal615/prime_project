@@ -122,7 +122,7 @@
   \postauthor{\par}
       \predate{\centering\large\emph}
   \postdate{\par}
-    \date{2018-10-05}
+    \date{2018-10-10}
 
 \usepackage{float,amsmath, bbm, siunitx, bm}
 \floatplacement{figure}{H}
@@ -440,6 +440,42 @@ uncorrelated to each other.
   \(Y = X_i ~~ X = X_j, j\in\mathcal{A}_f\) and use the residual as the
   new covariate \(Z_i = X_i - \hat{X_i}\)
 \end{enumerate}
+
+\section{Sigularity of the sample covariance
+matrix}\label{sigularity-of-the-sample-covariance-matrix}
+
+Based on the simulation study, the results suggest that the proposed
+method has a bias in total (ultimate) effect estimation when \(n<p\)
+situation. One of the most relative reason is that the way we used to
+estimate the sample covariance matrix. We suspect that the singularity
+of the sample covariance (Note its
+\(rank \leq p-1, because it using sample mean to calculate the sample covariance\))
+affects the result the proposed method.
+
+\subsection{\texorpdfstring{Solution 1, using SVD to reduce the total
+covariate matrix into a \(n \times n\)
+matrix}{Solution 1, using SVD to reduce the total covariate matrix into a n \textbackslash{}times n matrix}}\label{solution-1-using-svd-to-reduce-the-total-covariate-matrix-into-a-n-times-n-matrix}
+
+\subsubsection{Main idea}\label{main-idea}
+
+\[
+  X = U \Sigma V^T = \begin{bmatrix}
+                      U_1 & U_2
+                      \end{bmatrix}
+                      \begin{bmatrix}
+                      \Lambda_1 & 0\\
+                      0 & 0
+                      \end{bmatrix}
+                      \begin{bmatrix}
+                      V_1 & V_2\\
+                      V_3 & V_4
+                      \end{bmatrix}^T 
+                      = 
+                      \begin{bmatrix}
+                      U_1 & U_2
+                      \end{bmatrix}
+                      \begin{bmatrix} 
+\]
 
 
 \end{document}

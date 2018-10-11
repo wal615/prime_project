@@ -99,6 +99,17 @@ generate_chi_sub <- function(pro) {
   b
 }
 
+##################################################################################
+## SVD dimension reduction method
+##################################################################################
+
+SVD_dim_reduction <- function(x) {
+  n <- nrow(x)
+  p <- ncol(x)
+  svd_x <- svd(x, nu = n, nv = n)
+  x_r <- svd_x$u %*% diag(svd_x$d) %*% svd_x$v[1:n,]
+  x_r
+}
 
 ##################################################################################
 ## simulation function with simulated covariate
@@ -194,6 +205,10 @@ simulation_fn <- function(
       result_tmp[irep,4] <- fit$RACT
       
       # uncorrelated data 
+      if(nrow(b_final) < ncol(b_final)){
+      cat("SVD_dimension reduction applied")
+      b_final <- SVD_dim_reduction(b_final) # svd dimension reduction
+      }
       x <- uncorr_fn(b_final, uncorr_method, uncorr_args)
       
       # Call the GCTA method

@@ -204,3 +204,44 @@ The main idea of lasso regression is to find a procedure of decorrelation. we co
 1. For each $X_i$, select a group $\mathcal{A}_t$ of variable as the independent variable
 1. Conduct lasso regression and decide the final group of active variables as the independent variables $\mathcal{A}_f$, note that $\mathcal{A}_f \subset \mathcal{A}_t$
 1. Conduct a linear regression with $Y = X_i ~~ X = X_j, j\in\mathcal{A}_f$ and use the residual as the new covariate $Z_i = X_i - \hat{X_i}$
+
+# Sigularity of the sample covariance matrix
+
+Based on the simulation study, the results suggest that the proposed method has a bias in total (ultimate) effect estimation when $n<p$ situation. One of the most relative reason is that the way we used to estimate the sample covariance matrix. We suspect that the singularity of the sample covariance (Note its $rank \leq p-1, because it using sample mean to calculate the sample covariance$) affects the result the proposed method. 
+
+## Solution 1, using SVD to reduce the total covariate matrix into a $n \times n$ matrix
+
+### Main idea 
+
+\[
+  X = U \Sigma V^T = \begin{bmatrix}
+                      U_1 & U_2
+                      \end{bmatrix}
+                      \begin{bmatrix}
+                      \Lambda_1 & 0\\
+                      0 & 0
+                      \end{bmatrix}
+                      \begin{bmatrix}
+                      V_1 & V_2\\
+                      V_3 & V_4
+                      \end{bmatrix}^T 
+                      = 
+                      \begin{bmatrix}
+                      U_1\Lambda_1 & 0
+                      \end{bmatrix}
+                      \begin{bmatrix}
+                      V_1^T & V_3^T\\
+                      V_2^T & V_4^T
+                      \end{bmatrix}
+                      =
+                      \begin{bmatrix}
+                      U_1\Lambda_1V_1^T & U_1\Lambda_1V_3^T
+                      \end{bmatrix}
+\]
+Ignore the $V_3$ , then we have the X_r as following
+\[
+  X_r = U_1\Lambda_1V_1^T.
+\]
+We use $X_r$ as the new covariates to the proposed methd. Therefore, we reduce the dimension from p to n. 
+
+## Simulation result
