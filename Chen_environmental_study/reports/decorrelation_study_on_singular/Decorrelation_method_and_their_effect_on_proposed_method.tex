@@ -122,7 +122,7 @@
   \postauthor{\par}
       \predate{\centering\large\emph}
   \postdate{\par}
-    \date{2018-10-10}
+    \date{2018-10-11}
 
 \usepackage{float,amsmath, bbm, siunitx, bm}
 \floatplacement{figure}{H}
@@ -448,9 +448,9 @@ Based on the simulation study, the results suggest that the proposed
 method has a bias in total (ultimate) effect estimation when \(n<p\)
 situation. One of the most relative reason is that the way we used to
 estimate the sample covariance matrix. We suspect that the singularity
-of the sample covariance (Note its
-\(rank \leq p-1, because it using sample mean to calculate the sample covariance\))
-affects the result the proposed method.
+of the sample covariance (Note its \(rank \leq p-1\), because it using
+sample mean to calculate the sample covariance) affects the result the
+proposed method.
 
 \subsection{\texorpdfstring{Solution 1, using SVD to reduce the total
 covariate matrix into a \(n \times n\)
@@ -472,10 +472,62 @@ matrix}{Solution 1, using SVD to reduce the total covariate matrix into a n \tex
                       \end{bmatrix}^T 
                       = 
                       \begin{bmatrix}
-                      U_1 & U_2
+                      U_1\Lambda_1 & 0
                       \end{bmatrix}
-                      \begin{bmatrix} 
+                      \begin{bmatrix}
+                      V_1^T & V_3^T\\
+                      V_2^T & V_4^T
+                      \end{bmatrix}
+                      =
+                      \begin{bmatrix}
+                      U_1\Lambda_1V_1^T & U_1\Lambda_1V_3^T
+                      \end{bmatrix}
+\] Ignore the \(V_3\) , then we have the X\_r as following \[
+  X_r = U_1\Lambda_1V_1^T.
+\] We use \(X_r\) as the new covariates to the proposed methd.
+Therefore, we reduce the dimension from p to n.
+
+\subsubsection{Simulation setup}\label{simulation-setup}
+
+\[
+  X = [X_1 \dots, X_p] ,~~~ X_i \sim \chi_{(1)}^2, ~~~ cov(X_i, X_j) = 0.25,~~~ \forall  i \ne j 
 \]
+
+\begin{itemize}
+\tightlist
+\item
+  The sample size n is from 100 to 700
+\item
+  The number of main effect is 34 (p = 34)
+\item
+  The number of interaction effect is 561
+\item
+  The number of totoal effect is 595
+\end{itemize}
+
+Therefore, when \(n\leq591\), we using the svd\_dimension reduction
+method.
+\textcolor{red}{When $n > 595$, we don't reduce the dimension of the total covariates}
+
+\subsubsection{Simulation result}\label{simulation-result}
+
+\begin{figure}
+\centering
+\includegraphics{Decorrelation_method_and_their_effect_on_proposed_method_files/figure-latex/fixed_fixed_svd_sim_red-1.pdf}
+\caption{Fixed\_Fixed total corr = 0.25 chi with df = 1}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics{Decorrelation_method_and_their_effect_on_proposed_method_files/figure-latex/fixed_random_sim_red-1.pdf}
+\caption{fixed\_random total corr = 0.25 chi with df = 1}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics{Decorrelation_method_and_their_effect_on_proposed_method_files/figure-latex/random_random_sim_red-1.pdf}
+\caption{random\_random total corr = 0.25 chi with df = 1}
+\end{figure}
 
 
 \end{document}

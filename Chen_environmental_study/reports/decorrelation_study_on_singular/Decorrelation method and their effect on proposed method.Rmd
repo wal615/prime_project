@@ -207,7 +207,7 @@ The main idea of lasso regression is to find a procedure of decorrelation. we co
 
 # Sigularity of the sample covariance matrix
 
-Based on the simulation study, the results suggest that the proposed method has a bias in total (ultimate) effect estimation when $n<p$ situation. One of the most relative reason is that the way we used to estimate the sample covariance matrix. We suspect that the singularity of the sample covariance (Note its $rank \leq p-1, because it using sample mean to calculate the sample covariance$) affects the result the proposed method. 
+Based on the simulation study, the results suggest that the proposed method has a bias in total (ultimate) effect estimation when $n<p$ situation. One of the most relative reason is that the way we used to estimate the sample covariance matrix. We suspect that the singularity of the sample covariance (Note its $rank \leq p-1$, because it using sample mean to calculate the sample covariance) affects the result the proposed method. 
 
 ## Solution 1, using SVD to reduce the total covariate matrix into a $n \times n$ matrix
 
@@ -244,4 +244,39 @@ Ignore the $V_3$ , then we have the X_r as following
 \]
 We use $X_r$ as the new covariates to the proposed methd. Therefore, we reduce the dimension from p to n. 
 
-## Simulation result
+### Simulation setup 
+
+\[
+  X = [X_1 \dots, X_p] ,~~~ X_i \sim \chi_{(1)}^2, ~~~ cov(X_i, X_j) = 0.25,~~~ \forall  i \ne j 
+\]
+
+
+- The sample size n is from 100 to 700
+- The number of main effect is 34 (p = 34)
+- The number of interaction effect is 561
+- The number of totoal effect is 595
+
+Therefore, when $n\leq591$, we using the svd_dimension reduction method. \textcolor{red}{When $n > 595$, we don't reduce the dimension of the total covariates}
+
+
+
+### Simulation result 
+
+```{r load picture svd, include=FALSE }
+source("./generate_graph_chi.R")
+```
+
+
+```{r fixed_fixed_svd_sim_red, fig.cap = "Fixed_Fixed total corr = 0.25 chi with df = 1"}
+plot_chi_fixed_fixed_total_p_34_n_100_700_svd_dim_red
+```
+
+
+```{r fixed_random_sim_red, fig.cap = "fixed_random total corr = 0.25 chi with df = 1"}
+plot_chi_fixed_random_total_p_34_n_100_700_svd_dim_red
+```
+
+
+```{r random_random_sim_red, fig.cap = "random_random total corr = 0.25 chi with df = 1"}
+plot_chi_random_random_total_p_34_n_100_700_svd_dim_red
+```

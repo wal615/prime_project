@@ -59,7 +59,7 @@ plot_chi_fixed_random_total_p_34_n_100_700_svd_dim_red <- tidyr::gather(main, en
   geom_boxplot(alpha = 0.7) +
   scale_y_continuous(trans='log10') +
   facet_wrap(facets = vars(main_fixed, inter_fixed, n), ncol = 3 , scales = "free", labeller  = "label_both")+
-  ggtitle("Total effect with fixed main and fixed interactive") +
+  ggtitle("Total effect with fixed main and random interactive") +
   theme(plot.title = element_text(hjust = 0.5))
 #################################################################################################################################
 
@@ -89,5 +89,5 @@ plot_chi_random_random_total_p_34_n_100_700_svd_dim_red <- tidyr::gather(main, e
   geom_boxplot(alpha = 0.7) +
   scale_y_continuous(trans='log10') +
   facet_wrap(facets = vars(main_fixed, inter_fixed, n), ncol = 3 , scales = "free", labeller  = "label_both")+
-  ggtitle("Total effect with fixed main and fixed interactive") +
+  ggtitle("Total effect with random main and random interactive") +
   theme(plot.title = element_text(hjust = 0.5))
