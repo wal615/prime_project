@@ -111,6 +111,18 @@ SVD_dim_reduction <- function(x) {
   x_r
 }
 
+
+##################################################################################
+## SVD dimension reduction method
+##################################################################################
+
+PCA_dim_reduction <- function(x) {
+ pca_x <- prcomp(x, retx = TRUE)
+ x_r <- pca_x$x
+ x_r
+}
+
+
 ##################################################################################
 ## simulation function with simulated covariate
 ##################################################################################
@@ -207,7 +219,8 @@ simulation_fn <- function(
       # uncorrelated data 
       if(nrow(b_final) < ncol(b_final)){
       # cat("SVD_dimension reduction applied")
-      b_final <- SVD_dim_reduction(b_final) # svd dimension reduction
+      # b_final <- SVD_dim_reduction(b_final) # svd dimension reduction
+      b_final <- PCA_dim_reduction(b_final) # pca dimension reduction
       }
       x <- uncorr_fn(b_final, uncorr_method, uncorr_args)
       
