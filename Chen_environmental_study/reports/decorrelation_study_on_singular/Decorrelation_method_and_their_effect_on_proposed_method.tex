@@ -122,9 +122,10 @@
   \postauthor{\par}
       \predate{\centering\large\emph}
   \postdate{\par}
-    \date{2018-10-11}
+    \date{2018-10-19}
 
 \usepackage{float,amsmath, bbm, siunitx, bm}
+\usepackage{pdfpages}
 \floatplacement{figure}{H}
 \newcommand{\indep}{\rotatebox[origin=c]{90}{$\models$}}
 
@@ -149,10 +150,11 @@ decorrelation procedure. But the result is not very well compared with
 the original method. Thus, the following is trying to discuss the reason
 of why this is not working.
 
-\section{SVD decorrelation procedure}\label{svd-decorrelation-procedure}
+\section{decorrelation procedure using Eigenvalue
+Decomposition}\label{decorrelation-procedure-using-eigenvalue-decomposition}
 
 \[
-  Var(X) = \Sigma_X = U\Lambda V^T,
+  Var(X) = \Sigma_X = U\Lambda U^T,
 \]
 
 \begin{itemize}
@@ -160,9 +162,7 @@ of why this is not working.
 \item
   \(X\) is the random vector with dim as \(p \times 1\),\\
 \item
-  \(\Sigma_X\) is \(p \times p\) symmetry matrix,\\
-\item
-  \(U = V\) are orthogonal matrix and each column is the eigenvector\\
+  \(\Sigma_X\) is \(p \times p\) symmetry and p.d. matrix,\\
 \item
   \(\Lambda\) is a diagonal matrix with each diagonal element as the
   eigenvalue.
@@ -190,7 +190,7 @@ identity covariance matrix as following,
 rank}{Assume the \textbackslash{}Sigma\_X is not full rank}}\label{assume-the-sigma_x-is-not-full-rank}
 
 \[
-  Var(X) = \Sigma_X = U\Lambda V^T =
+  Var(X) = \Sigma_X = U\Lambda U^T =
                         \begin{bmatrix}
                          U_1 & U_2\\
                         \end{bmatrix}
@@ -459,7 +459,7 @@ matrix}{Solution 1, using SVD to reduce the total covariate matrix into a n \tex
 \subsubsection{Main idea}\label{main-idea}
 
 \[
-  X = U \Sigma V^T = \begin{bmatrix}
+  X = U \Sigma U^T = \begin{bmatrix}
                       U_1 & U_2
                       \end{bmatrix}
                       \begin{bmatrix}
@@ -467,23 +467,23 @@ matrix}{Solution 1, using SVD to reduce the total covariate matrix into a n \tex
                       0 & 0
                       \end{bmatrix}
                       \begin{bmatrix}
-                      V_1 & V_2\\
-                      V_3 & V_4
+                      U_1 & U_2\\
+                      U_3 & U_4
                       \end{bmatrix}^T 
                       = 
                       \begin{bmatrix}
                       U_1\Lambda_1 & 0
                       \end{bmatrix}
                       \begin{bmatrix}
-                      V_1^T & V_3^T\\
-                      V_2^T & V_4^T
+                      U_1^T & U_3^T\\
+                      U_2^T & U_4^T
                       \end{bmatrix}
                       =
                       \begin{bmatrix}
-                      U_1\Lambda_1V_1^T & U_1\Lambda_1V_3^T
+                      U_1\Lambda_1U_1^T & U_1\Lambda_1U_3^T
                       \end{bmatrix}
-\] Ignore the \(V_3\) , then we have the X\_r as following \[
-  X_r = U_1\Lambda_1V_1^T.
+\] Ignore the \(U_3\) , then we have the X\_r as following \[
+  X_r = U_1\Lambda_1U_1^T.
 \] We use \(X_r\) as the new covariates to the proposed methd.
 Therefore, we reduce the dimension from p to n.
 
@@ -513,21 +513,71 @@ method.
 
 \begin{figure}
 \centering
-\includegraphics{Decorrelation_method_and_their_effect_on_proposed_method_files/figure-latex/fixed_fixed_svd_sim_red-1.pdf}
-\caption{Fixed\_Fixed total corr = 0.25 chi with df = 1}
+\includegraphics{./graphs/plot_chi_fixed_fixed_total_p_34_rho_0.1_0.9_n_100_700_svd_dim_red.pdf}
+\caption{SVD\_fixed\_fixed}
 \end{figure}
 
 \begin{figure}
 \centering
-\includegraphics{Decorrelation_method_and_their_effect_on_proposed_method_files/figure-latex/fixed_random_sim_red-1.pdf}
-\caption{fixed\_random total corr = 0.25 chi with df = 1}
+\includegraphics{./graphs/plot_chi_fixed_random_total_p_34_rho_0.1_0.9_n_100_700_svd_dim_red.pdf}
+\caption{SVD\_fixed\_random}
 \end{figure}
 
-\begin{figure}
-\centering
-\includegraphics{Decorrelation_method_and_their_effect_on_proposed_method_files/figure-latex/random_random_sim_red-1.pdf}
-\caption{random\_random total corr = 0.25 chi with df = 1}
-\end{figure}
+\subsection{Solution 2, using PCA Regression (PCR)
+method}\label{solution-2-using-pca-regression-pcr-method}
+
+\subsubsection{Motivation}\label{motivation-2}
+
+Since we only care about the total effect's variance
+\(Var(X_{total}^T\beta_{total})\), it may be possible to use PCA method
+to pre-screenning the data and reduce the dimension according to the
+sample variance. After the PCA transformation, we have \(T = XW\), then
+we could use T as the covairate matrix to do the analysis.
+
+\subsubsection{Main idea of PCA}\label{main-idea-of-pca}
+
+\paragraph{Singular Value
+Decomposition}\label{singular-value-decomposition}
+
+\[
+  X_s = UDV^T, ~\text{where} ~x_{ij,s} = \frac{x_{ij} - \bar{x}}{s_j}
+\]
+
+\begin{itemize}
+\tightlist
+\item
+  \(U = (u_1, \dots, u_r)\) is a n by r orthogonal matrix\\
+\item
+  \(D = diag(d_1, \dots, d_r)\) is a r by r diagonal matrix\\
+\item
+  \(V = (v_1, \dots, v_r)\) is a p by r orthogonal matrix
+\end{itemize}
+
+\paragraph{Principle Component and
+Loading}\label{principle-component-and-loading}
+
+\begin{align*} 
+  X_s &= \underbrace{\begin{bmatrix} d_1u_1 \hdots  d_ru_r \end{bmatrix} }_\text{PCs}
+         \underbrace{\begin{bmatrix} v_1^T \\
+                         \vdots \\
+                         v_r^T \\
+         \end{bmatrix}}_\text{Loading}
+\end{align*}
+
+\begin{itemize}
+\tightlist
+\item
+  \(PC_j = d_j\pmb{u_j} = X\pmb{v_j}\) is the jth principle component
+\item
+  The sample variance of \(PC_j\) is \(d_j^2/n\)
+\end{itemize}
+
+\paragraph{Using PCA to reduce the X's
+dimension}\label{using-pca-to-reduce-the-xs-dimension}
+
+\[
+  X_{s,k} = \sum_{j=1}^{k}d_j\pmb{u_jv_k} = U_kD_kV_k^T,~~ \text{Its Variation} ~~  \sum_{j=1}^kd_j^2/n.
+\]
 
 
 \end{document}
