@@ -12,7 +12,7 @@ plot_chi_fixed_fixed_main_combine_df_10 <- tidyr::gather(main, ends_with("main")
   ggplot(., aes(x = method, y = value, fill = method)) +
   geom_violin(alpha = 0.2) +
   geom_boxplot(alpha = 0.7) +
-  facet_wrap(facets = vars(main_fixed, inter_fixed, corr), ncol =3 , scales = "free", labeller  = "label_both")
+  facet_wrap(facets = vars(main_fixed, inter_fixed, corr), ncol =3 , scales = "fixed", labeller  = "label_both")
 
 
 
@@ -26,7 +26,7 @@ plot_chi_fixed_random_main_combine_df_10 <- tidyr::gather(main, ends_with("main"
   geom_violin(alpha = 0.2) +
   geom_boxplot(alpha = 0.7) +
   scale_y_continuous(trans='log10') +
-  facet_wrap(facets = vars(main_fixed, inter_fixed, corr), ncol =3 , scales = "free", labeller  = "label_both")
+  facet_wrap(facets = vars(main_fixed, inter_fixed, corr), ncol =3 , scales = "fixed", labeller  = "label_both")
 
 
 ## generating graph for the random_random simuation
@@ -39,7 +39,7 @@ plot_chi_random_random_main_combine_df_10 <- tidyr::gather(main, ends_with("main
   geom_violin(alpha = 0.2) +
   geom_boxplot(alpha = 0.7) +
   scale_y_continuous(trans='log10') +
-  facet_wrap(facets = vars(main_fixed, inter_fixed, corr), ncol =3 , scales = "free", labeller  = "label_both")
+  facet_wrap(facets = vars(main_fixed, inter_fixed, corr), ncol =3 , scales = "fixed", labeller  = "label_both")
 
 
 # df = 1
@@ -52,7 +52,7 @@ plot_chi_fixed_fixed_main_combine_df_1 <- tidyr::gather(main, ends_with("main"),
   ggplot(., aes(x = method, y = value, fill = method)) +
   geom_violin(alpha = 0.2) +
   geom_boxplot(alpha = 0.7) +
-  facet_wrap(facets = vars(main_fixed, inter_fixed, corr), ncol =3 , scales = "free", labeller  = "label_both")
+  facet_wrap(facets = vars(main_fixed, inter_fixed, corr), ncol =3 , scales = "fixed", labeller  = "label_both")
 
 
 
@@ -66,7 +66,7 @@ plot_chi_fixed_random_main_combine_df_1 <- tidyr::gather(main, ends_with("main")
   geom_violin(alpha = 0.2) +
   geom_boxplot(alpha = 0.7) +
   scale_y_continuous(trans='log10') +
-  facet_wrap(facets = vars(main_fixed, inter_fixed, corr), ncol =3 , scales = "free", labeller  = "label_both")
+  facet_wrap(facets = vars(main_fixed, inter_fixed, corr), ncol =3 , scales = "fixed", labeller  = "label_both")
 
 
 ## generating graph for the random_random simuation
@@ -79,4 +79,4 @@ plot_chi_random_random_main_combine_df_1 <- tidyr::gather(main, ends_with("main"
   geom_violin(alpha = 0.2) +
   geom_boxplot(alpha = 0.7) +
   scale_y_continuous(trans='log10') +
-  facet_wrap(facets = vars(main_fixed, inter_fixed, corr), ncol =3 , scales = "free", labeller  = "label_both")
+  facet_wrap(facets = vars(main_fixed, inter_fixed, corr), ncol =3 , scales = "fixed", labeller  = "label_both")

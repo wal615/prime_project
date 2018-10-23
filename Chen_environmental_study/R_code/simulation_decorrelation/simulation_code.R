@@ -8,9 +8,9 @@ library(tidyverse)
 library(foreach)
 library(doRNG)
 library(doParallel)
-cores <- 12
+cores <- 15
 
-n_total <- c(100,200,300,400,500, 600, 700)
+n_total <- c(100,200,300,400,500, 600, 700, 800)
 rho <- seq(0.1,0.9,0.1)
 p <- 34
 combine <- TRUE
@@ -34,7 +34,7 @@ result_list_fixed_fixed <- mapply(FUN = simulation_fn,
                                                   interaction = 1,
                                                   interaction_m = 0),
                                   SIMPLIFY = FALSE)
-save(result_list_fixed_fixed, file = "./result/simulation_decorrelation/simulation_result_list_fixed_fixed_ind_chi_rho_0.1_0.9_n_100_500_p_34_pca_reduction")
+save(result_list_fixed_fixed, file = "./result/simulation_decorrelation/simulation_result_list_fixed_fixed_ind_chi_rho_0.1_0.9_n_100_500_p_34")
 
 
 result_list_fixed_random <- mapply(FUN = simulation_fn,
@@ -53,7 +53,7 @@ result_list_fixed_random <- mapply(FUN = simulation_fn,
                                                   interaction = 1,
                                                   interaction_m = 0),
                                   SIMPLIFY = FALSE)
-save(result_list_fixed_random, file = "./result/simulation_decorrelation/simulation_result_list_fixed_random_ind_chi_rho_0.1_0.9_n_100_500_p_34_pca_reduction")
+save(result_list_fixed_random, file = "./result/simulation_decorrelation/simulation_result_list_fixed_random_ind_chi_rho_0.1_0.9_n_100_500_p_34")
 
 # result_list_random_random <- mapply(FUN = simulation_fn,
 #                                   gene_args = gene_args,

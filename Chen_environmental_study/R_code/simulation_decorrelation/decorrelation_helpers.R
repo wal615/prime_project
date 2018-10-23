@@ -217,11 +217,11 @@ simulation_fn <- function(
       result_tmp[irep,4] <- fit$RACT
       
       # uncorrelated data 
-      if(nrow(b_final) < ncol(b_final)){
+      # if(nrow(b_final) < ncol(b_final)){
       # cat("SVD_dimension reduction applied")
       # b_final <- SVD_dim_reduction(b_final) # svd dimension reduction
-      b_final <- PCA_dim_reduction(b_final) # pca dimension reduction
-      }
+      # b_final <- PCA_dim_reduction(b_final) # pca dimension reduction
+      # }
       x <- uncorr_fn(b_final, uncorr_method, uncorr_args)
       
       # Call the GCTA method
