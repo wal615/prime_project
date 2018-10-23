@@ -122,7 +122,7 @@
   \postauthor{\par}
       \predate{\centering\large\emph}
   \postdate{\par}
-    \date{2018-10-19}
+    \date{2018-10-23}
 
 \usepackage{float,amsmath, bbm, siunitx, bm}
 \usepackage{pdfpages}
@@ -232,59 +232,59 @@ matrix to an identity matrix.
 \KeywordTok{set.seed}\NormalTok{(}\DecValTok{123}\NormalTok{)}
 \NormalTok{p <-}\StringTok{ }\DecValTok{200}
 \NormalTok{n <-}\StringTok{ }\DecValTok{200}
-\NormalTok{Sig <-}\StringTok{ }\KeywordTok{matrix}\NormalTok{(}\KeywordTok{rep}\NormalTok{(}\FloatTok{0.5}\NormalTok{, }\DecValTok{200} \OperatorTok{*}\StringTok{ }\DecValTok{200}\NormalTok{), }\DataTypeTok{ncol =} \DecValTok{200}\NormalTok{)}
+\NormalTok{Sig <-}\StringTok{ }\KeywordTok{matrix}\NormalTok{(}\KeywordTok{rep}\NormalTok{(}\FloatTok{0.5}\NormalTok{, }\DecValTok{200}\OperatorTok{*}\DecValTok{200}\NormalTok{), }\DataTypeTok{ncol =} \DecValTok{200}\NormalTok{)}
 \KeywordTok{diag}\NormalTok{(Sig) <-}\StringTok{ }\DecValTok{1}
 \NormalTok{x_total <-}\StringTok{ }\KeywordTok{mvrnorm}\NormalTok{(n, }\KeywordTok{numeric}\NormalTok{(p), }\DataTypeTok{Sigma =}\NormalTok{ Sig)}
 
-\NormalTok{x_}\DecValTok{100}\NormalTok{ <-}\StringTok{ }\NormalTok{x_total[}\DecValTok{1}\OperatorTok{:}\DecValTok{100}\NormalTok{, ]}
+\NormalTok{x_}\DecValTok{100}\NormalTok{ <-}\StringTok{ }\NormalTok{x_total[}\DecValTok{1}\OperatorTok{:}\DecValTok{100}\NormalTok{,]}
 \NormalTok{Est_sqrt_ins_cov_}\DecValTok{100}\NormalTok{ <-}\StringTok{ }\KeywordTok{invsqrt}\NormalTok{(}\KeywordTok{cov}\NormalTok{(x_}\DecValTok{100}\NormalTok{))}
-\KeywordTok{cor}\NormalTok{(x_}\DecValTok{100} \OperatorTok{%*%}\StringTok{ }\NormalTok{Est_sqrt_ins_cov_}\DecValTok{100}\NormalTok{)[}\DecValTok{1}\OperatorTok{:}\DecValTok{5}\NormalTok{, }\DecValTok{1}\OperatorTok{:}\DecValTok{5}\NormalTok{] }\OperatorTok{%>%}\StringTok{ }\KeywordTok{round}\NormalTok{(., }\DecValTok{4}\NormalTok{)}
-\OtherTok{FALSE}\NormalTok{         [,}\DecValTok{1}\NormalTok{]    [,}\DecValTok{2}\NormalTok{]    [,}\DecValTok{3}\NormalTok{]   [,}\DecValTok{4}\NormalTok{]    [,}\DecValTok{5}\NormalTok{]}
-\OtherTok{FALSE}\NormalTok{ [}\DecValTok{1}\NormalTok{,]  }\FloatTok{1.0000} \OperatorTok{-}\FloatTok{0.0480} \OperatorTok{-}\FloatTok{0.0600} \FloatTok{0.0396} \OperatorTok{-}\FloatTok{0.0232}
-\OtherTok{FALSE}\NormalTok{ [}\DecValTok{2}\NormalTok{,] }\OperatorTok{-}\FloatTok{0.0480}  \FloatTok{1.0000} \OperatorTok{-}\FloatTok{0.0339} \FloatTok{0.1562} \OperatorTok{-}\FloatTok{0.0701}
-\OtherTok{FALSE}\NormalTok{ [}\DecValTok{3}\NormalTok{,] }\OperatorTok{-}\FloatTok{0.0600} \OperatorTok{-}\FloatTok{0.0339}  \FloatTok{1.0000} \FloatTok{0.0389} \OperatorTok{-}\FloatTok{0.0570}
-\OtherTok{FALSE}\NormalTok{ [}\DecValTok{4}\NormalTok{,]  }\FloatTok{0.0396}  \FloatTok{0.1562}  \FloatTok{0.0389} \FloatTok{1.0000}  \FloatTok{0.0734}
-\OtherTok{FALSE}\NormalTok{ [}\DecValTok{5}\NormalTok{,] }\OperatorTok{-}\FloatTok{0.0232} \OperatorTok{-}\FloatTok{0.0701} \OperatorTok{-}\FloatTok{0.0570} \FloatTok{0.0734}  \FloatTok{1.0000}
-\KeywordTok{cor}\NormalTok{(x_}\DecValTok{100} \OperatorTok{%*%}\StringTok{ }\NormalTok{Est_sqrt_ins_cov_}\DecValTok{100}\NormalTok{) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{abs}\NormalTok{(.) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{sum}\NormalTok{(.)}
-\OtherTok{FALSE}\NormalTok{ [}\DecValTok{1}\NormalTok{] }\FloatTok{2480.243}
-\KeywordTok{cov}\NormalTok{(x_}\DecValTok{100} \OperatorTok{%*%}\StringTok{ }\NormalTok{Est_sqrt_ins_cov_}\DecValTok{100}\NormalTok{) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{diag}\NormalTok{(.) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{sum}\NormalTok{(.)}
+\KeywordTok{cor}\NormalTok{(x_}\DecValTok{100}\OperatorTok{%*%}\NormalTok{Est_sqrt_ins_cov_}\DecValTok{100}\NormalTok{) [}\DecValTok{1}\OperatorTok{:}\DecValTok{5}\NormalTok{, }\DecValTok{1}\OperatorTok{:}\DecValTok{5}\NormalTok{] }\OperatorTok{%>%}\StringTok{ }\KeywordTok{round}\NormalTok{(.,}\DecValTok{4}\NormalTok{)}
+\OtherTok{FALSE}\NormalTok{         [,}\DecValTok{1}\NormalTok{]    [,}\DecValTok{2}\NormalTok{]    [,}\DecValTok{3}\NormalTok{]    [,}\DecValTok{4}\NormalTok{]    [,}\DecValTok{5}\NormalTok{]}
+\OtherTok{FALSE}\NormalTok{ [}\DecValTok{1}\NormalTok{,]  }\FloatTok{1.0000}  \FloatTok{0.0092} \OperatorTok{-}\FloatTok{0.0078}  \FloatTok{0.1251}  \FloatTok{0.0462}
+\OtherTok{FALSE}\NormalTok{ [}\DecValTok{2}\NormalTok{,]  }\FloatTok{0.0092}  \FloatTok{1.0000} \OperatorTok{-}\FloatTok{0.0707} \OperatorTok{-}\FloatTok{0.0113}  \FloatTok{0.1233}
+\OtherTok{FALSE}\NormalTok{ [}\DecValTok{3}\NormalTok{,] }\OperatorTok{-}\FloatTok{0.0078} \OperatorTok{-}\FloatTok{0.0707}  \FloatTok{1.0000}  \FloatTok{0.0267}  \FloatTok{0.0680}
+\OtherTok{FALSE}\NormalTok{ [}\DecValTok{4}\NormalTok{,]  }\FloatTok{0.1251} \OperatorTok{-}\FloatTok{0.0113}  \FloatTok{0.0267}  \FloatTok{1.0000} \OperatorTok{-}\FloatTok{0.1413}
+\OtherTok{FALSE}\NormalTok{ [}\DecValTok{5}\NormalTok{,]  }\FloatTok{0.0462}  \FloatTok{0.1233}  \FloatTok{0.0680} \OperatorTok{-}\FloatTok{0.1413}  \FloatTok{1.0000}
+\KeywordTok{cor}\NormalTok{(x_}\DecValTok{100}\OperatorTok{%*%}\NormalTok{Est_sqrt_ins_cov_}\DecValTok{100}\NormalTok{) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{abs}\NormalTok{(.) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{sum}\NormalTok{(.)}
+\OtherTok{FALSE}\NormalTok{ [}\DecValTok{1}\NormalTok{] }\FloatTok{2485.784}
+\KeywordTok{cov}\NormalTok{(x_}\DecValTok{100}\OperatorTok{%*%}\NormalTok{Est_sqrt_ins_cov_}\DecValTok{100}\NormalTok{) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{diag}\NormalTok{(.) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{sum}\NormalTok{(.)}
 \OtherTok{FALSE}\NormalTok{ [}\DecValTok{1}\NormalTok{] }\DecValTok{99}
-\KeywordTok{cor}\NormalTok{(x_}\DecValTok{100} \OperatorTok{%*%}\StringTok{ }\NormalTok{Est_sqrt_ins_cov_}\DecValTok{100}\NormalTok{)[}\KeywordTok{cor}\NormalTok{(x_}\DecValTok{100} \OperatorTok{%*%}\StringTok{ }\NormalTok{Est_sqrt_ins_cov_}\DecValTok{100}\NormalTok{) }\OperatorTok{%>%}\StringTok{ }
-\StringTok{    }\KeywordTok{lower.tri}\NormalTok{(., }\DataTypeTok{diag =} \OtherTok{FALSE}\NormalTok{)] }\OperatorTok{%>%}\StringTok{ }\KeywordTok{max}\NormalTok{()}
-\OtherTok{FALSE}\NormalTok{ [}\DecValTok{1}\NormalTok{] }\FloatTok{0.2839148}
+\KeywordTok{cor}\NormalTok{(x_}\DecValTok{100}\OperatorTok{%*%}\NormalTok{Est_sqrt_ins_cov_}\DecValTok{100}\NormalTok{)[}\KeywordTok{cor}\NormalTok{(x_}\DecValTok{100}\OperatorTok{%*%}\NormalTok{Est_sqrt_ins_cov_}\DecValTok{100}\NormalTok{) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{                                    }\KeywordTok{lower.tri}\NormalTok{(., }\DataTypeTok{diag =} \OtherTok{FALSE}\NormalTok{)] }\OperatorTok{%>%}\StringTok{ }\KeywordTok{max}\NormalTok{()}
+\OtherTok{FALSE}\NormalTok{ [}\DecValTok{1}\NormalTok{] }\FloatTok{0.3012618}
 
 \NormalTok{x_}\DecValTok{200}\NormalTok{ <-}\StringTok{ }\NormalTok{x_total}
 \NormalTok{Est_sqrt_ins_cov_}\DecValTok{200}\NormalTok{ <-}\StringTok{ }\KeywordTok{invsqrt}\NormalTok{(}\KeywordTok{cov}\NormalTok{(x_}\DecValTok{200}\NormalTok{))}
-\KeywordTok{cor}\NormalTok{(x_}\DecValTok{200} \OperatorTok{%*%}\StringTok{ }\NormalTok{Est_sqrt_ins_cov_}\DecValTok{200}\NormalTok{)[}\DecValTok{1}\OperatorTok{:}\DecValTok{5}\NormalTok{, }\DecValTok{1}\OperatorTok{:}\DecValTok{5}\NormalTok{] }\OperatorTok{%>%}\StringTok{ }\KeywordTok{round}\NormalTok{(., }\DecValTok{4}\NormalTok{)}
-\OtherTok{FALSE}\NormalTok{         [,}\DecValTok{1}\NormalTok{]    [,}\DecValTok{2}\NormalTok{]    [,}\DecValTok{3}\NormalTok{]   [,}\DecValTok{4}\NormalTok{]    [,}\DecValTok{5}\NormalTok{]}
-\OtherTok{FALSE}\NormalTok{ [}\DecValTok{1}\NormalTok{,]  }\FloatTok{1.0000}  \FloatTok{0.0032}  \FloatTok{0.0024} \OperatorTok{-}\FloatTok{3e-04}  \FloatTok{0.0034}
-\OtherTok{FALSE}\NormalTok{ [}\DecValTok{2}\NormalTok{,]  }\FloatTok{0.0032}  \FloatTok{1.0000} \OperatorTok{-}\FloatTok{0.0049}  \FloatTok{6e-04} \OperatorTok{-}\FloatTok{0.0069}
-\OtherTok{FALSE}\NormalTok{ [}\DecValTok{3}\NormalTok{,]  }\FloatTok{0.0024} \OperatorTok{-}\FloatTok{0.0049}  \FloatTok{1.0000}  \FloatTok{4e-04} \OperatorTok{-}\FloatTok{0.0052}
-\OtherTok{FALSE}\NormalTok{ [}\DecValTok{4}\NormalTok{,] }\OperatorTok{-}\FloatTok{0.0003}  \FloatTok{0.0006}  \FloatTok{0.0004}  \FloatTok{1e+00}  \FloatTok{0.0006}
-\OtherTok{FALSE}\NormalTok{ [}\DecValTok{5}\NormalTok{,]  }\FloatTok{0.0034} \OperatorTok{-}\FloatTok{0.0069} \OperatorTok{-}\FloatTok{0.0052}  \FloatTok{6e-04}  \FloatTok{1.0000}
-\KeywordTok{cor}\NormalTok{(x_}\DecValTok{200} \OperatorTok{%*%}\StringTok{ }\NormalTok{Est_sqrt_ins_cov_}\DecValTok{200}\NormalTok{) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{abs}\NormalTok{(.) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{sum}\NormalTok{(.)}
-\OtherTok{FALSE}\NormalTok{ [}\DecValTok{1}\NormalTok{] }\FloatTok{327.6482}
-\KeywordTok{cov}\NormalTok{(x_}\DecValTok{200} \OperatorTok{%*%}\StringTok{ }\NormalTok{Est_sqrt_ins_cov_}\DecValTok{200}\NormalTok{) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{diag}\NormalTok{(.) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{sum}\NormalTok{(.)}
+\KeywordTok{cor}\NormalTok{(x_}\DecValTok{200}\OperatorTok{%*%}\NormalTok{Est_sqrt_ins_cov_}\DecValTok{200}\NormalTok{)[}\DecValTok{1}\OperatorTok{:}\DecValTok{5}\NormalTok{,}\DecValTok{1}\OperatorTok{:}\DecValTok{5}\NormalTok{] }\OperatorTok{%>%}\StringTok{ }\KeywordTok{round}\NormalTok{(.,}\DecValTok{4}\NormalTok{)}
+\OtherTok{FALSE}\NormalTok{         [,}\DecValTok{1}\NormalTok{]    [,}\DecValTok{2}\NormalTok{]    [,}\DecValTok{3}\NormalTok{]    [,}\DecValTok{4}\NormalTok{]    [,}\DecValTok{5}\NormalTok{]}
+\OtherTok{FALSE}\NormalTok{ [}\DecValTok{1}\NormalTok{,]  }\FloatTok{1.0000} \OperatorTok{-}\FloatTok{0.0086} \OperatorTok{-}\FloatTok{0.0089}  \FloatTok{0.0045}  \FloatTok{0.0124}
+\OtherTok{FALSE}\NormalTok{ [}\DecValTok{2}\NormalTok{,] }\OperatorTok{-}\FloatTok{0.0086}  \FloatTok{1.0000} \OperatorTok{-}\FloatTok{0.0045}  \FloatTok{0.0023}  \FloatTok{0.0063}
+\OtherTok{FALSE}\NormalTok{ [}\DecValTok{3}\NormalTok{,] }\OperatorTok{-}\FloatTok{0.0089} \OperatorTok{-}\FloatTok{0.0045}  \FloatTok{1.0000}  \FloatTok{0.0024}  \FloatTok{0.0065}
+\OtherTok{FALSE}\NormalTok{ [}\DecValTok{4}\NormalTok{,]  }\FloatTok{0.0045}  \FloatTok{0.0023}  \FloatTok{0.0024}  \FloatTok{1.0000} \OperatorTok{-}\FloatTok{0.0033}
+\OtherTok{FALSE}\NormalTok{ [}\DecValTok{5}\NormalTok{,]  }\FloatTok{0.0124}  \FloatTok{0.0063}  \FloatTok{0.0065} \OperatorTok{-}\FloatTok{0.0033}  \FloatTok{1.0000}
+\KeywordTok{cor}\NormalTok{(x_}\DecValTok{200}\OperatorTok{%*%}\NormalTok{Est_sqrt_ins_cov_}\DecValTok{200}\NormalTok{) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{abs}\NormalTok{(.) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{sum}\NormalTok{(.)}
+\OtherTok{FALSE}\NormalTok{ [}\DecValTok{1}\NormalTok{] }\FloatTok{325.0432}
+\KeywordTok{cov}\NormalTok{(x_}\DecValTok{200}\OperatorTok{%*%}\NormalTok{Est_sqrt_ins_cov_}\DecValTok{200}\NormalTok{) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{diag}\NormalTok{(.) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{sum}\NormalTok{(.)}
 \OtherTok{FALSE}\NormalTok{ [}\DecValTok{1}\NormalTok{] }\DecValTok{199}
-\KeywordTok{cor}\NormalTok{(x_}\DecValTok{200} \OperatorTok{%*%}\StringTok{ }\NormalTok{Est_sqrt_ins_cov_}\DecValTok{200}\NormalTok{)[}\KeywordTok{cor}\NormalTok{(x_}\DecValTok{200} \OperatorTok{%*%}\StringTok{ }\NormalTok{Est_sqrt_ins_cov_}\DecValTok{200}\NormalTok{) }\OperatorTok{%>%}\StringTok{ }
-\StringTok{    }\KeywordTok{lower.tri}\NormalTok{(., }\DataTypeTok{diag =} \OtherTok{FALSE}\NormalTok{)] }\OperatorTok{%>%}\StringTok{ }\KeywordTok{max}\NormalTok{()}
-\OtherTok{FALSE}\NormalTok{ [}\DecValTok{1}\NormalTok{] }\FloatTok{0.03669759}
+\KeywordTok{cor}\NormalTok{(x_}\DecValTok{200}\OperatorTok{%*%}\NormalTok{Est_sqrt_ins_cov_}\DecValTok{200}\NormalTok{)[}\KeywordTok{cor}\NormalTok{(x_}\DecValTok{200}\OperatorTok{%*%}\NormalTok{Est_sqrt_ins_cov_}\DecValTok{200}\NormalTok{) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{                                    }\KeywordTok{lower.tri}\NormalTok{(., }\DataTypeTok{diag =} \OtherTok{FALSE}\NormalTok{)] }\OperatorTok{%>%}\StringTok{ }\KeywordTok{max}\NormalTok{()}
+\OtherTok{FALSE}\NormalTok{ [}\DecValTok{1}\NormalTok{] }\FloatTok{0.03819551}
 
 \CommentTok{# if we use the inverse information of x_200}
-\KeywordTok{cor}\NormalTok{(x_}\DecValTok{100} \OperatorTok{%*%}\StringTok{ }\NormalTok{Est_sqrt_ins_cov_}\DecValTok{200}\NormalTok{)[}\DecValTok{1}\OperatorTok{:}\DecValTok{5}\NormalTok{, }\DecValTok{1}\OperatorTok{:}\DecValTok{5}\NormalTok{] }\OperatorTok{%>%}\StringTok{ }\KeywordTok{round}\NormalTok{(., }\DecValTok{4}\NormalTok{)}
-\OtherTok{FALSE}\NormalTok{         [,}\DecValTok{1}\NormalTok{]    [,}\DecValTok{2}\NormalTok{]    [,}\DecValTok{3}\NormalTok{]    [,}\DecValTok{4}\NormalTok{]    [,}\DecValTok{5}\NormalTok{]}
-\OtherTok{FALSE}\NormalTok{ [}\DecValTok{1}\NormalTok{,]  }\FloatTok{1.0000} \OperatorTok{-}\FloatTok{0.0065} \OperatorTok{-}\FloatTok{0.1252} \OperatorTok{-}\FloatTok{0.0091} \OperatorTok{-}\FloatTok{0.0865}
-\OtherTok{FALSE}\NormalTok{ [}\DecValTok{2}\NormalTok{,] }\OperatorTok{-}\FloatTok{0.0065}  \FloatTok{1.0000} \OperatorTok{-}\FloatTok{0.0076}  \FloatTok{0.2172} \OperatorTok{-}\FloatTok{0.0999}
-\OtherTok{FALSE}\NormalTok{ [}\DecValTok{3}\NormalTok{,] }\OperatorTok{-}\FloatTok{0.1252} \OperatorTok{-}\FloatTok{0.0076}  \FloatTok{1.0000}  \FloatTok{0.0741} \OperatorTok{-}\FloatTok{0.0986}
-\OtherTok{FALSE}\NormalTok{ [}\DecValTok{4}\NormalTok{,] }\OperatorTok{-}\FloatTok{0.0091}  \FloatTok{0.2172}  \FloatTok{0.0741}  \FloatTok{1.0000}  \FloatTok{0.0489}
-\OtherTok{FALSE}\NormalTok{ [}\DecValTok{5}\NormalTok{,] }\OperatorTok{-}\FloatTok{0.0865} \OperatorTok{-}\FloatTok{0.0999} \OperatorTok{-}\FloatTok{0.0986}  \FloatTok{0.0489}  \FloatTok{1.0000}
-\KeywordTok{cor}\NormalTok{(x_}\DecValTok{100} \OperatorTok{%*%}\StringTok{ }\NormalTok{Est_sqrt_ins_cov_}\DecValTok{200}\NormalTok{) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{abs}\NormalTok{(.) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{sum}\NormalTok{(.)}
-\OtherTok{FALSE}\NormalTok{ [}\DecValTok{1}\NormalTok{] }\FloatTok{2479.92}
-\KeywordTok{cov}\NormalTok{(x_}\DecValTok{100} \OperatorTok{%*%}\StringTok{ }\NormalTok{Est_sqrt_ins_cov_}\DecValTok{200}\NormalTok{) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{diag}\NormalTok{(.) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{sum}\NormalTok{(.)}
+\KeywordTok{cor}\NormalTok{(x_}\DecValTok{100}\OperatorTok{%*%}\NormalTok{Est_sqrt_ins_cov_}\DecValTok{200}\NormalTok{)[}\DecValTok{1}\OperatorTok{:}\DecValTok{5}\NormalTok{,}\DecValTok{1}\OperatorTok{:}\DecValTok{5}\NormalTok{] }\OperatorTok{%>%}\StringTok{ }\KeywordTok{round}\NormalTok{(.,}\DecValTok{4}\NormalTok{)}
+\OtherTok{FALSE}\NormalTok{        [,}\DecValTok{1}\NormalTok{]    [,}\DecValTok{2}\NormalTok{]    [,}\DecValTok{3}\NormalTok{]    [,}\DecValTok{4}\NormalTok{]    [,}\DecValTok{5}\NormalTok{]}
+\OtherTok{FALSE}\NormalTok{ [}\DecValTok{1}\NormalTok{,] }\FloatTok{1.0000}  \FloatTok{0.0589}  \FloatTok{0.0833}  \FloatTok{0.0956}  \FloatTok{0.0781}
+\OtherTok{FALSE}\NormalTok{ [}\DecValTok{2}\NormalTok{,] }\FloatTok{0.0589}  \FloatTok{1.0000} \OperatorTok{-}\FloatTok{0.0444} \OperatorTok{-}\FloatTok{0.0154}  \FloatTok{0.1082}
+\OtherTok{FALSE}\NormalTok{ [}\DecValTok{3}\NormalTok{,] }\FloatTok{0.0833} \OperatorTok{-}\FloatTok{0.0444}  \FloatTok{1.0000}  \FloatTok{0.0436}  \FloatTok{0.0440}
+\OtherTok{FALSE}\NormalTok{ [}\DecValTok{4}\NormalTok{,] }\FloatTok{0.0956} \OperatorTok{-}\FloatTok{0.0154}  \FloatTok{0.0436}  \FloatTok{1.0000} \OperatorTok{-}\FloatTok{0.0724}
+\OtherTok{FALSE}\NormalTok{ [}\DecValTok{5}\NormalTok{,] }\FloatTok{0.0781}  \FloatTok{0.1082}  \FloatTok{0.0440} \OperatorTok{-}\FloatTok{0.0724}  \FloatTok{1.0000}
+\KeywordTok{cor}\NormalTok{(x_}\DecValTok{100}\OperatorTok{%*%}\NormalTok{Est_sqrt_ins_cov_}\DecValTok{200}\NormalTok{) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{abs}\NormalTok{(.) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{sum}\NormalTok{(.)}
+\OtherTok{FALSE}\NormalTok{ [}\DecValTok{1}\NormalTok{] }\FloatTok{2481.806}
+\KeywordTok{cov}\NormalTok{(x_}\DecValTok{100}\OperatorTok{%*%}\NormalTok{Est_sqrt_ins_cov_}\DecValTok{200}\NormalTok{) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{diag}\NormalTok{(.) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{sum}\NormalTok{(.)}
 \OtherTok{FALSE}\NormalTok{ [}\DecValTok{1}\NormalTok{] }\DecValTok{199}
-\KeywordTok{cor}\NormalTok{(x_}\DecValTok{100} \OperatorTok{%*%}\StringTok{ }\NormalTok{Est_sqrt_ins_cov_}\DecValTok{200}\NormalTok{)[}\KeywordTok{cor}\NormalTok{(x_}\DecValTok{100} \OperatorTok{%*%}\StringTok{ }\NormalTok{Est_sqrt_ins_cov_}\DecValTok{200}\NormalTok{) }\OperatorTok{%>%}\StringTok{ }
-\StringTok{    }\KeywordTok{lower.tri}\NormalTok{(., }\DataTypeTok{diag =} \OtherTok{FALSE}\NormalTok{)] }\OperatorTok{%>%}\StringTok{ }\KeywordTok{max}\NormalTok{()}
-\OtherTok{FALSE}\NormalTok{ [}\DecValTok{1}\NormalTok{] }\FloatTok{0.2662189}
+\KeywordTok{cor}\NormalTok{(x_}\DecValTok{100}\OperatorTok{%*%}\NormalTok{Est_sqrt_ins_cov_}\DecValTok{200}\NormalTok{)[}\KeywordTok{cor}\NormalTok{(x_}\DecValTok{100}\OperatorTok{%*%}\NormalTok{Est_sqrt_ins_cov_}\DecValTok{200}\NormalTok{) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{                                    }\KeywordTok{lower.tri}\NormalTok{(., }\DataTypeTok{diag =} \OtherTok{FALSE}\NormalTok{)] }\OperatorTok{%>%}\StringTok{ }\KeywordTok{max}\NormalTok{()}
+\OtherTok{FALSE}\NormalTok{ [}\DecValTok{1}\NormalTok{] }\FloatTok{0.3148402}
 \end{Highlighting}
 \end{Shaded}
 
