@@ -186,15 +186,48 @@ invsqrt <- function(Sigma, tol = 1e-15) {
 
 
 ##################################################################################
+## SVD dimension reduction method
+##################################################################################
+
+SVD_dim_reduction <- function(x, reduce_coef = 0.5) {
+  n <- nrow(x)
+  p <- ncol(x)
+  dim <- round(min(n,p) * reduce_coef, 0) 
+  svd_x <- svd(x, nu = dim, nv = dim)
+  x_r <- (svd_x$u) %*% diag(svd_x$d[1:dim]) %*% t(svd_x$v[1:dim,]) # ignore the right U_3 part 
+  x_r
+}
+
+
+##################################################################################
+## SVD dimension reduction method
+##################################################################################
+
+PCA_dim_reduction <- function(x) {
+  pca_x <- prcomp(x, retx = TRUE)
+  x_r <- pca_x$x
+  x_r
+}
+
+##################################################################################
 ## uncorrelated function
 ##################################################################################
-uncorr_fn <- function(input_data, uncorr_method = SVD_method , uncorr_args = NULL) {
-  if(!is.null(uncorr_args)){ 
-    args <- append(list(input_data = input_data), uncorr_args) # generate the args for the uncorrelation function
-    res <- do.call(uncorr_method, args)
-    } else 
-       res <- uncorr_method(input_data)
+uncorr_fn <- function(input_data, 
+                      uncorr_method = SVD_method , 
+                      uncorr_args = NULL,
+                      dim_red_method = NULL, 
+                      dim_red_args = NULL) {
   
+  # dimension reduction 
+  if(!is.null(dim_red_method)){
+    args <- append(list(x = input_data), dim_red_args)
+    input_data <- do.call(dim_red_method, args)
+  }
+  
+  # decorrelation
+  args <- append(list(input_data = input_data), uncorr_args) # generate the args for the uncorrelation function
+  res <- do.call(uncorr_method, args)
+
   res$uncorr_data
 }
 
@@ -202,10 +235,10 @@ uncorr_fn <- function(input_data, uncorr_method = SVD_method , uncorr_args = NUL
 ## SVD method of decorrelation method
 ##################################################################################
 
-SVD_method <- function(input_data, main = FALSE, inter = FALSE) {
+SVD_method <- function(input_data, p, main = FALSE, inter = FALSE) {
   # calculate the covariance matrix
   I_m <- diag(p)
-  I_i <- diag(ncol(input_data) - p)
+  I_i <- diag(p*(p-1)/2)
   
   if(main == TRUE) # only decorrelating main effect
     I_m <- cov(input_data[,1:p])

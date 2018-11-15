@@ -1,0 +1,232 @@
+\documentclass[]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \ifxetex
+    \usepackage{mathspec}
+  \else
+    \usepackage{fontspec}
+  \fi
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+\hypersetup{unicode=true,
+            pdftitle={SVD Dimension reduction method},
+            pdfauthor={Xuelong Wang},
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{5}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+%%% Use protect on footnotes to avoid problems with footnotes in titles
+\let\rmarkdownfootnote\footnote%
+\def\footnote{\protect\rmarkdownfootnote}
+
+%%% Change title format to be more compact
+\usepackage{titling}
+
+% Create subtitle command for use in maketitle
+\newcommand{\subtitle}[1]{
+  \posttitle{
+    \begin{center}\large#1\end{center}
+    }
+}
+
+\setlength{\droptitle}{-2em}
+
+  \title{SVD Dimension reduction method}
+    \pretitle{\vspace{\droptitle}\centering\huge}
+  \posttitle{\par}
+    \author{Xuelong Wang}
+    \preauthor{\centering\large\emph}
+  \postauthor{\par}
+      \predate{\centering\large\emph}
+  \postdate{\par}
+    \date{2018-11-15}
+
+\usepackage{float,amsmath, bbm, siunitx, bm}
+\usepackage{pdfpages}
+\floatplacement{figure}{H}
+\newcommand{\indep}{\rotatebox[origin=c]{90}{$\models$}}
+
+\begin{document}
+\maketitle
+
+{
+\setcounter{tocdepth}{2}
+\tableofcontents
+}
+\section{Motivation}\label{motivation}
+
+Based on previous simulation results we did a series of simulation on
+estimation of total variance of main and interactive effects. we found
+that combing dimension reduction with decorrelation tend (our proposed
+method) to have a better result than GCTA, especailly when n \textless{}
+p and correlation between covariates are high. Therefore, we condcuted a
+group of simulation studies trying to evaluate the performance of the
+proposed method. we tried different covariance structures and PCBs data
+with re-sampling. Overall, the performance is good in most of the case.
+When n is small and correlation is also weak, the prospoed method is as
+good as the original GCTA method.
+
+\section{Main idea two steps}\label{main-idea-two-steps}
+
+\subsection{Dimension Reduction}\label{dimension-reduction}
+
+\begin{align*}
+  X = U D V^T &= \begin{bmatrix}
+                      U_r & U_2
+                      \end{bmatrix}
+                      \begin{bmatrix}
+                      D_r & 0\\
+                      0 & D_2
+                      \end{bmatrix}
+                      \begin{bmatrix}
+                      V_r & V_2\\
+                      V_3 & V_4
+                      \end{bmatrix}^T \\ 
+              &= 
+                      \begin{bmatrix}
+                      U_rD_r & U_2D_2
+                      \end{bmatrix}
+                      \begin{bmatrix}
+                      V_r^T & V_3^T\\
+                      V_2^T & V_4^T
+                      \end{bmatrix}
+                      =
+                      \begin{bmatrix}
+                      U_rD_rV_r^T + U_2D_2V_2^T & U_rD_rV_3^T + U_2D_2 V_4^T
+                      \end{bmatrix}
+\end{align*}
+
+Ignore \(V_2\), \(V_3\) and \(V_4\) , then we have the X\_r as following
+\[
+  X_r = U_rD_rV_r^T.
+\] We use \(X_r\) as the new covariates to the proposed methd.
+Therefore, we reduce the dimension from p to n
+
+\subsection{Following with GCTA
+method}\label{following-with-gcta-method}
+
+After calculating \(X_r\), we can regard \(X_r\) as our new predictors
+and use it as the input to the proposed method
+
+Note that we could use this blocking method to reduce X's dimension to
+\(k, k \leq min(p,n)\).
+
+\section{Simulation study}\label{simulation-study}
+
+I used Chi-square random variable with df = 1. To generate a certain
+covariance structure, one could randomly generate a sample from
+multivariate-normal-distribution first, and then just square each
+elements to have a group univarate Chi-saure distribution with desired
+correlations. The details of simulation is shown as follows.
+
+\subsection{Simulation setup}\label{simulation-setup}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  Normal distribution\\
+  \[
+  X = [X_1 \dots, X_p] ~~~ cov(X_i, X_j) = \Sigma_{X}
+    \]
+\item
+  Chi-square distribution\\
+  \[
+  T = [T_1 \dots, T_p] ,~~~ T_i = X_i^2 \sim \chi_{(1)}^2, ~~~ cov(T_i, T_j) = \Sigma_{\chi^2}
+    \]
+\end{enumerate}
+
+\begin{itemize}
+\tightlist
+\item
+  The sample size n is from 100 to 800
+\item
+  The number of main effect is 34 (p = 34)
+\end{itemize}
+
+\subsubsection{\texorpdfstring{correlation of \(T_i\) and
+\(T_j\)}{correlation of T\_i and T\_j}}\label{correlation-of-t_i-and-t_j}
+
+Assume \(Cov(X_i,X_j) = \sigma_{ij}, ~~ Var(X_i) = \sigma_i^2\),
+\(E(X_i) = 0\) and constant variance, then we have \[
+  Var(X_i) = E(X_i^2) - E(X_i)^2 = E(X_i^2) = \sigma_i^2 = \sigma^2
+\]
+
+\begin{align*}
+  Cov(T_i, T_j) = Cov(X_i^2, X_i^2) &= E\left((X_i^2 - E(X_i^2))(X_j^2 - E(X_j^2))\right) \\ 
+                                    &= E(X_i^2X_j^2 - X_i^2E(X_j^2) - X_j^2E(X_i^2) + E(X_i^2)E(X_j^2)) \\
+                                    &= E(X_i^2X_j^2) - \sigma^4 \\ 
+                                    &= \sigma_i^2\sigma_j^2 + 2\sigma_{ij}^2 - \sigma^4 \\ 
+                                    &= 2\sigma^2_{ij}
+\end{align*}
+
+\subsubsection{Compound Symmetry}\label{compound-symmetry}
+
+\[
+  T = [T_1 \dots, T_p] ,~~~ T_i \sim \chi_{(1)}^2, ~~~ cov(T_i, T_j) = 2\rho^2,~~~ \forall  i \ne j, \rho = \{0.1, \dots, 0.9 \} 
+\]
+
+\subsubsection{Autoregression AR(1)}\label{autoregression-ar1}
+
+\[
+  T = [T_1 \dots, T_p] ,~~~ T_i \sim \chi_{(1)}^2, ~~~ cov(T_i, T_j) = 2\rho^{2|i-j|},~~~ \forall  i \ne j, \rho = \{0.1, \dots, 0.9 \} 
+\]
+
+\subsubsection{Unstructure}\label{unstructure}
+
+\[
+  T = [T_1 \dots, T_p] ,~~~ T_i \sim \chi_{(1)}^2, ~~~ cov(T_i, T_j) = \sigma_{ij}
+\]
+
+\subsection{Simulation result}\label{simulation-result}
+
+\subsubsection{Compound Symmetry}\label{compound-symmetry-1}
+
+\subsubsection{Autoregression}\label{autoregression}
+
+\subsubsection{Unstructure}\label{unstructure-1}
+
+
+\end{document}

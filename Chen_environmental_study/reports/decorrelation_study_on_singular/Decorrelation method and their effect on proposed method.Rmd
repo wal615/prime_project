@@ -165,21 +165,6 @@ We consider to estimate the total variance, so that the total covariates (combin
 source("./generate_graph_chi.R")
 ```
 
-#### Simulation results
-
-```{r fixed_fixed, fig.cap = "Fixed_Fixed total independet chi with df = 1"}
-plot_chi_fixed_fixed_total_p_34_n_100_600
-```
-
-
-```{r fixed_random, fig.cap = "fixed_random total independet chi with df = 1"}
-plot_chi_fixed_random_total_p_34_n_100_600
-```
-
-
-```{r random_random, fig.cap = "random_random total independet chi with df = 1"}
-plot_chi_random_random_total_p_34_n_100_600
-```
 
 - The original GCTA method is not affected by the $p < n$ condition if the covariates are independent in the population level
 - note that actual the covariates are not perfectly independent because of the interaction terms
@@ -211,38 +196,45 @@ Based on the simulation study, the results suggest that the proposed method has 
 
 ## Solution 1, using SVD to reduce the total covariate matrix into a $n \times n$ matrix
 
-### Main idea 
+### Main idea two steps 
 
-\[
-  X = U \Sigma U^T = \begin{bmatrix}
-                      U_1 & U_2
+1. Dimension Reduction
+
+\begin{align*}
+  X = U D V^T &= \begin{bmatrix}
+                      U_r & U_2
                       \end{bmatrix}
                       \begin{bmatrix}
-                      \Lambda_1 & 0\\
-                      0 & 0
+                      D_r & 0\\
+                      0 & D_2
                       \end{bmatrix}
                       \begin{bmatrix}
-                      U_1 & U_2\\
-                      U_3 & U_4
-                      \end{bmatrix}^T 
-                      = 
+                      V_r & V_2\\
+                      V_3 & V_4
+                      \end{bmatrix}^T \\ 
+              &= 
                       \begin{bmatrix}
-                      U_1\Lambda_1 & 0
+                      U_rD_r & U_2D_2
                       \end{bmatrix}
                       \begin{bmatrix}
-                      U_1^T & U_3^T\\
-                      U_2^T & U_4^T
+                      V_r^T & V_3^T\\
+                      V_2^T & V_4^T
                       \end{bmatrix}
                       =
                       \begin{bmatrix}
-                      U_1\Lambda_1U_1^T & U_1\Lambda_1U_3^T
+                      U_rD_rV_r^T + U_2D_2V_2^T & U_rD_rV_3^T + U_2D_2 V_4^T
                       \end{bmatrix}
-\]
-Ignore the $U_3$ , then we have the X_r as following
+\end{align*}
+
+Ignore $V_2$, $V_3$ and $V_4$ , then we have the X_r as following
 \[
-  X_r = U_1\Lambda_1U_1^T.
+  X_r = U_rD_rV_r^T.
 \]
-We use $X_r$ as the new covariates to the proposed methd. Therefore, we reduce the dimension from p to n. 
+We use $X_r$ as the new covariates to the proposed methd. Therefore, we reduce the dimension from p to n
+
+1. After calculating $X_r$, we can regard $X_r$ as our new predictors and use it as the input to GCTA or proposed method
+
+Note that we could use this blocking method to reduce X's dimension to $k, k \leq min(p,n)$. 
 
 ### Simulation setup 
 
@@ -265,12 +257,6 @@ Therefore, when $n\leq591$, we using the svd_dimension reduction method. \textco
 ```{r load picture svd, include=FALSE }
 source("./generate_graph_chi.R")
 ```
-
-![SVD_fixed_fixed](./graphs/plot_chi_fixed_fixed_total_p_34_rho_0.1_0.9_n_100_700_svd_dim_red.pdf)
-
-![SVD_fixed_random](./graphs/plot_chi_fixed_random_total_p_34_rho_0.1_0.9_n_100_700_svd_dim_red.pdf)
-
-<!-- \includepdf[pages={-}]{./graphs/plot_chi_fixed_fixed_total_p_34_rho_0.1_0.9_n_100_700_svd_dim_red.pdf} -->
 
 ## Solution 2, using PCA Regression (PCR) method 
 
@@ -307,4 +293,14 @@ Since we only care about the total effect's variance $Var(X_{total}^T\beta_{tota
   X_{s,k} = \sum_{j=1}^{k}d_j\pmb{u_jv_k} = U_kD_kV_k^T,~~ \text{Its Variation} ~~  \sum_{j=1}^kd_j^2/n.
 \]
 
+\[
+  X_r(k) = XV_k = UD \begin{bmatrix} 
+                      V_k^T \\
+                      V_{(p-k)}^T 
+                      \end{bmatrix} V_k=  UD \begin{bmatrix} 
+                                                  I_k \\
+                                                  0 
+                                                \end{bmatrix}= U_kD_k
+\]
 
+- Note that $Var(X_k) = diag(D_i^2), i \in \{1, \dots, k\}$, which means we don't need to decorrelated it again.

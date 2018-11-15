@@ -22,21 +22,72 @@ generate_inter <- function(p, interaction) {
   betai
 }
 
+
+##################################################################################
+## generate AR correlation matrix
+##################################################################################
+
+autocorr.mat <- function(p = 100, rho = 0.9) {
+  mat <- diag(p)
+  return(rho^abs(row(mat)-col(mat)))
+}
+
+##################################################################################
+## generate UN correlation matrix
+##################################################################################
+
+unstr_corr.mat <- function(p, k = 5) {
+  P <- matrix(runif(p*k), ncol=p)
+  con_str <- crossprod(P) + diag(runif(p))
+  con_str <- diag(1/sqrt(diag(con_str))) %*% con_str %*% diag(1/sqrt(diag(con_str)))
+  con_str
+}
+
 ##################################################################################
 ## generate correlated chi-square
 ##################################################################################
-generate_chi <- function(n, p, rho, chi_coef = 1, combine = TRUE) {
+generate_chi <- function(n, p, rho = NULL, sig_coef = 1, 
+                         structure = c("cs","un","ar")[1], 
+                         chi_coef = 1, 
+                         combine = TRUE,
+                         pre_cor = NULL) {
   # generate individual chi_square
   p_normal <- p*chi_coef
-  cor_str <- matrix(rep(rho,p_normal^2), ncol = p_normal)
-  diag(cor_str) <- 1
-  x <- mvrnorm(n = n,
-               mu = rep(0,p_normal),
-               Sigma = cor_str)
+  
+  if(structure == "cs"){
+    cor_str <- matrix(rep(rho,p_normal^2), ncol = p_normal)
+    diag(cor_str) <- 1
+    cor_str <- cor_str * sig_coef
+    
+    x <- mvrnorm(n = n,
+                 mu = rep(0,p_normal),
+                 Sigma = cor_str)
+  }
+  
+  if(structure == "un"){
+    if(class(pre_cor) == "list") {pre_cor <- pre_cor[[1]]}
+    con_str <- pre_cor * sig_coef # to keep the covariance matrix same for each simulation iterations
+    x <- mvrnorm(n = n,
+                 mu = rep(0,p_normal),
+                 Sigma = con_str)
+  }
+  
+  if(structure == "ar"){
+    con_str <- autocorr.mat(p_normal, rho)
+    con_str <- con_str * sig_coef
+    
+    x <- mvrnorm(n = n,
+                 mu = rep(0,p_normal),
+                 Sigma = con_str)
+  }
+  
   x <- x^2
   
   # combine different chi square to get different degree of freedom
-  if(chi_coef == 1) {len_index <- p; index_p <- sample(1:p)}
+  if(chi_coef == 1) {
+    len_index <- p # for later the while condition 
+    index_p <- sample(1:p)
+    }
   else len_index <- 0
   
   while(len_index < p) {
@@ -53,6 +104,7 @@ generate_chi <- function(n, p, rho, chi_coef = 1, combine = TRUE) {
   
   attributes(b) <- append(attributes(b), 
                           list(x_dist = "chi", 
+                               str = structure,
                                corr = rho))
   b
 }
@@ -99,28 +151,6 @@ generate_chi_sub <- function(pro) {
   b
 }
 
-##################################################################################
-## SVD dimension reduction method
-##################################################################################
-
-SVD_dim_reduction <- function(x) {
-  n <- nrow(x)
-  p <- ncol(x)
-  svd_x <- svd(x, nu = n, nv = n)
-  x_r <- svd_x$u %*% diag(svd_x$d) %*% svd_x$v[1:n,]
-  x_r
-}
-
-
-##################################################################################
-## SVD dimension reduction method
-##################################################################################
-
-PCA_dim_reduction <- function(x) {
- pca_x <- prcomp(x, retx = TRUE)
- x_r <- pca_x$x
- x_r
-}
 
 
 ##################################################################################
@@ -140,6 +170,8 @@ simulation_fn <- function(
                           nrep,
                           uncorr_method = NULL,
                           uncorr_args = NULL,
+                          dim_red_method = NULL,
+                          dim_red_args = NULL,
                           interaction = 0, 
                           interaction_m = 0, 
                           seed = 0, 
@@ -166,7 +198,7 @@ simulation_fn <- function(
   result_raw <- foreach(ibrep = 1:brep, .combine = rbind, .verbose = TRUE, .errorhandling = "remove") %dorng%   {
     # Initial output 
     result_tmp <- matrix(0, nrow = nrep, ncol = 6)
-    
+
     # Generate covariates  
     b_raw <- do.call(generate_data, gene_args)
     
@@ -176,6 +208,8 @@ simulation_fn <- function(
                        inter_fixed = inter_fixed,
                        x_dist = attributes(b_raw)$x_dist)
     additional <- append(additional, c(as.list(gene_args), as.list(uncorr_args)))
+    
+    additional$pre_cor <- NULL
     
     b <- std_fn(b = b_raw,
                 p = ncol(b_raw),
@@ -207,6 +241,10 @@ simulation_fn <- function(
     }
     
     
+    
+    # Uncorrelated data
+    x <- uncorr_fn(b_final, uncorr_method, uncorr_args, dim_red_method, dim_red_args)
+    
     # Estimating total effects with iterations
     for(irep in 1:nrep){
       # Generate health outcome given fixed random effects
@@ -215,15 +253,7 @@ simulation_fn <- function(
       fit=Yang(y,b_final,interact = interaction_m)
       result_tmp[irep,3] <- fit$G
       result_tmp[irep,4] <- fit$RACT
-      
-      # uncorrelated data 
-      # if(nrow(b_final) < ncol(b_final)){
-      # cat("SVD_dimension reduction applied")
-      # b_final <- SVD_dim_reduction(b_final) # svd dimension reduction
-      # b_final <- PCA_dim_reduction(b_final) # pca dimension reduction
-      # }
-      x <- uncorr_fn(b_final, uncorr_method, uncorr_args)
-      
+
       # Call the GCTA method
       fit=Yang(y,x,interact = interaction_m)
       result_tmp[irep,5] <- fit$G

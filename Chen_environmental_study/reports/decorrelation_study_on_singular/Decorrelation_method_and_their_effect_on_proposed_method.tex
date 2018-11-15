@@ -122,7 +122,7 @@
   \postauthor{\par}
       \predate{\centering\large\emph}
   \postdate{\par}
-    \date{2018-10-23}
+    \date{2018-11-01}
 
 \usepackage{float,amsmath, bbm, siunitx, bm}
 \usepackage{pdfpages}
@@ -359,26 +359,6 @@ increase from 100 to 600 in order to see how the \(p < n\) simulation
 affect the GCTA and proposed method's performance. Following is the
 simulation result.
 
-\paragraph{Simulation results}\label{simulation-results}
-
-\begin{figure}
-\centering
-\includegraphics{Decorrelation_method_and_their_effect_on_proposed_method_files/figure-latex/fixed_fixed-1.pdf}
-\caption{Fixed\_Fixed total independet chi with df = 1}
-\end{figure}
-
-\begin{figure}
-\centering
-\includegraphics{Decorrelation_method_and_their_effect_on_proposed_method_files/figure-latex/fixed_random-1.pdf}
-\caption{fixed\_random total independet chi with df = 1}
-\end{figure}
-
-\begin{figure}
-\centering
-\includegraphics{Decorrelation_method_and_their_effect_on_proposed_method_files/figure-latex/random_random-1.pdf}
-\caption{random\_random total independet chi with df = 1}
-\end{figure}
-
 \begin{itemize}
 \tightlist
 \item
@@ -456,36 +436,57 @@ proposed method.
 covariate matrix into a \(n \times n\)
 matrix}{Solution 1, using SVD to reduce the total covariate matrix into a n \textbackslash{}times n matrix}}\label{solution-1-using-svd-to-reduce-the-total-covariate-matrix-into-a-n-times-n-matrix}
 
-\subsubsection{Main idea}\label{main-idea}
+\subsubsection{Main idea two steps}\label{main-idea-two-steps}
 
-\[
-  X = U \Sigma U^T = \begin{bmatrix}
-                      U_1 & U_2
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Dimension Reduction
+\end{enumerate}
+
+\begin{align*}
+  X = U D V^T &= \begin{bmatrix}
+                      U_r & U_2
                       \end{bmatrix}
                       \begin{bmatrix}
-                      \Lambda_1 & 0\\
-                      0 & 0
+                      D_r & 0\\
+                      0 & D_2
                       \end{bmatrix}
                       \begin{bmatrix}
-                      U_1 & U_2\\
-                      U_3 & U_4
-                      \end{bmatrix}^T 
-                      = 
+                      V_r & V_2\\
+                      V_3 & V_4
+                      \end{bmatrix}^T \\ 
+              &= 
                       \begin{bmatrix}
-                      U_1\Lambda_1 & 0
+                      U_rD_r & U_2D_2
                       \end{bmatrix}
                       \begin{bmatrix}
-                      U_1^T & U_3^T\\
-                      U_2^T & U_4^T
+                      V_r^T & V_3^T\\
+                      V_2^T & V_4^T
                       \end{bmatrix}
                       =
                       \begin{bmatrix}
-                      U_1\Lambda_1U_1^T & U_1\Lambda_1U_3^T
+                      U_rD_rV_r^T + U_2D_2V_2^T & U_rD_rV_3^T + U_2D_2 V_4^T
                       \end{bmatrix}
-\] Ignore the \(U_3\) , then we have the X\_r as following \[
-  X_r = U_1\Lambda_1U_1^T.
+\end{align*}
+
+Ignore \(V_2\), \(V_3\) and \(V_4\) , then we have the X\_r as following
+\[
+  X_r = U_rD_rV_r^T.
 \] We use \(X_r\) as the new covariates to the proposed methd.
-Therefore, we reduce the dimension from p to n.
+Therefore, we reduce the dimension from p to n
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  After calculating \(X_r\), we can regard \(X_r\) as our new predictors
+  and use it as the input to GCTA or proposed method
+\end{enumerate}
+
+Note that we could use this blocking method to reduce X's dimension to
+\(k, k \leq min(p,n)\).
 
 \subsubsection{Simulation setup}\label{simulation-setup}
 
@@ -510,18 +511,6 @@ method.
 \textcolor{red}{When $n > 595$, we don't reduce the dimension of the total covariates}
 
 \subsubsection{Simulation result}\label{simulation-result}
-
-\begin{figure}
-\centering
-\includegraphics{./graphs/plot_chi_fixed_fixed_total_p_34_rho_0.1_0.9_n_100_700_svd_dim_red.pdf}
-\caption{SVD\_fixed\_fixed}
-\end{figure}
-
-\begin{figure}
-\centering
-\includegraphics{./graphs/plot_chi_fixed_random_total_p_34_rho_0.1_0.9_n_100_700_svd_dim_red.pdf}
-\caption{SVD\_fixed\_random}
-\end{figure}
 
 \subsection{Solution 2, using PCA Regression (PCR)
 method}\label{solution-2-using-pca-regression-pcr-method}
@@ -578,6 +567,23 @@ dimension}\label{using-pca-to-reduce-the-xs-dimension}
 \[
   X_{s,k} = \sum_{j=1}^{k}d_j\pmb{u_jv_k} = U_kD_kV_k^T,~~ \text{Its Variation} ~~  \sum_{j=1}^kd_j^2/n.
 \]
+
+\[
+  X_r(k) = XV_k = UD \begin{bmatrix} 
+                      V_k^T \\
+                      V_{(p-k)}^T 
+                      \end{bmatrix} V_k=  UD \begin{bmatrix} 
+                                                  I_k \\
+                                                  0 
+                                                \end{bmatrix}= U_kD_k
+\]
+
+\begin{itemize}
+\tightlist
+\item
+  Note that \(Var(X_k) = diag(D_i^2), i \in \{1, \dots, k\}\), which
+  means we don't need to decorrelated it again.
+\end{itemize}
 
 
 \end{document}
