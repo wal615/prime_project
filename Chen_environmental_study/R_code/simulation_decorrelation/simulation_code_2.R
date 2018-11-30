@@ -9,98 +9,75 @@ library(tidyverse)
 library(foreach)
 library(doRNG)
 library(doParallel)
-cores <- 5
+cores <- 20
 
+###############################################################################################################################
+## total
+###############################################################################################################################
+
+combine <- FALSE
 n_total <- c(100,200,300,400,500, 600, 700, 800)
 rho <- seq(0.1,0.9,0.1)
 p <- 34
-combine <- TRUE
 
-gene_args <- expand.grid(rho = rho, p = p, n = n_total, combine = combine)
+
+# gene_args <- expand.grid(structure = "un", p = p, n = n_total, pre_cor = list(pre_cor))
+gene_args <- expand.grid(rho = rho, p = p, structure = "cs", n = n_total)
 gene_args <- gene_args %>% split(x = ., f = seq(nrow(gene_args))) # generate a list from each row of a dataframe
 uncorr_args <- list(p = p)
 
-result_list_fixed_fixed <- mapply(FUN = simulation_fn,
-                                  gene_args = gene_args,
-                                  combine = TRUE,
-                                  MoreArgs = list(p = p,
-                                                  tran_fun = null_tran,
-                                                  main_fixed = TRUE,
-                                                  inter_fixed = TRUE,
-                                                  uncorr_method = SVD_method,
-                                                  uncorr_args = uncorr_args,
-                                                  generate_data = generate_chi,
-                                                  brep = 200,
-                                                  nrep = 20,
-                                                  seed = 123,
-                                                  cores = cores,
-                                                  interaction = 1,
-                                                  interaction_m = 0),
-                                  SIMPLIFY = FALSE)
-save(result_list_fixed_fixed, file = "./result/simulation_decorrelation/simulation_result_list_fixed_fixed_ind_chi_rho_0.1_0.9_n_100_800_p_34_svd_red_0.9")
+result_list_fixed_fixed_main <- mapply(FUN = simulation_fn,
+                                       gene_args = gene_args,
+                                       combine = combine,
+                                       MoreArgs = list(p = p,
+                                                       tran_fun = null_tran,
+                                                       main_fixed = TRUE,
+                                                       inter_fixed = TRUE,
+                                                       uncorr_method = SVD_method,
+                                                       uncorr_args = uncorr_args,
+                                                       dim_red_method = NULL,
+                                                       generate_data = generate_chi,
+                                                       brep = 200,
+                                                       nrep = 20,
+                                                       seed = 1234,
+                                                       cores = cores,
+                                                       interaction = 0,
+                                                       interaction_m = 1),
+                                       SIMPLIFY = FALSE)
 
+save(result_list_fixed_fixed_main, file = "./result/simulation_decorrelation/simulation_result_list_fixed_fixed_cs_chi_main_interm_1_inter_0_0_interaction")
 
-# result_list_fixed_random <- mapply(FUN = simulation_fn,
-#                                   gene_args = gene_args,
-#                                   combine = TRUE,
-#                                   MoreArgs = list(p = p,
-#                                                   tran_fun = null_tran,
-#                                                   main_fixed = TRUE,
-#                                                   inter_fixed = FALSE,
-#                                                   uncorr_method = SVD_method,
-#                                                   uncorr_args = uncorr_args,
-#                                                   generate_data = generate_chi,
-#                                                   brep = 200,
-#                                                   nrep = 20,
-#                                                   seed = 123,
-#                                                   cores = cores,
-#                                                   interaction = 1,
-#                                                   interaction_m = 0),
-#                                   SIMPLIFY = FALSE)
-# save(result_list_fixed_random, file = "./result/simulation_decorrelation/simulation_result_list_fixed_random_ind_chi_rho_0.1_0.9_n_100_800_p_34_svd_dim_100")
+###############################################################################################################################
+## total
+###############################################################################################################################
 
-# result_list_random_random <- mapply(FUN = simulation_fn,
-#                                   gene_args = gene_args,
-#                                   combine = TRUE,
-#                                   MoreArgs = list(p = p,
-#                                                   tran_fun = null_tran,
-#                                                   main_fixed = FALSE,
-#                                                   inter_fixed = FALSE,
-#                                                   uncorr_method = SVD_method,
-#                                                   generate_data = generate_chi,
-#                                                   brep = 200,
-#                                                   nrep = 20,
-#                                                   seed = 123,
-#                                                   cores = cores,
-#                                                   interaction = 1,
-#                                                   interaction_m = 0),
-#                                   SIMPLIFY = FALSE)
-# save(result_list_random_random, file = "./result/simulation_decorrelation/simulation_result_list_random_random_ind_chi_cho_0.5_n_100_500_p_34_svd_reduction")
+combine <- TRUE
+n_total <- c(100,200,300,400,500, 600, 700, 800)
+rho <- seq(0.1,0.9,0.1)
+p <- 34
 
-# pro <- seq(0.1,0.9,0.1)
-# p <- 34
-# combine <- TRUE
-# 
-# gene_args <- expand.grid(pro = pro, p = p)
-# gene_args <- gene_args %>% split(x = ., f = seq(nrow(gene_args))) # generate a list from each row of a dataframe
-# uncorr_args <- list(p = p)
-# 
-# result_list_fixed_fixed <- mapply(FUN = simulation_fn,
-#                                   gene_args = gene_args,
-#                                   combine = TRUE,
-#                                   MoreArgs = list(p = p,
-#                                                   tran_fun = null_tran,
-#                                                   main_fixed = TRUE,
-#                                                   inter_fixed = TRUE,
-#                                                   uncorr_method = SVD_method,
-#                                                   uncorr_args = uncorr_args,
-#                                                   generate_data = generate_PCB,
-#                                                   brep = 200,
-#                                                   nrep = 20,
-#                                                   seed = 123,
-#                                                   cores = cores,
-#                                                   interaction = 1,
-#                                                   interaction_m = 0),
-#                                   SIMPLIFY = FALSE)
-# save(result_list_fixed_fixed, file = "./result/simulation_decorrelation/simulation_result_list_fixed_fixed_PCB_pro_0.1_0.9_red_0.5")
+gene_args <- expand.grid(rho = rho, p = p, structure = "cs", n = n_total)
+gene_args <- gene_args %>% split(x = ., f = seq(nrow(gene_args))) # generate a list from each row of a dataframe
+uncorr_args <- list(p = p)
+dim_red_args <- list(reduce_coef = 0.5)
 
+result_list_fixed_fixed_total <- mapply(FUN = simulation_fn,
+                                        gene_args = gene_args,
+                                        combine = combine,
+                                        MoreArgs = list(p = p,
+                                                        tran_fun = null_tran,
+                                                        main_fixed = TRUE,
+                                                        inter_fixed = TRUE,
+                                                        uncorr_method = SVD_method,
+                                                        uncorr_args = uncorr_args,
+                                                        dim_red_method = SVD_dim_reduction,
+                                                        dim_red_args = dim_red_args,
+                                                        generate_data = generate_chi,
+                                                        brep = 200,
+                                                        nrep = 20,
+                                                        seed = 1234,
+                                                        cores = cores,
+                                                        interaction = 0,
+                                                        interaction_m = 0),
+                                        SIMPLIFY = FALSE)
+save(result_list_fixed_fixed_total, file = "./result/simulation_decorrelation/simulation_result_list_fixed_fixed_cs_chi_total_inter_0_svd_0.5_0_interaction")

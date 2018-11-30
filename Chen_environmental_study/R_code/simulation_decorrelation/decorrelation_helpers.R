@@ -5,7 +5,7 @@ library("MASS")
 ##################################################################################
 generate_main <- function(p) {
   betam=rnorm(p, mean =0, sd =0.5) # main_effect ~ N(0,0.5)
-  betam[2*c(1:floor(p/2))]=0  # mimic the zero coefficients 
+  betam[2*c(1:floor(p/2))]=0  # mimic the zero coefficients
   betam
 }
 
@@ -14,9 +14,9 @@ generate_main <- function(p) {
 ##################################################################################
 generate_inter <- function(p, interaction) {
   if(interaction==0) {
-    betai <- 0
+    betai <- matrix(0,ncol=p, nrow = p)
   } else {
-    betai <- matrix(rnorm(p*p,m=0,sd=0.1),ncol=p) # interaction_effect ~ N(0,0.1)
+    betai <- matrix(rnorm(p*p,m=0.015,sd=0.1),ncol=p) # interaction_effect ~ N(0,0.1)
     betai[lower.tri(betai, diag = TRUE)] <- 0 # the number of interaction terms is {p*(p-1)}/2
   }
   betai
@@ -36,8 +36,9 @@ autocorr.mat <- function(p = 100, rho = 0.9) {
 ## generate UN correlation matrix
 ##################################################################################
 
-unstr_corr.mat <- function(p, k = 5) {
-  P <- matrix(runif(p*k), ncol=p)
+unstr_corr.mat <- function(p, k = 10) {
+  set.seed(123)
+  P <- matrix(runif(p*k), ncol=p) # k control the magnitude of off-diagonal elements
   con_str <- crossprod(P) + diag(runif(p))
   con_str <- diag(1/sqrt(diag(con_str))) %*% con_str %*% diag(1/sqrt(diag(con_str)))
   con_str
@@ -49,11 +50,9 @@ unstr_corr.mat <- function(p, k = 5) {
 generate_chi <- function(n, p, rho = NULL, sig_coef = 1, 
                          structure = c("cs","un","ar")[1], 
                          chi_coef = 1, 
-                         combine = TRUE,
                          pre_cor = NULL) {
   # generate individual chi_square
   p_normal <- p*chi_coef
-  
   if(structure == "cs"){
     cor_str <- matrix(rep(rho,p_normal^2), ncol = p_normal)
     diag(cor_str) <- 1
@@ -100,7 +99,7 @@ generate_chi <- function(n, p, rho = NULL, sig_coef = 1,
               FUN = function(data, index) {rowSums(data[,index, drop = FALSE])}, data = x) %>%
     Reduce(cbind, x = .)
   
-  if(combine) b <- model.matrix(~.*.+0, data.frame(b)) 
+  b <- model.matrix(~.*.+0, data.frame(b)) # adding the interaction term
   
   attributes(b) <- append(attributes(b), 
                           list(x_dist = "chi", 
@@ -117,7 +116,7 @@ generate_PCB <- function(pro, p) {
   # a <- read.sas7bdat("~/dev/projects/Chen_environmental_study/R_code/pcbs1000nomiss.sas7bdat")
   # b <- data.matrix(a[,2:(p+1)], rownames.force = NA)
   a <- read.csv("~/dev/projects/Chen_environmental_study/R_code/data/pcb_99_13_no_missing.csv")
-  b <- data.matrix(a[,1:p], rownames.force = NA)
+  b <- data.matrix(a[,-1], rownames.force = NA)
   n <- nrow(b)
   index <- sample(1:n, round(pro*n,0), replace = FALSE)
   b <- b[index,]
@@ -226,7 +225,7 @@ simulation_fn <- function(
     if(!inter_fixed){
       betai <- generate_inter(p, interaction)
     }
-    
+
     # Generate the signals
     signalm <- b_m%*%betam
     signali <- b_i%*%betai[upper.tri(betai, diag = FALSE)]
@@ -240,7 +239,7 @@ simulation_fn <- function(
       b_final <- b_m
     }
     
-    
+
     
     # Uncorrelated data
     x <- uncorr_fn(b_final, uncorr_method, uncorr_args, dim_red_method, dim_red_args)

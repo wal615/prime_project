@@ -82,7 +82,22 @@
   \postauthor{\par}
       \predate{\centering\large\emph}
   \postdate{\par}
-    \date{2018-11-15}
+    \date{2018-11-19}
+
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage[table]{xcolor}
+\usepackage{wrapfig}
+\usepackage{float}
+\usepackage{colortbl}
+\usepackage{pdflscape}
+\usepackage{tabu}
+\usepackage{threeparttable}
+\usepackage{threeparttablex}
+\usepackage[normalem]{ulem}
+\usepackage{makecell}
 
 \usepackage{float,amsmath, bbm, siunitx, bm}
 \usepackage{pdfpages}
@@ -195,12 +210,21 @@ Assume \(Cov(X_i,X_j) = \sigma_{ij}, ~~ Var(X_i) = \sigma_i^2\),
 \]
 
 \begin{align*}
-  Cov(T_i, T_j) = Cov(X_i^2, X_i^2) &= E\left((X_i^2 - E(X_i^2))(X_j^2 - E(X_j^2))\right) \\ 
+  Cov(T_i, T_j) = Cov(X_i^2, X_j^2) &= E\left((X_i^2 - E(X_i^2))(X_j^2 - E(X_j^2))\right) \\ 
                                     &= E(X_i^2X_j^2 - X_i^2E(X_j^2) - X_j^2E(X_i^2) + E(X_i^2)E(X_j^2)) \\
                                     &= E(X_i^2X_j^2) - \sigma^4 \\ 
                                     &= \sigma_i^2\sigma_j^2 + 2\sigma_{ij}^2 - \sigma^4 \\ 
                                     &= 2\sigma^2_{ij}
 \end{align*}
+
+\begin{align*}
+  Cor(T_i, T_j) &= \frac{Cov(X_i^2, X_j^2)}{\sqrt{Var(X_i^2)Var(X_j^2)}}\\
+                &= \frac{2\sigma^2_{ij}}{2 \sigma^4} \\
+                &= \frac{2(\rho\sigma^2)^2}{2 \sigma^4} \\
+                &= \rho^2
+\end{align*}
+
+\newpage
 
 \subsubsection{Compound Symmetry}\label{compound-symmetry}
 
@@ -208,11 +232,23 @@ Assume \(Cov(X_i,X_j) = \sigma_{ij}, ~~ Var(X_i) = \sigma_i^2\),
   T = [T_1 \dots, T_p] ,~~~ T_i \sim \chi_{(1)}^2, ~~~ cov(T_i, T_j) = 2\rho^2,~~~ \forall  i \ne j, \rho = \{0.1, \dots, 0.9 \} 
 \]
 
+\begin{figure}
+\centering
+\includegraphics{./generate_graph_as_pdf/plot_chi_fixed_fixed_total_p_34_rho_0.1_0.9_n_100_800_svd_red_0.5.pdf}
+\caption{Compound Stymmetry}
+\end{figure}
+
 \subsubsection{Autoregression AR(1)}\label{autoregression-ar1}
 
 \[
   T = [T_1 \dots, T_p] ,~~~ T_i \sim \chi_{(1)}^2, ~~~ cov(T_i, T_j) = 2\rho^{2|i-j|},~~~ \forall  i \ne j, \rho = \{0.1, \dots, 0.9 \} 
 \]
+
+\begin{figure}
+\centering
+\includegraphics{./generate_graph_as_pdf/plot_chi_fixed_fixed_ar_chi_rho_0.1_0.9_n_100_800_p_34_svd_0.5.pdf}
+\caption{AR(1)}
+\end{figure}
 
 \subsubsection{Unstructure}\label{unstructure}
 
@@ -220,13 +256,93 @@ Assume \(Cov(X_i,X_j) = \sigma_{ij}, ~~ Var(X_i) = \sigma_i^2\),
   T = [T_1 \dots, T_p] ,~~~ T_i \sim \chi_{(1)}^2, ~~~ cov(T_i, T_j) = \sigma_{ij}
 \]
 
+\begin{figure}
+\centering
+\includegraphics{./generate_graph_as_pdf/plot_chi_fixed_fixed_total_un_chi_rho_0.1_0.9_n_100_800_p_34_svd_0.5.pdf}
+\caption{Unstructure}
+\end{figure}
+
+\newpage
+
+\section{PCBs data simulation result}\label{pcbs-data-simulation-result}
+
+We are using the PCBs data from the
+
+\subsection{sample matrix of PCB data}\label{sample-matrix-of-pcb-data}
+
+\subsubsection{A glimsp of the covariance
+matrix}\label{a-glimsp-of-the-covariance-matrix}
+
+\begin{table}[!h]
+
+\caption{\label{tab:sub matrix of covariance of PCB}Covariance of PCB}
+\centering
+\resizebox{\linewidth}{!}{
+\begin{tabular}[t]{l|r|r|r|r|r|r|r|r|r|r}
+\hline
+  & LBX028 & LBX066 & LBX074 & LBX105 & LBX118 & LBX156 & LBX157 & LBX167 & LBX044 & LBX049\\
+\hline
+LBX028 & 1.000 & 0.678 & 0.399 & 0.304 & 0.311 & 0.260 & 0.257 & 0.280 & 0.649 & 0.672\\
+\hline
+LBX066 & 0.678 & 1.000 & 0.665 & 0.721 & 0.694 & 0.502 & 0.509 & 0.629 & 0.327 & 0.333\\
+\hline
+LBX074 & 0.399 & 0.665 & 1.000 & 0.799 & 0.856 & 0.810 & 0.817 & 0.880 & 0.054 & 0.046\\
+\hline
+LBX105 & 0.304 & 0.721 & 0.799 & 1.000 & 0.974 & 0.689 & 0.707 & 0.840 & 0.046 & 0.040\\
+\hline
+LBX118 & 0.311 & 0.694 & 0.856 & 0.974 & 1.000 & 0.763 & 0.781 & 0.906 & 0.037 & 0.032\\
+\hline
+LBX156 & 0.260 & 0.502 & 0.810 & 0.689 & 0.763 & 1.000 & 0.989 & 0.890 & 0.004 & 0.000\\
+\hline
+LBX157 & 0.257 & 0.509 & 0.817 & 0.707 & 0.781 & 0.989 & 1.000 & 0.908 & -0.001 & -0.005\\
+\hline
+LBX167 & 0.280 & 0.629 & 0.880 & 0.840 & 0.906 & 0.890 & 0.908 & 1.000 & -0.015 & -0.019\\
+\hline
+LBX044 & 0.649 & 0.327 & 0.054 & 0.046 & 0.037 & 0.004 & -0.001 & -0.015 & 1.000 & 0.983\\
+\hline
+LBX049 & 0.672 & 0.333 & 0.046 & 0.040 & 0.032 & 0.000 & -0.005 & -0.019 & 0.983 & 1.000\\
+\hline
+\end{tabular}}
+\end{table}
+
+\subsubsection{Histgram of diagonal and off-diagonal elements of the
+PCBs'sample
+covariance}\label{histgram-of-diagonal-and-off-diagonal-elements-of-the-pcbssample-covariance}
+
+\includegraphics{SVD_dim_red_simulation_study_files/figure-latex/unnamed-chunk-1-1.pdf}
+
+\subsubsection{Histgram of off-diagonal elements of the PCBs'sample
+correlation-coefficient}\label{histgram-of-off-diagonal-elements-of-the-pcbssample-correlation-coefficient}
+
+\includegraphics{SVD_dim_red_simulation_study_files/figure-latex/unnamed-chunk-2-1.pdf}
+
+Based on the correlation coefficient values, it seems that there is no
+an obvious pattern and the correlations are basically uniformly
+distributed. Thus, the sample covariance of PCB is more likely to have
+an unstructure structure.
+
 \subsection{Simulation result}\label{simulation-result}
 
-\subsubsection{Compound Symmetry}\label{compound-symmetry-1}
+One thing about the PCB simulation is that we are using sub-sampling to
+evaluate the performance of the PCB data.
 
-\subsubsection{Autoregression}\label{autoregression}
+\begin{figure}
+\centering
+\includegraphics{./generate_graph_as_pdf/plot_PCB_fixed_fixed_pro_0.1_0.9_p_33_svd_0.2.pdf}
+\caption{PCB with 0.2}
+\end{figure}
 
-\subsubsection{Unstructure}\label{unstructure-1}
+\begin{figure}
+\centering
+\includegraphics{./generate_graph_as_pdf/plot_PCB_fixed_fixed_pro_0.1_0.9_p_33_svd_0.5.pdf}
+\caption{PCB with 0.5}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics{./generate_graph_as_pdf/plot_PCB_fixed_fixed_pro_0.1_0.9_p_33_svd_0.8.pdf}
+\caption{PCB with 0.8}
+\end{figure}
 
 
 \end{document}

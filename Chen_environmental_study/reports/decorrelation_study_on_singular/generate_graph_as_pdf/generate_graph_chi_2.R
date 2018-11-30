@@ -307,15 +307,15 @@ for(i in 1:length(uni_value)){
 }
 dev.off()
 
+
 ################################################################################################
 
-## generating graph for the fixed_fixed simuation chi n 100-800 p_34 with ar structure SVD dim_reduction 0.8
 load(file = "./result/simulation_decorrelation/simulation_result_list_fixed_fixed_ar_chi_rho_0.1_0.9_n_100_800_p_34_svd_0.5_un")
 table_fixed_fixed <- rbindlist(result_list_fixed_fixed)
 
 main <- table_fixed_fixed[true_total != 0, -c(2,4,6)]
 
-uni_value <- main[,unique(rho)]
+uni_value <- main[,unique(rho)][1]
 ## generate a pdf file with multiple pages
 pdf(file = "./reports/decorrelation_study_on_singular/generate_graph_as_pdf/plot_chi_fixed_fixed_total_un_chi_rho_0.1_0.9_n_100_800_p_34_svd_0.5.pdf",
     width = 8,
@@ -334,6 +334,31 @@ for(i in 1:length(uni_value)){
           ggtitle("Total effect with fixed main and fixed interactive un structure svd 0.5") +
           theme(plot.title = element_text(hjust = 0.5)))
 }
+dev.off()
+
+################################################################################################
+
+## generating graph for the fixed_fixed simuation chi n 100-800 p_34 with PCB 0.8
+load(file = "./result/simulation_decorrelation/simulation_result_list_fixed_fixed_PCB_p_33_svd_0.8")
+table_fixed_fixed <- rbindlist(result_list_fixed_fixed)
+
+main <- table_fixed_fixed[true_total != 0, -c(2,4,6)]
+## generate a pdf file with multiple pages
+pdf(file = "./reports/decorrelation_study_on_singular/generate_graph_as_pdf/plot_PCB_fixed_fixed_pro_0.1_0.9_p_33_svd_0.8.pdf",
+    width = 8,
+    height = 7)
+  
+  # subset the values
+  main_tmp <- main
+  
+  print(tidyr::gather(main_tmp, ends_with("total"), key = "method", value = "value") %>%
+          ggplot(., aes(x = method, y = value, fill = method)) +
+          geom_violin(alpha = 0.2) +
+          geom_boxplot(alpha = 0.7) +
+          scale_y_continuous(trans='log10') +
+          facet_wrap_paginate(facets = vars(pro), ncol = 3 ,nrow = 3, scales = "fixed", labeller  = "label_both", page = 1)+
+          ggtitle("PCB Total effect with fixed main and fixed interactive svd 0.8") +
+          theme(plot.title = element_text(hjust = 0.5)))
 dev.off()
 
 #####################################################################################################

@@ -9,22 +9,26 @@ library(tidyverse)
 library(foreach)
 library(doRNG)
 library(doParallel)
-cores <- 25
+cores <- 10
 
-n_total <- c(100,200,300,400,500, 600, 700, 800)
+# n_total <- c(100,200,300,400,500, 600, 700, 800)
 # rho <- seq(0.1,0.9,0.1)
-p <- 34
+# p <- 34
+# pre_cor <- unstr_corr.mat(p)
+p <- 33
 combine <- TRUE
-pre_cor <- unstr_corr.mat(p)
+pro <- seq(0.1,0.9,0.1)
 
-gene_args <- expand.grid(structure = "un", p = p, rho = rho, n = n_total, combine = combine, pre_cor = list(pre_cor))
+# gene_args <- expand.grid(structure = "un", p = p, rho = rho, n = n_total, combine = combine, pre_cor = list(pre_cor))
+gene_args <- expand.grid(pro = pro, p = p)
 gene_args <- gene_args %>% split(x = ., f = seq(nrow(gene_args))) # generate a list from each row of a dataframe
 uncorr_args <- list(p = p)
-dim_red_args <- list(reduce_coef = 0.5)
+dim_red_args <- list(list(reduce_coef = 0.5))
 
 result_list_fixed_fixed <- mapply(FUN = simulation_fn,
                                   gene_args = gene_args,
                                   combine = TRUE,
+                                  dim_red_args = dim_red_args,
                                   MoreArgs = list(p = p,
                                                   tran_fun = null_tran,
                                                   main_fixed = TRUE,
@@ -32,8 +36,7 @@ result_list_fixed_fixed <- mapply(FUN = simulation_fn,
                                                   uncorr_method = SVD_method,
                                                   uncorr_args = uncorr_args,
                                                   dim_red_method = SVD_dim_reduction,
-                                                  dim_red_args = dim_red_args,
-                                                  generate_data = generate_chi,
+                                                  generate_data = generate_PCB,
                                                   brep = 200,
                                                   nrep = 20,
                                                   seed = 1234,
@@ -41,7 +44,7 @@ result_list_fixed_fixed <- mapply(FUN = simulation_fn,
                                                   interaction = 1,
                                                   interaction_m = 0),
                                   SIMPLIFY = FALSE)
-save(result_list_fixed_fixed, file = "./result/simulation_decorrelation/simulation_result_list_fixed_fixed_un_chi_rho_0.1_0.9_n_100_800_p_34_svd_0.5_un")
+save(result_list_fixed_fixed, file = "./result/simulation_decorrelation/simulation_result_list_fixed_fixed_PCB_p_33_svd_0.5")
 
 
 # result_list_fixed_random <- mapply(FUN = simulation_fn,

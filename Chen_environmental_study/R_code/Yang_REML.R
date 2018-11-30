@@ -189,7 +189,7 @@ invsqrt <- function(Sigma, tol = 1e-15) {
 ## SVD dimension reduction method
 ##################################################################################
 
-SVD_dim_reduction <- function(x, reduce_coef = 0.5) {
+SVD_dim_reduction <- function(x, reduce_coef) {
   n <- nrow(x)
   p <- ncol(x)
   dim <- round(min(n,p) * reduce_coef, 0) 

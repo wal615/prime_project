@@ -8,7 +8,7 @@ output:
     number_sections: true
     keep_tex: true
     fig_width: 12
-    fig_height: 4.5
+    fig_height: 4
 header-includes:
     - \usepackage{float,amsmath, bbm, siunitx, bm}
     - \usepackage{pdfpages}
@@ -20,6 +20,8 @@ editor_options:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, comment = FALSE, message = FALSE, warning = FALSE, fig.height = 10)
+knitr::opts_chunk$set(fig.pos = 'h')
+
 library(MASS)
 library(tidyverse)
 source("../../R_code/Yang_REML.R")
@@ -100,18 +102,30 @@ Assume $Cov(X_i,X_j) = \sigma_{ij}, ~~ Var(X_i) = \sigma_i^2$, $E(X_i) = 0$ and 
 \]
 
 \begin{align*}
-  Cov(T_i, T_j) = Cov(X_i^2, X_i^2) &= E\left((X_i^2 - E(X_i^2))(X_j^2 - E(X_j^2))\right) \\ 
+  Cov(T_i, T_j) = Cov(X_i^2, X_j^2) &= E\left((X_i^2 - E(X_i^2))(X_j^2 - E(X_j^2))\right) \\ 
                                     &= E(X_i^2X_j^2 - X_i^2E(X_j^2) - X_j^2E(X_i^2) + E(X_i^2)E(X_j^2)) \\
                                     &= E(X_i^2X_j^2) - \sigma^4 \\ 
                                     &= \sigma_i^2\sigma_j^2 + 2\sigma_{ij}^2 - \sigma^4 \\ 
                                     &= 2\sigma^2_{ij}
 \end{align*}
 
+\begin{align*}
+  Cor(T_i, T_j) &= \frac{Cov(X_i^2, X_j^2)}{\sqrt{Var(X_i^2)Var(X_j^2)}}\\
+                &= \frac{2\sigma^2_{ij}}{2 \sigma^4} \\
+                &= \frac{2(\rho\sigma^2)^2}{2 \sigma^4} \\
+                &= \rho^2
+\end{align*}
+
+
+\newpage
+
 ### Compound Symmetry
 
 \[
   T = [T_1 \dots, T_p] ,~~~ T_i \sim \chi_{(1)}^2, ~~~ cov(T_i, T_j) = 2\rho^2,~~~ \forall  i \ne j, \rho = \{0.1, \dots, 0.9 \} 
 \]
+
+![Compound Stymmetry](./generate_graph_as_pdf/plot_chi_fixed_fixed_total_p_34_rho_0.1_0.9_n_100_800_svd_red_0.5.pdf)
 
 
 ### Autoregression AR(1)
@@ -120,20 +134,64 @@ Assume $Cov(X_i,X_j) = \sigma_{ij}, ~~ Var(X_i) = \sigma_i^2$, $E(X_i) = 0$ and 
   T = [T_1 \dots, T_p] ,~~~ T_i \sim \chi_{(1)}^2, ~~~ cov(T_i, T_j) = 2\rho^{2|i-j|},~~~ \forall  i \ne j, \rho = \{0.1, \dots, 0.9 \} 
 \]
 
+![AR(1)](./generate_graph_as_pdf/plot_chi_fixed_fixed_ar_chi_rho_0.1_0.9_n_100_800_p_34_svd_0.5.pdf)
+
+
 ### Unstructure
 
 \[
   T = [T_1 \dots, T_p] ,~~~ T_i \sim \chi_{(1)}^2, ~~~ cov(T_i, T_j) = \sigma_{ij}
 \]
 
-## Simulation result 
+![Unstructure](./generate_graph_as_pdf/plot_chi_fixed_fixed_total_un_chi_rho_0.1_0.9_n_100_800_p_34_svd_0.5.pdf)
 
-```{r load picture svd, include=FALSE }
-source("./generate_graph_chi.R")
+\newpage
+
+# PCBs data simulation result
+
+We are using the PCBs data from the 
+
+## sample matrix of PCB data 
+
+```{r sample variance of PCB, echo = FALSE, comment= NA}
+PCB <- read.csv("~/dev/projects/Chen_environmental_study/R_code/data/pcb_99_13_no_missing.csv")
+PCB <- PCB[,-1]
+cov_PCB <- cov(PCB)
+cor_PCB <- cor(PCB)
 ```
 
-### Compound Symmetry
+### A glimsp of the covariance matrix 
 
-### Autoregression 
+```{r sub matrix of covariance of PCB, echo = FALSE}
+cor_PCB[1:10,1:10] %>% round(., 3) %>% 
+  knitr::kable(., "latex", caption = "Covariance of PCB") %>%
+  kableExtra::kable_styling(latex_options = c("scale_down", "hold_position"), position = "center")
+```
 
-### Unstructure
+### Histgram of diagonal and off-diagonal elements of the PCBs'sample covariance
+
+```{r, echo = FALSE}
+par(mfrow=c(2,1))
+hist(diag(cov_PCB), breaks = 30)
+hist(cov_PCB[lower.tri(cov_PCB)], breaks = 30)
+```
+
+### Histgram of off-diagonal elements of the PCBs'sample correlation-coefficient
+
+```{r, echo = FALSE}
+par(mfrow=c(2,1))
+hist(cor_PCB[lower.tri(cor_PCB)], breaks = 30)
+```
+
+Based on the correlation coefficient values, it seems that there is no an obvious pattern and the correlations are basically uniformly distributed. Thus, the sample covariance of PCB is more likely to have an unstructure structure. 
+
+## Simulation result
+
+One thing about the PCB simulation is that we are using sub-sampling to evaluate the performance of the PCB data. 
+
+![PCB with 0.2](./generate_graph_as_pdf/plot_PCB_fixed_fixed_pro_0.1_0.9_p_33_svd_0.2.pdf)
+
+![PCB with 0.5](./generate_graph_as_pdf/plot_PCB_fixed_fixed_pro_0.1_0.9_p_33_svd_0.5.pdf)
+
+![PCB with 0.8](./generate_graph_as_pdf/plot_PCB_fixed_fixed_pro_0.1_0.9_p_33_svd_0.8.pdf)
+
