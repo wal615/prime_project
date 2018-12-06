@@ -16,7 +16,7 @@ generate_inter <- function(p, interaction) {
   if(interaction==0) {
     betai <- matrix(0,ncol=p, nrow = p)
   } else {
-    betai <- matrix(rnorm(p*p,m=0.015,sd=0.1),ncol=p) # interaction_effect ~ N(0,0.1)
+    betai <- matrix(rnorm(p*p,m=0,sd=0.1),ncol=p) # interaction_effect ~ N(0,0.1)
     betai[lower.tri(betai, diag = TRUE)] <- 0 # the number of interaction terms is {p*(p-1)}/2
   }
   betai
@@ -173,6 +173,8 @@ simulation_fn <- function(
                           dim_red_args = NULL,
                           interaction = 0, 
                           interaction_m = 0, 
+                          corrected_main = FALSE,
+                          main_pro = NULL,
                           seed = 0, 
                           cores = 1) {
   if (cores == 1) 
@@ -239,10 +241,12 @@ simulation_fn <- function(
       b_final <- b_m
     }
     
-
-    
     # Uncorrelated data
-    x <- uncorr_fn(b_final, uncorr_method, uncorr_args, dim_red_method, dim_red_args)
+     if(corrected_main == TRUE){
+      x<- uncorr_fn(cbind(b_m, b_i), uncorr_method, uncorr_args, dim_red_method, dim_red_args)
+     } else {
+       x <- uncorr_fn(b_final, uncorr_method, uncorr_args, dim_red_method, dim_red_args)
+     }
     
     # Estimating total effects with iterations
     for(irep in 1:nrep){

@@ -235,7 +235,7 @@ uncorr_fn <- function(input_data,
 ## SVD method of decorrelation method
 ##################################################################################
 
-SVD_method <- function(input_data, p, main = FALSE, inter = FALSE) {
+SVD_method <- function(input_data, p, main = FALSE, inter = FALSE, main_pro = NULL) {
   # calculate the covariance matrix
   I_m <- diag(p)
   I_i <- diag(p*(p-1)/2)
@@ -254,8 +254,13 @@ SVD_method <- function(input_data, p, main = FALSE, inter = FALSE) {
   } 
     
   # decorrelating the input_data
-  uncorr_data=input_data%*%Sinvsqrt  
-  list(uncorr_data = uncorr_data)
+  uncorr_data=input_data%*%Sinvsqrt 
+  
+  # for main estimation
+  if(!is.null(main_pro))
+    uncorr_data <- uncorr_data[,(1:round(main_pro*p,0))]
+  
+    list(uncorr_data = uncorr_data)
 }
 
 ##################################################################################
