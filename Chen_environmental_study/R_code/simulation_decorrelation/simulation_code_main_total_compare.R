@@ -46,7 +46,7 @@ result_list_fixed_fixed_main <- mapply(FUN = simulation_fn,
                                                        nrep = 2,
                                                        seed = 1234,
                                                        cores = cores,
-                                                       interaction = 0,
+                                                       interaction = 1,
                                                        interaction_m = 0),
                                        SIMPLIFY = FALSE)
 
@@ -85,7 +85,7 @@ result_list_fixed_fixed_total <- mapply(FUN = simulation_fn,
                                                         nrep = 2,
                                                         seed = 1234,
                                                         cores = cores,
-                                                        interaction = 0,
+                                                        interaction = 1,
                                                         interaction_m = 0),
                                         SIMPLIFY = FALSE)
 save(result_list_fixed_fixed_total, file = "./result/simulation_decorrelation/simulation_result_list_fixed_fixed_un_chi_total_inter_1_svd_0.5_0_interaction_v_2")
