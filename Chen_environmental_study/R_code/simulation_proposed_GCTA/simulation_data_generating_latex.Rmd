@@ -1,0 +1,81 @@
+---
+title: "simulation table for proposed GCTA"
+output:
+  pdf_document: default
+  header-includes:
+      - \usepackage{booktabs}
+      - \usepackage{longtable}
+      - \usepackage{array}
+      - \usepackage{multirow}
+      - \usepackage{wrapfig}
+      - \usepackage{float}
+      - \usepackage{colortbl}
+      - \usepackage{pdflscape}
+      - \usepackage{tabu}
+      - \usepackage{threeparttable}
+      - \usepackage{threeparttablex}
+      - \usepackage[normalem]{ulem}
+      - \usepackage{makecell}
+      - \usepackage{xcolor}
+---
+
+# Simulation setup
+The key factors are 
+
+1. Distribution
+2. Covariance matrix
+    + Note that if the covariance matrix is $I$, which means uncorrlated data and also indicates Independence in our paper. 
+    + we also use the the sample vairance matrix calculated from the real PCB data
+3. Decorrelation method
+    + SVD, dimension reduction before SVD and none
+4. main and interaction coefficients
+    + $\beta_{m} = \beta_{mf} + \beta_{mr}$ where $\beta_{mf} \sim N(0,\sigma_{mf}^2)$ and $\beta_{mr} \sim N(0,\sigma_{mr}^2)$ if $\sigma_{mr}^2 = 0$ means main effect is fixed, otherwise it's random
+    + $\beta_{i} = \beta_{if} + \beta_{ir}$ where $\beta_{if} \sim N(0,\sigma_{if}^2)$ and $\beta_{ir}^2 \sim N(0,\sigma_{ir}^2)$ if $\sigma_{ir}^2 = 0$ means internaction effect is fixed, otherwise it's random. Besides, if $\sigma_{if}^2 = 0$ then means there is no interaction effect
+1. Sample size = {200, \dots, 900} and $p = 33$
+5. Total Iteration times: 200
+
+```{r setup, include=FALSE}
+library(kableExtra)
+library(data.table)
+library(tidyverse)
+## simulation table generatetion
+
+Dist <- c("Normal", "Chi-square", "PCB")
+main_fixed <- c(0.5)
+main_random <- c(0, 0.5) # 0 means fixed
+inter_fixed <- c(0, 0.1) # 0 means no interaction effect
+inter_random <- c(0, 0.1) # 0 means fixed
+Corr_stru <- c("I", "pcb")
+decorr <- c("SVD", "dim_SVD")
+
+simulation_table_tmp <- expand.grid(Dist = Dist, 
+                                    Corr_stru = Corr_stru,
+                                    decorr = decorr,
+                                    main_fixed = main_fixed,
+                                    main_random = main_random,
+                                    inter_fixed = inter_fixed,
+                                    inter_random = inter_random) %>% data.table(.)
+setorderv(simulation_table_tmp, colnames(simulation_table_tmp))
+
+# adjust the variance magnitude
+simulation_table_tmp[(main_fixed !=0 & main_random !=0), c("main_fixed","main_random") := list(0.5/2, 0.5/2)]
+simulation_table_tmp[(inter_fixed !=0 & inter_random !=0), c("inter_fixed","inter_random") := list(0.1/2, 0.1/2)]
+simulation_table_tmp <- simulation_table_tmp[!(Dist == "PCB" & Corr_stru == "I")]
+
+# fixed case
+simulation_table_fixed <- simulation_table_tmp[!((inter_fixed ==0 & inter_random != 0)|(inter_random != 0)|(main_random != 0))]
+simulation_table_fixed <- cbind(ID = seq.int(nrow(simulation_table_fixed)), simulation_table_fixed, finished_date = "")
+
+simulation_table_random <- simulation_table_tmp[!((inter_fixed ==0 & inter_random != 0)|(inter_random == 0 & main_random == 0)|(inter_random != 0 & main_random == 0))]
+simulation_table_random <- cbind(ID = seq.int(nrow(simulation_table_random)), simulation_table_random, finished_date = "")
+```
+
+```{r generate table,echo=FALSE}
+kable(simulation_table_fixed, "latex", longtable = FALSE,row.names = FALSE, caption = "Fixed cases") %>%
+kable_styling(latex_options = c("scale_down", "striped", "hold_position"), position = "center")
+```
+
+```{r generate table random,echo=FALSE}
+kable(simulation_table_random, "latex", longtable = FALSE,row.names = FALSE, caption = "random cases") %>%
+kable_styling(latex_options = c("scale_down", "striped", "hold_position"), position = "center")
+```

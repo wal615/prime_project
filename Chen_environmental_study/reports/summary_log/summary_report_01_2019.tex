@@ -82,7 +82,7 @@
   \postauthor{\par}
       \predate{\centering\large\emph}
   \postdate{\par}
-    \date{2019-01-11}
+    \date{2019-01-18}
 
 \usepackage{float,amsmath, bbm, siunitx, bm}
 \floatplacement{figure}{H}
@@ -164,6 +164,13 @@ which is the summation of main and interaction and their correlation
 method. And then, we use some statistical test to determine if there
 exits an interaction effect. Followings are some details of the methods.
 
+\subsection{the proposed method}\label{the-proposed-method}
+
+The approach of the proposed method is to uncorrelated the observed
+covariates by using a linear transformation, i.e. \(Z = A^{-1}X\), So
+that \(Var(Z) = I_p\). In this way, we could get the uncorrelated
+predictors and use them as the input of the regular GCTA method.
+
 \section{Variance Estimation under different
 conditions}\label{variance-estimation-under-different-conditions}
 
@@ -193,6 +200,9 @@ Var(Y) &= Var(X^T\beta + X^T\Gamma X) + Var(\epsilon) \\
 
 \subsection{Normal distribution}\label{normal-distribution}
 
+\subsubsection{Independent covariates}\label{independent-covariates}
+
+In this situation, both GCTA and proposed method can work well.\\
 Let's just start with the most straightforward one, which is when
 covariates follows a Normal distribution. The properties of normal
 distribution simplify the situation, so that the proposed method can
@@ -200,12 +210,12 @@ work well. Namely, no matter covariates are independent or not, we can
 always have
 
 \begin{align*}
-Cov(X_i^T\beta, X_i^T\Gamma X_i) &= E[(X_i^T\beta - E(X_i^T\beta))(X_i^T\Gamma X_i - E(X_i^T\Gamma X_i))]\\
-    &= E[X_i^T\beta(X_i^T\Gamma X_i - E(X_i^T\Gamma X_i)) \\
-    &= E[X_i^T\beta(X_i^T\Gamma X_i - trace(\Gamma\Sigma_p))] \tag*{Note that $\gamma_{jj} = 0$}\\
-    &= E[X_i^T\beta \cdot X_i^T\Gamma X_i] \\
-    &= E[(\sum_m(x_{im}\beta_m))(\sum_j\sum_k\gamma_{jk}x_{ij} x_{ik}) ] \\
-    & = 0 \tag*{Note that $E(x_i^2x_j) = 0$ because of centered data}
+Cov(X^T\beta, X^T\Gamma X) &= E[(X^T\beta - E(X^T\beta))(X^T\Gamma X - E(X^T\Gamma X))]\\
+    &= E[X^T\beta(X^T\Gamma X - E(X^T\Gamma X)) \\
+    &= E[X^T\beta(X^T\Gamma X - trace(\Gamma\Sigma_p))] \tag*{Note that $\gamma_{jj} = 0$}\\
+    &= E[X^T\beta \cdot X^T\Gamma X] \\
+    &= E[(\sum_m(x_{m}\beta_m))(\sum_j\sum_k\gamma_{jk}x_{j} x_{k}) ] \\
+    & = 0 \tag*{Note that $E(x^2x_j) = 0$ because of centered data}
 \end{align*}
 
 Then we have,
@@ -218,25 +228,32 @@ Var(Y) &= Var(X^T\beta + X^T\Gamma X) + Var(\epsilon) \\
 . Therefore, we don't have to worry about the covariance term and should
 expect good variance estimation result
 
-Following are some results and conclusion based on simulation and
-theoretical study.
-
-\subsubsection{Independent covariates}\label{independent-covariates}
-
-In this situation, both GCTA and proposed method can work well.
-
 \subsubsection{Dependent covariates}\label{dependent-covariates}
 
 In this situation, the proposed method's performance is much better then
 the GCTA itself in term of unbiaseness. This indicates that the
 correlation structure may be more necessary for the GCTA method than
-independency. The simulation result could be found on my report with
-date 08/15/2018
+independency. But because the covariates follows normal distribution,
+which means that after decorrelation, they become independent variables.
+The simulation result could be found on my report with date 08/15/2018
 
+Let's assume \(X \sim N(\mu, \Sigma)\), after standardization we have \[
+  E(X) = 0 ~~ Var(X) = \tilde{\Sigma},
+\] Where \(diag(\tilde{\Sigma}) = \vec{1}\), and
+\(\tilde{\Sigma}_{ij} = \rho_{ij}\).
+
+If we uncorrelated the X by \(Z = A^{-1}X\), where
+\(A = \tilde{\Sigma}^{1/2}\), then we will have
+
+\[
+  Z \sim N(0,I_p), 
+\] We are back to the independent case again.
+
+A thougth for take advantage of the properties of normal distirbution:
 The normal distribution is relatively easy to deal with because of the
-property. We could just add an decorrelation step before the GCTA
-method, than we could get a good result. This also indicates an option
-to deal with a more complicated problem, for example, the non-normal
+property. We could just add a decorrelation step before the GCTA method,
+than we could get a good result. This also indicates an option to deal
+with a more complicated problem, for example, the non-normal
 distribution. We could just transfer the data into a normal or
 normal-like distribution and do the analysis as usual. But we could not
 or hard to control the magnitude of main and interaction variance and
@@ -246,16 +263,179 @@ their relative relation after transfermation.
 
 \subsubsection{Independent covariates}\label{independent-covariates-1}
 
-For Independent case, GCTA method appears to work fine.
+For Independent case, GCTA method appears to work fine. Similar with the
+independent normal distribution, the covariance of main and interaction
+effect will be zero. One condition is that we need the covariates to be
+standardized.
 
 \subsubsection{Dependent covariates}\label{dependent-covariates-1}
 
 Now, we move to a more general and also more complicated situation,
 non-normal distribution. For the non-normal or long tail distribution,
-we cannot guarantee that the third monment equal to zero, therefore the
-covariance of main and interaction effect is no longer zero. Simulation
-study (08/15/2018) has shown that in such case, even the proposed method
-cannot estimate both of the effect correctly.
+we cannot make them indepedent by just some linear operation, therefore
+the covariance of main and interaction effect is no longer zero.
+Simulation study (08/15/2018) has shown that in such case, even the
+proposed method cannot estimate both of the effects correctly.
+
+However, we can take one step back, which means instead of considering
+the main and interaction effect separately, we look at the total
+variance related to covariates:
+
+\begin{align*}
+  Var(Y) &= Var(X^T\beta + X^T \Gamma X) + Var(\epsilon) \\
+           &= Var(X^T\beta + X_{inter}^T \gamma) + Var(\epsilon) \\
+           &= \begin{bmatrix}   
+                  X \\        
+                  X_{inter}   
+              \end{bmatrix}^T     
+              \begin{bmatrix}
+                \beta \\
+                \gamma
+              \end{bmatrix} + Var(\epsilon) \\
+           &= Var(X_{total}^T \beta_{total}) + Var(\epsilon)
+\end{align*}
+
+In this way, we combine the main and interaction effect together as the
+new covariates. The good news for estimation of the total variance is we
+don't need to worry about the covariance part, because it is always
+included in the total variance term. The downside is that we will never
+make the total effect to be independent themselves anymore, because the
+interaction terms contains the main effects.
+
+Based on the simulation, we find the proposed method works fine, and it
+works much better than the origianl GCTA method. After decorrelation,
+the GCTA is able to estimate the total variance accuretly based on the
+simualtion result.
+
+\subsection{Decorrelation method}\label{decorrelation-method}
+
+For Decoorelation step, it could be done by using the Spectral
+decomposition if the observed covariates X is full column rank. After
+adding this decorrelation step, the GCTA can work well in term of
+estimation the main and interaction variance. However, if \(p > n\),
+which means the number of parameter is larger than the number of
+observation, so the sample covariance is not full rank, then the
+proposed method suddenly work much worse. One working solution for that
+issuse is to reduce the dimension of covariate and then apply the
+decorrealtion.
+
+\subsubsection{Spectral decomposition}\label{spectral-decomposition}
+
+\[
+  Var(X) = \Sigma_X = U\Lambda U^T,
+\]
+
+\begin{itemize}
+\tightlist
+\item
+  \(X\) is the random vector with dim as \(p \times 1\),\\
+\item
+  \(\Sigma_X\) is \(p \times p\) symmetry and p.d. matrix,\\
+\item
+  \(\Lambda\) is a diagonal matrix with each diagonal element as the
+  eigenvalue.
+\end{itemize}
+
+\subsubsection{\texorpdfstring{Assume the \(\Sigma_X\) is full
+rank}{Assume the \textbackslash{}Sigma\_X is full rank}}\label{assume-the-sigma_x-is-full-rank}
+
+To decorreate the X, we could just take the reciprocal of each square
+root of eigenvalue as following.
+
+\[
+  \Sigma^{-\frac{1}{2}}_X = U\Lambda^{-\frac{1}{2}}U^T,
+\] where
+\(\Lambda^{-\frac{1}{2}} = \begin{bmatrix}  e_1^{-\frac{1}{2}} & \dots & 0 \\  \vdots & \ddots & \vdots \\  0 & \dots & e_p^{-\frac{1}{2}}  \end{bmatrix}\)
+
+So that after transformation the \(\Sigma^{-\frac{1}{2}}_X X\) has
+identity covariance matrix as following,
+
+\[
+  Var(\Sigma^{-\frac{1}{2}}_X X) = \Sigma^{-\frac{1}{2}}_X \Sigma_X\Sigma^{-\frac{1}{2}}_X = U\Lambda^{-\frac{1}{2}}U^T U\Lambda^{-1}U^T U\Lambda^{-\frac{1}{2}}U^T = I_p.
+\]
+
+\paragraph{\texorpdfstring{Assume the \(\Sigma_X\) is not full
+rank}{Assume the \textbackslash{}Sigma\_X is not full rank}}\label{assume-the-sigma_x-is-not-full-rank}
+
+\[
+  Var(X) = \Sigma_X = U\Lambda U^T =
+                        \begin{bmatrix}
+                         U_1 & U_2\\
+                        \end{bmatrix}
+                        \begin{bmatrix}
+                        \Lambda_1 & 0\\
+                        0 & 0
+                        \end{bmatrix}
+                        \begin{bmatrix}
+                        U_1^T \\
+                        U_2^T
+                        \end{bmatrix} = U_1\Lambda_1U_1^T,
+\] - \(U_1\) is a \(p \times r\) matrix with r \textless{} p and in most
+of case r = n the sample size.
+
+Then after applying the same procedure we get following,
+
+\[
+  \Sigma^{-\frac{1}{2}}_X = U_1\Lambda_1^{-\frac{1}{2}}U_1^T,
+\] Note that in this case, I'm using Moore Penrose inverse.
+
+After transformation the X we have, \[
+  Var(\Sigma^{-\frac{1}{2}}_X X) = \Sigma^{-\frac{1}{2}}_X \Sigma_X\Sigma^{-\frac{1}{2}}_X = U_1\Lambda^{-\frac{1}{2}}_1U^T_1 U_1\Lambda^{-1}_1U^T_1 U_1\Lambda^{-\frac{1}{2}}_1U^T_1 = U_1U_1^T,  
+\] Note that by the property of the U we have \[
+  U_1U_1^T + U_2U_2^T = I_p, ~~~~~\\
+  (U_1U_1^T)^T U_1U_1^T = U_1U_1^T,
+\] Besides, \(U_1U_1^T\) and \(U_2U_2^T\) are indempotent and
+\(rank(U_2U_2^T) + rank(U_1U_1^T) = p\).
+
+So if the X is not full rank we cannot decorrelation the covariance
+matrix to an identity matrix.
+
+\subsubsection{SVD with dimension reduction
+step}\label{svd-with-dimension-reduction-step}
+
+One possible solution for the issue of too many predictors is to reduce
+the column dimension of covariates first and then used the reduced
+covariate as the input for the prosposed method. I have tried several
+dimension reduction method, and found that a modified SVD method
+provides promosing results based on simulation study. the details as
+following:
+
+\begin{align*}
+  X = U D V^T &= \begin{bmatrix}
+                      U_r & U_2
+                      \end{bmatrix}
+                      \begin{bmatrix}
+                      D_r & 0\\
+                      0 & D_2
+                      \end{bmatrix}
+                      \begin{bmatrix}
+                      V_r & V_2\\
+                      V_3 & V_4
+                      \end{bmatrix}^T \\ 
+              &= 
+                      \begin{bmatrix}
+                      U_rD_r & U_2D_2
+                      \end{bmatrix}
+                      \begin{bmatrix}
+                      V_r^T & V_3^T\\
+                      V_2^T & V_4^T
+                      \end{bmatrix}
+                      =
+                      \begin{bmatrix}
+                      U_rD_rV_r^T + U_2D_2V_2^T & U_rD_rV_3^T + U_2D_2 V_4^T
+                      \end{bmatrix}
+\end{align*}
+
+Ignore \(V_2\), \(V_3\) and \(V_4\) , then we have the X\_r as following
+\[
+  X_r = U_rD_rV_r^T.
+\] We use \(X_r\) as the new covariates to the proposed methd.
+Therefore, we reduce the dimension from p to n. After calculating
+\(X_r\), we can regard \(X_r\) as our new predictors and use it as the
+input to the proposed method Note that we could use this blocking method
+to reduce X's dimension to \(k, k \leq min(p,n)\).
+
+\subsubsection{PCA method}\label{pca-method}
 
 \subsection{sub sampling method for evaluating methods'
 performance}\label{sub-sampling-method-for-evaluating-methods-performance}
