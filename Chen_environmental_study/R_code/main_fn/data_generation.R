@@ -115,9 +115,6 @@ generate_normal <- function(n, p, rho = NULL, sig_coef = 1,
     b <- x
     colnames(b) <- paste0("X", 1:ncol(b))
     
-    # generate the interaction term
-    b <- model.matrix(~.*.+0, data.frame(b)) # adding the interaction term
-    
     attributes(b) <- append(attributes(b), 
                             list(x_dist = "Normal", 
                                  str = structure,
@@ -190,9 +187,6 @@ generate_chi <- function(n, p, rho = NULL, sig_coef = 1,
     Reduce(cbind, x = .)
   colnames(b) <- paste0("X", 1:ncol(b))
   
-  # generate the interaction term
-  b <- model.matrix(~.*.+0, data.frame(b)) # adding the interaction term
-    
   attributes(b) <- append(attributes(b), 
                           list(x_dist = "chi", 
                                str = structure,

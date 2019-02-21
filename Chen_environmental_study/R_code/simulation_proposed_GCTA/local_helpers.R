@@ -54,8 +54,6 @@ simulation_fn <- function(p,
     b_m <- b[,1:p]
     b_i <- b[,-(1:p)]
     
-    browser()
-    
     # Generate main betas
     betam <- betam_fixed + generate_main_random(p, gene_coeff_args)
 
@@ -66,7 +64,8 @@ simulation_fn <- function(p,
     sparse_index <- sparsify_coeff(colnames(b_m), colnames(b_i))  
     betam[sparse_index$index_main] <- 0
     betai[sparse_index$index_inter] <- 0
-
+    
+    
     # Generate the signals
     signalm <- b_m%*%betam
     signali <- b_i%*%betai
@@ -79,7 +78,6 @@ simulation_fn <- function(p,
       result_tmp[, 1]=var(signalm)
       b_final <- b_m
     }
-    
     # Uncorrelated data
     if(corrected_main == TRUE){
       x<- uncorr_fn(cbind(b_m, b_i), uncorr_method, uncorr_args, dim_red_method, dim_red_args)
