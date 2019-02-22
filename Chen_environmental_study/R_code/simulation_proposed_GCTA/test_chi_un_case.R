@@ -79,78 +79,78 @@ Yang=function(y,x,interact=0){
 # b=data.matrix(a[,2:35], rownames.force = NA)
 # b=log(b)
 
-# b=matrix(rnorm(1000*34),ncol=34) # simulated covariates
-# b = b^2
-p <- 33
-n <- 1000
-gene_coeff_args <- list(main_fixed_var = 0.5,
-                        main_random_var = 0,
-                        inter_fixed_var = 0.1,
-                        inter_random_var = 0)
+set.seed(1234)
+b=matrix(rnorm(1000*33),ncol=33) # simulated covariates
+b = b^2
+# p <- 33
+# n <- 1000
+# gene_coeff_args <- list(main_fixed_var = 0.5,
+#                         main_random_var = 0,
+#                         inter_fixed_var = 0.1,
+#                         inter_random_var = 0)
 
 nrep=10
 result=array(0,c(nrep,6))
-# # 1. Generate health outcome
-# n=dim(b)[1]
-# p=dim(b)[2]
-# for(k in 1:p){
-#   # b[,k]=rank(b[,k])
-#   me=mean(b[,k])
-#   std=sqrt(var(b[,k]))
-#   b[,k]=(b[,k]-me)/std
-#   
-#   # b[,k]=(b[,k]-mean(b[,k]))/sqrt(var(b[,k]))
-# }
+# 1. Generate health outcome
+n=dim(b)[1]
+p=dim(b)[2]
+for(k in 1:p){
+  # b[,k]=rank(b[,k])
+  me=mean(b[,k])
+  std=sqrt(var(b[,k]))
+  b[,k]=(b[,k]-me)/std
+
+  # b[,k]=(b[,k]-mean(b[,k]))/sqrt(var(b[,k]))
+}
+
+betam=rnorm(p, m=0, sd=(0.5)^0.5)
+betai= matrix(rnorm(p*p,m=0,sd=(0.1)^0.5),ncol=p)
+betam[2*c(1:16)]=0
+for(k in 1:p){
+  betai[k,k]=0
+}
+signalm=b%*%betam
+signali=rep(0,n)
+for(i in 1:n){
+  signali[i]=t(b[i,])%*%betai%*%b[i,]
+}
+
+
+# # Generate main fixed betas
+# betam_fixed <- generate_main(p, gene_coeff_args)
 # 
-# betam=rnorm(p, m=0, sd=0.5)
-# betai= matrix(rnorm(p*p,m=0,sd=0.1),ncol=p)
-# betam[2*c(1:17)]=0
-# for(k in 1:p){
-#   betai[k,k]=0
-# }
-# signalm=b%*%betam
-# signali=rep(0,n)
-# for(i in 1:n){
-#   signali[i]=t(b[i,])%*%betai%*%b[i,]
-# }
-
-set.seed(1234)
-
-# Generate main fixed betas
-betam_fixed <- generate_main(p, gene_coeff_args)
-
-
-# Generate interaction fixed gammas
-betai_fixed <- generate_inter(p, gene_coeff_args)
-
-# Generate covariates  
-b_raw <- generate_chi(n = n,
-                      p = p,
-                      chi_coef = 1, 
-                      structure = "I")
-
-# Standardized covariates
-b <- std_fn(b = b_raw,
-            p = ncol(b_raw),
-            tran_FUN = null_tran)
-b_m <- b[,1:p]
-b_i <- model.matrix(~.*.+0, data.frame(b_m))[,-(1:p)]
-
-# Generate main betas
-betam <- betam_fixed + generate_main_random(p, gene_coeff_args)
-
-# Generate interaction gammas
-betai <- betai_fixed + generate_inter_random(p, gene_coeff_args)
-
-# Sparsity
-sparse_index <- sparsify_coeff(colnames(b_m), colnames(b_i))  
-betam[sparse_index$index_main] <- 0
-betai[sparse_index$index_inter] <- 0
-
-
-# Generate the signals
-signalm <- b_m%*%betam
-signali <- b_i%*%betai
+# 
+# # Generate interaction fixed gammas
+# betai_fixed <- generate_inter(p, gene_coeff_args)
+# 
+# # Generate covariates  
+# b_raw <- generate_chi(n = n,
+#                       p = p,
+#                       chi_coef = 1, 
+#                       structure = "I")
+# 
+# # Standardized covariates
+# b <- std_fn(b = b_raw,
+#             p = ncol(b_raw),
+#             tran_FUN = null_tran)
+# b_m <- b[,1:p]
+# b_i <- model.matrix(~.*.+0, data.frame(b_m))[,-(1:p)]
+# 
+# # Generate main betas
+# betam <- betam_fixed + generate_main_random(p, gene_coeff_args)
+# 
+# # Generate interaction gammas
+# betai <- betai_fixed + generate_inter_random(p, gene_coeff_args)
+# 
+# # Sparsity
+# sparse_index <- sparsify_coeff(colnames(b_m), colnames(b_i))  
+# betam[sparse_index$index_main] <- 0
+# betai[sparse_index$index_inter] <- 0
+# 
+# 
+# # Generate the signals
+# signalm <- b_m%*%betam
+# signali <- b_i%*%betai
 
 # browser()
 

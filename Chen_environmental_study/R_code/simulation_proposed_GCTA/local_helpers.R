@@ -16,7 +16,6 @@ simulation_fn <- function(p,
                           uncorr_args = NULL,
                           dim_red_method = NULL,
                           dim_red_args = NULL,
-                          interaction = 0, 
                           interaction_m = 0, 
                           corrected_main = FALSE,
                           main_pro = NULL,
@@ -85,6 +84,7 @@ simulation_fn <- function(p,
       x <- uncorr_fn(b_final, uncorr_method, uncorr_args, dim_red_method, dim_red_args)
     }
     
+
     # Estimating effects with iterations to reduce the variance
     for(irep in 1:nrep){
       # Generate health outcome given fixed random effects
@@ -102,7 +102,7 @@ simulation_fn <- function(p,
     
     # combined the all the attributes to b so we could plot them by the attributes
     additional <- list(x_dist = attributes(b_raw)$x_dist)
-    additional <- append(additional, c(as.list(gene_data_args), as.list(uncorr_args), gene_coeff_args))
+    additional <- append(additional, c(as.list(gene_data_args), as.list(uncorr_args), gene_coeff_args, list(interaction_m = interaction_m)))
     additional <- additional[unique(names(additional))] # remove duplicated attrs
     additional$pre_cor <- NULL # pre_cor is a covariance matrix so don't need to carry it to the output
     
