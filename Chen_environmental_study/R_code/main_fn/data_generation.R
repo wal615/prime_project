@@ -197,17 +197,15 @@ generate_chi <- function(n, p, rho = NULL, sig_coef = 1,
 ##################################################################################
 ## subset PCB data
 ##################################################################################
-generate_PCB <- function(pro, p) {
-  # read the PCB data
-  # a <- read.sas7bdat("~/dev/projects/Chen_environmental_study/R_code/pcbs1000nomiss.sas7bdat")
-  # b <- data.matrix(a[,2:(p+1)], rownames.force = NA)
-  a <- read.csv("~/dev/projects/Chen_environmental_study/R_code/data/pcb_99_13_no_missing.csv")
-  b <- data.matrix(a[,-1], rownames.force = NA)
+generate_PCB <- function(data_path, pro) {
+  b <- read.csv(data_path)
+  
+  # subset b 
   n <- nrow(b)
   index <- sample(1:n, round(pro*n,0), replace = FALSE)
   b <- b[index,]
   
-  b <- model.matrix(~.*.+0, data.frame(b)) 
+  # add distribution attributes
   attributes(b) <- append(attributes(b), 
                           list(x_dist = "PCB"))
   b

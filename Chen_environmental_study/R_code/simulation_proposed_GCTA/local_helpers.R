@@ -48,8 +48,8 @@ simulation_fn <- function(p,
     
     # Standardized covariates
     b <- std_fn(b = b_raw,
-                p = ncol(b_raw),
-                tran_FUN = tran_fun)
+                tran_FUN = tran_fun,
+                combine = combine)
     b_m <- b[,1:p]
     b_i <- b[,-(1:p)]
     
@@ -84,7 +84,6 @@ simulation_fn <- function(p,
       x <- uncorr_fn(b_final, uncorr_method, uncorr_args, dim_red_method, dim_red_args)
     }
     
-
     # Estimating effects with iterations to reduce the variance
     for(irep in 1:nrep){
       # Generate health outcome given fixed random effects
@@ -98,11 +97,12 @@ simulation_fn <- function(p,
       fit=Yang(y,x,interact = interaction_m)
       result_tmp[irep,5] <- fit$G
       result_tmp[irep,6] <- fit$RACT
+      browser()
     }
     
     # combined the all the attributes to b so we could plot them by the attributes
     additional <- list(x_dist = attributes(b_raw)$x_dist)
-    additional <- append(additional, c(as.list(gene_data_args), as.list(uncorr_args), gene_coeff_args, list(interaction_m = interaction_m)))
+    additional <- append(additional, c(as.list(gene_data_args), as.list(uncorr_args), gene_coeff_args, list(interaction_m = interaction_m, combine = combine, n = nrow(b_raw))))
     additional <- additional[unique(names(additional))] # remove duplicated attrs
     additional$pre_cor <- NULL # pre_cor is a covariance matrix so don't need to carry it to the output
     
