@@ -24,7 +24,7 @@ n_iter_2 <- 20
 ## inter_1 inter_m = 0
 ###############################################################################################################################
 
-combine <- TRUE
+combine <-FALSE
 n_total <- c(1000)
 gene_coeff_args <- list(main_fixed_var = 0.5,
                         main_random_var = 0,
@@ -32,13 +32,12 @@ gene_coeff_args <- list(main_fixed_var = 0.5,
                         inter_random_var = 0)
 pre_cor <- real_data_corr.mat(data_path)
 p <- dim(pre_cor)[1]
-# chi_coef <- c(1,10,50)
 gene_data_args_I <- expand.grid(structure = "un", p = p, n = n_total, pre_cor = list(pre_cor))
 gene_data_args <- gene_data_args_I
 
 gene_data_args <- gene_data_args %>% split(x = ., f = seq(nrow(gene_data_args))) # generate a list from each row of a dataframe
 uncorr_args <- list(p = p)
-result_list_fixed_chi_inter_1_combine <- mapply(FUN = simulation_fn,
+result_list_fixed_chi_un_inter_1_main <- mapply(FUN = simulation_fn,
                                                  gene_data_args = gene_data_args,
                                                  MoreArgs = list(p = p,
                                                                  tran_fun = null_tran,
@@ -55,7 +54,7 @@ result_list_fixed_chi_inter_1_combine <- mapply(FUN = simulation_fn,
                                                                  interaction_m = 0),
                                                  SIMPLIFY = FALSE)
 
-saveRDS(result_list_fixed_chi_inter_1_combine, file = "./result/simulation_proposed_GCTA_paper/result_list_fixed_chi_inter_1_combine")
+saveRDS(result_list_fixed_chi_un_inter_1_main, file = "./result/simulation_proposed_GCTA_paper/result_list_fixed_chi_un_inter_1_main")
 
 
 
@@ -63,7 +62,7 @@ saveRDS(result_list_fixed_chi_inter_1_combine, file = "./result/simulation_propo
 ## inter_0 inter_m = 0
 ###############################################################################################################################
 
-combine <- TRUE
+combine <-FALSE
 n_total <- c(1000)
 gene_coeff_args <- list(main_fixed_var = 0.5,
                         main_random_var = 0,
@@ -71,13 +70,12 @@ gene_coeff_args <- list(main_fixed_var = 0.5,
                         inter_random_var = 0)
 pre_cor <- real_data_corr.mat(data_path)
 p <- dim(pre_cor)[1]
-# chi_coef <- c(1,10,50)
 gene_data_args_I <- expand.grid(structure = "un", p = p, n = n_total, pre_cor = list(pre_cor))
 gene_data_args <- gene_data_args_I
 
 gene_data_args <- gene_data_args %>% split(x = ., f = seq(nrow(gene_data_args))) # generate a list from each row of a dataframe
 uncorr_args <- list(p = p)
-result_list_fixed_chi_inter_0_combine <- mapply(FUN = simulation_fn,
+result_list_fixed_chi_un_inter_0_main <- mapply(FUN = simulation_fn,
                                                  gene_data_args = gene_data_args,
                                                  MoreArgs = list(p = p,
                                                                  tran_fun = null_tran,
@@ -94,4 +92,4 @@ result_list_fixed_chi_inter_0_combine <- mapply(FUN = simulation_fn,
                                                                  interaction_m = 0),
                                                  SIMPLIFY = FALSE)
 
-saveRDS(result_list_fixed_chi_inter_0_combine, file = "./result/simulation_proposed_GCTA_paper/result_list_fixed_chi_inter_0_combine")
+saveRDS(result_list_fixed_chi_un_inter_0_main, file = "./result/simulation_proposed_GCTA_paper/result_list_fixed_chi_un_inter_0_main")

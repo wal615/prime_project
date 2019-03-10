@@ -47,20 +47,22 @@ inter_fixed <- c(0, 0.1) # 0 means no interaction effect
 inter_random <- c(0, 0.1) # 0 means fixed
 Corr_stru <- c("I", "pcb")
 decorr <- c("SVD", "dim_SVD")
+estimation_model <- c("main", "main /& interaction", "total")
 
 simulation_table_tmp <- expand.grid(Dist = Dist, 
                                     Corr_stru = Corr_stru,
                                     decorr = decorr,
                                     main_fixed = main_fixed,
                                     main_random = main_random,
+                                    inter_random = inter_random,
                                     inter_fixed = inter_fixed,
-                                    inter_random = inter_random) %>% data.table(.)
+                                    estimation_model = estimation_model) %>% data.table(.)
 setorderv(simulation_table_tmp, colnames(simulation_table_tmp))
 
 # adjust the variance magnitude
 simulation_table_tmp[(main_fixed !=0 & main_random !=0), c("main_fixed","main_random") := list(0.5/2, 0.5/2)]
 simulation_table_tmp[(inter_fixed !=0 & inter_random !=0), c("inter_fixed","inter_random") := list(0.1/2, 0.1/2)]
-simulation_table_tmp <- simulation_table_tmp[!(Dist == "PCB" & Corr_stru == "I")]
+simulation_table_tmp <- simulation_table_tmp[!((Dist == "PCB" & Corr_stru == "I") | (Dist != "PCB" & decorr == "dim_SVD"))]
 
 # fixed case
 simulation_table_fixed <- simulation_table_tmp[!((inter_fixed ==0 & inter_random != 0)|(inter_random != 0)|(main_random != 0))]

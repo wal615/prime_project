@@ -25,27 +25,25 @@ simulation_fn <- function(p,
     foreach::registerDoSEQ() 
   else 
     doParallel::registerDoParallel(cores = cores) # setting cores
-  if(seed != 0) set.seed(seed) # set seed for foreach
   
   # generate coefficients
   if(is.null(gene_coeff_args)){
     stop("you need provide coefficient generating information")
   }
   
+  set.seed(seed) # set seed for main coefficient
   # Generate main fixed betas
   betam_fixed <- generate_main(p, gene_coeff_args)
-  
-  
   # Generate interaction fixed gammas
   betai_fixed <- generate_inter(p, gene_coeff_args)
   
-  result_raw <- foreach(ibrep = 1:brep, .combine = rbind, .verbose = TRUE, .errorhandling = "remove") %dorng%   {
+  result_raw <- foreach(ibrep = 1:brep, .combine = rbind, .verbose = TRUE, .errorhandling = "remove", .options.RNG = seed) %dorng%   {
     # Initial output 
     result_tmp <- matrix(0, nrow = nrep, ncol = 6)
     
     # Generate covariates  
     b_raw <- do.call(generate_data, gene_data_args)
-    
+
     # Standardized covariates
     b <- std_fn(b = b_raw,
                 tran_FUN = tran_fun,
@@ -77,6 +75,7 @@ simulation_fn <- function(p,
       result_tmp[, 1]=var(signalm)
       b_final <- b_m
     }
+
     # Uncorrelated data
     if(corrected_main == TRUE){
       x<- uncorr_fn(cbind(b_m, b_i), uncorr_method, uncorr_args, dim_red_method, dim_red_args)
@@ -88,7 +87,6 @@ simulation_fn <- function(p,
     for(irep in 1:nrep){
       # Generate health outcome given fixed random effects
       y=signalm+signali+rnorm(length(signalm),sd=4)
-      
       fit=Yang(y,b_final,interact = interaction_m)
       result_tmp[irep,3] <- fit$G
       result_tmp[irep,4] <- fit$RACT
@@ -97,12 +95,11 @@ simulation_fn <- function(p,
       fit=Yang(y,x,interact = interaction_m)
       result_tmp[irep,5] <- fit$G
       result_tmp[irep,6] <- fit$RACT
-      browser()
     }
     
     # combined the all the attributes to b so we could plot them by the attributes
     additional <- list(x_dist = attributes(b_raw)$x_dist)
-    additional <- append(additional, c(as.list(gene_data_args), as.list(uncorr_args), gene_coeff_args, list(interaction_m = interaction_m, combine = combine, n = nrow(b_raw))))
+    additional <- append(additional, c(as.list(gene_data_args), as.list(uncorr_args), gene_coeff_args, dim_red_args, list(interaction_m = interaction_m, combine = combine, n = nrow(b_raw))))
     additional <- additional[unique(names(additional))] # remove duplicated attrs
     additional$pre_cor <- NULL # pre_cor is a covariance matrix so don't need to carry it to the output
     
