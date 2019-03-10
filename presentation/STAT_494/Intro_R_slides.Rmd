@@ -1,6 +1,6 @@
 ---
 title: 'Introduction to R and Statlab Server'
-short-title: "STAT 494"
+short-title: "STAT 494/451"
 author: "Xuelong Wang"
 date: '`r format(Sys.Date(), "%B %d, %Y")`'      # Month DD, YYYY (Main Slide)
 short-date: '`r format(Sys.Date(), "%m/%d/%Y")`' # MM/DD/YYYY (Lower Right)
@@ -49,112 +49,6 @@ library(iterators)
     + save and delete all objects in the Global Enviroment (rm(list=ls()))
     + using top and kill the terminate your R sessions
 
-# Introduction to R with an example
-
-### Basics concepts of R
-
-#### Object-oriented
-
-R is an object-oriented language
-
-- Everything in R is an object and each object has a class e.g. matrix, list, data.frame,etc...
-
-- For different classes, R has different operations which are called "Method"
-
-
-### An example of Linear Regression
-
-#### Mathematical equation
-
-\[
-  Y = \beta_0 + \beta_1X + \epsilon,
-\] 
-Where $\beta_0$ is the intercept and $\beta_1$ is the slope
-
-#### Goal
-
-Estimate the coefficients and prediction
-
-### Example Cars' Speed and distances to stop 
-
-```{r, eval=FALSE}
-?cars
-```
-
-#### Mathematical equation
-
-\[
-  Y_{dist} = \beta_0 + \beta_{speed}X_{speed} + \epsilon,
-\] 
-Where $\beta_0$ is the intercept and $\beta_{speed}$ is the slope
-
-#### Goal
-
-Using a car's speed to predict the distance it will use to stop
-
-- esitmate the $\beta_0$ and $\beta_{speed}$
-
-
-### Check the data
-
-```{r check data, collapse=TRUE}
-head(cars)
-class(cars)
-```
-
-### Plot X and Y together 
-
-```{r plot x and y, collapse=TRUE}
-plot(x = cars$speed, y = cars$dist)
-```
-
-### Plot a box-plot of speeds for outliers
-```{r plot speed, collapse=TRUE}
-boxplot(cars$speed, main="Speed")
-```
-
-### Plot a box-plot of distances for outliers
-```{r plot distance, collapse=TRUE, fill = TRUE}
-boxplot(cars$dist, main="Distance")
-```
-
-### Fit the model 
-
-```{r fit the model, collapse=TRUE, tidy=TRUE}
-help(lm)
-class(lm)
-linearMod <- lm(dist ~ speed, data=cars)
-class(linearMod)
-print(linearMod)
-```
-
-### plot the fitted model
-
-```{r plot the model, collapse=TRUE, tidy=TRUE}
-par(mfrow = c(2, 2))
-plot(linearMod)
-```
-
-### Using the fitted model to predict
-
-```{r prediction, collapse=TRUE, tidy=TRUE}
-help(predict)
-help(predict.lm)
-# esimation
-est <- predict(linearMod)
-est[1:5]
-# prediction
-new_data <- data.frame(speed = 200)
-pre <- predict(linearMod, newdata = new_data)
-pre
-```
-
-### plot the predicted value vs true
-
-```{r predicted vs true, collapse=TRUE, tidy=TRUE}
-plot(x = cars$speed, y = cars$dist)
-lines(x = cars$speed, linearMod$fitted.values, type='l', col='blue')
-```
 
 # Introduction to parallel computation 
 
@@ -169,7 +63,7 @@ lines(x = cars$speed, linearMod$fitted.values, type='l', col='blue')
 ### Getting start Example
 
 Calculate the sum of the square $$\sum_{i=1}^{10000}\sum_{j=1}^{i} j^2$$
-There is a warning saying the loop ran sequentially   
+  There is a warning saying the loop ran sequentially   
 To run the loop parallelly,  we need to register parallel backends. 
 
 ```{r, tidy = TRUE, fill =TRUE, collapse=TRUE, tidy.opts=list(width.cutoff = 50)}
@@ -180,7 +74,7 @@ system.time(foreach(i=1:10000) %dopar% sum((1:i)^2))[3]
 ### Parallel backends
 
 ```{r, tidy = TRUE, fill =TRUE, collapse=TRUE}
-registerDoParallel()
+registerDoParallel(cores = 2)
 getDoParWorkers()
 ```
 
@@ -199,13 +93,13 @@ dopar <- system.time(r <- foreach(i = 1:10000) %dopar% {
   result1 <- glm(x[ind,2]~x[ind,1],
                  family=binomial(logit))
   coefficients(result1)
-  })[3]
+})[3]
 do <- system.time(r <- foreach(i = 1:10000) %do% {
   ind <- sample(100, 100, replace=TRUE)
   result1 <- glm(x[ind,2]~x[ind,1],
                  family=binomial(logit))
   coefficients(result1)
-  })[3]
+})[3]
 ```
 
 ```{r, tidy = TRUE, fill =TRUE, collapse=TRUE, tidy.opts=list(width.cutoff = 45)}
@@ -214,7 +108,80 @@ r <- foreach(i = 1:10000) %dopar% {
   ind <- sample(100, 100, replace=TRUE)
   result1 <- glm(x[ind,2]~x[ind,1], family=binomial(logit))
   coefficients(result1)
-  }
+}
 ```
 - Escaped time for using  `r getDoParWorkers()` cores is `r dopar` seconds
 - Escaped time for using single core is `r do` seconds
+
+
+# data.table
+
+### data.table
+
+#### Why data.table
+
+- Data.table is an extension of data.frame package in R
+- Much Faster than other structures in R
+- SQL type syntax: `DT[where, select|update|do, by]`
+
+### How to create a data.table
+
+#### `data.table` function
+```{r, tidy = TRUE, fill =TRUE, collapse=TRUE, tidy.opts=list(width.cutoff = 40)}
+library(data.table)
+DT = data.table(x=c("b","b","b","a","a"),
+                v=rnorm(5))
+CARS = data.table(cars)
+tables()
+```
+
+### How to create a data.table
+#### Subset
+```{r, tidy = TRUE, fill =TRUE, collapse=TRUE, tidy.opts=list(width.cutoff = 30)}
+library(data.table)
+DT[2,]
+DT[x=="a",]
+cat(try(DT["a",],silent=TRUE))
+```
+
+### How to create a data.table
+#### setKeys
+```{r, tidy = TRUE, fill =TRUE, collapse=TRUE, tidy.opts=list(width.cutoff = 40)}
+setkey(DT,x)
+DT["a",]
+```
+
+- Note that the keys are not requried to be unique.
+
+### How fast 
+
+#### data.frame 
+```{r, tidy = TRUE, fill =TRUE, collapse=TRUE, tidy.opts=list(width.cutoff = 40)}
+grpsize = ceiling(1e7/26^2) # 10 million rows, 676 groups
+DF <- data.frame(x=rep(LETTERS,each=26*grpsize),
+                 y=rep(letters,each=grpsize),
+                 v=runif(grpsize*26^2),
+                 stringsAsFactors=FALSE)
+head(DF,3)
+dim(DF)
+```
+
+### How fast 
+
+#### data.frame 
+```{r, tidy = TRUE, fill =TRUE, collapse=TRUE, tidy.opts=list(width.cutoff = 40)}
+tt=system.time(ans1 <- DF[DF$x=="R" & DF$y=="h",]) # ’vector scan’
+tt
+head(ans1,3)
+```
+
+### How fast 
+
+#### data.frame 
+```{r, tidy = TRUE, fill =TRUE, collapse=TRUE, tidy.opts=list(width.cutoff = 40)}
+DT = as.data.table(DF)
+system.time(setkey(DT,x,y))
+ss=system.time(ans2 <- DT[list("R","h")])
+ss
+head(ans2,3)
+```

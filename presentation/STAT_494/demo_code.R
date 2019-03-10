@@ -1,4 +1,4 @@
-# demo_code for stat 494
+# demo_code for stat 494 & 451
 options(width = 40)
 library(doParallel)
 library(foreach)
