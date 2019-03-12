@@ -127,28 +127,28 @@ print(fixed_chi_main_I_un)
 dev.off()
 
 ###################################################################################################################
-## combine PCB
+## PCB Total
 ###################################################################################################################
 
 ### fixed fixed 
 file_list <- list.files("./result/simulation_proposed_GCTA_paper/") %>%
   paste0("./result/simulation_proposed_GCTA_paper/",.)
-file_list <- file_list[grep(x = file_list, pattern = "PCB.*combine",perl = TRUE)]
-# file_list_I <- file_list[grepl(pattern = "chi_I_inter", x = file_list, fixed = TRUE)]
+file_list <- file_list[grep(x = file_list, pattern = "PCB.*total$",perl = TRUE)]
 result_list_fixed <- lapply(file_list, function (x) {readRDS(x) %>% rbindlist(.)}) %>% rbindlist(.)
-
-# remove outliners based on sub-group
-# result_list_fixed <- result_list_fixed[, .SD[(prop_interaction < prop_interaction[order(prop_interaction, decreasing = TRUE)[5]]) | (prop_interaction ==0),], 
-#                                        by = c("structure", "inter_fixed_var", "interaction_m")]
-
 result_list_fixed_total <- result_list_fixed[true_total != 0, -c(2,4,6)] # remove inter
+result_list_fixed_total[,c("data_gen_model","est_model") := list(ifelse(inter_fixed_var ==0, "main","main+inter"), "total")]
 
 fixed_PCB_total <- tidyr::gather(result_list_fixed_total, ends_with("total"), key = "method", value = "value") %>%
   ggplot(., aes(x = method, y = value, fill = method)) +
   geom_violin(alpha = 0.2) +
   geom_boxplot(alpha = 0.7) +
-  facet_wrap_paginate(facets = vars(inter_fixed_var, pro), ncol = 3 ,nrow = 2, scales = "free", labeller  = "label_both", page = 1) +
-  ggtitle("total effect of PCB") +
+  facet_wrap_paginate(facets = vars(data_gen_model, est_model,pro), 
+                      ncol = 3,
+                      nrow = 2, 
+                      scales = "free", 
+                      labeller  = label_both, 
+                      page = 1) +
+  ggtitle("Total effect of PCB") +
   scale_y_continuous(breaks = scales::pretty_breaks(n = 10))+
   theme(plot.title = element_text(hjust = 0.5))
 
@@ -159,21 +159,16 @@ fixed_PCB_total <- tidyr::gather(result_list_fixed_total, ends_with("total"), ke
 ### fixed fixed 
 file_list <- list.files("./result/simulation_proposed_GCTA_paper/") %>%
   paste0("./result/simulation_proposed_GCTA_paper/",.)
-file_list <- file_list[grep(x = file_list, pattern = "PCB.*main",perl = TRUE)]
-# file_list_I <- file_list[grepl(pattern = "chi_I_inter", x = file_list, fixed = TRUE)]
+file_list <- file_list[grep(x = file_list, pattern = "PCB.*main$",perl = TRUE)]
 result_list_fixed <- lapply(file_list, function (x) {readRDS(x) %>% rbindlist(.)}) %>% rbindlist(.)
-
-# remove outliners based on sub-group
-# result_list_fixed <- result_list_fixed[, .SD[(prop_interaction < prop_interaction[order(prop_interaction, decreasing = TRUE)[5]]) | (prop_interaction ==0),], 
-#                                        by = c("structure", "inter_fixed_var", "interaction_m")]
-
 result_list_fixed_main <- result_list_fixed[true_main != 0, -c(2,4,6)] # remove inter
+result_list_fixed_main[,c("data_gen_model","est_model") := list(ifelse(inter_fixed_var ==0, "main","main+inter"), ifelse(interaction_m == 0, "main","main+inter"))]
 
 fixed_PCB_main <- tidyr::gather(result_list_fixed_main, ends_with("main"), key = "method", value = "value") %>%
   ggplot(., aes(x = method, y = value, fill = method)) +
   geom_violin(alpha = 0.2) +
   geom_boxplot(alpha = 0.7) +
-  facet_wrap_paginate(facets = vars(inter_fixed_var, pro), ncol = 3 ,nrow = 2, scales = "free", labeller  = "label_both", page = 1) +
+  facet_wrap_paginate(facets = vars(data_gen_model, est_model, pro), ncol = 3 ,nrow = 2, scales = "free", labeller  = "label_both", page = 1) +
   ggtitle("main effect of PCB") +
   scale_y_continuous(breaks = scales::pretty_breaks(n = 10))+
   theme(plot.title = element_text(hjust = 0.5))
@@ -182,139 +177,62 @@ fixed_PCB_main <- tidyr::gather(result_list_fixed_main, ends_with("main"), key =
 ##  PCB maininter
 ###################################################################################################################
 
-
-### fixed fixed 
 file_list <- list.files("./result/simulation_proposed_GCTA_paper/") %>%
   paste0("./result/simulation_proposed_GCTA_paper/",.)
-file_list <- file_list[grep(x = file_list, pattern = "PCB.*maininter",perl = TRUE)]
-# file_list_I <- file_list[grepl(pattern = "chi_I_inter", x = file_list, fixed = TRUE)]
+file_list <- file_list[grep(x = file_list, pattern = "PCB.*main_inter",perl = TRUE)]
 result_list_fixed <- lapply(file_list, function (x) {readRDS(x) %>% rbindlist(.)}) %>% rbindlist(.)
-
-# remove outliners based on sub-group
-# result_list_fixed <- result_list_fixed[, .SD[(prop_interaction < prop_interaction[order(prop_interaction, decreasing = TRUE)[5]]) | (prop_interaction ==0),], 
-#                                        by = c("structure", "inter_fixed_var", "interaction_m")]
+result_list_fixed[,c("data_gen_model","est_model") := list(ifelse(inter_fixed_var ==0, "main","main+inter"), ifelse(interaction_m == 0, "main","main+inter"))]
 
 result_list_fixed_main <- result_list_fixed[true_main != 0, -c(2,4,6)] # remove inter
-
-fixed_PCB_main_maininter <- tidyr::gather(result_list_fixed_main, ends_with("main"), key = "method", value = "value") %>%
+fixed_PCB_main_inter_main <- tidyr::gather(result_list_fixed_main, ends_with("main"), key = "method", value = "value") %>%
   ggplot(., aes(x = method, y = value, fill = method)) +
   geom_violin(alpha = 0.2) +
   geom_boxplot(alpha = 0.7) +
-  facet_wrap_paginate(facets = vars(inter_fixed_var, pro), ncol = 3 ,nrow = 2, scales = "free", labeller  = "label_both", page = 1) +
-  ggtitle("main effect estimation of PCB assuming interaction") +
+  facet_wrap_paginate(facets = vars(data_gen_model, est_model, pro), ncol = 3 ,nrow = 2, scales = "free", labeller  = "label_both", page = 1) +
+  ggtitle("Main of PCB") +
   scale_y_continuous(breaks = scales::pretty_breaks(n = 10))+
   theme(plot.title = element_text(hjust = 0.5))
 
-result_list_fixed_interaction <- result_list_fixed[true_main != 0, -c(1,3,5)] # remove inter
-fixed_PCB_interaction_maininter <- tidyr::gather(result_list_fixed_interaction, ends_with("interaction"), key = "method", value = "value") %>%
+result_list_fixed_inter <- result_list_fixed[true_main != 0, -c(1,3,5)] # remove inter
+fixed_PCB_main_inter_inter <- tidyr::gather(result_list_fixed_inter, ends_with("interaction"), key = "method", value = "value") %>%
   ggplot(., aes(x = method, y = value, fill = method)) +
   geom_violin(alpha = 0.2) +
   geom_boxplot(alpha = 0.7) +
-  facet_wrap_paginate(facets = vars(inter_fixed_var, pro), ncol = 3 ,nrow = 2, scales = "free", labeller  = "label_both", page = 1) +
-  ggtitle("interaction effect estimation of PCB assuming interaction") +
+  facet_wrap_paginate(facets = vars(data_gen_model, est_model, pro), ncol = 3 ,nrow = 2, scales = "free", labeller  = "label_both", page = 1) +
+  ggtitle("Interaction of PCB") +
   scale_y_continuous(breaks = scales::pretty_breaks(n = 10))+
   theme(plot.title = element_text(hjust = 0.5))
-
-pdf(file = "./reports/proposed_GCTA_paper/test_fixed_PCB_maininter.pdf",
-    width = 8,
-    height = 6)
-
-print(fixed_PCB_main_maininter)
-print(fixed_PCB_interaction_maininter)
-
-dev.off()
-
 
 ###################################################################################################################
 ##  PCB combine dim
 ###################################################################################################################
 
-
-### fixed fixed 
 file_list <- list.files("./result/simulation_proposed_GCTA_paper/") %>%
   paste0("./result/simulation_proposed_GCTA_paper/",.)
-file_list <- file_list[grep(x = file_list, pattern = "PCB.*dim",perl = TRUE)]
-# file_list_I <- file_list[grepl(pattern = "chi_I_inter", x = file_list, fixed = TRUE)]
+file_list <- file_list[grep(x = file_list, pattern = "PCB.*dim$",perl = TRUE)]
 result_list_fixed <- lapply(file_list, function (x) {readRDS(x) %>% rbindlist(.)}) %>% rbindlist(.)
+result_list_fixed[,c("data_gen_model","est_model") := list(ifelse(inter_fixed_var ==0, "main","main+inter"), "total")]
+result_list_fixed <- result_list_fixed[true_total != 0, -c(2,4,6)]
 
-# remove outliners based on sub-group
-# result_list_fixed <- result_list_fixed[, .SD[(prop_interaction < prop_interaction[order(prop_interaction, decreasing = TRUE)[5]]) | (prop_interaction ==0),], 
-#                                        by = c("structure", "inter_fixed_var", "interaction_m")]
-
-result_list_fixed_total <- result_list_fixed[true_total != 0, -c(2,4,6)] # remove inter
-
-
-fixed_PCB_total_total_dim_no_inter <- tidyr::gather(result_list_fixed_total, ends_with("total"), key = "method", value = "value") %>%
+fixed_PCB_total_dim <- tidyr::gather(result_list_fixed, ends_with("total"), key = "method", value = "value") %>%
   ggplot(., aes(x = method, y = value, fill = method)) +
   geom_violin(alpha = 0.2) +
   geom_boxplot(alpha = 0.7) +
-  facet_wrap_paginate(facets = vars(inter_fixed_var, pro,reduce_coef), ncol = 3 ,nrow = 3, scales = "free", labeller  = "label_both", page = 1) +
-  ggtitle("total effect estimation of PCB assuming interaction") +
-  scale_y_continuous(breaks = scales::pretty_breaks(n = 10))+
-  theme(plot.title = element_text(hjust = 0.5))
-
-fixed_PCB_total_total_dim_inter <- tidyr::gather(result_list_fixed_total, ends_with("total"), key = "method", value = "value") %>%
-  ggplot(., aes(x = method, y = value, fill = method)) +
-  geom_violin(alpha = 0.2) +
-  geom_boxplot(alpha = 0.7) +
-  facet_wrap_paginate(facets = vars(inter_fixed_var, pro,reduce_coef), ncol = 3 ,nrow = 3, scales = "free", labeller  = "label_both", page = 2) +
-  ggtitle("total effect estimation of PCB assuming interaction") +
+  facet_wrap_paginate(facets = vars(data_gen_model, est_model, pro, reduce_coef), ncol = 3 ,nrow = 3, scales = "free", labeller  = "label_both", page = 1) +
+  ggtitle("dim total of PCB") +
   scale_y_continuous(breaks = scales::pretty_breaks(n = 10))+
   theme(plot.title = element_text(hjust = 0.5))
 
 
-pdf(file = "./reports/proposed_GCTA_paper/test_fixed_PCB_combine_dim.pdf",
+pdf(file = "./reports/proposed_GCTA_paper/test_fixed_PCB.pdf",
     width = 8,
-    height = 6)
+    height = 9)
 
-print(fixed_PCB_total_total_dim_no_inter)
-print(fixed_PCB_total_total_dim_inter)
+print(fixed_PCB_main_inter_main)
+print(fixed_PCB_main_inter_inter)
+print(fixed_PCB_main)
+print(fixed_PCB_total)
+print(fixed_PCB_total_dim)
 
 dev.off()
 
-
-###################################################################################################################
-##  PCB random interaction
-###################################################################################################################
-
-### fixed fixed 
-file_list <- list.files("./result/simulation_proposed_GCTA_paper/") %>%
-  paste0("./result/simulation_proposed_GCTA_paper/",.)
-file_list <- file_list[grep(x = file_list, pattern = "rand_inter_chi",perl = TRUE)]
-# file_list_I <- file_list[grepl(pattern = "chi_I_inter", x = file_list, fixed = TRUE)]
-result_list_random <- lapply(file_list, function (x) {readRDS(x) %>% rbindlist(.)}) %>% rbindlist(.)
-
-# remove outliners based on sub-group
-# result_list_fixed <- result_list_fixed[, .SD[(prop_interaction < prop_interaction[order(prop_interaction, decreasing = TRUE)[5]]) | (prop_interaction ==0),], 
-#                                        by = c("structure", "inter_fixed_var", "interaction_m")]
-
-result_list_random_main <- result_list_random[true_main != 0, -c(2,4,6)] # remove inter
-
-chi_rand_inter_main <- tidyr::gather(result_list_random_main, ends_with("main"), key = "method", value = "value") %>%
-  ggplot(., aes(x = method, y = value, fill = method)) +
-  geom_violin(alpha = 0.2) +
-  geom_boxplot(alpha = 0.7) +
-  facet_wrap_paginate(facets = vars(inter_random_var, interaction_m), ncol = 2 ,nrow = 2, scales = "free", labeller  = "label_both", page = 1) +
-  ggtitle("main effect of chi with random interaction effect") +
-  scale_y_continuous(breaks = scales::pretty_breaks(n = 10))+
-  theme(plot.title = element_text(hjust = 0.5))
-
-result_list_random_interaction <- result_list_random[true_main != 0, -c(1,3,5)] # remove inter
-
-chi_rand_inter_interaction <- tidyr::gather(result_list_random_interaction, ends_with("interaction"), key = "method", value = "value") %>%
-  ggplot(., aes(x = method, y = value, fill = method)) +
-  geom_violin(alpha = 0.2) +
-  geom_boxplot(alpha = 0.7) +
-  facet_wrap_paginate(facets = vars(inter_random_var, interaction_m), ncol = 2 ,nrow = 2, scales = "free", labeller  = "label_both", page = 1) +
-  ggtitle("interaction effect of chi with random interaction effect") +
-  scale_y_continuous(breaks = scales::pretty_breaks(n = 10))+
-  theme(plot.title = element_text(hjust = 0.5))
-
-pdf(file = "./reports/proposed_GCTA_paper/test_chi_I_random_interaction_main_interaction.pdf",
-    width = 8,
-    height = 6)
-
-print(chi_rand_inter_main)
-print(chi_rand_inter_interaction)
-
-dev.off()

@@ -11,7 +11,7 @@ library(doRNG)
 library(doParallel)
 library(gtools) # for rbind based on columns
 
-cores <- 20
+cores <- 10
 n_iter <- 200
 n_iter_2 <- 20
 
@@ -24,7 +24,7 @@ n_iter_2 <- 20
 ## inter_1 inter_m = 0
 ###############################################################################################################################
 
-combine <- FALSE
+combine <- TRUE
 n_total <- c(1000)
 gene_coeff_args <- list(main_fixed_var = 0.5,
                         main_random_var = 0,
@@ -37,7 +37,7 @@ gene_data_args <- gene_data_args_I
 
 gene_data_args <- gene_data_args %>% split(x = ., f = seq(nrow(gene_data_args))) # generate a list from each row of a dataframe
 uncorr_args <- list(p = p)
-result_list_fixed_chi_I_inter_1_main <- mapply(FUN = simulation_fn,
+result_list_fixed_chi_I_main_0.5_inter_0.1_total <- mapply(FUN = simulation_fn,
                                                 gene_data_args = gene_data_args,
                                                 MoreArgs = list(p = p,
                                                                 tran_fun = null_tran,
@@ -54,7 +54,7 @@ result_list_fixed_chi_I_inter_1_main <- mapply(FUN = simulation_fn,
                                                                 interaction_m = 0),
                                                 SIMPLIFY = FALSE)
 
-saveRDS(result_list_fixed_chi_I_inter_1_main, file = "./result/simulation_proposed_GCTA_paper/result_list_fixed_chi_I_inter_1_main")
+saveRDS(result_list_fixed_chi_I_main_0.5_inter_0.1_total, file = "./result/simulation_proposed_GCTA_paper/result_list_fixed_chi_I_main_0.5_inter_0.1_total")
 
 
 
@@ -75,7 +75,7 @@ gene_data_args <- gene_data_args_I
 
 gene_data_args <- gene_data_args %>% split(x = ., f = seq(nrow(gene_data_args))) # generate a list from each row of a dataframe
 uncorr_args <- list(p = p)
-result_list_fixed_chi_I_inter_0_main <- mapply(FUN = simulation_fn,
+result_list_fixed_chi_I_main_0.5_inter_0_total <- mapply(FUN = simulation_fn,
                                                 gene_data_args = gene_data_args,
                                                 MoreArgs = list(p = p,
                                                                 tran_fun = null_tran,
@@ -92,4 +92,4 @@ result_list_fixed_chi_I_inter_0_main <- mapply(FUN = simulation_fn,
                                                                 interaction_m = 0),
                                                 SIMPLIFY = FALSE)
 
-saveRDS(result_list_fixed_chi_I_inter_0_main, file = "./result/simulation_proposed_GCTA_paper/result_list_fixed_chi_I_inter_0_main")
+saveRDS(result_list_fixed_chi_I_main_0.5_inter_0_total, file = "./result/simulation_proposed_GCTA_paper/result_list_fixed_chi_I_main_0.5_inter_0_total")
