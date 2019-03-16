@@ -11,8 +11,8 @@ library(doRNG)
 library(doParallel)
 library(gtools) # for rbind based on columns
 
-cores <- 15
-n_iter <- 200
+cores <- 20
+n_iter <- 100
 n_iter_2 <- 20
 
 ###############################################################################################################################

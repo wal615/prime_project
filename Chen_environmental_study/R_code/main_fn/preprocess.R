@@ -2,30 +2,16 @@
 ## standardized function with tranformation features
 ##################################################################################
 # default 
-std_fn <- function(b, tran_FUN = null_tran, combine = FALSE, additional = NULL,...){
+std_fn <- function(b, tran_FUN = null_tran, combine = FALSE, additional = NULL,inter = TRUE, ...){
   b <- apply(b, 2, tran_FUN, ...)
-  p_m <- ncol(b)
-  # note if combine is true than standardized for main and effect 
-  if (combine) {
-    b <- model.matrix(~.*.+0, data.frame(b)) # adding the interaction term
-  }  
-  
+
   for(k in 1:ncol(b)){
     me=mean(b[,k])
     std=sqrt(var(b[,k]))
     b[,k]=(b[,k]-me)/std
   }
-  
-  # note if combine is false than standardized only main 
-  if(!combine) {
-    b <- model.matrix(~.*.+0, data.frame(b)) # adding the interaction term
-    # for(k in ((p_m+1):ncol(b))){
-    #   me=mean(b[,k])
-    #   std=sqrt(var(b[,k]))
-    #   b[,k]=(b[,k]-me)/std
-    # }
-  }
-  
+  if(inter == TRUE)
+  b <- model.matrix(~.*.+0, data.frame(b)) # adding the interaction term
   
   if (!is.null(additional)) attributes(b) <- append(attributes(b), additional)
   b

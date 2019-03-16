@@ -62,7 +62,7 @@ saveRDS(result_list_fixed_normal_un_main_0.5_inter_0.1_total, file = "./result/s
 ## inter_0 inter_m = 0
 ###############################################################################################################################
 
-combine <- FALSE
+combine <- TRUE
 n_total <- c(1000)
 gene_coeff_args <- list(main_fixed_var = 0.5,
                         main_random_var = 0,

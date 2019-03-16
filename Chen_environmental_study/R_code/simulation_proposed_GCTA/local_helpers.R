@@ -39,7 +39,7 @@ simulation_fn <- function(p,
   
   result_raw <- foreach(ibrep = 1:brep, .combine = rbind, .verbose = TRUE, .errorhandling = "remove", .options.RNG = seed) %dorng%   {
     # Initial output 
-    result_tmp <- matrix(0, nrow = nrep, ncol = 6)
+    result_tmp <- matrix(0, nrow = nrep, ncol = 9)
     
     # Generate covariates  
     b_raw <- do.call(generate_data, gene_data_args)
@@ -66,7 +66,13 @@ simulation_fn <- function(p,
     # Generate the signals
     signalm <- b_m%*%betam
     signali <- b_i%*%betai
-    result_tmp[, 2]=var(signali)
+    result_tmp[,2] <- var(signali)
+    
+    # record all the variance 
+    result_tmp[,7] <- var(signalm)
+    result_tmp[,8] <- var(signali)
+    result_tmp[,9] <- 2*cov(signali,signalm)
+    
     
     if(combine == TRUE){
       result_tmp[, 1]=var(signalm + signali)
@@ -75,7 +81,9 @@ simulation_fn <- function(p,
       result_tmp[, 1]=var(signalm)
       b_final <- b_m
     }
-
+    
+    
+    
     # Uncorrelated data
     if(corrected_main == TRUE){
       x<- uncorr_fn(cbind(b_m, b_i), uncorr_method, uncorr_args, dim_red_method, dim_red_args)
@@ -97,6 +105,7 @@ simulation_fn <- function(p,
       result_tmp[irep,6] <- fit$RACT
     }
     
+    
     # combined the all the attributes to b so we could plot them by the attributes
     additional <- list(x_dist = attributes(b_raw)$x_dist)
     additional <- append(additional, c(as.list(gene_data_args), as.list(uncorr_args), gene_coeff_args, dim_red_args, list(interaction_m = interaction_m, combine = combine, n = nrow(b_raw))))
@@ -109,8 +118,9 @@ simulation_fn <- function(p,
     
   }
   attributes(result_raw)$rng <- NULL # rm the random sampling info
-  colnames(result_raw)[1:6] <- c("true_main", "true_interaction", "GCTA_main", "GCTA_interaction", "prop_main", "prop_interaction")
   
+  colnames(result_raw)[7:9] <- c("var_main_effect","var_inter_effect","cov_main_inter_effect")
+  colnames(result_raw)[1:6] <- c("true_main", "true_interaction", "GCTA_main", "GCTA_interaction", "prop_main", "prop_interaction")
   if(combine == TRUE){
     colnames(result_raw)[1:6] <- c("true_total", "true_interaction", "GCTA_total", "GCTA_interaction", "prop_total", "prop_interaction")
   }

@@ -37,7 +37,7 @@ gene_data_args <- gene_data_args_I
 
 gene_data_args <- gene_data_args %>% split(x = ., f = seq(nrow(gene_data_args))) # generate a list from each row of a dataframe
 uncorr_args <- list(p = p)
-result_list_fixed_noraml_I_main_0.5_inter_0.1_main <- mapply(FUN = simulation_fn,
+result_list_fixed_normal_I_main_0.5_inter_0.1_main <- mapply(FUN = simulation_fn,
                                                                 gene_data_args = gene_data_args,
                                                                 MoreArgs = list(p = p,
                                                                                 tran_fun = null_tran,
@@ -46,7 +46,7 @@ result_list_fixed_noraml_I_main_0.5_inter_0.1_main <- mapply(FUN = simulation_fn
                                                                                 uncorr_method = SVD_method,
                                                                                 uncorr_args = uncorr_args,
                                                                                 dim_red_method = NULL,
-                                                                                generate_data = generate_noraml,
+                                                                                generate_data = generate_normal,
                                                                                 brep = n_iter,
                                                                                 nrep = n_iter_2,
                                                                                 seed = 1234,
@@ -54,7 +54,7 @@ result_list_fixed_noraml_I_main_0.5_inter_0.1_main <- mapply(FUN = simulation_fn
                                                                                 interaction_m = 0),
                                                                 SIMPLIFY = FALSE)
 
-saveRDS(result_list_fixed_noraml_I_main_0.5_inter_0.1_main, file = "./result/simulation_proposed_GCTA_paper/result_list_fixed_noraml_I_main_0.5_inter_0.1_main")
+saveRDS(result_list_fixed_normal_I_main_0.5_inter_0.1_main, file = "./result/simulation_proposed_GCTA_paper/result_list_fixed_normal_I_main_0.5_inter_0.1_main")
 
 
 ###############################################################################################################################
@@ -76,7 +76,7 @@ gene_data_args <- gene_data_args_I
 
 gene_data_args <- gene_data_args %>% split(x = ., f = seq(nrow(gene_data_args))) # generate a list from each row of a dataframe
 uncorr_args <- list(p = p)
-result_list_fixed_noraml_I_main_0.5_inter_0_main <- mapply(FUN = simulation_fn,
+result_list_fixed_normal_I_main_0.5_inter_0_main <- mapply(FUN = simulation_fn,
                                                               gene_data_args = gene_data_args,
                                                               MoreArgs = list(p = p,
                                                                               tran_fun = null_tran,
@@ -85,7 +85,7 @@ result_list_fixed_noraml_I_main_0.5_inter_0_main <- mapply(FUN = simulation_fn,
                                                                               uncorr_method = SVD_method,
                                                                               uncorr_args = uncorr_args,
                                                                               dim_red_method = NULL,
-                                                                              generate_data = generate_noraml,
+                                                                              generate_data = generate_normal,
                                                                               brep = n_iter,
                                                                               nrep = n_iter_2,
                                                                               seed = 1234,
@@ -93,5 +93,5 @@ result_list_fixed_noraml_I_main_0.5_inter_0_main <- mapply(FUN = simulation_fn,
                                                                               interaction_m = 0),
                                                               SIMPLIFY = FALSE)
 
-saveRDS(result_list_fixed_noraml_I_main_0.5_inter_0_main, file = "./result/simulation_proposed_GCTA_paper/result_list_fixed_noraml_I_main_0.5_inter_0_main")
+saveRDS(result_list_fixed_normal_I_main_0.5_inter_0_main, file = "./result/simulation_proposed_GCTA_paper/result_list_fixed_normal_I_main_0.5_inter_0_main")
 

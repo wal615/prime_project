@@ -11,7 +11,7 @@ library(doRNG)
 library(doParallel)
 library(gtools) # for rbind based on columns
 
-cores <- 10
+cores <- 20
 n_iter <- 200
 n_iter_2 <- 20
 
@@ -55,14 +55,14 @@ result_list_fixed_chi_un_main_0.5_inter_0.1_total <- mapply(FUN = simulation_fn,
                                                            SIMPLIFY = FALSE)
 
 saveRDS(result_list_fixed_chi_un_main_0.5_inter_0.1_total, file = "./result/simulation_proposed_GCTA_paper/result_list_fixed_chi_un_main_0.5_inter_0.1_total")
-
-
-
-###############################################################################################################################
-## inter_0 inter_m = 0
-###############################################################################################################################
-
-combine <- FALSE
+# 
+# 
+# 
+# ###############################################################################################################################
+# ## inter_0 inter_m = 0
+# ###############################################################################################################################
+# 
+combine <- TRUE
 n_total <- c(1000)
 gene_coeff_args <- list(main_fixed_var = 0.5,
                         main_random_var = 0,
@@ -91,5 +91,5 @@ result_list_fixed_chi_un_main_0.5_inter_0_total <- mapply(FUN = simulation_fn,
                                                                          cores = cores,
                                                                          interaction_m = 0),
                                                          SIMPLIFY = FALSE)
-
+# 
 saveRDS(result_list_fixed_chi_un_main_0.5_inter_0_total, file = "./result/simulation_proposed_GCTA_paper/result_list_fixed_chi_un_main_0.5_inter_0_total")
