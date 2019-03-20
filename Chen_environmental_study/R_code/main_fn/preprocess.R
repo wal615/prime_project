@@ -2,7 +2,7 @@
 ## standardized function with tranformation features
 ##################################################################################
 # default 
-std_fn <- function(b, tran_FUN = null_tran, combine = FALSE, additional = NULL,inter = TRUE, ...){
+std_fn <- function(b, tran_FUN = null_tran, additional = NULL,inter = TRUE, ...){
   b <- apply(b, 2, tran_FUN, ...)
 
   for(k in 1:ncol(b)){

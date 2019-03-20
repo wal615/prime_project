@@ -19,6 +19,7 @@ simulation_fn <- function(p,
                           interaction_m = 0, 
                           corrected_main = FALSE,
                           main_pro = NULL,
+                          inter_std = FALSE,
                           seed = 0, 
                           cores = 1) {
   if (cores == 1) 
@@ -44,10 +45,9 @@ simulation_fn <- function(p,
     # Generate covariates  
     b_raw <- do.call(generate_data, gene_data_args)
 
-    # Standardized covariates
+    # Standardized main covariates
     b <- std_fn(b = b_raw,
-                tran_FUN = tran_fun,
-                combine = combine)
+                tran_FUN = tran_fun)
     b_m <- b[,1:p]
     b_i <- b[,-(1:p)]
     
@@ -73,6 +73,10 @@ simulation_fn <- function(p,
     result_tmp[,8] <- var(signali)
     result_tmp[,9] <- 2*cov(signali,signalm)
     
+    # center the interaction terms
+    if(inter_std == TRUE)
+    b_i <- std_fn(b = b_i,
+                inter = FALSE)
     
     if(combine == TRUE){
       result_tmp[, 1]=var(signalm + signali)
@@ -83,14 +87,13 @@ simulation_fn <- function(p,
     }
     
     
-    
     # Uncorrelated data
     if(corrected_main == TRUE){
       x<- uncorr_fn(cbind(b_m, b_i), uncorr_method, uncorr_args, dim_red_method, dim_red_args)
     } else {
       x <- uncorr_fn(b_final, uncorr_method, uncorr_args, dim_red_method, dim_red_args)
     }
-    
+
     # Estimating effects with iterations to reduce the variance
     for(irep in 1:nrep){
       # Generate health outcome given fixed random effects
@@ -108,7 +111,14 @@ simulation_fn <- function(p,
     
     # combined the all the attributes to b so we could plot them by the attributes
     additional <- list(x_dist = attributes(b_raw)$x_dist)
-    additional <- append(additional, c(as.list(gene_data_args), as.list(uncorr_args), gene_coeff_args, dim_red_args, list(interaction_m = interaction_m, combine = combine, n = nrow(b_raw))))
+    additional <- append(additional, c(as.list(gene_data_args), 
+                                       as.list(uncorr_args), 
+                                       gene_coeff_args, 
+                                       dim_red_args, 
+                                       list(interaction_m = interaction_m, 
+                                            combine = combine, 
+                                            n = nrow(b_raw),
+                                            inter_std = inter_std)))
     additional <- additional[unique(names(additional))] # remove duplicated attrs
     additional$pre_cor <- NULL # pre_cor is a covariance matrix so don't need to carry it to the output
     

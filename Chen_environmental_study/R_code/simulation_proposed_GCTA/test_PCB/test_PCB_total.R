@@ -1,6 +1,6 @@
 options(error = bettertrace::stacktrace)
 setwd("~/dev/projects/Chen_environmental_study/")
-R.utils::sourceDirectory("./R_code/main_fn")
+R.utils::sourceDirectory("./R_code/main_fn", modifiedOnly = FALSE)
 source("./R_code/simulation_proposed_GCTA/local_helpers.R")
 data_path <- "~/dev/projects/Chen_environmental_study/R_code/data/pcb_99_13_no_missing.csv"
 library(sas7bdat)
@@ -12,8 +12,8 @@ library(doParallel)
 library(gtools) # for rbind based on columns
 
 cores <- 20
-n_iter <- 100
-n_iter_2 <- 20
+n_iter <- 20
+n_iter_2 <- 5
 
 ###############################################################################################################################
 ## Chi-squre fixed case
@@ -30,13 +30,15 @@ gene_coeff_args <- list(main_fixed_var = 0.5,
                         inter_fixed_var = 0.1,
                         inter_random_var = 0)
 p <- 33
-pro <- c(0.2,0.6,0.8)
+pro <- seq(0.1, 0.6, 0.1)
 gene_data_args_PCB <- expand.grid(data_path = data_path, pro = pro, stringsAsFactors = FALSE)
 gene_data_args <- gene_data_args_PCB
 
 gene_data_args <- gene_data_args %>% split(x = ., f = seq(nrow(gene_data_args))) # generate a list from each row of a dataframe
 uncorr_args <- list(p = p)
-result_list_fixed_PCB_main_0.5_inter_0.1_total <- mapply(FUN = simulation_fn,
+
+# inter_stadardized
+result_list_fixed_PCB_main_0.5_inter_0.1_total_inter_std <- mapply(FUN = simulation_fn,
                                                 gene_data_args = gene_data_args,
                                                 MoreArgs = list(p = p,
                                                                 tran_fun = null_tran,
@@ -50,8 +52,29 @@ result_list_fixed_PCB_main_0.5_inter_0.1_total <- mapply(FUN = simulation_fn,
                                                                 nrep = n_iter_2,
                                                                 seed = 1234,
                                                                 cores = cores,
+                                                                inter_std = TRUE,
                                                                 interaction_m = 0),
                                                 SIMPLIFY = FALSE)
+
+saveRDS(result_list_fixed_PCB_main_0.5_inter_0.1_total_inter_std, file = "./result/simulation_proposed_GCTA_paper/result_list_fixed_PCB_main_0.5_inter_0.1_total_inter_std")
+
+# inter_not_standardized
+result_list_fixed_PCB_main_0.5_inter_0.1_total <- mapply(FUN = simulation_fn,
+                                                         gene_data_args = gene_data_args,
+                                                         MoreArgs = list(p = p,
+                                                                         tran_fun = null_tran,
+                                                                         combine = combine,
+                                                                         gene_coeff_args = gene_coeff_args,
+                                                                         uncorr_method = SVD_method,
+                                                                         uncorr_args = uncorr_args,
+                                                                         dim_red_method = NULL,
+                                                                         generate_data = generate_PCB,
+                                                                         brep = n_iter,
+                                                                         nrep = n_iter_2,
+                                                                         seed = 1234,
+                                                                         cores = cores,
+                                                                         interaction_m = 0),
+                                                         SIMPLIFY = FALSE)
 
 saveRDS(result_list_fixed_PCB_main_0.5_inter_0.1_total, file = "./result/simulation_proposed_GCTA_paper/result_list_fixed_PCB_main_0.5_inter_0.1_total")
 
@@ -67,13 +90,15 @@ gene_coeff_args <- list(main_fixed_var = 0.5,
                         inter_fixed_var = 0,
                         inter_random_var = 0)
 p <- 33
-pro <- c(0.2,0.6,0.8)
+pro <- seq(0.1, 0.6, 0.1)
 gene_data_args_PCB <- expand.grid(data_path = data_path, pro = pro, stringsAsFactors = FALSE)
 gene_data_args <- gene_data_args_PCB
 
 gene_data_args <- gene_data_args %>% split(x = ., f = seq(nrow(gene_data_args))) # generate a list from each row of a dataframe
 uncorr_args <- list(p = p)
-result_list_fixed_PCB_main_0.5_inter_0_total <- mapply(FUN = simulation_fn,
+
+# inter_standardized
+result_list_fixed_PCB_main_0.5_inter_0_total_inter_std <- mapply(FUN = simulation_fn,
                                                 gene_data_args = gene_data_args,
                                                 MoreArgs = list(p = p,
                                                                 tran_fun = null_tran,
@@ -87,7 +112,28 @@ result_list_fixed_PCB_main_0.5_inter_0_total <- mapply(FUN = simulation_fn,
                                                                 nrep = n_iter_2,
                                                                 seed = 1234,
                                                                 cores = cores,
+                                                                inter_std = TRUE,
                                                                 interaction_m = 0),
                                                 SIMPLIFY = FALSE)
+
+saveRDS(result_list_fixed_PCB_main_0.5_inter_0_total_inter_std, file = "./result/simulation_proposed_GCTA_paper/result_list_fixed_PCB_main_0.5_inter_0_total_inter_std")
+
+# inter_not_standardized
+result_list_fixed_PCB_main_0.5_inter_0_total <- mapply(FUN = simulation_fn,
+                                                       gene_data_args = gene_data_args,
+                                                       MoreArgs = list(p = p,
+                                                                       tran_fun = null_tran,
+                                                                       combine = combine,
+                                                                       gene_coeff_args = gene_coeff_args,
+                                                                       uncorr_method = SVD_method,
+                                                                       uncorr_args = uncorr_args,
+                                                                       dim_red_method = NULL,
+                                                                       generate_data = generate_PCB,
+                                                                       brep = n_iter,
+                                                                       nrep = n_iter_2,
+                                                                       seed = 1234,
+                                                                       cores = cores,
+                                                                       interaction_m = 0),
+                                                       SIMPLIFY = FALSE)
 
 saveRDS(result_list_fixed_PCB_main_0.5_inter_0_total, file = "./result/simulation_proposed_GCTA_paper/result_list_fixed_PCB_main_0.5_inter_0_total")
