@@ -46,8 +46,7 @@ simulation_fn <- function(p,
     b_raw <- do.call(generate_data, gene_data_args)
 
     # Standardized main covariates
-    b <- std_fn(b = b_raw,
-                tran_FUN = tran_fun)
+    b <- b_raw %>% std_fn(.) %>% add_inter(.)
     b_m <- b[,1:p]
     b_i <- b[,-(1:p)]
     
@@ -73,10 +72,9 @@ simulation_fn <- function(p,
     result_tmp[,8] <- var(signali)
     result_tmp[,9] <- 2*cov(signali,signalm)
     
-    # center the interaction terms
+    # center the main/interaction terms
     if(inter_std == TRUE)
-    b_i <- std_fn(b = b_i,
-                inter = FALSE)
+      b_i <- std_fn(b = b_i)
     
     if(combine == TRUE){
       result_tmp[, 1]=var(signalm + signali)
@@ -86,14 +84,13 @@ simulation_fn <- function(p,
       b_final <- b_m
     }
     
-    
     # Uncorrelated data
     if(corrected_main == TRUE){
       x<- uncorr_fn(cbind(b_m, b_i), uncorr_method, uncorr_args, dim_red_method, dim_red_args)
     } else {
       x <- uncorr_fn(b_final, uncorr_method, uncorr_args, dim_red_method, dim_red_args)
     }
-
+    
     # Estimating effects with iterations to reduce the variance
     for(irep in 1:nrep){
       # Generate health outcome given fixed random effects

@@ -11,8 +11,8 @@ library(doRNG)
 library(doParallel)
 library(gtools) # for rbind based on columns
 
-cores <- 15
-n_iter <- 100
+cores <- 20
+n_iter <- 10
 n_iter_2 <- 10
 
 ###############################################################################################################################
@@ -61,7 +61,7 @@ result_list_fixed_PCB_main_0.5_inter_0.1_total_dim_inter_std <- mapply(FUN = sim
                                                                 interaction_m = 0),
                                                 SIMPLIFY = FALSE)
 
-saveRDS(result_list_fixed_PCB_main_0.5_inter_0.1_total_dim_inter_std, file = "./result/simulation_proposed_GCTA_paper/result_list_fixed_PCB_main_0.5_inter_0.1_total_dim_inter_std")
+saveRDS(result_list_fixed_PCB_main_0.5_inter_0.1_total_dim_inter_std, file = "./result/simulation_proposed_GCTA_paper/PCB_std_est/result_list_fixed_PCB_main_0.5_inter_0.1_total_dim_inter_std")
 
 # inter_not_std
 result_list_fixed_PCB_main_0.5_inter_0.1_total_dim <- mapply(FUN = simulation_fn,
@@ -82,7 +82,7 @@ result_list_fixed_PCB_main_0.5_inter_0.1_total_dim <- mapply(FUN = simulation_fn
                                                                              interaction_m = 0),
                                                              SIMPLIFY = FALSE)
 
-saveRDS(result_list_fixed_PCB_main_0.5_inter_0.1_total_dim, file = "./result/simulation_proposed_GCTA_paper/result_list_fixed_PCB_main_0.5_inter_0.1_total_dim")
+saveRDS(result_list_fixed_PCB_main_0.5_inter_0.1_total_dim, file = "./result/simulation_proposed_GCTA_paper/PCB_std_est/result_list_fixed_PCB_main_0.5_inter_0.1_total_dim")
 
 
 ###############################################################################################################################
@@ -126,7 +126,7 @@ result_list_fixed_PCB_main_0.5_inter_0_total_dim_inter_std <- mapply(FUN = simul
                                                                 interaction_m = 0),
                                                 SIMPLIFY = FALSE)
 
-saveRDS(result_list_fixed_PCB_main_0.5_inter_0_total_dim_inter_std, file = "./result/simulation_proposed_GCTA_paper/result_list_fixed_PCB_main_0.5_inter_0_total_dim_inter_std")
+saveRDS(result_list_fixed_PCB_main_0.5_inter_0_total_dim_inter_std, file = "./result/simulation_proposed_GCTA_paper/PCB_std_est/result_list_fixed_PCB_main_0.5_inter_0_total_dim_inter_std")
 
 
 result_list_fixed_PCB_main_0.5_inter_0_total_dim <- mapply(FUN = simulation_fn,
@@ -147,4 +147,4 @@ result_list_fixed_PCB_main_0.5_inter_0_total_dim <- mapply(FUN = simulation_fn,
                                                                            interaction_m = 0),
                                                            SIMPLIFY = FALSE)
 
-saveRDS(result_list_fixed_PCB_main_0.5_inter_0_total_dim, file = "./result/simulation_proposed_GCTA_paper/result_list_fixed_PCB_main_0.5_inter_0_total_dim")
+saveRDS(result_list_fixed_PCB_main_0.5_inter_0_total_dim, file = "./result/simulation_proposed_GCTA_paper/PCB_std_est/result_list_fixed_PCB_main_0.5_inter_0_total_dim")

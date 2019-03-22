@@ -387,6 +387,42 @@ fixed_PCB_main_inter_inter <- tidyr::gather(result_list_fixed_inter, ends_with("
 ###################################################################################################################
 
 
+file_list <- list.files("./result/simulation_proposed_GCTA_paper/") %>%
+  paste0("./result/simulation_proposed_GCTA_paper/",.)
+file_list <- file_list[grep(x = file_list, pattern = "PCB.*total$",perl = TRUE)]
+result_list_fixed <- lapply(file_list, function (x) {readRDS(x) %>% rbindlist(.)}) %>% rbindlist(.)
+result_list_fixed_total <- result_list_fixed[true_total != 0, -c(2,4,6)] # remove inter
+result_list_fixed_total[,c("data_gen_model","est_model") := list(ifelse(inter_fixed_var ==0, "main","main+inter"), "total")]
+
+fixed_PCB_total_1 <- tidyr::gather(result_list_fixed_total, ends_with("total"), key = "method", value = "value") %>%
+  ggplot(., aes(x = method, y = value, fill = method)) +
+  geom_violin(alpha = 0.2) +
+  geom_boxplot(alpha = 0.7) +
+  facet_wrap_paginate(facets = vars(pro, data_gen_model, est_model, inter_std), 
+                      ncol = 2,
+                      nrow = 3, 
+                      scales = "free", 
+                      labeller  = label_both, 
+                      page = 1) +
+  ggtitle("Total effect estimation of PCB") +
+  scale_y_continuous(breaks = scales::pretty_breaks(n = 10))+
+  theme(plot.title = element_text(hjust = 0.5))
+
+fixed_PCB_total_2 <- tidyr::gather(result_list_fixed_total, ends_with("total"), key = "method", value = "value") %>%
+  ggplot(., aes(x = method, y = value, fill = method)) +
+  geom_violin(alpha = 0.2) +
+  geom_boxplot(alpha = 0.7) +
+  facet_wrap_paginate(facets = vars(pro, data_gen_model, est_model, inter_std), 
+                      ncol = 2,
+                      nrow = 3, 
+                      scales = "free", 
+                      labeller  = label_both, 
+                      page = 2) +
+  ggtitle("Total effect estimation of PCB") +
+  scale_y_continuous(breaks = scales::pretty_breaks(n = 10))+
+  theme(plot.title = element_text(hjust = 0.5))
+
+
 # inter_std
 
 file_list <- list.files("./result/simulation_proposed_GCTA_paper/") %>%
@@ -483,14 +519,19 @@ fixed_PCB_total_dim_inter_std_2 <- tidyr::gather(result_list_fixed, ends_with("t
 
 pdf(file = "./reports/proposed_GCTA_paper/test_fixed_PCB.pdf",
     width = 8,
-    height = 9)
+    height = 11)
 
 print(fixed_PCB_main_inter_main)
 print(fixed_PCB_main_inter_inter)
 print(fixed_PCB_main)
-print(fixed_PCB_total)
+print(fixed_PCB_total_1)
+print(fixed_PCB_total_2)
+print(fixed_PCB_total_inter_std_1)
+print(fixed_PCB_total_inter_std_2)
 print(fixed_PCB_total_dim_1)
 print(fixed_PCB_total_dim_2)
+print(fixed_PCB_total_dim_inter_std_1)
+print(fixed_PCB_total_dim_inter_std_2)
 
 dev.off()
 

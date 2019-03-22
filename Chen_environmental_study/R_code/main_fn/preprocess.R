@@ -2,21 +2,28 @@
 ## standardized function with tranformation features
 ##################################################################################
 # default 
-std_fn <- function(b, tran_FUN = null_tran, additional = NULL,inter = TRUE, ...){
-  b <- apply(b, 2, tran_FUN, ...)
-
+std_fn <- function(b){
+  # mean-variance standardized for main effect
   for(k in 1:ncol(b)){
     me=mean(b[,k])
     std=sqrt(var(b[,k]))
     b[,k]=(b[,k]-me)/std
   }
-  if(inter == TRUE)
-  b <- model.matrix(~.*.+0, data.frame(b)) # adding the interaction term
-  
-  if (!is.null(additional)) attributes(b) <- append(attributes(b), additional)
+
   b
 }
 
+trans <- function(b, tran_FUN = null_tran){
+  # transform 
+  b <- apply(b, 2, tran_FUN, ...)
+  b
+}
+
+add_inter <- function(b){
+  # interaction 
+  b <- model.matrix(~.*.+0, data.frame(b))# adding the interaction term
+  b
+}
 
 ##################################################################################
 ## Null transformation function
