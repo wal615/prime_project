@@ -71,7 +71,7 @@ simulation_fn <- function(p,
     result_tmp[,7] <- var(signalm)
     result_tmp[,8] <- var(signali)
     result_tmp[,9] <- 2*cov(signali,signalm)
-    
+
     # center the main/interaction terms
     if(inter_std == TRUE)
       b_i <- std_fn(b = b_i)

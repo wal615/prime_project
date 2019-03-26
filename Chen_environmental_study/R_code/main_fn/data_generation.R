@@ -1,9 +1,11 @@
+
 ##################################################################################
 ## generate main effect
 ##################################################################################
 generate_main <- function(p, additional_args) {
-  beta <- rnorm(p, mean =0, additional_args$main_fixed_var %>% sqrt(.)) 
-  beta
+  beta <- rnorm(p, mean =0, additional_args$main_fixed_var %>% sqrt(.))
+  3*beta/norm(beta,"2")*sqrt((p-1)/2) # normalized and multiple with p to have equal magnitude 
+                           # interaction coefficients
 }
 
 ##################################################################################
@@ -19,7 +21,7 @@ generate_main_random <- function(p, additional_args) {
 ##################################################################################
 generate_inter <- function(p, additional_args) {
   beta <- matrix(rnorm(p*p,m=0,sd=additional_args$inter_fixed_var %>% sqrt(.)),ncol=p) 
-  beta[upper.tri(beta, diag = FALSE)]
+  5*beta[upper.tri(beta, diag = FALSE)]/norm(beta[upper.tri(beta, diag = FALSE)],"2")
 }
 
 ##################################################################################

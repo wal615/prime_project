@@ -11,8 +11,8 @@ library(doRNG)
 library(doParallel)
 library(gtools) # for rbind based on columns
 
-cores <- 20
-n_iter <- 5
+cores <- 10
+n_iter <- 100
 n_iter_2 <- 10
 
 ###############################################################################################################################
@@ -25,9 +25,9 @@ n_iter_2 <- 10
 ###############################################################################################################################
 
 combine <- TRUE
-gene_coeff_args <- list(main_fixed_var = 0.5,
+gene_coeff_args <- list(main_fixed_var = 1,
                         main_random_var = 0,
-                        inter_fixed_var = 0.1,
+                        inter_fixed_var = 1,
                         inter_random_var = 0)
 p <- 33
 pro <- seq(0.1, 0.6, 0.1)
@@ -38,7 +38,7 @@ gene_data_args <- gene_data_args %>% split(x = ., f = seq(nrow(gene_data_args)))
 uncorr_args <- list(p = p)
 
 # inter_stadardized
-result_list_fixed_PCB_main_0.5_inter_0.1_total_inter_std <- mapply(FUN = simulation_fn,
+result_list_fixed_PCB_main_1_inter_1_total_inter_std <- mapply(FUN = simulation_fn,
                                                                    gene_data_args = gene_data_args,
                                                                    MoreArgs = list(p = p,
                                                                                    tran_fun = null_tran,
@@ -56,10 +56,10 @@ result_list_fixed_PCB_main_0.5_inter_0.1_total_inter_std <- mapply(FUN = simulat
                                                                                    interaction_m = 0),
                                                                    SIMPLIFY = FALSE)
 
-saveRDS(result_list_fixed_PCB_main_0.5_inter_0.1_total_inter_std, file = "./result/simulation_proposed_GCTA_paper/PCB_std_est/result_list_fixed_PCB_main_0.5_inter_0.1_total_inter_std")
+saveRDS(result_list_fixed_PCB_main_1_inter_1_total_inter_std, file = "./result/simulation_proposed_GCTA_paper/PCB_std_est/result_list_fixed_PCB_main_1_inter_1_total_inter_std")
 
 # inter_not_standardized
-result_list_fixed_PCB_main_0.5_inter_0.1_total <- mapply(FUN = simulation_fn,
+result_list_fixed_PCB_main_1_inter_1_total <- mapply(FUN = simulation_fn,
                                                          gene_data_args = gene_data_args,
                                                          MoreArgs = list(p = p,
                                                                          tran_fun = null_tran,
@@ -76,7 +76,7 @@ result_list_fixed_PCB_main_0.5_inter_0.1_total <- mapply(FUN = simulation_fn,
                                                                          interaction_m = 0),
                                                          SIMPLIFY = FALSE)
 
-saveRDS(result_list_fixed_PCB_main_0.5_inter_0.1_total, file = "./result/simulation_proposed_GCTA_paper/PCB_std_est/result_list_fixed_PCB_main_0.5_inter_0.1_total")
+saveRDS(result_list_fixed_PCB_main_1_inter_1_total, file = "./result/simulation_proposed_GCTA_paper/PCB_std_est/result_list_fixed_PCB_main_1_inter_1_total")
 
 
 
@@ -85,7 +85,7 @@ saveRDS(result_list_fixed_PCB_main_0.5_inter_0.1_total, file = "./result/simulat
 ###############################################################################################################################
 
 combine <- TRUE
-gene_coeff_args <- list(main_fixed_var = 0.5,
+gene_coeff_args <- list(main_fixed_var = 1,
                         main_random_var = 0,
                         inter_fixed_var = 0,
                         inter_random_var = 0)
@@ -98,7 +98,7 @@ gene_data_args <- gene_data_args %>% split(x = ., f = seq(nrow(gene_data_args)))
 uncorr_args <- list(p = p)
 
 # inter_standardized
-result_list_fixed_PCB_main_0.5_inter_0_total_inter_std <- mapply(FUN = simulation_fn,
+result_list_fixed_PCB_main_1_inter_0_total_inter_std <- mapply(FUN = simulation_fn,
                                                                  gene_data_args = gene_data_args,
                                                                  MoreArgs = list(p = p,
                                                                                  tran_fun = null_tran,
@@ -116,10 +116,10 @@ result_list_fixed_PCB_main_0.5_inter_0_total_inter_std <- mapply(FUN = simulatio
                                                                                  interaction_m = 0),
                                                                  SIMPLIFY = FALSE)
 
-saveRDS(result_list_fixed_PCB_main_0.5_inter_0_total_inter_std, file = "./result/simulation_proposed_GCTA_paper/PCB_std_est/result_list_fixed_PCB_main_0.5_inter_0_total_inter_std")
+saveRDS(result_list_fixed_PCB_main_1_inter_0_total_inter_std, file = "./result/simulation_proposed_GCTA_paper/PCB_std_est/result_list_fixed_PCB_main_1_inter_0_total_inter_std")
 
 # inter_not_standardized
-result_list_fixed_PCB_main_0.5_inter_0_total <- mapply(FUN = simulation_fn,
+result_list_fixed_PCB_main_1_inter_0_total <- mapply(FUN = simulation_fn,
                                                        gene_data_args = gene_data_args,
                                                        MoreArgs = list(p = p,
                                                                        tran_fun = null_tran,
@@ -136,4 +136,4 @@ result_list_fixed_PCB_main_0.5_inter_0_total <- mapply(FUN = simulation_fn,
                                                                        interaction_m = 0),
                                                        SIMPLIFY = FALSE)
 
-saveRDS(result_list_fixed_PCB_main_0.5_inter_0_total, file = "./result/simulation_proposed_GCTA_paper/PCB_std_est/result_list_fixed_PCB_main_0.5_inter_0_total")
+saveRDS(result_list_fixed_PCB_main_1_inter_0_total, file = "./result/simulation_proposed_GCTA_paper/PCB_std_est/result_list_fixed_PCB_main_1_inter_0_total")
