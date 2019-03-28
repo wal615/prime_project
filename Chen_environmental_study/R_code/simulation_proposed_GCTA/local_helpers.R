@@ -55,7 +55,7 @@ simulation_fn <- function(p,
 
     # Generate interaction gammas
     betai <- betai_fixed + generate_inter_random(p, gene_coeff_args)
-    
+
     # Sparsity
     sparse_index <- sparsify_coeff(colnames(b_m), colnames(b_i))  
     betam[sparse_index$index_main] <- 0
@@ -95,11 +95,13 @@ simulation_fn <- function(p,
     for(irep in 1:nrep){
       # Generate health outcome given fixed random effects
       y=signalm+signali+rnorm(length(signalm),sd=4)
+      
+      # Call the original GCTA method 
       fit=Yang(y,b_final,interact = interaction_m)
       result_tmp[irep,3] <- fit$G
       result_tmp[irep,4] <- fit$RACT
       
-      # Call the GCTA method
+      # Call the proposed GCTA method
       fit=Yang(y,x,interact = interaction_m)
       result_tmp[irep,5] <- fit$G
       result_tmp[irep,6] <- fit$RACT

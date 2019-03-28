@@ -21,7 +21,12 @@ generate_main_random <- function(p, additional_args) {
 ##################################################################################
 generate_inter <- function(p, additional_args) {
   beta <- matrix(rnorm(p*p,m=0,sd=additional_args$inter_fixed_var %>% sqrt(.)),ncol=p) 
-  5*beta[upper.tri(beta, diag = FALSE)]/norm(beta[upper.tri(beta, diag = FALSE)],"2")
+  if(norm(beta[upper.tri(beta, diag = FALSE)],"2") >0) {
+    beta <- 5*beta[upper.tri(beta, diag = FALSE)]/norm(beta[upper.tri(beta, diag = FALSE)],"2") # modify the strength of beta
+    return(beta)
+  } else {
+    return(beta[upper.tri(beta, diag = FALSE)])
+  }
 }
 
 ##################################################################################
