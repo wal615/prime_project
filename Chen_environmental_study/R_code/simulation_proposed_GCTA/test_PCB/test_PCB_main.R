@@ -27,7 +27,7 @@ n_iter_2 <- 10
 combine <- FALSE
 gene_coeff_args <- list(main_fixed_var = 1,
                         main_random_var = 0,
-                        inter_fixed_var = 1
+                        inter_fixed_var = 1,
                         inter_random_var = 0)
 p <- 33
 pro <- c(0.2,0.6,0.8)

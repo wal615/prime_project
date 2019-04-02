@@ -12,8 +12,8 @@ library(doParallel)
 library(gtools) # for rbind based on columns
 
 cores <- 10
-n_iter <- 200
-n_iter_2 <- 20
+n_iter <- 100
+n_iter_2 <- 10
 
 ###############################################################################################################################
 ## Chi-squre fixed case

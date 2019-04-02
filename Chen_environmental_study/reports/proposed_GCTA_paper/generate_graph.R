@@ -152,7 +152,7 @@ fixed_normal_un_total <- tidyr::gather(result_list_fixed_main, ends_with("total"
 
 pdf(file = "./reports/proposed_GCTA_paper/test_normal.pdf",
     width = 8,
-    height = 8)
+    height = 11)
 
 
 print(fixed_normal_I_main_inter_main)
