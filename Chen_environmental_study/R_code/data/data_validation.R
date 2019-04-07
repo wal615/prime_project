@@ -7,6 +7,7 @@ setwd("~/dev/projects/Chen_environmental_study/R_code/data/")
 pcb_2000 <- read.xport("./LAB28POC_99_00.XPT")
 pcb_05_06 <- read.xport("./PCBPOL_D_05_06.XPT")
 pcb_Chen <- read.sas7bdat("../pcbs1000nomiss.sas7bdat")
+nhance_data <- read.sas7bdat("./NHANES/pops_hormones.sas7bdat")
 
 ###########################################
 ## compare the pcb_99_04 and the PCb_chen 
@@ -80,4 +81,6 @@ compare_Chen_pcb_05_06[[i]] <- ggplot(data = rbind(pcb_Chen_gather, pcb_05_06_no
                                ncol = 3, 
                                nrow = 3, page = i)  
 }
+
+N
 

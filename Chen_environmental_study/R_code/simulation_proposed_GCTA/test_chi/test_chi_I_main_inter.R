@@ -12,7 +12,7 @@ library(doParallel)
 library(gtools) # for rbind based on columns
 
 cores <- 10
-n_iter <- 100
+n_iter <- 10
 n_iter_2 <- 10
 
 ###############################################################################################################################
@@ -55,14 +55,14 @@ result_list_fixed_chi_I_main_0.5_inter_0.1_main_inter <- mapply(FUN = simulation
                                                                  interaction_m = 1),
                                                  SIMPLIFY = FALSE)
 
-saveRDS(result_list_fixed_chi_I_main_0.5_inter_0.1_main_inter, file = "./result/simulation_proposed_GCTA_paper/result_list_fixed_chi_I_main_0.5_inter_0.1_main_inter")
-
-
-###############################################################################################################################
-## inter_0 inter_m = 1
-###############################################################################################################################
-
-
+# saveRDS(result_list_fixed_chi_I_main_0.5_inter_0.1_main_inter, file = "./result/simulation_proposed_GCTA_paper/result_list_fixed_chi_I_main_0.5_inter_0.1_main_inter")
+# 
+# 
+# ###############################################################################################################################
+# ## inter_0 inter_m = 1
+# ###############################################################################################################################
+# 
+# 
 
 combine <- FALSE
 n_total <- c(1000)
@@ -93,6 +93,6 @@ result_list_fixed_chi_I_main_0.5_inter_0_main_inter <- mapply(FUN = simulation_f
                                                                  cores = cores,
                                                                  interaction_m = 1),
                                                  SIMPLIFY = FALSE)
-
-saveRDS(result_list_fixed_chi_I_main_0.5_inter_0_main_inter, file = "./result/simulation_proposed_GCTA_paper/result_list_fixed_chi_I_main_0.5_inter_0_main_inter")
-
+# 
+# saveRDS(result_list_fixed_chi_I_main_0.5_inter_0_main_inter, file = "./result/simulation_proposed_GCTA_paper/result_list_fixed_chi_I_main_0.5_inter_0_main_inter")
+# 

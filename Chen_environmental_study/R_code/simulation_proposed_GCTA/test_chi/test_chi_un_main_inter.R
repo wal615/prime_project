@@ -12,7 +12,7 @@ library(doParallel)
 library(gtools) # for rbind based on columns
 
 cores <- 10
-n_iter <- 100
+n_iter <- 10
 n_iter_2 <- 10
 
 ###############################################################################################################################
@@ -55,7 +55,7 @@ result_list_fixed_chi_un_main_0.5_inter_0.1_main_inter <- mapply(FUN = simulatio
                                                                                 interaction_m = 1),
                                                                 SIMPLIFY = FALSE)
 
-saveRDS(result_list_fixed_chi_un_main_0.5_inter_0.1_main_inter, file = "./result/simulation_proposed_GCTA_paper/result_list_fixed_chi_un_main_0.5_inter_0.1_main_inter")
+# saveRDS(result_list_fixed_chi_un_main_0.5_inter_0.1_main_inter, file = "./result/simulation_proposed_GCTA_paper/result_list_fixed_chi_un_main_0.5_inter_0.1_main_inter")
 
 
 ###############################################################################################################################
@@ -94,5 +94,5 @@ result_list_fixed_chi_un_main_0.5_inter_0_main_inter <- mapply(FUN = simulation_
                                                                               interaction_m = 1),
                                                               SIMPLIFY = FALSE)
 
-saveRDS(result_list_fixed_chi_un_main_0.5_inter_0_main_inter, file = "./result/simulation_proposed_GCTA_paper/result_list_fixed_chi_un_main_0.5_inter_0_main_inter")
+# saveRDS(result_list_fixed_chi_un_main_0.5_inter_0_main_inter, file = "./result/simulation_proposed_GCTA_paper/result_list_fixed_chi_un_main_0.5_inter_0_main_inter")
 
