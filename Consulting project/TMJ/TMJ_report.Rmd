@@ -1,0 +1,84 @@
+---
+title: "Sample size calculation for TMJ study"
+author: "Xuelong Wang"
+date: "`r Sys.Date()`"
+output: 
+  pdf_document:
+    toc: false
+    number_sections: true
+    keep_tex: false
+    fig_width: 12
+    fig_height: 6
+header-includes:
+    - \usepackage{float,amsmath, bbm, siunitx, bm}
+    - \floatplacement{figure}{H}
+    - \newcommand{\indep}{\rotatebox[origin=c]{90}{$\models$}}
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, fig.height = 10)
+```
+
+# Background and Goal
+
+## TMJ 
+TMJ, temporomandibular joints, are the joints and jaw muscles that make it possible to open and close your mouth. As we discussed in the meeting, not all dentisty clinics accept the TMJ patients for some reasons. In fact, a lot of them choose to not accept TMJ related patients. 
+
+## Goal 
+The primary goal, for my understanding, is to figure out for what reasons the TMJ acceptting rate is very low. For the very beginning of the study, what we are interested in, again for my understanding, is to see if there is any difference of the accepting rate among k different geographic groups (discrts). Moreover, we also want also to calcuate the sample size for that test. Please note, if we want to answer a more complicated question about the the TMJ accepting rate, we may need to conduct a designed survey. 
+
+## Data
+
+# Sample size calculation
+
+## Hypothesis test and sample size calculation for comparison 2 propotions
+The question this Hypothesis is trying to answer is if the two propotions are same or different. In the Statistics, we say that the null hypothesis is they same, and alternative hypothesis is that they are different, that is 
+\[
+  H_0 : p_1 = p_2 ~~~ H_A: p_1 \neq p_2.
+\]
+Based on this test, we could derive the formula for sample size calculation, which is 
+\[
+  n = \left(\frac{\Phi_{\alpha/2}\sqrt{2p(1-p)} + \Phi_{\beta}\sqrt{p_1(1-p_1)+p_2(1-p_2)}}{|\delta|}\right)^2,
+\]
+
+Where $\Phi$ is the distribution function of standardized normal,
+$\alpha$ is the type-I error and $\beta$ is the type-II error, 
+$\delta = p_1 - p_2$ is difference between $p_1$ and $p_2$. Note that we assume those two groups have the same sample size $n$.
+For all of those parameters mentioned above, $p, p_1, p_2$ are calculated from sample and $\alpha, \beta, \delta$ need to be decided based on experience.  
+
+## Hypothesis test for comparison K propotions
+For K propotions comparsion, we could just extend the comparsion of 2 proportions. The basic idea is to preform $K(K-1)/2$ tests for each combination of $p_i$ and $p_j$, and if there is one test rejects the the null hypothesis, then we claim there is there is some difference among the K proportions. To simpliy the test, we can just look the two groups which is the $p_{min} = \min{(p_1, \cdots, p_k)}$ and $p_{max} = \max{(p_1, \cdots, p_k)}$. Then the corresponding hypothesis is 
+\[
+  H_0 : p_1=,\dots =p_k \iff p_{min} = p_{max} ~~~ H_A: p_{max} \neq p_{min}.
+\]
+
+The sample size is 
+\[
+  n = \left(\frac{\Phi_{\alpha/2\tau}\sqrt{2p(1-p)} + \Phi_{\beta}\sqrt{p_{max}(1-p_{max})+p_{min}(1-p_{min})}}{|\delta|}\right)^2,
+\]
+
+where $\tau = k(k-1)/2$, which is because of we have K different groups need to compare with. 
+
+## Sample size 
+
+## results
+
+```{r sample size cal}
+pA=0.3
+pB=0.8
+tau=5*9
+alpha=0.05
+beta=0.20
+(n=(pA*(1-pA)+pB*(1-pB))*((qnorm(1-alpha/2/tau)+qnorm(1-beta))/(pA-pB))^2)
+ceiling(n) # 96
+z=(pA-pB)/sqrt(pA*(1-pA)/n+pB*(1-pB)/n)
+(Power=pnorm(z-qnorm(1-alpha/2/tau))+pnorm(-z-qnorm(1-alpha/2/tau)))
+```
+
+# Bias Issue 
+
+# Future work
+
+
