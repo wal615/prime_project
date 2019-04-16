@@ -26,7 +26,7 @@ uncorr_fn <- function(input_data,
 ##################################################################################
 
 SVD_method <- function(input_data, p, main = FALSE, inter = FALSE, main_pro = NULL) {
-  # calculate the covariance matrix
+  
   I_m <- diag(p)
   I_i <- diag(p*(p-1)/2)
   

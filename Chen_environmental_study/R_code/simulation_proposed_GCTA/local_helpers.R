@@ -136,4 +136,92 @@ simulation_fn <- function(p,
   result_raw
 }
 
+#######################################################################################
+## real data analysis
+#######################################################################################
+
+fit_real_data_fn <- function( combine = FALSE,
+                              tran_fun,
+                              generate_data,
+                              gene_data_args,
+                              brep, 
+                              uncorr_method = NULL,
+                              uncorr_args = NULL,
+                              dim_red_method = NULL,
+                              dim_red_args = NULL,
+                              interaction_m = 0, 
+                              inter_std = FALSE,
+                              seed = 0, 
+                              cores = 1) {
+  if (cores == 1) 
+    foreach::registerDoSEQ() 
+  else 
+    doParallel::registerDoParallel(cores = cores) # setting cores
+  
+  result_raw <- foreach(ibrep = 1:brep, .combine = rbind, .verbose = TRUE, .errorhandling = "remove", .options.RNG = seed) %dorng%   {
+    # Initial output 
+    result_tmp <- matrix(0, nrow = 1, ncol = 5)
+    
+    # Generate covariates  
+    input_data <- do.call(generate_data, gene_data_args)
+    b_raw <- input_data$x
+    p <- ncol(b_raw)
+    
+    # Standardized main covariates
+    b <- b_raw %>% std_fn(.) %>% add_inter(.)
+    b_m <- b[,1:p]
+    b_i <- b[,-(1:p)]
+    
+    # center the main/interaction terms
+    if(inter_std == TRUE)
+      b_i <- std_fn(b = b_i)
+    
+    if(combine == TRUE){
+      b_final <- cbind(b_m, b_i)
+    } else {
+      b_final <- b_m
+    }
+    
+    # Uncorrelated data
+    x <- uncorr_fn(b_final, uncorr_method, uncorr_args, dim_red_method, dim_red_args)
+    
+    # Generate health outcome given fixed random effects
+    y <- input_data$y
+    result_tmp[1,1] <- var(y)
+    
+    
+    # Call the original GCTA method 
+    fit=Yang(y,b_final,interact = interaction_m)
+    result_tmp[1,2] <- fit$G
+    result_tmp[1,3] <- fit$RACT
+    
+    # Call the proposed GCTA method
+    fit=Yang(y,x,interact = interaction_m)
+    result_tmp[1,4] <- fit$G
+    result_tmp[1,5] <- fit$RACT
+    
+    # combined the all the attributes to b so we could plot them by the attributes
+    additional <- list(x_dist = attributes(b_raw)$x_dist)
+    additional <- append(additional, c(as.list(gene_data_args), 
+                                       as.list(uncorr_args), 
+                                       dim_red_args, 
+                                       list(interaction_m = interaction_m, 
+                                            combine = combine, 
+                                            n = nrow(b_raw),
+                                            inter_std = inter_std)))
+    additional <- additional[unique(names(additional))] # remove duplicated attrs
+    additional$pre_cor <- NULL # pre_cor is a covariance matrix so don't need to carry it to the output
+    
+    # save the result
+    result_final <- data.frame(result_tmp, additional) ## adding attributes as plot categories
+    
+  }
+  attributes(result_raw)$rng <- NULL # rm the random sampling info
+  
+  colnames(result_raw)[1:5] <- c("y_var",  "GCTA_main", "GCTA_interaction", "prop_main", "prop_interaction")
+  if(combine == TRUE){
+    colnames(result_raw)[1:5] <- c("y_var", "GCTA_total", "GCTA_interaction", "prop_total", "prop_interaction")
+  }
+  result_raw
+}
 

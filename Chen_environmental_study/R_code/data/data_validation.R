@@ -6,7 +6,7 @@ setwd("~/dev/projects/Chen_environmental_study/R_code/data/")
 # pcb_99_04 <- read.sas7bdat("./pops_abc.sas7bdat")
 pcb_2000 <- read.xport("./LAB28POC_99_00.XPT")
 pcb_05_06 <- read.xport("./PCBPOL_D_05_06.XPT")
-pcb_Chen <- read.sas7bdat("../pcbs1000nomiss.sas7bdat")
+pcb_Chen <- read.sas7bdat("./pcbs1000nomiss.sas7bdat")
 nhance_data <- read.sas7bdat("./NHANES/pops_hormones.sas7bdat")
 
 ###########################################
@@ -82,5 +82,8 @@ compare_Chen_pcb_05_06[[i]] <- ggplot(data = rbind(pcb_Chen_gather, pcb_05_06_no
                                nrow = 3, page = i)  
 }
 
-N
 
+# inverse log transfomration of wqs
+wqs <- read.csv("./real_data/wqs/wqs_PCBs.csv")
+wqs[,1:34] <- apply(wqs[,1:34], MARGIN = 2, FUN = `^`, y = 0.1)
+wqs_orginal_PCBs <- wqs

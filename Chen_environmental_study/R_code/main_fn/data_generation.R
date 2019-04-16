@@ -219,6 +219,29 @@ generate_PCB <- function(data_path, pro) {
 }
 
 ##################################################################################
+## real data 
+##################################################################################
+
+generate_real <- function(data_path, pro, data_name=NULL) {
+  data <- read.csv(data_path)
+  
+  # subset 
+  n <- nrow(data)
+  index <- sample(1:n, round(pro*n,0), replace = FALSE)
+  data <- data[index,]
+  
+  # covaraites
+  x <- data[,!(colnames(data) %in% "y")]  %>% data.matrix(.)
+  # add distribution attributes
+  attributes(x) <- append(attributes(x), 
+                          list(x_dist = data_name))
+  
+  # response
+  y <- data[,"y", drop = FALSE]  %>% data.matrix(.)
+  b <- list(x = x, y = y)
+}
+
+##################################################################################
 ## subset of chi-square
 ##################################################################################
 generate_chi_sub <- function(pro) {
