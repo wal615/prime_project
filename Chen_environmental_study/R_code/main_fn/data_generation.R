@@ -241,6 +241,26 @@ generate_real <- function(data_path, pro, data_name=NULL) {
   b <- list(x = x, y = y)
 }
 
+generate_real_test <- function(data_path, pro, data_name=NULL, resp_name = "y") {
+  
+  data <- read.csv(data_path,header = TRUE, stringsAsFactors = FALSE)
+  
+  # subset 
+  n <- nrow(data)
+  index <- sample(1:n, round(pro*n,0), replace = FALSE)
+  data <- data[index,]
+  # covaraites
+  x <- data[,!(colnames(data) %in% resp_name)]  %>% data.matrix(.)
+  # add distribution attributes
+  attributes(x) <- append(attributes(x), 
+                          list(x_dist = data_name))
+  
+  
+  # response
+  y <- data[,(resp_name), drop = FALSE]  %>% data.matrix(.)
+  b <- list(x = x, y = y)
+}
+
 ##################################################################################
 ## subset of chi-square
 ##################################################################################

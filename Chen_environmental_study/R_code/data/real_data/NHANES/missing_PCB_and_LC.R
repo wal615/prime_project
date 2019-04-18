@@ -121,6 +121,6 @@ missing_count_plot_hemoglobin <- ggplot() +
 # 
 # dev.off()
 
-write.csv(thyroid_data_tmp,file = "./real_data/NHANES/nhance_thyroid_PCB.csv", row.names = FALSE)
-write.csv(steroid_data_tmp,file = "./real_data/NHANES/nhance_steroid_PCB.csv", row.names = FALSE)
-write.csv(hemoglobin_data_tmp,file = "./real_data/NHANES/nhance_hemoglobin_PCB.csv", row.names = FALSE)
+write.csv(thyroid_data_tmp,file = "./real_data/NHANES/nhance_thyroid_PCB_LC.csv", row.names = FALSE)
+write.csv(steroid_data_tmp,file = "./real_data/NHANES/nhance_steroid_PCB_LC.csv", row.names = FALSE)
+write.csv(hemoglobin_data_tmp,file = "./real_data/NHANES/nhance_hemoglobin_PCB_LC.csv", row.names = FALSE)
