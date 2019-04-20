@@ -3,6 +3,7 @@ library(sas7bdat)
 library(SASxport)
 library(tidyverse)
 library(data.table)
+library(foreign)
 # nhance_data <- read.sas7bdat("./real_data/NHANES/pops_hormones.sas7bdat")
 # nhance_data_table <- data.table(nhance_data)
 
@@ -26,7 +27,7 @@ length(PCB_all) == length(PCB_LA) + length(PCB_LC) + length(PCB)
 
   
 # selected total rows :2649
-thyroid_data <- read.sas7bdat("./real_data/NHANES/nhance_thyroid.sas7bdat") %>% data.table(.) 
+thyroid_data <- read.sas7bdat("./real_data/NHANES/thyroid/nhance_thyroid.sas7bdat") %>% data.table(.) 
 
 # select the only exposure and outcome
 outcome_name <- c("LBXTSH", "LBXT4")
@@ -57,7 +58,7 @@ missing_count_plot_thyroid <- ggplot() +
 #                                 .[!(RIAGENDR==1),]
 
 # selected total rows :1249
-steroid_data <- read.sas7bdat("./real_data/NHANES/nhance_steroid.sas7bdat") %>% data.table(.) 
+steroid_data <- read.sas7bdat("./real_data/NHANES/steroid/nhance_steroid.sas7bdat") %>% data.table(.) 
 
 # select the only exposure and outcome
 outcome_name <- outcome_name <- c("SS3ADLG", "SSSE2", "SSSHBG", "SSTESTO")
@@ -87,7 +88,7 @@ missing_count_plot_steroid <- ggplot() +
 #######################################################################################
 # hemoglobin_data <- nhance_data_table[!(RIDAGEYR < 20),] %>%
 #                                    .[(!(DIQ010==1 | rx_antidiab==1)) | (is.na(DIQ010)|is.na(rx_antidiab)),] 
-hemoglobin_data <- read.sas7bdat("./real_data/NHANES/nhance_hemoglobin.sas7bdat") %>% data.table(.)
+hemoglobin_data <- read.sas7bdat("./real_data/NHANES/hemoglobin/nhance_hemoglobin.sas7bdat") %>% data.table(.)
 # select the only exposure and outcome
 outcome_name <- c("LBXGH")
 selected_col <- c(outcome_name, PCB, PCB_LC)
@@ -120,7 +121,12 @@ missing_count_plot_hemoglobin <- ggplot() +
 # print(missing_count_plot_hemoglobin)
 # 
 # dev.off()
+# output 
+write.csv(thyroid_data_tmp,file = "./real_data/NHANES/thyroid/nhance_thyroid_PCB_LC.csv", row.names = FALSE)
+write.csv(steroid_data_tmp,file = "./real_data/NHANES/steroid/nhance_steroid_PCB_LC.csv", row.names = FALSE)
+write.csv(hemoglobin_data_tmp,file = "./real_data/NHANES/hemoglobin/nhance_hemoglobin_PCB_LC.csv", row.names = FALSE)
 
-write.csv(thyroid_data_tmp,file = "./real_data/NHANES/nhance_thyroid_PCB_LC.csv", row.names = FALSE)
-write.csv(steroid_data_tmp,file = "./real_data/NHANES/nhance_steroid_PCB_LC.csv", row.names = FALSE)
-write.csv(hemoglobin_data_tmp,file = "./real_data/NHANES/nhance_hemoglobin_PCB_LC.csv", row.names = FALSE)
+# output as sas file
+write.foreign(df=thyroid_data_tmp, datafile="./real_data/NHANES/thyroid/SAS_nhance_thyroid_PCB_LC.csv", codefile="./real_data/NHANES/thyroid/SAS_nhance_thyroid_PCB_LC.sas", package="SAS")
+write.foreign(df=thyroid_data_tmp, datafile="./real_data/NHANES/steroid/SAS_nhance_steroid_PCB_LC.csv", codefile="./real_data/NHANES/steroid/SAS_nhance_steroid_PCB_LC.sas", package="SAS")
+write.foreign(df=thyroid_data_tmp, datafile="./real_data/NHANES/hemoglobin/SAS_nhance_hemoglobin_PCB_LC.csv", codefile="./real_data/NHANES/hemoglobin/SAS_nhance_hemoglobin_PCB_LC.sas", package="SAS")

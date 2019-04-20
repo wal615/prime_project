@@ -107,7 +107,20 @@ power.prop.test(p1 = p_max,
                 power = 1- beta)
 ```
 
-Based on result, if the sample size is larger then 25 , then we could test the effect size which is $p_{max} - p_{min} = 0.3 -0.1 = 0.2$ with significant level 0.0033 and power 0.8. 
+```{r, include=FALSE}
+k = 6
+alpha = 0.05
+beta = 0.2
+p_max = 0.3
+p_min = 0.1
+size_6 <- power.prop.test(p1 = p_max,
+                p2 = p_min,
+                sig.level = alpha/(k*(k-1)/2),
+                power = 1- beta)
+```
+
+
+Based on result, if for each group the sample size is larger then `r round(size_6$n,0)` , then we could test the effect size which is $p_{max} - p_{min} = 0.3 -0.1 = 0.2$ with significant level 0.0033 and power 0.8. 
 Note that if we have less number of groups, we will need less sample size for test a same effect size, as following result shows.
 
 ```{r, demo sample size cal 2, echo=TRUE}

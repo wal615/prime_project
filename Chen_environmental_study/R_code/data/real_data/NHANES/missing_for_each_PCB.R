@@ -5,9 +5,9 @@ library(reshape2)
 
 
 # loading data
-nhance_thyroid_PCB <- read.csv("./real_data/NHANES/nhance_thyroid_PCB.csv", header = TRUE, stringsAsFactors = FALSE)
-nhance_steroid_PCB <- read.csv("./real_data/NHANES/nhance_steroid_PCB.csv", header = TRUE, stringsAsFactors = FALSE)
-nhance_hemoglobin_PCB <- read.csv("./real_data/NHANES/nhance_hemoglobin_PCB.csv", header = TRUE, stringsAsFactors = FALSE)
+nhance_thyroid_PCB <- read.csv("./real_data/NHANES/thyroid/nhance_thyroid_PCB.csv", header = TRUE, stringsAsFactors = FALSE)
+nhance_steroid_PCB <- read.csv("./real_data/NHANES/steroid/nhance_steroid_PCB.csv", header = TRUE, stringsAsFactors = FALSE)
+nhance_hemoglobin_PCB <- read.csv("./real_data/NHANES/hemoglobin/nhance_hemoglobin_PCB.csv", header = TRUE, stringsAsFactors = FALSE)
 
 # NA-plot
 NA_each_PCB_thyroid <- sapply(X = nhance_thyroid_PCB, FUN = function(x) (sum(is.na(x))),simplify = TRUE) %>% 

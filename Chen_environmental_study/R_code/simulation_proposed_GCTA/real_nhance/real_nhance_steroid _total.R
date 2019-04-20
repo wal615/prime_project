@@ -1,7 +1,7 @@
 options(error = bettertrace::stacktrace)
 setwd("~/dev/projects/Chen_environmental_study/")
 R.utils::sourceDirectory("./R_code/main_fn", modifiedOnly = FALSE)
-data_path <- "~/dev/projects/Chen_environmental_study/R_code/data/real_data/NHANES/hemoglobin/"
+data_path <- "~/dev/projects/Chen_environmental_study/R_code/data/real_data/NHANES/steroid/"
 source("./R_code/simulation_proposed_GCTA/local_helpers.R")
 source("./R_code/data/real_data/NHANES/exposure_name_loading.R")
 library(sas7bdat)
@@ -14,16 +14,22 @@ library(gtools) # for rbind based on columns
 library(mice)
 
 # data pre-process and generating 
-# hemoglobin 
-PCB_and_LC <- read.csv("~/dev/projects/Chen_environmental_study/R_code/data/real_data/NHANES/hemoglobin/nhance_hemoglobin_PCB_LC.csv", header = TRUE, stringsAsFactors = FALSE) %>%
+# steroid 
+PCB_and_LC <- read.csv("~/dev/projects/Chen_environmental_study/R_code/data/real_data/NHANES/steroid/nhance_steroid_PCB_LC.csv", header = TRUE, stringsAsFactors = FALSE) %>%
   data.table(.)
 # remove all the missing value and only keep PCBs
 PCB <- PCB_and_LC[, (PCB_LC):=NULL]
+
+# check for all empty columns and removed
+all_empty_col <- sapply(PCB, FUN = function(x) sum(is.na(x)) == length(x), simplify = TRUE)
+PCB <- PCB[,!all_empty_col, with = FALSE]
+
 # normalized response 
 method = "pmm"
 PCB_missing_imputed <- mice(PCB,m=3,maxit=3,method=method,seed=500) %>% complete(.) %>% data.frame(.)
+
 PCB_missing_imputed$LBXGH <- norm_quantile_tran(PCB_missing_imputed$LBXGH)
-data_path <- paste0(data_path, "hemoglobin_", method ,".csv")
+data_path <- paste0(data_path, "steroid_", method ,".csv")
 write.csv(x = PCB_missing_imputed, file = data_path, row.names = FALSE)
 
 
@@ -40,23 +46,6 @@ gene_data_args <- gene_data_args %>% split(x = ., f = seq(nrow(gene_data_args)))
 uncorr_args <- list(p = 38)
 
 result_list_real_hemolobin_total <- mapply(FUN = fit_real_data_fn,
-                               gene_data_args = gene_data_args,
-                               MoreArgs = list(tran_fun = null_tran,
-                                               combine = combine,
-                                               uncorr_method = SVD_method,
-                                               uncorr_args = uncorr_args,
-                                               generate_data = generate_real_test,
-                                               brep = n_iter,
-                                               seed = 1234,
-                                               cores = cores,
-                                               inter_std = TRUE,
-                                               interaction_m = 0),
-                               SIMPLIFY = FALSE)
-
-saveRDS(result_list_real_hemolobin_total, file = "./result/simulation_proposed_GCTA_paper/result_list_real_hemolobin_missing_imputed_total")
-
-combine <- FALSE
-result_list_real_hemolobin_main <- mapply(FUN = fit_real_data_fn,
                                            gene_data_args = gene_data_args,
                                            MoreArgs = list(tran_fun = null_tran,
                                                            combine = combine,
@@ -69,5 +58,22 @@ result_list_real_hemolobin_main <- mapply(FUN = fit_real_data_fn,
                                                            inter_std = TRUE,
                                                            interaction_m = 0),
                                            SIMPLIFY = FALSE)
+
+saveRDS(result_list_real_hemolobin_total, file = "./result/simulation_proposed_GCTA_paper/result_list_real_hemolobin_missing_imputed_total")
+
+combine <- FALSE
+result_list_real_hemolobin_main <- mapply(FUN = fit_real_data_fn,
+                                          gene_data_args = gene_data_args,
+                                          MoreArgs = list(tran_fun = null_tran,
+                                                          combine = combine,
+                                                          uncorr_method = SVD_method,
+                                                          uncorr_args = uncorr_args,
+                                                          generate_data = generate_real_test,
+                                                          brep = n_iter,
+                                                          seed = 1234,
+                                                          cores = cores,
+                                                          inter_std = TRUE,
+                                                          interaction_m = 0),
+                                          SIMPLIFY = FALSE)
 
 saveRDS(result_list_real_hemolobin_main, file = "./result/simulation_proposed_GCTA_paper/result_list_real_hemolobin_missing_imputed_main")
