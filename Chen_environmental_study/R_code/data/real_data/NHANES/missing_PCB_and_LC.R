@@ -1,6 +1,6 @@
 setwd("~/dev/projects/Chen_environmental_study/R_code/data/")
 source("./real_data/NHANES/variable_names/exposure_name_loading.R")
-
+source("./real_data/NHANES/LC_update.R")
 library(sas7bdat)
 library(SASxport)
 library(tidyverse)
@@ -143,10 +143,16 @@ hemoglobin_data_tmp <- hemoglobin_data_selected[!(is.na(outcome_LBXGH)),]
 n1 <- nrow(hemoglobin_data_tmp)
 selected_col <- c(name_PCB, name_PCB_LC)
 index <- hemoglobin_data_tmp[,rowSums(is.na(.SD)) == length(selected_col), .SDcols = selected_col]
-hemoglobin_data_tmp <- hemoglobin_data_tmp[index,]
+hemoglobin_data_tmp <- hemoglobin_data_tmp[!index,]
 (n1 - nrow(hemoglobin_data_tmp)) %>% cat(., "row removed")
-# 2. recover the limit of detection
 
+# 2. recover the limit of detection
+name_PCB_with_LC <- gsub(pattern = "LC", 
+                         replacement = "", 
+                         x = name_PCB_LC,
+                         perl = TRUE)
+
+hemoglobin_data_test_comp <- update_LC(data = hemoglobin_data_tmp, PCB_names = name_PCB_with_LC)
 
 # 2. create the missing data table
 missing_count_table <- rowSums(is.na(hemoglobin_data_tmp)) %>% table(.) %>% cumsum(.) %>% 
