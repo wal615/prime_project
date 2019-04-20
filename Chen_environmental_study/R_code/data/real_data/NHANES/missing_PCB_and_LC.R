@@ -1,4 +1,6 @@
 setwd("~/dev/projects/Chen_environmental_study/R_code/data/")
+source("./real_data/NHANES/variable_names/exposure_name_loading.R")
+
 library(sas7bdat)
 library(SASxport)
 library(tidyverse)
@@ -7,13 +9,6 @@ library(foreign)
 # nhance_data <- read.sas7bdat("./real_data/NHANES/pops_hormones.sas7bdat")
 # nhance_data_table <- data.table(nhance_data)
 
-# got all the exposures'names 
-expousres_type <- read.csv("./real_data/NHANES/exposure_type.csv", header = TRUE, stringsAsFactors = FALSE) %>% data.table(.)
-PCB_all<- expousres_type[grepl("^PCB", x = type), exposure]
-PCB_LA <- PCB_all[grep(PCB_all, pattern = ".*LA$", perl = TRUE)]
-PCB_LC <- PCB_all[grep(PCB_all, pattern = ".*LC$", perl = TRUE)]
-PCB <- PCB_all[-grep(PCB_all, pattern = ".*(LC|LA)$", perl = TRUE)]
-length(PCB_all) == length(PCB_LA) + length(PCB_LC) + length(PCB)
 
 
 ##########################################################################################
@@ -83,20 +78,75 @@ missing_count_plot_steroid <- ggplot() +
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ##########################################################################################
 ## Are POPs associated with hemoglobin A1c in non-diabetics?
 #######################################################################################
 # hemoglobin_data <- nhance_data_table[!(RIDAGEYR < 20),] %>%
 #                                    .[(!(DIQ010==1 | rx_antidiab==1)) | (is.na(DIQ010)|is.na(rx_antidiab)),] 
-hemoglobin_data <- read.sas7bdat("./real_data/NHANES/hemoglobin/nhance_hemoglobin.sas7bdat") %>% data.table(.)
+
+hemoglobin_data <- read.sas7bdat("./real_data/NHANES/hemoglobin/nhance_hemoglobin.sas7bdat") %>% 
+                   data.table(.)
 # select the only exposure and outcome
 outcome_name <- c("LBXGH")
-selected_col <- c(outcome_name, PCB, PCB_LC)
-hemoglobin_data <- hemoglobin_data[,.SD, .SDcols = selected_col]
+selected_col <- c(outcome_name, name_PCB, name_PCB_LC, name_other_variables)
+hemoglobin_data_selected <- hemoglobin_data[,..selected_col]
 
+# change the outcome name
+colnames(hemoglobin_data_selected)[colnames(hemoglobin_data_selected) %in% outcome_name] <- "outcome_LBXGH"
 
-# 1. remove all empty row, # 1619 rows removed
-hemoglobin_data_tmp <- hemoglobin_data[rowSums(is.na(hemoglobin_data)) < ncol(hemoglobin_data),]
+# change the exposures' name to PCB
+colnames(hemoglobin_data_selected) <-  gsub(pattern = "^(LBX|LBD)", 
+                                            replacement = "PCB", 
+                                            x = colnames(hemoglobin_data_selected),
+                                            perl = TRUE)
+name_PCB <- gsub(pattern = "^(LBX|LBD)", 
+                 replacement = "PCB", 
+                 x = name_PCB,
+                 perl = TRUE)
+
+name_PCB_LC <- gsub(pattern = "^(LBX|LBD)", 
+                 replacement = "PCB", 
+                 x = name_PCB_LC,
+                 perl = TRUE)
+
+name_PCB_LA <- gsub(pattern = "^(LBX|LBD)", 
+                 replacement = "PCB", 
+                 x = name_PCB_LA,
+                 perl = TRUE)
+
+name_PCB_all <- gsub(pattern = "^(LBX|LBD)", 
+                 replacement = "PCB", 
+                 x = name_PCB_all,
+                 perl = TRUE)
+
+# 0. remove all the NA response # 1623 rows removed
+hemoglobin_data_tmp <- hemoglobin_data_selected[!(is.na(outcome_LBXGH)),]
+(nrow(hemoglobin_data_selected) - nrow(hemoglobin_data_tmp)) %>% cat(., "row removed")
+
+# 1. remove all empty PCB and PCBLC row, # 0 rows removed
+n1 <- nrow(hemoglobin_data_tmp)
+selected_col <- c(name_PCB, name_PCB_LC)
+index <- hemoglobin_data_tmp[,rowSums(is.na(.SD)) == length(selected_col), .SDcols = selected_col]
+hemoglobin_data_tmp <- hemoglobin_data_tmp[index,]
+(n1 - nrow(hemoglobin_data_tmp)) %>% cat(., "row removed")
+# 2. recover the limit of detection
+
 
 # 2. create the missing data table
 missing_count_table <- rowSums(is.na(hemoglobin_data_tmp)) %>% table(.) %>% cumsum(.) %>% 
