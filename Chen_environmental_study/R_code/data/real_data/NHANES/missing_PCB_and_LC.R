@@ -100,8 +100,8 @@ missing_count_plot_steroid <- ggplot() +
 # hemoglobin_data <- nhance_data_table[!(RIDAGEYR < 20),] %>%
 #                                    .[(!(DIQ010==1 | rx_antidiab==1)) | (is.na(DIQ010)|is.na(rx_antidiab)),] 
 
-hemoglobin_data <- read.sas7bdat("./real_data/NHANES/hemoglobin/nhance_hemoglobin.sas7bdat") %>% 
-                   data.table(.)
+hemoglobin_data_sas <- read.sas7bdat("./real_data/NHANES/hemoglobin/nhance_hemoglobin.sas7bdat") 
+hemoglobin_data <- hemoglobin_data_sas %>% data.table(.)
 # select the only exposure and outcome
 outcome_name <- c("LBXGH")
 selected_col <- c(outcome_name, name_PCB, name_PCB_LC, name_other_variables)
@@ -146,43 +146,31 @@ index <- hemoglobin_data_tmp[,rowSums(is.na(.SD)) == length(selected_col), .SDco
 hemoglobin_data_tmp <- hemoglobin_data_tmp[!index,]
 (n1 - nrow(hemoglobin_data_tmp)) %>% cat(., "row removed")
 
-# 2. recover the limit of detection
+# 2. recover the limit of detection and generate the comprehensive table
 name_PCB_with_LC <- gsub(pattern = "LC", 
                          replacement = "", 
                          x = name_PCB_LC,
                          perl = TRUE)
+update_LC(data = hemoglobin_data_tmp, PCB_names = name_PCB_with_LC)
+# 2.1 remove all the PCB_LC 
+hemoglobin_data_tmp[,(name_PCB_LC) := NULL]
+# 2.2 check the missing value for confonders 
+special_value_confonder <- list()
+for(n in name_other_variables){
+  special_value_confonder <- append(special_value_confonder, list(hemoglobin_data_tmp[,table(eval(parse(text = n)), exclude = NULL)])) 
+}
+names(special_value_confonder) <- name_other_variables
+capture.output(print(special_value_confonder),
+               file = "./real_data/NHANES/hemoglobin/special_value_confonder.txt")
+# 2.3 indicator variable for confonders
+add_missing_indicator(data = hemoglobin_data_tmp, var = name_other_variables)
 
-hemoglobin_data_test_comp <- update_LC(data = hemoglobin_data_tmp, PCB_names = name_PCB_with_LC)
+# 2.4 reorder the name
+sorted_name <- sort(colnames(hemoglobin_data_tmp))
+hemoglobin_data_tmp <- hemoglobin_data_tmp[, ..sorted_name]
 
-# 2. create the missing data table
-missing_count_table <- rowSums(is.na(hemoglobin_data_tmp)) %>% table(.) %>% cumsum(.) %>% 
-                         data.frame(NA_each_row= as.integer(names(.)), total = .)
-p <- length(PCB)
-missing_count_plot_hemoglobin <- ggplot() +
-                                  geom_step(data = missing_count_table, mapping = aes(x = NA_each_row, y = total)) +
-                                  ggtitle("hemoglobin_PCB_and_LC_74") +
-                                  geom_vline(xintercept= 26, linetype="dashed", color = "red") +
-                                  geom_hline(yintercept= p*(p-1)/2, linetype="dashed", color = "red") +
-                                  scale_x_continuous(breaks=c(c(0,5,10,15,20,26),seq(30,75,5))) +
-                                  theme(plot.title = element_text(hjust = 0.5))
-
-###
-
-# pdf(file = "./real_data/NHANES/missing_data_count.pdf",
-#     width = 11,
-#     height = 11)
-# 
-# print(missing_count_plot_thyroid)
-# print(missing_count_plot_steroid)
-# print(missing_count_plot_hemoglobin)
-# 
-# dev.off()
-# output 
-write.csv(thyroid_data_tmp,file = "./real_data/NHANES/thyroid/nhance_thyroid_PCB_LC.csv", row.names = FALSE)
-write.csv(steroid_data_tmp,file = "./real_data/NHANES/steroid/nhance_steroid_PCB_LC.csv", row.names = FALSE)
-write.csv(hemoglobin_data_tmp,file = "./real_data/NHANES/hemoglobin/nhance_hemoglobin_PCB_LC.csv", row.names = FALSE)
+# save output as csv
+write.csv(hemoglobin_data_tmp, file = "./real_data/NHANES/hemoglobin/nhance_hemoglobin_PCB_LC_comp.csv", row.names = FALSE)
 
 # output as sas file
-write.foreign(df=thyroid_data_tmp, datafile="./real_data/NHANES/thyroid/SAS_nhance_thyroid_PCB_LC.csv", codefile="./real_data/NHANES/thyroid/SAS_nhance_thyroid_PCB_LC.sas", package="SAS")
-write.foreign(df=thyroid_data_tmp, datafile="./real_data/NHANES/steroid/SAS_nhance_steroid_PCB_LC.csv", codefile="./real_data/NHANES/steroid/SAS_nhance_steroid_PCB_LC.sas", package="SAS")
-write.foreign(df=thyroid_data_tmp, datafile="./real_data/NHANES/hemoglobin/SAS_nhance_hemoglobin_PCB_LC.csv", codefile="./real_data/NHANES/hemoglobin/SAS_nhance_hemoglobin_PCB_LC.sas", package="SAS")
+write.foreign(df=hemoglobin_data_tmp, datafile="./real_data/NHANES/hemoglobin/SAS_nhance_hemoglobin_PCB_LC_comp.csv", codefile="./real_data/NHANES/hemoglobin/SAS_nhance_hemoglobin_PCB_LC_comp.sas", package="SAS")

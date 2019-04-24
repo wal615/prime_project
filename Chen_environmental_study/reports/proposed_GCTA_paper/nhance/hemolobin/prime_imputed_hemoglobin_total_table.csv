@@ -1,0 +1,10 @@
+"data name","n","est model","tran fn y","y var","GCTA total","GCTA precentage","proposed GCTA total","proposed GCTA precentage"
+"imputed_hemoglobin_0",825,"main + inter","null_tran",0.89,0.19,21.7,0.1,11.57
+"imputed_hemoglobin_0",825,"main + inter","norm_quantile_tran",0.96,0.21,21.54,0.1,10.4
+"imputed_hemoglobin_0",825,"main + inter","norm_score_tran",0.98,0.21,21.82,0.16,16.34
+"imputed_hemoglobin_1",825,"main + inter","null_tran",0.89,0.21,24,0.09,10.04
+"imputed_hemoglobin_1",825,"main + inter","norm_quantile_tran",0.96,0.23,23.75,0.08,8.8
+"imputed_hemoglobin_1",825,"main + inter","norm_score_tran",0.98,0.24,24.11,0.14,14.67
+"imputed_hemoglobin_2",825,"main + inter","null_tran",0.89,0.21,23.94,0.09,10.17
+"imputed_hemoglobin_2",825,"main + inter","norm_quantile_tran",0.96,0.23,23.62,0.09,8.98
+"imputed_hemoglobin_2",825,"main + inter","norm_score_tran",0.98,0.23,24,0.14,14.72

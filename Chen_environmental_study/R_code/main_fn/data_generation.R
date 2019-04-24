@@ -241,10 +241,8 @@ generate_real <- function(data_path, pro, data_name=NULL) {
   b <- list(x = x, y = y)
 }
 
-generate_real_test <- function(data_path, pro, data_name=NULL, resp_name = "y") {
-  
+generate_real_test <- function(data_path, pro, data_name=NULL, resp_name = "y", tran_fn_y) {
   data <- read.csv(data_path,header = TRUE, stringsAsFactors = FALSE)
-  
   # subset 
   n <- nrow(data)
   index <- sample(1:n, round(pro*n,0), replace = FALSE)
@@ -254,10 +252,10 @@ generate_real_test <- function(data_path, pro, data_name=NULL, resp_name = "y") 
   # add distribution attributes
   attributes(x) <- append(attributes(x), 
                           list(x_dist = data_name))
-  
-  
   # response
-  y <- data[,(resp_name), drop = FALSE]  %>% data.matrix(.)
+  if(class(tran_fn_y) == 'list') tran_fn_y <- tran_fn_y[[1]] # incase the function is pass as a list
+  y <- data[,(resp_name), drop = FALSE] %>% data.matrix(.)  %>% tran_fn_y(.) %>% matrix(., ncol = 1)
+  
   b <- list(x = x, y = y)
 }
 

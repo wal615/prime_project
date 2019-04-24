@@ -141,7 +141,6 @@ simulation_fn <- function(p,
 #######################################################################################
 
 fit_real_data_fn <- function( combine = FALSE,
-                              tran_fun,
                               generate_data,
                               gene_data_args,
                               brep, 
@@ -199,9 +198,9 @@ fit_real_data_fn <- function( combine = FALSE,
     fit=Yang(y,x,interact = interaction_m)
     result_tmp[1,4] <- fit$G
     result_tmp[1,5] <- fit$RACT
-    
     # combined the all the attributes to b so we could plot them by the attributes
     additional <- list(x_dist = attributes(b_raw)$x_dist)
+    
     additional <- append(additional, c(as.list(gene_data_args), 
                                        as.list(uncorr_args), 
                                        dim_red_args, 
@@ -211,7 +210,7 @@ fit_real_data_fn <- function( combine = FALSE,
                                             inter_std = inter_std)))
     additional <- additional[unique(names(additional))] # remove duplicated attrs
     additional$pre_cor <- NULL # pre_cor is a covariance matrix so don't need to carry it to the output
-    
+    additional$tran_fn_y <- names(additional$tran_fn_y)
     # save the result
     result_final <- data.frame(result_tmp, additional) ## adding attributes as plot categories
     
