@@ -185,7 +185,7 @@ fit_real_data_fn <- function( combine = FALSE,
     x <- uncorr_fn(b_final, uncorr_method, uncorr_args, dim_red_method, dim_red_args)
     
     # Generate health outcome given fixed random effects
-    y <- input_data$y
+    y <- input_data$y %>% std_fn(.)
     result_tmp[1,1] <- var(y)
     
     

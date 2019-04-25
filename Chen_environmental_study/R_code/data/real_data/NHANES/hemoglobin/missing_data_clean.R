@@ -17,11 +17,34 @@ setwd("~/dev/projects/Chen_environmental_study/R_code/data/")
 imputed_hemoglobin <- read.csv("./real_data/NHANES/hemoglobin/nhanceImputedNormalScore.csv", stringsAsFactors = FALSE) %>% 
                        data.table(.)
 names(imputed_hemoglobin)[1:2] <- c("index", "LBXGH")
+
 # remove the "fcol"
+imputed_hemoglobin <- imputed_hemoglobin[index != "fcol",]
+
+# change the outcome to numerical
+imputed_hemoglobin$LBXGH <- as.numeric(imputed_hemoglobin$LBXGH)
+
+# save the data 
 imputed_hemoglobin_tmp <- imputed_hemoglobin[imputed_hemoglobin$index ==0][,"index":=NULL]
+
 write.csv(imputed_hemoglobin_tmp, "./real_data/NHANES/hemoglobin/imputed_hemoglobin_0.csv", row.names = FALSE)
+
 imputed_hemoglobin_tmp <- imputed_hemoglobin[imputed_hemoglobin$index ==1][,"index":=NULL]
+
 write.csv(imputed_hemoglobin_tmp, "./real_data/NHANES/hemoglobin/imputed_hemoglobin_1.csv", row.names = FALSE)
+
 imputed_hemoglobin_tmp <- imputed_hemoglobin[imputed_hemoglobin$index ==2][,"index":=NULL]
+
 write.csv(imputed_hemoglobin_tmp, "./real_data/NHANES/hemoglobin/imputed_hemoglobin_2.csv", row.names = FALSE)
 
+imputed_hemoglobin_tmp <- imputed_hemoglobin[imputed_hemoglobin$index ==3][,"index":=NULL]
+
+write.csv(imputed_hemoglobin_tmp, "./real_data/NHANES/hemoglobin/imputed_hemoglobin_3.csv", row.names = FALSE)
+
+imputed_hemoglobin_tmp <- imputed_hemoglobin[imputed_hemoglobin$index ==4][,"index":=NULL]
+
+write.csv(imputed_hemoglobin_tmp, "./real_data/NHANES/hemoglobin/imputed_hemoglobin_4.csv", row.names = FALSE)
+
+imputed_hemoglobin_tmp <- imputed_hemoglobin[imputed_hemoglobin$index ==5][,"index":=NULL]
+
+write.csv(imputed_hemoglobin_tmp, "./real_data/NHANES/hemoglobin/imputed_hemoglobin_5.csv", row.names = FALSE)

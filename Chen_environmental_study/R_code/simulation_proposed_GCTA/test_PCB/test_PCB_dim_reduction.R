@@ -11,7 +11,7 @@ library(doRNG)
 library(doParallel)
 library(gtools) # for rbind based on columns
 
-cores <- 15
+cores <- 20
 n_iter <- 100
 n_iter_2 <- 10
 
@@ -30,8 +30,8 @@ gene_coeff_args <- list(main_fixed_var = 1,
                         inter_fixed_var = 1,
                         inter_random_var = 0)
 p <- 33
-pro <- seq(0.1, 0.3, 0.1)
-reduce_coef <- c(0.8, 0.9,1)
+pro <- seq(0.1, 0.9, 0.1)
+reduce_coef <- c(0.5)
 
 gene_data_args_PCB <- expand.grid(data_path = data_path, pro = pro, reduce_coef = reduce_coef,stringsAsFactors = FALSE)
 gene_data_args <- gene_data_args_PCB[,-3]
@@ -61,29 +61,29 @@ result_list_fixed_PCB_main_1_inter_1_total_dim_inter_std <- mapply(FUN = simulat
                                                                 interaction_m = 0),
                                                 SIMPLIFY = FALSE)
 
-saveRDS(result_list_fixed_PCB_main_1_inter_1_total_dim_inter_std, file = "./result/simulation_proposed_GCTA_paper/result_list_fixed_PCB_main_1_inter_1_total_dim_inter_std")
+saveRDS(result_list_fixed_PCB_main_1_inter_1_total_dim_inter_std, file = "./result/simulation_proposed_GCTA_paper/prime_slides/result_list_fixed_PCB_main_1_inter_1_total_dim_inter_std")
 
 # inter_not_std
-result_list_fixed_PCB_main_1_inter_1_total_dim <- mapply(FUN = simulation_fn,
-                                                             gene_data_args = gene_data_args,
-                                                             dim_red_args = dim_red_args,
-                                                             MoreArgs = list(p = p,
-                                                                             tran_fun = null_tran,
-                                                                             combine = combine,
-                                                                             gene_coeff_args = gene_coeff_args,
-                                                                             uncorr_method = SVD_method,
-                                                                             uncorr_args = uncorr_args,
-                                                                             dim_red_method = SVD_dim_reduction,
-                                                                             generate_data = generate_PCB,
-                                                                             brep = n_iter,
-                                                                             nrep = n_iter_2,
-                                                                             seed = 1234,
-                                                                             cores = cores,
-                                                                             interaction_m = 0),
-                                                             SIMPLIFY = FALSE)
-
-saveRDS(result_list_fixed_PCB_main_1_inter_1_total_dim, file = "./result/simulation_proposed_GCTA_paper/result_list_fixed_PCB_main_1_inter_1_total_dim")
-
+# result_list_fixed_PCB_main_1_inter_1_total_dim <- mapply(FUN = simulation_fn,
+#                                                              gene_data_args = gene_data_args,
+#                                                              dim_red_args = dim_red_args,
+#                                                              MoreArgs = list(p = p,
+#                                                                              tran_fun = null_tran,
+#                                                                              combine = combine,
+#                                                                              gene_coeff_args = gene_coeff_args,
+#                                                                              uncorr_method = SVD_method,
+#                                                                              uncorr_args = uncorr_args,
+#                                                                              dim_red_method = SVD_dim_reduction,
+#                                                                              generate_data = generate_PCB,
+#                                                                              brep = n_iter,
+#                                                                              nrep = n_iter_2,
+#                                                                              seed = 1234,
+#                                                                              cores = cores,
+#                                                                              interaction_m = 0),
+#                                                              SIMPLIFY = FALSE)
+# 
+# saveRDS(result_list_fixed_PCB_main_1_inter_1_total_dim, file = "./result/simulation_proposed_GCTA_paper/result_list_fixed_PCB_main_1_inter_1_total_dim")
+# 
 
 ###############################################################################################################################
 ## inter_0 inter_m = 0
@@ -126,25 +126,25 @@ result_list_fixed_PCB_main_1_inter_0_total_dim_inter_std <- mapply(FUN = simulat
                                                                 interaction_m = 0),
                                                 SIMPLIFY = FALSE)
 
-saveRDS(result_list_fixed_PCB_main_1_inter_0_total_dim_inter_std, file = "./result/simulation_proposed_GCTA_paper/result_list_fixed_PCB_main_1_inter_0_total_dim_inter_std")
+saveRDS(result_list_fixed_PCB_main_1_inter_0_total_dim_inter_std, file = "./result/simulation_proposed_GCTA_paper/prime_slides/result_list_fixed_PCB_main_1_inter_0_total_dim_inter_std")
 
 
-result_list_fixed_PCB_main_1_inter_0_total_dim <- mapply(FUN = simulation_fn,
-                                                           gene_data_args = gene_data_args,
-                                                           dim_red_args = dim_red_args,
-                                                           MoreArgs = list(p = p,
-                                                                           tran_fun = null_tran,
-                                                                           combine = combine,
-                                                                           gene_coeff_args = gene_coeff_args,
-                                                                           uncorr_method = SVD_method,
-                                                                           uncorr_args = uncorr_args,
-                                                                           dim_red_method = SVD_dim_reduction,
-                                                                           generate_data = generate_PCB,
-                                                                           brep = n_iter,
-                                                                           nrep = n_iter_2,
-                                                                           seed = 1234,
-                                                                           cores = cores,
-                                                                           interaction_m = 0),
-                                                           SIMPLIFY = FALSE)
-
-saveRDS(result_list_fixed_PCB_main_1_inter_0_total_dim, file = "./result/simulation_proposed_GCTA_paper/result_list_fixed_PCB_main_1_inter_0_total_dim")
+# result_list_fixed_PCB_main_1_inter_0_total_dim <- mapply(FUN = simulation_fn,
+#                                                            gene_data_args = gene_data_args,
+#                                                            dim_red_args = dim_red_args,
+#                                                            MoreArgs = list(p = p,
+#                                                                            tran_fun = null_tran,
+#                                                                            combine = combine,
+#                                                                            gene_coeff_args = gene_coeff_args,
+#                                                                            uncorr_method = SVD_method,
+#                                                                            uncorr_args = uncorr_args,
+#                                                                            dim_red_method = SVD_dim_reduction,
+#                                                                            generate_data = generate_PCB,
+#                                                                            brep = n_iter,
+#                                                                            nrep = n_iter_2,
+#                                                                            seed = 1234,
+#                                                                            cores = cores,
+#                                                                            interaction_m = 0),
+#                                                            SIMPLIFY = FALSE)
+# 
+# saveRDS(result_list_fixed_PCB_main_1_inter_0_total_dim, file = "./result/simulation_proposed_GCTA_paper/result_list_fixed_PCB_main_1_inter_0_total_dim")

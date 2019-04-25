@@ -18,7 +18,6 @@ result_list[,c("data_gen_model","est_model") := list(ifelse(inter_fixed_var == 0
 
 result_list <- result_list[, .SD[(prop_interaction > prop_interaction[order(prop_interaction, decreasing = FALSE)[5]]) & (prop_interaction < prop_interaction[order(prop_interaction, decreasing = TRUE)[5]]) | (prop_interaction ==0),],
                            by = c("structure", "inter_fixed_var", "interaction_m")]
-
 
 result_list_fixed_main <- result_list[true_main != 0, !inter_col_name, with = FALSE] # remove inter
 result_list_fixed_inter <- result_list[true_main != 0, !main_col_name, with = FALSE]
@@ -65,7 +64,7 @@ result_list <- lapply(file_list, function (x) {readRDS(x) %>% rbindlist(.)}) %>%
 result_list[,c("data_gen_model","est_model") := list(ifelse(inter_fixed_var == 0, "main","main+inter"), "total")]
 result_list <- result_list[, .SD[(prop_interaction > prop_interaction[order(prop_interaction, decreasing = FALSE)[5]]) & (prop_interaction < prop_interaction[order(prop_interaction, decreasing = TRUE)[5]]) | (prop_interaction ==0),],
                            by = c("structure", "inter_fixed_var", "interaction_m")]
-
+
 
 result_list_fixed_main <- result_list[true_total != 0, !inter_col_name, with = FALSE] # remove inter
 
@@ -87,7 +86,7 @@ result_list <- lapply(file_list, function (x) {readRDS(x) %>% rbindlist(.)}) %>%
 result_list[,c("data_gen_model","est_model") := list(ifelse(inter_fixed_var == 0, "main","main+inter"), ifelse(interaction_m == 0, "main","main+inter"))]
 result_list <- result_list[, .SD[(prop_interaction > prop_interaction[order(prop_interaction, decreasing = FALSE)[8]]) & (prop_interaction < prop_interaction[order(prop_interaction, decreasing = TRUE)[10]]) | (prop_interaction ==0),],
                            by = c("structure", "inter_fixed_var", "interaction_m")]
-
+
 
 result_list_fixed_main <- result_list[true_main != 0, !inter_col_name, with = FALSE] # remove inter
 result_list_fixed_inter <- result_list[true_main != 0, !main_col_name, with = FALSE]
@@ -116,7 +115,7 @@ result_list <- lapply(file_list, function (x) {readRDS(x) %>% rbindlist(.)}) %>%
 result_list[,c("data_gen_model","est_model") := list(ifelse(inter_fixed_var == 0, "main","main+inter"), ifelse(interaction_m == 0, "main","main+inter"))]
 result_list <- result_list[, .SD[(prop_interaction > prop_interaction[order(prop_interaction, decreasing = FALSE)[5]]) & (prop_interaction < prop_interaction[order(prop_interaction, decreasing = TRUE)[5]]) | (prop_interaction ==0),],
                            by = c("structure", "inter_fixed_var", "interaction_m")]
-
+
 
 result_list_fixed_main <- result_list[true_main != 0, !inter_col_name, with = FALSE] # remove inter
 
@@ -134,7 +133,7 @@ result_list <- lapply(file_list, function (x) {readRDS(x) %>% rbindlist(.)}) %>%
 result_list[,c("data_gen_model","est_model") := list(ifelse(inter_fixed_var == 0, "main","main+inter"), "total")]
 result_list <- result_list[, .SD[(prop_interaction > prop_interaction[order(prop_interaction, decreasing = FALSE)[5]]) & (prop_interaction < prop_interaction[order(prop_interaction, decreasing = TRUE)[5]]) | (prop_interaction ==0),],
                            by = c("structure", "inter_fixed_var", "interaction_m")]
-
+
 
 result_list_fixed_main <- result_list[true_total != 0, !inter_col_name, with = FALSE] # remove inter
 
@@ -150,21 +149,21 @@ fixed_normal_un_total <- tidyr::gather(result_list_fixed_main, ends_with("total"
 
 
 
-pdf(file = "./reports/proposed_GCTA_paper/test_normal.pdf",
-    width = 8,
-    height = 11)
-
-
-print(fixed_normal_I_main_inter_main)
-print(fixed_normal_I_main_inter_inter)
-print(fixed_normal_I_main)
-print(fixed_normal_I_total)
-print(fixed_normal_un_main_inter_main)
-print(fixed_normal_un_main_inter_inter)
-print(fixed_normal_un_main)
-print(fixed_normal_un_total)
-
-dev.off()
+# pdf(file = "./reports/proposed_GCTA_paper/test_normal.pdf",
+#     width = 8,
+#     height = 11)
+# 
+# 
+# print(fixed_normal_I_main_inter_main)
+# print(fixed_normal_I_main_inter_inter)
+# print(fixed_normal_I_main)
+# print(fixed_normal_I_total)
+# print(fixed_normal_un_main_inter_main)
+# print(fixed_normal_un_main_inter_inter)
+# print(fixed_normal_un_main)
+# print(fixed_normal_un_total)
+# 
+# dev.off()
 
 
 
@@ -181,7 +180,7 @@ result_list[,c("data_gen_model","est_model") := list(ifelse(inter_fixed_var == 0
 
 result_list <- result_list[, .SD[(prop_interaction > prop_interaction[order(prop_interaction, decreasing = FALSE)[5]]) & (prop_interaction < prop_interaction[order(prop_interaction, decreasing = TRUE)[5]]) | (prop_interaction ==0),],
                   by = c("structure", "inter_fixed_var", "interaction_m")]
-
+
 
 result_list_fixed_main <- result_list[true_main != 0, !inter_col_name, with = FALSE] # remove inter
 result_list_fixed_inter <- result_list[true_main != 0, !main_col_name, with = FALSE]
@@ -228,7 +227,7 @@ result_list <- lapply(file_list, function (x) {readRDS(x) %>% rbindlist(.)}) %>%
 result_list[,c("data_gen_model","est_model") := list(ifelse(inter_fixed_var == 0, "main","main+inter"), "total")]
 result_list <- result_list[, .SD[(prop_interaction > prop_interaction[order(prop_interaction, decreasing = FALSE)[5]]) & (prop_interaction < prop_interaction[order(prop_interaction, decreasing = TRUE)[5]]) | (prop_interaction ==0),],
                            by = c("structure", "inter_fixed_var", "interaction_m")]
-
+
 
 result_list_fixed_main <- result_list[true_total != 0, !inter_col_name, with = FALSE] # remove inter
 
@@ -250,7 +249,7 @@ result_list <- lapply(file_list, function (x) {readRDS(x) %>% rbindlist(.)}) %>%
 result_list[,c("data_gen_model","est_model") := list(ifelse(inter_fixed_var == 0, "main","main+inter"), ifelse(interaction_m == 0, "main","main+inter"))]
 result_list <- result_list[, .SD[(prop_interaction > prop_interaction[order(prop_interaction, decreasing = FALSE)[8]]) & (prop_interaction < prop_interaction[order(prop_interaction, decreasing = TRUE)[10]]) | (prop_interaction ==0),],
                            by = c("structure", "inter_fixed_var", "interaction_m")]
-
+
 
 result_list_fixed_main <- result_list[true_main != 0, !inter_col_name, with = FALSE] # remove inter
 result_list_fixed_inter <- result_list[true_main != 0, !main_col_name, with = FALSE]
@@ -279,7 +278,7 @@ result_list <- lapply(file_list, function (x) {readRDS(x) %>% rbindlist(.)}) %>%
 result_list[,c("data_gen_model","est_model") := list(ifelse(inter_fixed_var == 0, "main","main+inter"), ifelse(interaction_m == 0, "main","main+inter"))]
 result_list <- result_list[, .SD[(prop_interaction > prop_interaction[order(prop_interaction, decreasing = FALSE)[5]]) & (prop_interaction < prop_interaction[order(prop_interaction, decreasing = TRUE)[5]]) | (prop_interaction ==0),],
                            by = c("structure", "inter_fixed_var", "interaction_m")]
-
+
 
 result_list_fixed_main <- result_list[true_main != 0, !inter_col_name, with = FALSE] # remove inter
 
@@ -297,7 +296,7 @@ result_list <- lapply(file_list, function (x) {readRDS(x) %>% rbindlist(.)}) %>%
 result_list[,c("data_gen_model","est_model") := list(ifelse(inter_fixed_var == 0, "main","main+inter"), "total")]
 result_list <- result_list[, .SD[(prop_interaction > prop_interaction[order(prop_interaction, decreasing = FALSE)[5]]) & (prop_interaction < prop_interaction[order(prop_interaction, decreasing = TRUE)[5]]) | (prop_interaction ==0),],
                            by = c("structure", "inter_fixed_var", "interaction_m")]
-
+
 
 result_list_fixed_main <- result_list[true_total != 0, !inter_col_name, with = FALSE] # remove inter
 
@@ -312,22 +311,22 @@ fixed_chi_un_total <- tidyr::gather(result_list_fixed_main, ends_with("total"), 
 
 
 
-
-pdf(file = "./reports/proposed_GCTA_paper/test_chi.pdf",
-    width = 8,
-    height = 8)
-
-
-print(fixed_chi_I_main_inter_main)
-print(fixed_chi_I_main_inter_inter)
-print(fixed_chi_I_main)
-print(fixed_chi_I_total)
-print(fixed_chi_un_main_inter_main)
-print(fixed_chi_un_main_inter_inter)
-print(fixed_chi_un_main)
-print(fixed_chi_un_total)
-
-dev.off()
+# 
+# pdf(file = "./reports/proposed_GCTA_paper/test_chi.pdf",
+#     width = 8,
+#     height = 8)
+# 
+# 
+# print(fixed_chi_I_main_inter_main)
+# print(fixed_chi_I_main_inter_inter)
+# print(fixed_chi_I_main)
+# print(fixed_chi_I_total)
+# print(fixed_chi_un_main_inter_main)
+# print(fixed_chi_un_main_inter_inter)
+# print(fixed_chi_un_main)
+# print(fixed_chi_un_total)
+# 
+# dev.off()
 
 
 
@@ -517,21 +516,24 @@ fixed_PCB_total_dim_inter_std_2 <- tidyr::gather(result_list_fixed, ends_with("t
   scale_y_continuous(breaks = scales::pretty_breaks(n = 10))+
   theme(plot.title = element_text(hjust = 0.5))
 
-pdf(file = "./reports/proposed_GCTA_paper/test_fixed_PCB.pdf",
-    width = 8,
-    height = 11)
+# pdf(file = "./reports/proposed_GCTA_paper/test_fixed_PCB.pdf",
+#     width = 8,
+#     height = 11)
+# 
+# print(fixed_PCB_main_inter_main)
+# print(fixed_PCB_main_inter_inter)
+# print(fixed_PCB_main)
+# print(fixed_PCB_total_1)
+# print(fixed_PCB_total_2)
+# print(fixed_PCB_total_inter_std_1)
+# print(fixed_PCB_total_inter_std_2)
+# print(fixed_PCB_total_dim_1)
+# print(fixed_PCB_total_dim_2)
+# print(fixed_PCB_total_dim_inter_std_1)
+# print(fixed_PCB_total_dim_inter_std_2)
+# 
+# dev.off()
 
-print(fixed_PCB_main_inter_main)
-print(fixed_PCB_main_inter_inter)
-print(fixed_PCB_main)
-print(fixed_PCB_total_1)
-print(fixed_PCB_total_2)
-print(fixed_PCB_total_inter_std_1)
-print(fixed_PCB_total_inter_std_2)
-print(fixed_PCB_total_dim_1)
-print(fixed_PCB_total_dim_2)
-print(fixed_PCB_total_dim_inter_std_1)
-print(fixed_PCB_total_dim_inter_std_2)
+### save graph for prime meeting
 
-dev.off()
 
