@@ -1,0 +1,9 @@
+"data name","est model","tran fn y","tran fn x","y var","GCTA total","GCTA precentage","proposed GCTA total","proposed GCTA precentage"
+"nhanceMiceImpute10","main + inter","null_tran","null_tran",1,0.09,8.63,0.05,5.21
+"nhanceMiceImpute10","main + inter","null_tran","log_tran",1,0.08,7.92,0.05,4.87
+"nhanceMiceImpute10","main + inter","log_tran","null_tran",1,0.12,11.52,0.07,7.33
+"nhanceMiceImpute10","main + inter","log_tran","log_tran",1,0.09,9.11,0.06,5.93
+"nhanceMiceImpute25","main + inter","null_tran","null_tran",1,0.7,69.58,0.35,35.13
+"nhanceMiceImpute25","main + inter","null_tran","log_tran",1,0.22,22.03,0.12,11.67
+"nhanceMiceImpute25","main + inter","log_tran","null_tran",1,0.75,74.56,0.3,30.35
+"nhanceMiceImpute25","main + inter","log_tran","log_tran",1,0.24,24.33,0.15,15.44

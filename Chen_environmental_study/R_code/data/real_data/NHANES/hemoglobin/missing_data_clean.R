@@ -48,3 +48,15 @@ write.csv(imputed_hemoglobin_tmp, "./real_data/NHANES/hemoglobin/imputed_hemoglo
 imputed_hemoglobin_tmp <- imputed_hemoglobin[imputed_hemoglobin$index ==5][,"index":=NULL]
 
 write.csv(imputed_hemoglobin_tmp, "./real_data/NHANES/hemoglobin/imputed_hemoglobin_5.csv", row.names = FALSE)
+
+########################################################################################################################################
+
+imputed_hemoglobin <- read.csv("./real_data/NHANES/hemoglobin/nhanceMiceImpute10.csv", stringsAsFactors = FALSE) %>% 
+  data.table(.)
+names(imputed_hemoglobin)[1] <- "LBXGH"
+write.csv(imputed_hemoglobin, file = "./real_data/NHANES/hemoglobin/nhanceMiceImpute10.csv", row.names = FALSE)
+
+imputed_hemoglobin <- read.csv("./real_data/NHANES/hemoglobin/nhanceMiceImpute25.csv", stringsAsFactors = FALSE) %>% 
+  data.table(.)
+names(imputed_hemoglobin)[1] <- "LBXGH"
+write.csv(imputed_hemoglobin, file = "./real_data/NHANES/hemoglobin/nhanceMiceImpute25.csv", row.names = FALSE)

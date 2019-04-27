@@ -13,17 +13,16 @@ library(doParallel)
 library(gtools) # for rbind based on columns
 library(mice)
 
-data_name <- "imputed_hemoglobin_4"
+data_name <- "nhanceMiceImpute25"
 
 cores <- 1
 n_iter <- 1
 combine <- TRUE
 pro <- 1
 tran_fn_y <- c(null_tran = null_tran,
-               log_tran  = log_tran,
-               norm_quantile_tran  = norm_quantile_tran,
-               norm_score_tran = norm_score_tran)
-tran_fn_x <- c(null_tran = null_tran)
+               log_tran  = log_tran)
+tran_fn_x <- c(null_tran = null_tran,
+               log_tran  = log_tran)
 # generate the parameters
 data_path <- paste0(data_folder, data_name, ".csv")
 args <- expand.grid(data_path = data_path, tran_fn_y = tran_fn_y, tran_fn_x = tran_fn_x, data_name = data_name, pro = pro, resp_name = "LBXGH", stringsAsFactors = FALSE)
@@ -39,26 +38,10 @@ result_list_real_hemolobin_total <- mapply(FUN = fit_real_data_fn,
                                                            uncorr_args = uncorr_args,
                                                            generate_data = generate_real_test,
                                                            brep = n_iter,
-                                                           seed = 1234,
+                                                           seed = 123,
                                                            cores = cores,
                                                            inter_std = TRUE,
                                                            interaction_m = 0),
                                            SIMPLIFY = FALSE)
 save_path <- paste0(result_folder, "result_list_", data_name,"_total")
 saveRDS(result_list_real_hemolobin_total, file = save_path)
-
-# combine <- FALSE
-# result_list_real_hemolobin_main <- mapply(FUN = fit_real_data_fn,
-#                                            gene_data_args = gene_data_args,
-#                                            MoreArgs = list(combine = combine,
-#                                                            uncorr_method = SVD_method,
-#                                                            uncorr_args = uncorr_args,
-#                                                            generate_data = generate_real_test,
-#                                                            brep = n_iter,
-#                                                            seed = 1234,
-#                                                            cores = cores,
-#                                                            inter_std = TRUE,
-#                                                            interaction_m = 0),
-#                                            SIMPLIFY = FALSE)
-# save_path <- paste0(result_folder, "result_list_", data_name,"_main")
-# saveRDS(result_list_real_hemolobin_main, file = save_path)

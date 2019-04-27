@@ -66,5 +66,5 @@ ggsave(filename = "./reports/proposed_GCTA_paper/prime_poster/total_dim_dependen
 
 # chi-square 
 ggsave(filename = "./reports/proposed_GCTA_paper/prime_poster/main_dependent_chi.pdf", plot = fixed_chi_cs_main_inter_main, device = NULL, path = NULL,
-       scale = 1, dpi = 1200, width = 8, height = 4)
+       scale = 1, dpi = 1200, width = 8, height = 9)
 

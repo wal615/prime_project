@@ -35,7 +35,6 @@ generate_inter <- function(p, additional_args) {
 generate_inter_random <- function(p, additional_args) {
   beta <- matrix(rnorm(p*p,m=0,sd=additional_args$inter_random_var %>% sqrt(.)),ncol=p) 
   beta[upper.tri(beta, diag = FALSE)]
-  
 }
 
 ##################################################################################
@@ -241,19 +240,25 @@ generate_real <- function(data_path, pro, data_name=NULL) {
   b <- list(x = x, y = y)
 }
 
-generate_real_test <- function(data_path, pro, data_name=NULL, resp_name = "y", tran_fn_y) {
+generate_real_test <- function(data_path, pro, data_name=NULL, resp_name = "y", tran_fn_y, tran_fn_x) {
+  if(class(tran_fn_y) == 'list') tran_fn_y <- tran_fn_y[[1]] # incase the function is pass as a list
+  if(class(tran_fn_x) == "list") tran_fn_x <- tran_fn_x[[1]] # incase the function is pass as a list
+  
   data <- read.csv(data_path,header = TRUE, stringsAsFactors = FALSE)
   # subset 
   n <- nrow(data)
-  index <- sample(1:n, round(pro*n,0), replace = FALSE)
-  data <- data[index,]
+  if(pro <1){
+    index <- sample(1:n, round(pro*n,0), replace = FALSE)
+    data <- data[index,]
+    }
+  
   # covaraites
-  x <- data[,!(colnames(data) %in% resp_name)]  %>% data.matrix(.)
+  x <- data[,!(colnames(data) %in% resp_name)] %>% data.matrix(.) %>% apply(.,2, tran_fn_x)
+  
   # add distribution attributes
   attributes(x) <- append(attributes(x), 
                           list(x_dist = data_name))
   # response
-  if(class(tran_fn_y) == 'list') tran_fn_y <- tran_fn_y[[1]] # incase the function is pass as a list
   y <- data[,(resp_name), drop = FALSE] %>% data.matrix(.)  %>% tran_fn_y(.) %>% matrix(., ncol = 1)
   
   b <- list(x = x, y = y)

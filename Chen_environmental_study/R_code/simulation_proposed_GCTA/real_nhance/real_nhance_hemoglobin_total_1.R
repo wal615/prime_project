@@ -23,9 +23,10 @@ tran_fn_y <- c(null_tran = null_tran,
                log_tran  = log_tran,
                norm_quantile_tran  = norm_quantile_tran,
                norm_score_tran = norm_score_tran)
+tran_fn_x <- c(null_tran = null_tran)
 # generate the parameters
 data_path <- paste0(data_folder, data_name, ".csv")
-args <- expand.grid(data_path = data_path, tran_fn_y = tran_fn_y, data_name = data_name, pro = pro, resp_name = "LBXGH", stringsAsFactors = FALSE)
+args <- expand.grid(data_path = data_path, tran_fn_y = tran_fn_y, tran_fn_x = tran_fn_x,data_name = data_name, pro = pro, resp_name = "LBXGH", stringsAsFactors = FALSE)
 gene_data_args <- args
 gene_data_args <- gene_data_args %>% split(x = ., f = seq(nrow(gene_data_args))) # generate a list from each row of a dataframe
 

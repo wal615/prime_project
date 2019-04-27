@@ -211,6 +211,8 @@ fit_real_data_fn <- function( combine = FALSE,
     additional <- additional[unique(names(additional))] # remove duplicated attrs
     additional$pre_cor <- NULL # pre_cor is a covariance matrix so don't need to carry it to the output
     additional$tran_fn_y <- names(additional$tran_fn_y)
+    additional$tran_fn_x <- names(additional$tran_fn_x)
+    
     # save the result
     result_final <- data.frame(result_tmp, additional) ## adding attributes as plot categories
     
