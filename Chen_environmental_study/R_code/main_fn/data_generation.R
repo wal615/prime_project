@@ -204,7 +204,7 @@ generate_chi <- function(n, p, rho = NULL, sig_coef = 1,
 ## subset PCB data
 ##################################################################################
 generate_PCB <- function(data_path, pro) {
-  b <- read.csv(data_path)
+  b <- read.csv(data_path, stringsAsFactors = FALSE)
   
   # subset b 
   n <- nrow(b)
@@ -264,25 +264,35 @@ generate_real_test <- function(data_path, pro, data_name=NULL, resp_name = "y", 
   b <- list(x = x, y = y)
 }
 
-##################################################################################
-## subset of chi-square
-##################################################################################
-generate_chi_sub <- function(pro) {
-  # generate a chi-square
-  cor_str <- matrix(rep(0.5,34^2), ncol = 34)
-  diag(cor_str) <- 1
-  x <- mvrnorm(n = 1000,
-               mu = rep(0,34),
-               Sigma = cor_str)
-  b <- x^2
-  n <- nrow(b)
+
+
+generate_sub <- function(data, pro, n) {
+  # subset 
   index <- sample(1:n, round(pro*n,0), replace = FALSE)
-  b <- b[index,]
+  sub_data <- lapply(data, FUN = function(x) x[index, ,drop = FALSE])
+  sub_data
+}
+
+generate_std_decorr <- function(b_raw, p, inter_std, combined, uncorr_method, uncorr_args, dim_red_method, dim_red_args){
+  # Standardized main covariates
+  b <- b_raw %>% std_fn(.) %>% add_inter(.)
+  b_m <- b[,1:p]
+  b_i <- b[,-(1:p)]
+  # center the main/interaction terms
+  if(inter_std == TRUE)
+    b_i <- std_fn(b = b_i)
   
-  b <- model.matrix(~.*.+0, data.frame(b)) 
+  if(combine == TRUE){
+    b_final <- cbind(b_m, b_i)
+  } else {
+    b_final <- b_m
+  }
   
-  attributes(b) <- append(attributes(b), 
-                          list(x_dist = "Chi", 
-                               pro = pro))
-  b
+  # Uncorrelated data
+  x <- uncorr_fn(b_final, uncorr_method, uncorr_args, dim_red_method, dim_red_args)
+  
+  list(b_final = b_final,
+       b_m = b_m,
+       b_i = b_i,
+       x = x)
 }

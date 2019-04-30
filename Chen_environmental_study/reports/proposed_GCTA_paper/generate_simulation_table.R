@@ -215,3 +215,24 @@ simulation_summary_table[is.na(simulation_summary_table)] <- "."
 colnames(simulation_summary_table) <- gsub("_", " ", colnames(simulation_summary_table))
 write.csv(simulation_summary_table, file = "./reports/proposed_GCTA_paper/prime_simulation_table.csv", row.names = FALSE)
 
+
+
+
+#############################################################################################################################
+## Variance estimation of GCTA
+#############################################################################################################################
+file_list_all <- list.files("./result/simulation_proposed_GCTA_paper/") %>%
+  paste0("./result/simulation_proposed_GCTA_paper/",.)
+
+file_list <- file_list_all[grep(x = file_list_all, pattern = "result_list_.*sub_chi.*total",perl = TRUE)]
+sub_chi_total <- lapply(file_list, function (x) {readRDS(x) %>% rbindlist(.)}) %>% rbindlist(., fill = TRUE)
+sub_chi_total[,c("data_gen_model","est_model") := list(ifelse(inter_fixed_var ==0, "main","main+inter"), ifelse(interaction_m == 0, "total"," "))]
+rm_col <- c( "combine", "n_sub", "inter_std", "GCTA_interaction", "sub_GCTA_interaction", 
+             "prop_interaction","sub_prop_interaction","structure", "interaction_m","n",
+             "main_fixed_var","main_random_var","inter_fixed_var","inter_random_var")
+sub_chi_total[,(rm_col) := NULL]
+sub_chi_total_est <- sub_chi_total[var_main_effect != 0,]
+sub_chi_total_var_est <- sub_chi_total[var_main_effect == 0,][, c("sub_GCTA_total", "sub_prop_total")]
+names(sub_chi_total_var_est) <- c("sub_GCTA_total_var", "sub_prop_total_var")
+sub_chi_total_est_final <- cbind(sub_chi_total_est, sub_chi_total_var_est)
+write.csv(sub_chi_total_est_final, file = "./reports/proposed_GCTA_paper/sub_chi_total_est_final.csv", row.names = FALSE)
