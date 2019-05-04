@@ -18,7 +18,8 @@ Yang=function(y,x,interact=0){
   
   RACT=0 # interaction effects
   if(interact==0){
-    s=svd(WW,nu=nr,nv=0,LINPACK=TRUE) # singular value decomposition
+    s <- tryCatch(svd(WW,nu=nr,nv=0,LINPACK=TRUE), error = function(e) e) # return return NA if there is an error for LINPACK
+    if(inherits(s, "error")) return(list(G=NA,E=NA,RACT=NA))  # singular value decomposition
     YD=(t(s$u)%*%y)^2
     ID=rep(1,nr)-(t(s$u)%*%rep(1,nr))^2/nr
     
@@ -36,6 +37,7 @@ Yang=function(y,x,interact=0){
       sigmaGnew=(A22*B1-A12*B2)/den
       sigmaEnew=(A11*B2-A12*B1)/den
       
+      if(is.na(sigmaGnew) | is.na(sigmaEnew)) return(list(G=NA,E=NA,RACT=NA)) # return NA if there is an error
       #use complementary slackness
       if(sigmaGnew<0 && sigmaEnew>=0){sigmaGnew=0; sigmaEnew=B2/A22}
       if(sigmaGnew>=0 && sigmaEnew<0){sigmaGnew=B1/A11; sigmaEnew=0}

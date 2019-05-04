@@ -18,7 +18,6 @@ simulation_fn <- function(p,
                           dim_red_args = NULL,
                           interaction_m = 0, 
                           corrected_main = FALSE,
-                          main_pro = NULL,
                           inter_std = FALSE,
                           seed = 0, 
                           cores = 1) {
@@ -141,23 +140,24 @@ simulation_fn <- function(p,
 ## simulation function with simulated covariate
 ##################################################################################
 simulation_var_est_fn <- function(p,
-                          combine = FALSE,
-                          gene_coeff_args = NULL,
-                          generate_data,
-                          gene_data_args,
-                          brep, 
-                          n_sub,
-                          pro,
-                          uncorr_method = NULL,
-                          uncorr_args = NULL,
-                          dim_red_method = NULL,
-                          dim_red_args = NULL,
-                          interaction_m = 0, 
-                          corrected_main = FALSE,
-                          main_pro = NULL,
-                          inter_std = FALSE,
-                          seed = 0, 
-                          cores = 1) {
+                                  combine = FALSE,
+                                  gene_coeff_args = NULL,
+                                  generate_data,
+                                  gene_data_args,
+                                  brep, 
+                                  n_sub,
+                                  pro,
+                                  bs,
+                                  uncorr_method = NULL,
+                                  uncorr_args = NULL,
+                                  dim_red_method = NULL,
+                                  dim_red_args = NULL,
+                                  interaction_m = 0, 
+                                  corrected_main = FALSE,
+                                  inter_std = FALSE,
+                                  seed = 0, 
+                                  cores = 1,
+                                  inter_result_path = NULL) {
   if (cores == 1) 
     foreach::registerDoSEQ() 
   else 
@@ -192,12 +192,11 @@ simulation_var_est_fn <- function(p,
     x <- b_tmp$x
     b_i <- b_tmp$b_i
     b_m <- b_tmp$b_m
+    
     # Generate main betas
     betam <- betam_fixed + generate_main_random(p, gene_coeff_args)
-    
     # Generate interaction gammas
     betai <- betai_fixed + generate_inter_random(p, gene_coeff_args)
-    
     # Sparsity
     sparse_index <- sparsify_coeff(colnames(b_m), colnames(b_i))  
     betam[sparse_index$index_main] <- 0
@@ -227,8 +226,11 @@ simulation_var_est_fn <- function(p,
     
     # generate sub_sampling effects
     for(i in 1:n_sub){
-      sub_data <- generate_sub(list(y = y,
-                                    b_raw = b_raw), pro = pro, n = length(y))
+      sub_data <- generate_sub(data = list(y = y,
+                                    b_raw = b_raw), 
+                               pro = pro,
+                               bs = bs,
+                               n = length(y))
       b_tmp <- generate_std_decorr(b_raw = sub_data$b_raw, 
                                    p = p, 
                                    inter_std = inter_std, 
@@ -251,6 +253,7 @@ simulation_var_est_fn <- function(p,
       result_tmp[i,12] <- fit$RACT  
     }
     
+
     
     # combined the all the attributes to b so we could plot them by the attributes
     additional <- list(x_dist = attributes(b_raw)$x_dist)
@@ -268,9 +271,9 @@ simulation_var_est_fn <- function(p,
     additional$pre_cor <- NULL # pre_cor is a covariance matrix so don't need to carry it to the output
     
     # save the result
-    result_final <- rbind(apply(result_tmp, 2, mean), apply(result_tmp, 2,sd))
-    result_final <- data.frame(result_final, additional) ## adding attributes as plot categories
-    
+    result_final <- rbind(apply(result_tmp, 2, mean, na.rm = TRUE), apply(result_tmp, 2,var, na.rm = TRUE))
+    result_final <- data.frame(result_final, additional, error_rate = sum(is.na(result_tmp[,11]))/n_sub) ## adding attributes as plot categories
+    data.frame(result_tmp, additional) %>% write.csv(., file = paste0(inter_result_path,"sub_sampling_",i,".csv"), row.names = FALSE)
   }
   attributes(result_raw)$rng <- NULL # rm the random sampling info
   

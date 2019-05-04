@@ -266,9 +266,13 @@ generate_real_test <- function(data_path, pro, data_name=NULL, resp_name = "y", 
 
 
 
-generate_sub <- function(data, pro, n) {
-  # subset 
-  index <- sample(1:n, round(pro*n,0), replace = FALSE)
+generate_sub <- function(data, pro, n, bs = FALSE) {
+  if(bs == TRUE) {
+    index <- sample(1:n, replace = TRUE)
+  } else {
+    index <- sample(1:n, round(pro*n,0), replace = FALSE)
+  }
+  
   sub_data <- lapply(data, FUN = function(x) x[index, ,drop = FALSE])
   sub_data
 }
