@@ -265,23 +265,31 @@ generate_real_test <- function(data_path, pro, data_name=NULL, resp_name = "y", 
 }
 
 
-
 generate_sub <- function(data, pro, n, bs = FALSE) {
   if(bs == TRUE) {
     index <- sample(1:n, replace = TRUE)
   } else {
     index <- sample(1:n, round(pro*n,0), replace = FALSE)
   }
-  
   sub_data <- lapply(data, FUN = function(x) x[index, ,drop = FALSE])
   sub_data
 }
 
-generate_std_decorr <- function(b_raw, p, inter_std, combined, uncorr_method, uncorr_args, dim_red_method, dim_red_args){
+gene_model_data <- function(b_raw, p){
   # Standardized main covariates
   b <- b_raw %>% std_fn(.) %>% add_inter(.)
   b_m <- b[,1:p]
   b_i <- b[,-(1:p)]
+  list(b_m = b_m,
+       b_i = b_i)
+}
+
+est_model_data <- function(b_raw, p, inter_std, combined, uncorr_method, uncorr_args, dim_red_method, dim_red_args){
+  # Standardized main covariates
+  b <- b_raw %>% std_fn(.) %>% add_inter(.)
+  b_m <- b[,1:p]
+  b_i <- b[,-(1:p)]
+  
   # center the main/interaction terms
   if(inter_std == TRUE)
     b_i <- std_fn(b = b_i)
@@ -291,12 +299,10 @@ generate_std_decorr <- function(b_raw, p, inter_std, combined, uncorr_method, un
   } else {
     b_final <- b_m
   }
-  
+
   # Uncorrelated data
   x <- uncorr_fn(b_final, uncorr_method, uncorr_args, dim_red_method, dim_red_args)
   
   list(b_final = b_final,
-       b_m = b_m,
-       b_i = b_i,
        x = x)
 }

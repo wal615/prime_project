@@ -70,7 +70,6 @@ simulation_fn <- function(p,
     result_tmp[,7] <- var(signalm)
     result_tmp[,8] <- var(signali)
     result_tmp[,9] <- 2*cov(signali,signalm)
-
     # center the main/interaction terms
     if(inter_std == TRUE)
       b_i <- std_fn(b = b_i)
@@ -168,7 +167,6 @@ simulation_var_est_fn <- function(p,
     stop("you need provide coefficient generating information")
   }
   
-  set.seed(seed) # set seed for main coefficient
   # Generate main fixed betas
   betam_fixed <- generate_main(p, gene_coeff_args)
   # Generate interaction fixed gammas
@@ -177,34 +175,31 @@ simulation_var_est_fn <- function(p,
   result_raw <- foreach(ibrep = 1:brep, .combine = rbind, .verbose = TRUE, .errorhandling = "remove", .options.RNG = seed) %dorng%   {
     # Initial output 
     result_tmp <- matrix(0, nrow = n_sub, ncol = 12)
+    col_names <- c("var_main_effect","var_inter_effect","cov_main_inter_effect", "var_total_effect")
+    if(combine == TRUE){
+      col_names <- col_names %>% append(., c("GCTA_total", "GCTA_interaction", "prop_total", "prop_interaction",
+                                             "sub_GCTA_total", "sub_GCTA_interaction", "sub_prop_total", "sub_prop_interaction"))
+    } else {
+      col_names <- col_names %>% append(., c("GCTA_main", "GCTA_interaction", "prop_main", "prop_interaction",
+                                             "sub_GCTA_main", "sub_GCTA_interaction", "sub_prop_main", "sub_prop_interaction"))
+    }
+    colnames(result_tmp) <- col_names
     
     # Generate covariates  
     b_raw <- do.call(generate_data, gene_data_args)
-    b_tmp <- generate_std_decorr(b_raw = b_raw, 
-                                 p = p, 
-                                 inter_std = inter_std, 
-                                 uncorr_method = uncorr_method, 
-                                 combined = combine, 
-                                 uncorr_args = uncorr_args, 
-                                 dim_red_method = dim_red_method, 
-                                 dim_red_args = dim_red_args)
-    b_final <- b_tmp$b_final
-    x <- b_tmp$x
-    b_i <- b_tmp$b_i
-    b_m <- b_tmp$b_m
-    
+    b_gene_model <- gene_model_data(b_raw, p)
     # Generate main betas
     betam <- betam_fixed + generate_main_random(p, gene_coeff_args)
     # Generate interaction gammas
     betai <- betai_fixed + generate_inter_random(p, gene_coeff_args)
     # Sparsity
-    sparse_index <- sparsify_coeff(colnames(b_m), colnames(b_i))  
+    sparse_index <- sparsify_coeff(colnames(b_gene_model$b_m), colnames(b_gene_model$b_i))  
     betam[sparse_index$index_main] <- 0
     betai[sparse_index$index_inter] <- 0
     
     # Generate the signals
-    signalm <- b_m%*%betam
-    signali <- b_i%*%betai
+    signalm <- b_gene_model$b_m%*%betam
+    signali <- b_gene_model$b_i%*%betai
 
     # record all the variance 
     result_tmp[,1] <- var(signalm)
@@ -214,41 +209,52 @@ simulation_var_est_fn <- function(p,
   
     # Generate health outcome given fixed random effects
     y <- signalm+signali+rnorm(length(signalm),sd=4)
+    
+    ## estimating model
+    
+    # generate data for esitmating
+    b_est_model <- est_model_data(b_raw, 
+                                  p, 
+                                  inter_std, 
+                                  combined, 
+                                  uncorr_method, 
+                                  uncorr_args, 
+                                  dim_red_method, 
+                                  dim_red_args)
     # Call the original GCTA method 
-    fit=Yang(y,b_final,interact = interaction_m)
+    fit=Yang(y,b_est_model$b_final,interact = interaction_m)
     result_tmp[,5] <- fit$G
     result_tmp[,6] <- fit$RACT
     
     # Call the proposed GCTA method
-    fit=Yang(y,x,interact = interaction_m)
+    fit=Yang(y,b_est_model$x,interact = interaction_m)
     result_tmp[,7] <- fit$G
     result_tmp[,8] <- fit$RACT
     
     # generate sub_sampling effects
     for(i in 1:n_sub){
       sub_data <- generate_sub(data = list(y = y,
-                                    b_raw = b_raw), 
+                                           b_raw = b_raw), 
                                pro = pro,
                                bs = bs,
                                n = length(y))
-      b_tmp <- generate_std_decorr(b_raw = sub_data$b_raw, 
-                                   p = p, 
-                                   inter_std = inter_std, 
-                                   uncorr_method = uncorr_method, 
-                                   combined = combine, 
-                                   uncorr_args = uncorr_args, 
-                                   dim_red_method = dim_red_method, 
-                                   dim_red_args = dim_red_args)
-      b_final <- b_tmp$b_final
-      x <- b_tmp$x
       
+      b_tmp <- est_model_data(sub_data$b_raw, 
+                              p, 
+                              inter_std, 
+                              combined, 
+                              uncorr_method, 
+                              uncorr_args, 
+                              dim_red_method, 
+                              dim_red_args)
+
       # Call the original GCTA method 
-      fit=Yang(sub_data$y,b_final,interact = interaction_m)
+      fit=Yang(sub_data$y, b_tmp$b_final,interact = interaction_m)
       result_tmp[i,9] <- fit$G
       result_tmp[i,10] <- fit$RACT
       
       # Call the proposed GCTA method
-      fit=Yang(sub_data$y,x,interact = interaction_m)
+      fit=Yang(sub_data$y,b_tmp$x,interact = interaction_m)
       result_tmp[i,11] <- fit$G
       result_tmp[i,12] <- fit$RACT  
     }
@@ -271,19 +277,13 @@ simulation_var_est_fn <- function(p,
     additional$pre_cor <- NULL # pre_cor is a covariance matrix so don't need to carry it to the output
     
     # save the result
-    result_final <- rbind(apply(result_tmp, 2, mean, na.rm = TRUE), apply(result_tmp, 2,var, na.rm = TRUE))
-    result_final <- data.frame(result_final, additional, error_rate = sum(is.na(result_tmp[,11]))/n_sub) ## adding attributes as plot categories
-    data.frame(result_tmp, additional) %>% write.csv(., file = paste0(inter_result_path,"sub_sampling_",i,".csv"), row.names = FALSE)
+    if(!(is.null(inter_result_path))) data.frame(result_tmp, additional, i = ibrep) %>% write.csv(., file = paste0(inter_result_path,"sub_sampling_",ibrep,".csv"), row.names = FALSE)
+    # result_final <- rbind(apply(result_tmp, 2, mean, na.rm = TRUE), apply(result_tmp, 2,var, na.rm = TRUE))
+    # result_final <- data.frame(result_final, additional, error_rate = sum(is.na(result_tmp[,11]))/n_sub) ## adding attributes as plot categories
+    # result_final
+    return_info <- paste0(ibrep, " is done at ", timestamp())
   }
   attributes(result_raw)$rng <- NULL # rm the random sampling info
-  
-  colnames(result_raw)[1:4] <- c("var_main_effect","var_inter_effect","cov_main_inter_effect", "var_total_effect")
-  colnames(result_raw)[5:12] <- c("GCTA_main", "GCTA_interaction", "prop_main", "prop_interaction",
-                                  "sub_GCTA_main", "sub_GCTA_interaction", "sub_prop_main", "sub_prop_interaction")
-  if(combine == TRUE){
-    colnames(result_raw)[5:12] <- c("GCTA_total", "GCTA_interaction", "prop_total", "prop_interaction",
-                                    "sub_GCTA_total", "sub_GCTA_interaction", "sub_prop_total", "sub_prop_interaction")
-  }
   result_raw
 }
 
