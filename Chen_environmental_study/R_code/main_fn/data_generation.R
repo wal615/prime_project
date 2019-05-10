@@ -122,7 +122,7 @@ generate_normal <- function(n, p, rho = NULL, sig_coef = 1,
     colnames(b) <- paste0("X", 1:ncol(b))
     
     attributes(b) <- append(attributes(b), 
-                            list(x_dist = "Normal", 
+                            list(x_dist = "normal", 
                                  str = structure,
                                  corr = rho))
     b
