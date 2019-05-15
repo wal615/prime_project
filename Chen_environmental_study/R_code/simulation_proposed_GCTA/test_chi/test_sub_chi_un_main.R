@@ -12,9 +12,9 @@ library(doRNG)
 library(doParallel)
 library(gtools) # for rbind based on columns
 
-cores <- 1
-n_iter <- 1
-n_sub <- 5
+cores <- 30
+n_iter <- 100
+n_sub <- 200
 seed <- 1234
 ###############################################################################################################################
 ## inter_1 inter_m = 0
@@ -26,8 +26,8 @@ generate_data <- generate_chi
 est <- "main"
 interaction_m <- 0
 
-dim_red_method <- SVD_dim_reduction
-dim_red_args <- list(reduce_coef = 0.8)
+dim_red_method <- NULL
+dim_red_args <- NULL
 
 combine <- FALSE
 n_total <- c(1500)
@@ -53,7 +53,7 @@ uncorr_args <- list(p = p)
 
 # setup folders for results
 result_name <- paste("result_list_fixed_sub", dist, "structure", structure, "main", main_fixed_var, "inter",
-                     inter_fixed_var, "n", n_total, "p", p, "dim_red_coeff", dim_red_args, est, sep = "_")
+                     inter_fixed_var, "n", n_total, "p", p, "dim_red_coeff", dim_red_args, "pro", pro, est, sep = "_")
 result_folder_path <- paste0(save_path, result_name, "/")
 dir.create(result_folder_path)
 

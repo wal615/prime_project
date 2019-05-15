@@ -30,7 +30,6 @@ SVD_dim_reduction <- function(x, reduce_coef) {
   dim <- round(p * reduce_coef, 0)
   svd_x <- svd(x)
   x_r <- (svd_x$u) %*% diag(svd_x$d) %*% t(svd_x$v[1:dim,]) # ignore the right U_3 part
-  browser()
   x_r
 }
 

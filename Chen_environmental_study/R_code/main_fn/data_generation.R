@@ -284,7 +284,7 @@ gene_model_data <- function(b_raw, p){
        b_i = b_i)
 }
 
-est_model_data <- function(b_raw, p, inter_std, combined, uncorr_method, uncorr_args, dim_red_method, dim_red_args){
+est_model_data <- function(b_raw, y, p, inter_std, combined, uncorr_method, uncorr_args, dim_red_method, dim_red_args){
   # Standardized main covariates
   b <- b_raw %>% std_fn(.) %>% add_inter(.)
   b_m <- b[,1:p]
@@ -301,8 +301,9 @@ est_model_data <- function(b_raw, p, inter_std, combined, uncorr_method, uncorr_
   }
 
   # Uncorrelated data
-  x <- uncorr_fn(b_final, uncorr_method, uncorr_args, dim_red_method, dim_red_args)
+  s_final <- uncorr_fn(b_final, uncorr_method, uncorr_args, dim_red_method, dim_red_args)
   
   list(b_final = b_final,
-       x = x)
+       s_final = s_final,
+       y = y)
 }
