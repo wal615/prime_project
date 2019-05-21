@@ -4,69 +4,102 @@ library(ggforce)
 library(ggpubr)
 library(gridExtra)
 setwd("~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/var_est/")
-
+mean <- function(x, ..., na.rm = TRUE) {
+  base::mean(x, ..., na.rm = na.rm)
+}
+var <- function(x, ..., na.rm = TRUE) {
+  stats::var(x, ..., na.rm = na.rm)
+}
+save_path <- "~/dev/projects/Chen_environmental_study/reports/proposed_GCTA_paper/est_var_analysis/"
 #############################################################################################################################
 ## I main
 #############################################################################################################################
-result_path <- "result_list_fixed_sub_normal_structure_I_main_0.5_inter_0_n_1500_p_33_main"
+result_path <- "result_list_fixed_sub_normal_structure_I_main_0.5_inter_0_n_1500_p_33_dim_red_coeff__subpro_0.5_iter_100_nsub_200_GCTA_kernel_est_main"
 file_list_all <- list.files(paste0("./", result_path, "/")) %>% paste0(paste0("./", result_path, "/"),.)
 file_list <- file_list_all[grep(x = file_list_all, pattern = "sub_sampling",perl = TRUE)]
 sub_result <- lapply(file_list, function (x) {read.csv(x, header = TRUE, stringsAsFactors = FALSE)}) %>% rbindlist(., fill = TRUE)
-sub_result[,c("data_gen_model","est_model") := list(ifelse(inter_fixed_var ==0, "main","main+inter"), ifelse(interaction_m == 0, "main","main+inter"))]
+sub_result[,c("data_gen_model","est_model") := list(ifelse(inter_fixed_var ==0, "main","main+inter"), ifelse(interact == 0, "main","main+inter"))]
+summary_list <- list()
+# summary tables
+## true
+summary_list <- append(summary_list, list(result_path))
+mean_table <- sub_result[, .(mean_main_true = mean(var_main_effect), 
+                       mean_inter_true = mean(var_inter_effect), 
+                       mean_cov_true = mean(cov_main_inter_effect),
+                       mean_total_true = mean(var_total_effect))]
+var_table <- sub_result[, .(var_main_true = var(var_main_effect), 
+                      var_inter_true = var(var_inter_effect), 
+                      var_cov_true = var(cov_main_inter_effect),
+                      var_total_true = var(var_total_effect))]
+summary_list <- append(summary_list, list(mean_table, var_table))
+## full data
+mean_table <- sub_result[, .(mean_main_full = mean(prop_main), 
+                       mean_inter_full = mean(prop_inter))]
+var_table <- sub_result[, .(var_main_full = var(prop_main), 
+                      var_inter_full = var(prop_main))]
+summary_list <- append(summary_list, list(mean_table, var_table))
+## sub-sampling_mean
+sub <- sub_result[, .(sub_main_mean = mean(sub_prop_main),
+                      sub_inter_mean = mean(sub_prop_inter),
+                      sub_main_var = var(sub_prop_main),
+                      sub_inter_var = var(sub_prop_inter)), by = i]
+mean_table <- sub[, .(mean_main_submean = mean(sub_main_mean),
+                      mean_inter_submean = mean(sub_inter_mean))]
+var_table <- sub[, .(var_main_submean = var(sub_main_mean),
+                     var_inter_submean = var(sub_inter_mean))]
+sub_var_table <- sub[,.(var_main_sub = mean(sub_main_var),
+                         var_inter_sub = mean(sub_inter_var))] 
+summary_list <- append(summary_list, list(mean_table, var_table, sub_var_table))
 
-# tables
-prop_main <- sub_result[, .(prop_main = mean(prop_main)), by = i]
-prop_main$i <- 0
-sub_prop_main <- sub_result[, .(prop_main = sub_prop_main,i)]
-hist_table <- rbindlist(l = list(prop_main, sub_prop_main), use.names = TRUE)
-hist_table[, i := as.character(i)]
-var_table <- hist_table[,.(est_var = var(prop_main, na.rm = TRUE)), by = i]
-var_table[i !=0, est_var] %>% mean(.)
-var_table[i ==0, est_var]
-# save the result 
-write.csv(sub_result, file = paste0("./", result_path, ".csv"), row.names = FALSE)
+# save the result
+sink(paste0(save_path,result_path,".txt"))
+print(summary_list)
+sink()
+
 
 
 
 #############################################################################################################################
 ## un main
 #############################################################################################################################
-result_path <- "result_list_fixed_sub_normal_structure_un_main_0.5_inter_0_n_1500_p_33_main"
+result_path <- ""
 file_list_all <- list.files(paste0("./", result_path, "/")) %>% paste0(paste0("./", result_path, "/"),.)
 file_list <- file_list_all[grep(x = file_list_all, pattern = "sub_sampling",perl = TRUE)]
 sub_result <- lapply(file_list, function (x) {read.csv(x, header = TRUE, stringsAsFactors = FALSE)}) %>% rbindlist(., fill = TRUE)
-sub_result[,c("data_gen_model","est_model") := list(ifelse(inter_fixed_var ==0, "main","main+inter"), ifelse(interaction_m == 0, "main","main+inter"))]
+sub_result[,c("data_gen_model","est_model") := list(ifelse(inter_fixed_var ==0, "main","main+inter"), ifelse(interact == 0, "main","main+inter"))]
+summary_list <- list()
+# summary tables
+## true
+summary_list <- append(summary_list, list(result_path))
+mean_table <- sub_result[, .(mean_main_true = mean(var_main_effect), 
+                             mean_inter_true = mean(var_inter_effect), 
+                             mean_cov_true = mean(cov_main_inter_effect),
+                             mean_total_true = mean(var_total_effect))]
+var_table <- sub_result[, .(var_main_true = var(var_main_effect), 
+                            var_inter_true = var(var_inter_effect), 
+                            var_cov_true = var(cov_main_inter_effect),
+                            var_total_true = var(var_total_effect))]
+summary_list <- append(summary_list, list(mean_table, var_table))
+## full data
+mean_table <- sub_result[, .(mean_main_full = mean(prop_main), 
+                             mean_inter_full = mean(prop_inter))]
+var_table <- sub_result[, .(var_main_full = var(prop_main), 
+                            var_inter_full = var(prop_main))]
+summary_list <- append(summary_list, list(mean_table, var_table))
+## sub-sampling_mean
+sub <- sub_result[, .(sub_main_mean = mean(sub_prop_main),
+                      sub_inter_mean = mean(sub_prop_inter),
+                      sub_main_var = var(sub_prop_main),
+                      sub_inter_var = var(sub_prop_inter)), by = i]
+mean_table <- sub[, .(mean_main_submean = mean(sub_main_mean),
+                      mean_inter_submean = mean(sub_inter_mean))]
+var_table <- sub[, .(var_main_submean = var(sub_main_mean),
+                     var_inter_submean = var(sub_inter_mean))]
+sub_var_table <- sub[,.(var_main_sub = mean(sub_main_var),
+                        var_inter_sub = mean(sub_inter_var))] 
+summary_list <- append(summary_list, list(mean_table, var_table, sub_var_table))
 
-# tables
-prop_main <- sub_result[, .(prop_main = mean(prop_main)), by = i]
-prop_main$i <- 0
-sub_prop_main <- sub_result[, .(prop_main = sub_prop_main,i)]
-hist_table <- rbindlist(l = list(prop_main, sub_prop_main), use.names = TRUE)
-hist_table[, i := as.character(i)]
-var_table <- hist_table[,.(est_var = var(prop_main, na.rm = TRUE)), by = i]
-var_table[i !=0, est_var] %>% mean(.)
-var_table[i ==0, est_var]
-# save the result 
-write.csv(sub_result, file = paste0("./", result_path, ".csv"), row.names = FALSE)
-
-#############################################################################################################################
-## I total
-#############################################################################################################################
-result_path <- "result_list_fixed_sub_normal_structure_I_main_0.5_inter_0.1_n_1500_p_33_total"
-file_list_all <- list.files(paste0("./", result_path, "/")) %>% paste0(paste0("./", result_path, "/"),.)
-file_list <- file_list_all[grep(x = file_list_all, pattern = "sub_sampling",perl = TRUE)]
-sub_result <- lapply(file_list, function (x) {read.csv(x, header = TRUE, stringsAsFactors = FALSE)}) %>% rbindlist(., fill = TRUE)
-sub_result[,c("data_gen_model","est_model") := list(ifelse(inter_fixed_var ==0, "main","main+inter"), ifelse(interaction_m == 0, "total",""))]
-
-# tables
-prop_total <- sub_result[, .(prop_total = mean(prop_total)), by = i]
-prop_total$i <- 0
-sub_prop_total <- sub_result[, .(prop_total = sub_prop_total,i)]
-hist_table <- rbindlist(l = list(prop_total, sub_prop_total), use.names = TRUE)
-hist_table[, i := as.character(i)]
-var_table <- hist_table[,.(est_var = var(prop_total, na.rm = TRUE)), by = i]
-var_table[i !=0, est_var] %>% mean(.)
-var_table[i ==0, est_var]
-# save the result 
-write.csv(sub_result, file = paste0("./", result_path, ".csv"), row.names = FALSE)
-
+# save the result
+sink(paste0(save_path,result_path,".txt"))
+print(summary_list)
+sink()

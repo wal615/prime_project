@@ -175,13 +175,22 @@ simulation_var_est_fn <- function(kernel = GCTA_kernel,
   # Generate interaction fixed gammas
   betai_fixed <- generate_inter(p, gene_coeff_args)
   
+  # Calculate the empirical covariance
+  gene_data_args_emp <- gene_data_args
+  gene_data_args_emp$n <- 10^5
+  x_emp <- do.call(generate_data, gene_data_args_emp) %>% gene_model_data(., p)
+  sigma_main_emp <- var(x_emp$b_m)
+  sigma_inter_emp <- var(x_emp$b_i)
+  sigma_cov_emp <- cov(x_emp$b_m, x_emp$b_i)
+  sigma_total_emp <- cbind(x_emp$b_m, x_emp$b_i) %>% var(.)
+  browser()
+  # Calcualte the effects
   result_raw <- foreach(ibrep = 1:brep, .combine = rbind, .verbose = TRUE, .errorhandling = "remove", .options.RNG = seed_loop) %dorng%   {
     # Initial output 
-    
     col_names <- c("var_main_effect","var_inter_effect","cov_main_inter_effect", "var_total_effect")
     kernel_result_col_names <- c(kernel_result_col_names, paste0("sub_", kernel_result_col_names))
     if(combine == TRUE){
-      col_names <- col_names %>% append(., kernel_result_col_names)
+      col_names <- col_names %>% gsub(pattern = "_main$", replacement = "_total",x = .) %>% append(., kernel_result_col_names)
     } else {
       col_names <- col_names %>% append(., kernel_result_col_names)
     }
@@ -205,11 +214,11 @@ simulation_var_est_fn <- function(kernel = GCTA_kernel,
     signali <- b_gene_model$b_i%*%betai
 
     # record all the variance 
-    result_tmp[,1] <- var(signalm)
-    result_tmp[,2] <- var(signali)
-    result_tmp[,3] <- 2*cov(signali,signalm)
-    result_tmp[,4] <- var(signalm + signali)
-  
+    result_tmp[,1] <- t(betam)%*%sigma_main_emp%*%betam
+    result_tmp[,2] <- t(betai)%*%sigma_inter_emp%*%betai
+    result_tmp[,3] <- t(betam)%*%sigma_cov_emp%*%betai
+    betat <- c(betam, betai)
+    result_tmp[,4] <- t(betat)%*%sigma_total_emp%*%betat
     # Generate health outcome given fixed random effects
     y <- signalm+signali+rnorm(length(signalm),sd=4)
     
@@ -227,7 +236,7 @@ simulation_var_est_fn <- function(kernel = GCTA_kernel,
                                   dim_red_args)
     
     # Call the original GCTA method 
-    args <- append(b_est_model, kernel_args)
+    args <- append(b_est_model, kernel_args) %>% append(.,list(betam = betam, betai = betai))
     result_kernel <- do.call(kernel, args)
     result_tmp[,(5:(4+length(kernel_result_col_names)/2))] <- do.call("rbind", replicate(n_sub, result_kernel, simplify = FALSE))
 
@@ -248,7 +257,7 @@ simulation_var_est_fn <- function(kernel = GCTA_kernel,
                               uncorr_args, 
                               dim_red_method, 
                               dim_red_args)
-      args <- append(b_tmp, kernel_args)
+      args <- append(b_tmp, kernel_args) %>% append(.,list(betam = betam, betai = betai))
       result_tmp[i,(5+length(kernel_result_col_names)/2):ncol(result_tmp)] <- do.call(kernel, args)
     }
   
@@ -331,7 +340,6 @@ fit_real_data_fn <- function( combine = FALSE,
     # Generate health outcome given fixed random effects
     y <- input_data$y %>% std_fn(.)
     result_tmp[1,1] <- var(y)
-    
     
     # Call the original GCTA method 
     fit=Yang(y,b_final,interact = interaction_m)

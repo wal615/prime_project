@@ -12,7 +12,7 @@ library(doRNG)
 library(doParallel)
 library(gtools) # for rbind based on columns
 
-cores <- 30
+cores <- 20
 n_iter <- 100
 n_sub <- 200
 seed_loop <- 1234
@@ -33,7 +33,7 @@ est <- "main"
 kernel_args <- list(interact = 0)
 kernel <- GCTA_kernel
 kernel_name <- "GCTA_kernel"
-kernel_result_col_names <- c("GCTA_main", "GCTA_inter", "prop_main", "prop_inter")
+kernel_result_col_names <- col_names_GCTA
 
 # dim_reduction
 dim_red_method <- NULL
@@ -61,7 +61,8 @@ uncorr_args <- list(p = p)
 
 # setup folders for results
 result_name <- paste("result_list_fixed_sub", dist, "structure", structure, "main", main_fixed_var, "inter",
-                     inter_fixed_var, "n", n_total, "p", p, "dim_red_coeff", dim_red_args, "subpro", pro, "kernel", kernel_name, "est", est, sep = "_")
+                     inter_fixed_var, "n", n_total, "p", p, "dim_red_coeff", dim_red_args, "subpro", pro, "iter", n_iter, "nsub", n_sub,
+                     kernel_name, "est", est, sep = "_")
 result_folder_path <- paste0(save_path, result_name, "/")
 dir.create(result_folder_path)
 

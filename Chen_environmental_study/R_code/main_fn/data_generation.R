@@ -82,7 +82,6 @@ real_data_corr.mat <- function(path,...) {
 
 generate_normal <- function(n, p, rho = NULL, sig_coef = 1, 
                             structure = c("cs","un","ar", "I")[1], 
-                            chi_coef = 1, 
                             pre_cor = NULL){
     if(structure == "cs"){
       cor_str <- matrix(rep(rho,p^2), ncol = p)
@@ -134,7 +133,6 @@ generate_normal <- function(n, p, rho = NULL, sig_coef = 1,
 ##################################################################################
 generate_chi <- function(n, p, rho = NULL, sig_coef = 1, 
                          structure = c("cs","un","ar", "I")[1], 
-                         chi_coef = 1, 
                          pre_cor = NULL) {
   # generate individual chi_square
   p_normal <- p*chi_coef
@@ -172,31 +170,32 @@ generate_chi <- function(n, p, rho = NULL, sig_coef = 1,
                  Sigma = diag(p_normal))
   }
   
-  x <- x^2
+  b <- x^2
   
-  # combine different chi square to get different degree of freedom
-  if(chi_coef == 1) {
-    len_index <- p # for later the while condition 
-    index_p <- sample(1:p)
-  }
-  else len_index <- 0
-  
-  while(len_index < p) {
-    index_p <- sample(1:p, p_normal, replace = TRUE)  
-    len_index <- unique(index_p) %>% length(.)
-  } # make sure we sample all p different groups with replacement
-  index_list <- split(1:p_normal, index_p)
-  
-  # generate the chi-square with specificed df
-  b <- lapply(X = index_list, 
-              FUN = function(data, index) {rowSums(data[,index, drop = FALSE])}, data = x) %>%
-    Reduce(cbind, x = .)
+  # # combine different chi square to get different degree of freedom
+  # if(chi_coef == 1) {
+  #   len_index <- p # for later the while condition 
+  #   index_p <- 1:p
+  # }
+  # else len_index <- 0
+  # 
+  # while(len_index < p) {
+  #   index_p <- sample(1:p, p_normal, replace = TRUE)  
+  #   len_index <- unique(index_p) %>% length(.)
+  # } # make sure we sample all p different groups with replacement
+  # index_list <- split(1:p_normal, index_p)
+  # 
+  # # generate the chi-square with specificed df
+  # b <- lapply(X = index_list, 
+  #             FUN = function(data, index) {rowSums(data[,index, drop = FALSE])}, data = x) %>%
+  #      Reduce(cbind, x = .)
   colnames(b) <- paste0("X", 1:ncol(b))
   
   attributes(b) <- append(attributes(b), 
                           list(x_dist = "chi", 
                                str = structure,
-                               corr = rho))
+                               corr = rho,
+                               df = chi_coef))
   b
 }
 

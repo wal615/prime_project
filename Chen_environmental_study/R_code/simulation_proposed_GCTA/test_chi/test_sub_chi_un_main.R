@@ -12,36 +12,44 @@ library(doRNG)
 library(doParallel)
 library(gtools) # for rbind based on columns
 
-cores <- 30
+cores <- 1
 n_iter <- 100
 n_sub <- 200
-seed <- 1234
-###############################################################################################################################
-## inter_1 inter_m = 0
-###############################################################################################################################
-
+seed_loop <- 1234
+seed_coef <- 1014
 # steup parameters
+
+# data generation
+n_total <- 1500
 dist <- "chi"
 generate_data <- generate_chi
-est <- "main"
-interaction_m <- 0
+structure <- "un"
+pre_cor <- real_data_corr.mat(data_path)
+p <- dim(pre_cor)[1]
 
+# est 
+combine <- FALSE
+est <- "main"
+kernel_args <- list(interact = 0)
+kernel <- GCTA_kernel
+kernel_name <- "GCTA_kernel"
+kernel_result_col_names <- col_names_GCTA
+
+# dim_reduction
 dim_red_method <- NULL
 dim_red_args <- NULL
 
-combine <- FALSE
-n_total <- c(1500)
+# coef
 main_fixed_var <- 0.5
 main_random_var <- 0
 inter_fixed_var <- 0
 inter_random_var <- 0
-structure <- "un"
 gene_coeff_args <- list(main_fixed_var = main_fixed_var,
                         main_random_var = main_random_var,
                         inter_fixed_var = inter_fixed_var,
                         inter_random_var = inter_random_var)
-pre_cor <- real_data_corr.mat(data_path)
-p <- dim(pre_cor)[1]
+
+# sub_sampling
 pro <- 0.5
 bs <- FALSE
 
@@ -53,7 +61,8 @@ uncorr_args <- list(p = p)
 
 # setup folders for results
 result_name <- paste("result_list_fixed_sub", dist, "structure", structure, "main", main_fixed_var, "inter",
-                     inter_fixed_var, "n", n_total, "p", p, "dim_red_coeff", dim_red_args, "pro", pro, est, sep = "_")
+                     inter_fixed_var, "n", n_total, "p", p, "dim_red_coeff", dim_red_args, "subpro", pro, "iter", n_iter, "nsub", n_sub,
+                     kernel_name, "est", est, sep = "_")
 result_folder_path <- paste0(save_path, result_name, "/")
 dir.create(result_folder_path)
 
@@ -61,6 +70,9 @@ dir.create(result_folder_path)
 result_list <- mapply(FUN = simulation_var_est_fn,
                       gene_data_args = gene_data_args,
                       MoreArgs = list(p = p,
+                                      kernel = kernel,
+                                      kernel_args = kernel_args,
+                                      kernel_result_col_names = kernel_result_col_names,
                                       pro = pro,
                                       bs = bs,
                                       combine = combine,
@@ -72,9 +84,9 @@ result_list <- mapply(FUN = simulation_var_est_fn,
                                       generate_data = generate_data,
                                       brep = n_iter,
                                       n_sub = n_sub,
-                                      seed = seed,
+                                      seed_loop = seed_loop,
+                                      seed_coef = seed_coef,
                                       cores = cores,
-                                      interaction_m = interaction_m,
                                       inter_std = TRUE,
                                       inter_result_path = result_folder_path),
                       SIMPLIFY = FALSE)
