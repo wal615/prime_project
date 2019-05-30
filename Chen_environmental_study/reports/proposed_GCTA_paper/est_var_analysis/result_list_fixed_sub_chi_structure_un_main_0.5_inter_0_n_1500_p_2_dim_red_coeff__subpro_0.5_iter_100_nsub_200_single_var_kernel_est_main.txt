@@ -1,0 +1,20 @@
+[[1]]
+   mean_var1_full mean_var2_full mean_cov_full
+1:       1.999895       2.052627     0.9393108
+
+[[2]]
+   var_var1_full var_var2_full var_cov_full
+1:    0.03351903    0.03996105   0.01559264
+
+[[3]]
+   mean_var1_submean mean_var2_submean mean_cov_submean
+1:          2.000096          2.054204        0.9396807
+
+[[4]]
+   var_var1_submean var_var2_submean var_cov_submean
+1:       0.03429291       0.04106959      0.01598273
+
+[[5]]
+   var_var1_sub var_var2_sub var_cov_sub
+1:   0.03535487   0.04276693  0.01591653
+

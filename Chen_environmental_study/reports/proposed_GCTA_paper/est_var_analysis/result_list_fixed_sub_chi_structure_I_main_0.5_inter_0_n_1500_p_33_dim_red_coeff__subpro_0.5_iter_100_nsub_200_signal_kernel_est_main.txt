@@ -19,13 +19,13 @@
 
 [[6]]
    mean_main_submean mean_inter_submean mean_total_submean
-1:          97.50066                  0           97.50066
+1:          97.44794                  0           97.44794
 
 [[7]]
    var_main_submean var_inter_submean var_total_submean
-1:         10.58252                 0          10.58252
+1:         10.62346                 0          10.62346
 
 [[8]]
    var_main_sub var_inter_sub var_total_sub
-1:     10.75137             0      10.75137
+1:     10.94893             0      10.94893
 

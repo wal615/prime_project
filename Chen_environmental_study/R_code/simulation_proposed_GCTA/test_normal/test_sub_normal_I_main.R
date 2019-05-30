@@ -12,7 +12,7 @@ library(doRNG)
 library(doParallel)
 library(gtools) # for rbind based on columns
 
-cores <- 20
+cores <- 10
 n_iter <- 100
 n_sub <- 200
 seed_loop <- 1234
@@ -33,7 +33,7 @@ est <- "main"
 kernel_args <- list(interact = 0)
 kernel <- GCTA_kernel
 kernel_name <- "GCTA_kernel"
-kernel_result_col_names <- c("GCTA_main", "GCTA_inter", "prop_main", "prop_inter")
+kernel_result_col_names <- col_names_GCTA
 
 # dim_reduction
 dim_red_method <- NULL

@@ -25,7 +25,7 @@ generate_inter <- function(p, additional_args) {
     beta <- 5*beta[upper.tri(beta, diag = FALSE)]/norm(beta[upper.tri(beta, diag = FALSE)],"2") # modify the strength of beta
     return(beta)
   } else {
-    return(beta[upper.tri(beta, diag = FALSE)])
+    return(beta[upper.tri(beta, diag = FALSE)]) # return all 0 when all inter is 0
   }
 }
 
@@ -65,9 +65,9 @@ autocorr.mat <- function(p = 100, rho = 0.9) {
 unstr_corr.mat <- function(p, k = 10) {
   set.seed(123)
   P <- matrix(runif(p*k), ncol=p) # k control the magnitude of off-diagonal elements
-  con_str <- crossprod(P) + diag(runif(p))
-  con_str <- diag(1/sqrt(diag(con_str))) %*% con_str %*% diag(1/sqrt(diag(con_str)))
-  con_str
+  cor_str <- crossprod(P) + diag(runif(p))
+  cor_str <- diag(1/sqrt(diag(cor_str))) %*% cor_str %*% diag(1/sqrt(diag(cor_str)))
+  cor_str
 }
 
 ##################################################################################
@@ -95,19 +95,19 @@ generate_normal <- function(n, p, rho = NULL, sig_coef = 1,
     
     if(structure == "un"){
       if(class(pre_cor) == "list") {pre_cor <- pre_cor[[1]]}
-      con_str <- pre_cor * sig_coef # to keep the covariance matrix same for each simulation iterations
+      cor_str <- pre_cor * sig_coef # to keep the covariance matrix same for each simulation iterations
       x <- mvrnorm(n = n,
                    mu = rep(0,p),
-                   Sigma = con_str)
+                   Sigma = cor_str)
     }
     
     if(structure == "ar"){
-      con_str <- autocorr.mat(p, rho)
-      con_str <- con_str * sig_coef
+      cor_str <- autocorr.mat(p, rho)
+      cor_str <- cor_str * sig_coef
       
       x <- mvrnorm(n = n,
                    mu = rep(0,p),
-                   Sigma = con_str)
+                   Sigma = cor_str)
     }
     
     if(structure == "I"){
@@ -135,32 +135,32 @@ generate_chi <- function(n, p, rho = NULL, sig_coef = 1,
                          structure = c("cs","un","ar", "I")[1], 
                          pre_cor = NULL) {
   # generate individual chi_square
-  p_normal <- p*chi_coef
+  p_normal <- p
   if(structure == "cs"){
     cor_str <- matrix(rep(rho,p_normal^2), ncol = p_normal)
     diag(cor_str) <- 1
+    cor_str <- cor_str * sig_coef # 
+    
+    x <- mvrnorm(n = n,
+                 mu = rep(0,p_normal),
+                 Sigma = cor_str) # square root: make the chi has same cov-structure as pre_cor
+  }
+  
+  if(structure == "un"){
+    if(class(pre_cor) == "list") {pre_cor <- pre_cor[[1]]}
+    cor_str <- pre_cor * sig_coef # to keep the covariance matrix same for each simulation iterations
+    x <- mvrnorm(n = n,
+                 mu = rep(0,p_normal),
+                 Sigma = cor_str) 
+  }
+  
+  if(structure == "ar"){
+    cor_str <- autocorr.mat(p_normal, rho)
     cor_str <- cor_str * sig_coef
     
     x <- mvrnorm(n = n,
                  mu = rep(0,p_normal),
                  Sigma = cor_str)
-  }
-  
-  if(structure == "un"){
-    if(class(pre_cor) == "list") {pre_cor <- pre_cor[[1]]}
-    con_str <- pre_cor * sig_coef # to keep the covariance matrix same for each simulation iterations
-    x <- mvrnorm(n = n,
-                 mu = rep(0,p_normal),
-                 Sigma = con_str)
-  }
-  
-  if(structure == "ar"){
-    con_str <- autocorr.mat(p_normal, rho)
-    con_str <- con_str * sig_coef
-    
-    x <- mvrnorm(n = n,
-                 mu = rep(0,p_normal),
-                 Sigma = con_str)
   }
   
   if(structure == "I"){
@@ -194,8 +194,7 @@ generate_chi <- function(n, p, rho = NULL, sig_coef = 1,
   attributes(b) <- append(attributes(b), 
                           list(x_dist = "chi", 
                                str = structure,
-                               corr = rho,
-                               df = chi_coef))
+                               corr = rho))
   b
 }
 
@@ -277,8 +276,8 @@ generate_sub <- function(data, pro, n, bs = FALSE) {
 gene_model_data <- function(b_raw, p){
   # Standardized main covariates
   b <- b_raw %>% std_fn(.) %>% add_inter(.)
-  b_m <- b[,1:p]
-  b_i <- b[,-(1:p)]
+  b_m <- b[,1:p, drop = FALSE]
+  b_i <- b[,-(1:p), drop = FALSE]
   list(b_m = b_m,
        b_i = b_i)
 }
@@ -286,8 +285,8 @@ gene_model_data <- function(b_raw, p){
 est_model_data <- function(b_raw, y, p, inter_std, combined, uncorr_method, uncorr_args, dim_red_method, dim_red_args){
   # Standardized main covariates
   b <- b_raw %>% std_fn(.) %>% add_inter(.)
-  b_m <- b[,1:p]
-  b_i <- b[,-(1:p)]
+  b_m <- b[,1:p, drop = FALSE]
+  b_i <- b[,-(1:p), drop = FALSE]
   
   # center the main/interaction terms
   if(inter_std == TRUE)

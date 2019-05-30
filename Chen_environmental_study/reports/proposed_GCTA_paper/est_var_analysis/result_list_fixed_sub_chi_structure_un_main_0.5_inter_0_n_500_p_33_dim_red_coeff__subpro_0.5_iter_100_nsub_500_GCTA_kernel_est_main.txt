@@ -1,0 +1,31 @@
+[[1]]
+[1] "result_list_fixed_sub_chi_structure_un_main_0.5_inter_0_n_500_p_33_dim_red_coeff__subpro_0.5_iter_100_nsub_500_GCTA_kernel_est_main"
+
+[[2]]
+   mean_main_true mean_inter_true mean_cov_true mean_total_true
+1:        39.9391               0             0         39.9391
+
+[[3]]
+   var_main_true var_inter_true var_cov_true var_total_true
+1:             0              0            0              0
+
+[[4]]
+   mean_main_full mean_inter_full
+1:        39.3331               0
+
+[[5]]
+   var_main_full var_inter_full
+1:      12.39683       12.39683
+
+[[6]]
+   mean_main_submean mean_inter_submean
+1:          39.32947                  0
+
+[[7]]
+   var_main_submean var_inter_submean
+1:         12.16365                 0
+
+[[8]]
+   var_main_sub var_inter_sub
+1:     27.97031             0
+

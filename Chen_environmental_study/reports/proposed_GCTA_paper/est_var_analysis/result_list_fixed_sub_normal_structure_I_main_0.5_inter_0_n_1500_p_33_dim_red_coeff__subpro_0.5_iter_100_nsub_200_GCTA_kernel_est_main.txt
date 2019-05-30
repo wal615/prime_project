@@ -3,11 +3,11 @@
 
 [[2]]
    mean_main_true mean_inter_true mean_cov_true mean_total_true
-1:       97.51679               0             0        97.51679
+1:       97.24985               0             0        97.24985
 
 [[3]]
    var_main_true var_inter_true var_cov_true var_total_true
-1:      13.23363              0            0       13.23363
+1:             0              0            0              0
 
 [[4]]
    mean_main_full mean_inter_full

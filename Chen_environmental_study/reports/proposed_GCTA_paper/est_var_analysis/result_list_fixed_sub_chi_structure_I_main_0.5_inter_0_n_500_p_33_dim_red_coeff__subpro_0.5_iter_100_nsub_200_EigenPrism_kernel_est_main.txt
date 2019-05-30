@@ -3,37 +3,55 @@
 
 [[2]]
    mean_main_true mean_inter_true mean_cov_true mean_total_true
-1:       98.43571               0             0        98.43571
+1:       97.70243               0             0        97.70243
 
 [[3]]
    var_main_true var_inter_true var_cov_true var_total_true
-1:      32.77635              0            0       32.77635
+1:             0              0            0              0
 
 [[4]]
    mean_main_full
-1:        98.4501
+1:       98.79888
 
 [[5]]
    var_main_full
-1:      15.15971
+1:      12.29844
 
 [[6]]
    mean_CI1_full mean_CI2_full
-1:      43.34083      153.5594
+1:      43.85138      153.7464
 
 [[7]]
    mean_main_submean
-1:          99.30246
+1:          99.73928
 
 [[8]]
    var_main_submean
-1:         15.70022
+1:         12.58046
 
 [[9]]
    var_main_sub
-1:     49.25024
+1:     48.37622
 
 [[10]]
    mean_CI1_sub mean_CI2_sub
-1:     44.31998     154.2849
+1:     44.96549     154.5131
+
+$eg_coverage_rate_0.05
+[1] 1
+
+$full_eg_CI
+   full_eg_CI1 full_eg_CI2
+1:    43.85138    153.7464
+
+$sub_CI
+    sub_CI1  sub_CI2
+1: 86.49269 112.9089
+
+$coverage_rate_0.05
+[1] 1
+
+$full_CI
+   full_CI1 full_CI2
+1: 92.67785 104.5212
 

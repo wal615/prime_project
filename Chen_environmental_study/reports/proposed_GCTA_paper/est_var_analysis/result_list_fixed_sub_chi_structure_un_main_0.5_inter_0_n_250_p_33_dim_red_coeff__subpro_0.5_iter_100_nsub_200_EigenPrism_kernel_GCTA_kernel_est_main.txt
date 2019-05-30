@@ -1,0 +1,75 @@
+[[1]]
+[1] "result_list_fixed_sub_chi_structure_un_main_0.5_inter_0_n_250_p_33_dim_red_coeff__subpro_0.5_iter_100_nsub_200_EigenPrism_kernel_GCTA_kernel_est_main"
+
+$true_value
+   mean_main_true mean_inter_true mean_cov_true mean_total_true
+1:       44.68296               0             0        44.68296
+
+$method
+[1] "============EgenPrism==========="
+
+$full_data_mean
+   mean_main_full
+1:        43.1434
+
+$full_data_var
+   var_main_full
+1:      33.07238
+
+$sub_data_mean
+   mean_main_submean
+1:          44.99099
+
+$sub_data_var
+   var_main_submean
+1:         33.75826
+
+$sub_data_mean_var
+   var_main_sub
+1:     99.96591
+
+$EigenPrism_CI_full_coverage_rate
+[1] 1
+
+$EigenPrism_CI_full_length_mean
+[1] 55.0834
+
+$sub_coverage_rate
+[1] 0.9494949
+
+$sub_CI_length_mean
+[1] 27.01222
+
+$method
+[1] "============GCTA==========="
+
+$full_data_mean
+   mean_main_full mean_inter_full
+1:       41.38209               0
+
+$full_data_var
+   var_main_full var_inter_full
+1:      33.93732              0
+
+$sub_data_mean
+   mean_main_submean mean_inter_submean
+1:            41.383                  0
+
+$sub_data_var
+   var_main_submean var_inter_submean
+1:         34.26563                 0
+
+$sub_data_mean_var
+   var_main_sub var_inter_sub
+1:     56.84384             0
+
+$sub_CI_length_mean
+[1] 27.54283
+
+$sub_CI_coverage_rate
+[1] 0.9191919
+
+$full_CI_length
+   97.5% 
+23.65445 
+

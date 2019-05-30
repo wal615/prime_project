@@ -36,7 +36,7 @@ simulation_fn <- function(p,
   betam_fixed <- generate_main(p, gene_coeff_args)
   # Generate interaction fixed gammas
   betai_fixed <- generate_inter(p, gene_coeff_args)
-  
+
   result_raw <- foreach(ibrep = 1:brep, .combine = rbind, .verbose = TRUE, .errorhandling = "remove", .options.RNG = seed) %dorng%   {
     # Initial output 
     result_tmp <- matrix(0, nrow = nrep, ncol = 9)
@@ -141,6 +141,9 @@ simulation_fn <- function(p,
 simulation_var_est_fn <- function(kernel = GCTA_kernel,
                                   kernel_args = NULL,
                                   kernel_result_col_names,
+                                  kernel_2 = NULL,
+                                  kernel_args_2 = NULL,
+                                  kernel_result_col_names_2 = NULL,
                                   p,
                                   combine = FALSE,
                                   gene_coeff_args = NULL,
@@ -174,29 +177,42 @@ simulation_var_est_fn <- function(kernel = GCTA_kernel,
   betam_fixed <- generate_main(p, gene_coeff_args)
   # Generate interaction fixed gammas
   betai_fixed <- generate_inter(p, gene_coeff_args)
+  if(gene_data_args$structure != "I")
+    betai_fixed <- betai_fixed/5 # modfied the interaction effect to get consistent interaction effects
   
   # Calculate the empirical covariance
   gene_data_args_emp <- gene_data_args
   gene_data_args_emp$n <- 10^5
-  x_emp <- do.call(generate_data, gene_data_args_emp) %>% gene_model_data(., p)
+  x_emp_raw <- do.call(generate_data, gene_data_args_emp) 
+  x_emp <- gene_model_data(x_emp_raw, p)
   sigma_main_emp <- var(x_emp$b_m)
   sigma_inter_emp <- var(x_emp$b_i)
   sigma_cov_emp <- cov(x_emp$b_m, x_emp$b_i)
   sigma_total_emp <- cbind(x_emp$b_m, x_emp$b_i) %>% var(.)
-  browser()
+  if (gene_data_args_emp$structure == "un"){
+    if (attributes(x_emp_raw)$x_dist == "chi")
+      sigma_main_approx <- mean(abs(sigma_main_emp - (gene_data_args_emp$pre_cor[[1]])^2))
+    else 
+      sigma_main_approx <- mean(abs(sigma_main_emp - gene_data_args_emp$pre_cor[[1]]))  
+  } else if (gene_data_args_emp$structure == "I"){
+      sigma_main_approx <- mean(abs(sigma_main_emp - diag(p)))
+  }
+
   # Calcualte the effects
   result_raw <- foreach(ibrep = 1:brep, .combine = rbind, .verbose = TRUE, .errorhandling = "remove", .options.RNG = seed_loop) %dorng%   {
     # Initial output 
     col_names <- c("var_main_effect","var_inter_effect","cov_main_inter_effect", "var_total_effect")
     kernel_result_col_names <- c(kernel_result_col_names, paste0("sub_", kernel_result_col_names))
+    if(!is.null(kernel_result_col_names_2)){
+      kernel_result_col_names_2 <- c(kernel_result_col_names_2, paste0("sub_", kernel_result_col_names_2))
+    }
     if(combine == TRUE){
-      col_names <- col_names %>% gsub(pattern = "_main$", replacement = "_total",x = .) %>% append(., kernel_result_col_names)
+      col_names <- c(col_names, kernel_result_col_names,kernel_result_col_names_2) %>% gsub(pattern = "_main$", replacement = "_total",x = .)
     } else {
-      col_names <- col_names %>% append(., kernel_result_col_names)
+      col_names <- c(col_names, kernel_result_col_names,kernel_result_col_names_2)
     }
     result_tmp <- matrix(0, nrow = n_sub, ncol = length(col_names))
     colnames(result_tmp) <- col_names
-    
     # Generate covariates  
     b_raw <- do.call(generate_data, gene_data_args)
     b_gene_model <- gene_model_data(b_raw, p)
@@ -211,8 +227,9 @@ simulation_var_est_fn <- function(kernel = GCTA_kernel,
     
     # Generate the signals
     signalm <- b_gene_model$b_m%*%betam
-    signali <- b_gene_model$b_i%*%betai
-
+    signali <- b_gene_model$b_i%*%betai    
+      
+    
     # record all the variance 
     result_tmp[,1] <- t(betam)%*%sigma_main_emp%*%betam
     result_tmp[,2] <- t(betai)%*%sigma_inter_emp%*%betai
@@ -236,11 +253,16 @@ simulation_var_est_fn <- function(kernel = GCTA_kernel,
                                   dim_red_args)
     
     # Call the original GCTA method 
-    args <- append(b_est_model, kernel_args) %>% append(.,list(betam = betam, betai = betai))
+    args <- append(b_est_model, kernel_args) %>% append(.,list(b_raw = b_raw, betam = betam, betai = betai))
     result_kernel <- do.call(kernel, args)
     result_tmp[,(5:(4+length(kernel_result_col_names)/2))] <- do.call("rbind", replicate(n_sub, result_kernel, simplify = FALSE))
-
+    if(!is.null(kernel_2)){
+      args_2 <- append(b_est_model, kernel_args_2) %>% append(.,list(b_raw = b_raw, betam = betam, betai = betai))
+      result_kernel <- do.call(kernel_2, args_2)
+      result_tmp[,(5+length(kernel_result_col_names)):(4+length(kernel_result_col_names)+length(kernel_result_col_names_2)/2)] <- do.call("rbind", replicate(n_sub, result_kernel, simplify = FALSE))
+    }
     # generate sub_sampling effects
+
     for(i in 1:n_sub){
       sub_data <- generate_sub(data = list(y = y,
                                            b_raw = b_raw), 
@@ -257,8 +279,12 @@ simulation_var_est_fn <- function(kernel = GCTA_kernel,
                               uncorr_args, 
                               dim_red_method, 
                               dim_red_args)
-      args <- append(b_tmp, kernel_args) %>% append(.,list(betam = betam, betai = betai))
-      result_tmp[i,(5+length(kernel_result_col_names)/2):ncol(result_tmp)] <- do.call(kernel, args)
+      args <- append(b_tmp, kernel_args) %>% append(.,list(b_raw = sub_data$b_raw, betam = betam, betai = betai))
+      result_tmp[i,(5+length(kernel_result_col_names)/2):(4+length(kernel_result_col_names))] <- do.call(kernel, args)
+      if(!is.null(kernel_2)){
+        args_2 <- append(b_tmp, kernel_args_2) %>% append(.,list(b_raw = sub_data$b_raw, betam = betam, betai = betai))
+        result_tmp[i,(5+length(kernel_result_col_names)+length(kernel_result_col_names_2)/2):(4+length(kernel_result_col_names)+length(kernel_result_col_names_2))] <- do.call(kernel_2, args_2)
+      }
     }
   
     # combined the all the attributes to b so we could plot them by the attributes
@@ -268,23 +294,22 @@ simulation_var_est_fn <- function(kernel = GCTA_kernel,
                                        gene_coeff_args, 
                                        dim_red_args, 
                                        kernel_args,
+                                       kernel_args_2,
                                        list(combine = combine, 
                                             n = nrow(b_raw),
                                             pro = pro,
                                             n_sub = n_sub,
-                                            inter_std = inter_std)))
+                                            inter_std = inter_std,
+                                            sigma_main_approx = sigma_main_approx)))
     additional <- additional[unique(names(additional))] # remove duplicated attrs
     additional$pre_cor <- NULL # pre_cor is a covariance matrix so don't need to carry it to the output
 
     # save the result
     if(!(is.null(inter_result_path))) data.frame(result_tmp, additional, i = ibrep) %>% write.csv(., file = paste0(inter_result_path,"sub_sampling_",ibrep,".csv"), row.names = FALSE)
-    # result_final <- rbind(apply(result_tmp, 2, mean, na.rm = TRUE), apply(result_tmp, 2,var, na.rm = TRUE))
-    # result_final <- data.frame(result_final, additional, error_rate = sum(is.na(result_tmp[,11]))/n_sub) ## adding attributes as plot categories
-    # result_final
-    return_info <- paste0(ibrep, " is done at ", timestamp())
+    paste0(ibrep, " is done at ", timestamp())
   }
   attributes(result_raw)$rng <- NULL # rm the random sampling info
-  result_raw
+  print(result_raw)
 }
 
 

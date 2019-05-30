@@ -12,15 +12,15 @@ library(doRNG)
 library(doParallel)
 library(gtools) # for rbind based on columns
 
-cores <- 20
-n_iter <- 100
+cores <- 15
+n_iter <- 500
 n_sub <- 200
 seed_loop <- 1234
 seed_coef <- 1014
 # steup parameters
 
 # data generation
-n_total <- 1500
+n_total <- 500
 dist <- "chi"
 generate_data <- generate_chi
 structure <- "I"

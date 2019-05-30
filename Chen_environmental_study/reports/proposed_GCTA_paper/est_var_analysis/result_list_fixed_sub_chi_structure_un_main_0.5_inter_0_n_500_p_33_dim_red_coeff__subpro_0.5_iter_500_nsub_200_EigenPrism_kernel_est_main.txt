@@ -1,0 +1,61 @@
+[[1]]
+[1] "result_list_fixed_sub_chi_structure_un_main_0.5_inter_0_n_500_p_33_dim_red_coeff__subpro_0.5_iter_500_nsub_200_EigenPrism_kernel_est_main"
+
+[[2]]
+   mean_main_true mean_inter_true mean_cov_true
+1:        39.9391               0             0
+   mean_total_true
+1:         39.9391
+
+[[3]]
+   var_main_true var_inter_true var_cov_true
+1:             0              0            0
+   var_total_true
+1:              0
+
+[[4]]
+   mean_main_full
+1:       108.8121
+
+[[5]]
+   var_main_full
+1:      142.3374
+
+[[6]]
+   mean_CI1_full mean_CI2_full
+1:      81.11382      136.5104
+
+[[7]]
+   mean_main_submean
+1:          99.22322
+
+[[8]]
+   var_main_submean
+1:         85.95764
+
+[[9]]
+   var_main_sub
+1:     168.4321
+
+[[10]]
+   mean_CI1_sub mean_CI2_sub
+1:     69.12721     129.3192
+
+$eg_coverage_rate_0.05
+[1] 0
+
+$full_eg_CI
+   full_eg_CI1 full_eg_CI2
+1:    81.11382    136.5104
+
+$sub_CI
+    sub_CI1  sub_CI2
+1: 76.53695 124.1241
+
+$coverage_rate_0.05
+[1] 0
+
+$full_CI
+   full_CI1 full_CI2
+1: 87.63249 129.9329
+
