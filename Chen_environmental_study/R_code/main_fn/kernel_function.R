@@ -23,10 +23,10 @@ least_square_kernel <- function(...){
   args <- list(...)
   if(args$decor == TRUE){
     fit <- least_square(y = args$y, 
-                        X = args$s_final)  
+                        x = args$s_final)  
   } else {
     fit <- least_square(y = args$y, 
-                        X = args$b_final)  
+                        x = args$b_final)  
   }
   fit[1]
 }
@@ -34,7 +34,7 @@ col_names_least_square <- c("least_square_main")
 
 signal_kernel <- function(...){
   args <- list(...)
-  fit <- signal(args$b_final, args$betam, args$betai)
+  fit <- signal(args$b_raw, args$betam, args$betai)
   fit[1:4]
 }
 col_names_signal <- c("main", "inter", "cov","total")

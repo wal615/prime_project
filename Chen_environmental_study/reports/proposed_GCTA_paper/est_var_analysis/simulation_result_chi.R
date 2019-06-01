@@ -11,11 +11,12 @@ var <- function(x, ..., na.rm = TRUE) {
   stats::var(x, ..., na.rm = na.rm)
 }
 save_path <- "~/dev/projects/Chen_environmental_study/reports/proposed_GCTA_paper/est_var_analysis/"
-
+upper <- 0.9
+lower <- 0.1
 #############################################################################################################################
 ## Eg + GCTA main
 #############################################################################################################################
-result_path <- "result_list_fixed_sub_chi_structure_I_main_0.5_inter_0_n_1000_p_33_dim_red_coeff__subpro_0.5_iter_100_nsub_200_least_square_kernel_GCTA_kernel_est_main"
+result_path <- "result_list_fixed_sub_chi_structure_I_main_0.5_inter_0.1_n_264_p_33_dim_red_coeff__subpro_0.5_iter_100_nsub_200_least_square_kernel_GCTA_kernel_est_total"
 file_list_all <- list.files(paste0("./", result_path, "/")) %>% paste0(paste0("./", result_path, "/"),.)
 file_list <- file_list_all[grep(x = file_list_all, pattern = "sub_sampling",perl = TRUE)]
 sub_result <- lapply(file_list, function (x) {read.csv(x, header = TRUE, stringsAsFactors = FALSE)}) %>% rbindlist(., fill = TRUE)
@@ -56,7 +57,7 @@ summary_list <- append(summary_list, list(EigenPrism_CI_full_coverage_rate = Eig
                                           EigenPrism_CI_full_length_mean = EigenPrism_CI_full_length_mean))
 
 # add CI and covarage rate
-sub_CI_result <- sub_result[,.(var_main_effect =mean(var_main_effect, na.rm = TRUE), sub_CI1 = quantile(sub_EigenPrism_main, 0.025, na.rm = TRUE), sub_CI2 = quantile(sub_EigenPrism_main, 0.975,na.rm = TRUE)), by = i]
+sub_CI_result <- sub_result[,.(var_main_effect =mean(var_main_effect, na.rm = TRUE), sub_CI1 = quantile(sub_EigenPrism_main, lower, na.rm = TRUE), sub_CI2 = quantile(sub_EigenPrism_main, upper,na.rm = TRUE)), by = i]
 sub_CI_result[, sub_CI_coverage := (var_main_effect >= sub_CI1) & (var_main_effect <= sub_CI2)]
 sub_coverage_rate <- sub_CI_result[,mean(sub_CI_coverage)]
 sub_CI_length_mean <- sub_CI_result[, sub_CI2-sub_CI1] %>% mean(.)
@@ -88,12 +89,12 @@ summary_list <- append(summary_list, list(sub_data_mean = mean_table,
 
 
 # add CI 
-sub_CI_result <- sub_result[,.(var_main_effect = mean(var_main_effect), sub_CI1 = quantile(sub_GCTA_main, 0.025, na.rm = TRUE), sub_CI2 = quantile(sub_GCTA_main, 0.975, na.rm = TRUE)), by = i]
+sub_CI_result <- sub_result[,.(var_main_effect = mean(var_main_effect), sub_CI1 = quantile(sub_GCTA_main, lower, na.rm = TRUE), sub_CI2 = quantile(sub_GCTA_main, upper, na.rm = TRUE)), by = i]
 sub_CI_result[,sub_CI_length := sub_CI2 - sub_CI1]
 sub_CI_result[, coverage := (var_main_effect >= sub_CI1) & (var_main_effect <= sub_CI2)]
 sub_CI_coverage_rate <- sub_CI_result[,mean(coverage)]
 sub_CI_length_mean <- sub_CI_result[, mean(sub_CI_length)]
-full_CI_length <- sub_result[, (quantile(GCTA_main, 0.975)-quantile(GCTA_main, 0.025))]
+full_CI_length <- sub_result[, (quantile(GCTA_main, upper)-quantile(GCTA_main, lower))]
 summary_list <- append(summary_list, list(sub_CI_length_mean=sub_CI_length_mean, 
                                           sub_CI_coverage_rate = sub_CI_coverage_rate, 
                                           full_CI_length = full_CI_length))
@@ -107,7 +108,7 @@ sink()
 #############################################################################################################################
 ## least + GCTA main
 #############################################################################################################################
-result_path <- "result_list_fixed_sub_chi_structure_un_main_0.5_inter_0_n_1000_p_33_dim_red_coeff__subpro_0.5_iter_100_nsub_200_least_square_kernel_GCTA_kernel_est_main"
+result_path <- "result_list_fixed_sub_chi_structure_I_main_0.5_inter_0_n_528_p_33_dim_red_coeff__subpro_0.5_iter_100_nsub_200_least_square_kernel_GCTA_kernel_est_main"
 file_list_all <- list.files(paste0("./", result_path, "/")) %>% paste0(paste0("./", result_path, "/"),.)
 file_list <- file_list_all[grep(x = file_list_all, pattern = "sub_sampling",perl = TRUE)]
 sub_result <- lapply(file_list, function (x) {read.csv(x, header = TRUE, stringsAsFactors = FALSE)}) %>% rbindlist(., fill = TRUE)
@@ -140,7 +141,7 @@ summary_list <- append(summary_list, list(sub_data_mean = mean_table,
                                           sub_data_mean_var = sub_var_table))
 
 # add CI and covarage rate
-sub_CI_result <- sub_result[,.(var_main_effect =mean(var_main_effect, na.rm = TRUE), sub_CI1 = quantile(sub_EigenPrism_main, 0.025, na.rm = TRUE), sub_CI2 = quantile(sub_EigenPrism_main, 0.975,na.rm = TRUE)), by = i]
+sub_CI_result <- sub_result[,.(var_main_effect =mean(var_main_effect, na.rm = TRUE), sub_CI1 = quantile(sub_least_square_main, lower, na.rm = TRUE), sub_CI2 = quantile(sub_least_square_main, upper,na.rm = TRUE)), by = i]
 sub_CI_result[, sub_CI_coverage := (var_main_effect >= sub_CI1) & (var_main_effect <= sub_CI2)]
 sub_coverage_rate <- sub_CI_result[,mean(sub_CI_coverage)]
 sub_CI_length_mean <- sub_CI_result[, sub_CI2-sub_CI1] %>% mean(.)
@@ -173,12 +174,12 @@ summary_list <- append(summary_list, list(sub_data_mean = mean_table,
 
 
 # add CI 
-sub_CI_result <- sub_result[,.(var_main_effect = mean(var_main_effect), sub_CI1 = quantile(sub_GCTA_main, 0.025, na.rm = TRUE), sub_CI2 = quantile(sub_GCTA_main, 0.975, na.rm = TRUE)), by = i]
+sub_CI_result <- sub_result[,.(var_main_effect = mean(var_main_effect), sub_CI1 = quantile(sub_GCTA_main, lower, na.rm = TRUE), sub_CI2 = quantile(sub_GCTA_main, upper, na.rm = TRUE)), by = i]
 sub_CI_result[,sub_CI_length := sub_CI2 - sub_CI1]
 sub_CI_result[, coverage := (var_main_effect >= sub_CI1) & (var_main_effect <= sub_CI2)]
 sub_CI_coverage_rate <- sub_CI_result[,mean(coverage)]
 sub_CI_length_mean <- sub_CI_result[, mean(sub_CI_length)]
-full_CI_length <- sub_result[, (quantile(GCTA_main, 0.975)-quantile(GCTA_main, 0.025))]
+full_CI_length <- sub_result[, (quantile(GCTA_main, upper)-quantile(GCTA_main, lower))]
 summary_list <- append(summary_list, list(sub_CI_length_mean=sub_CI_length_mean, 
                                           sub_CI_coverage_rate = sub_CI_coverage_rate, 
                                           full_CI_length = full_CI_length))
@@ -192,7 +193,7 @@ sink()
 #############################################################################################################################
 ## Eg + GCTA total
 #############################################################################################################################
-result_path <- "result_list_fixed_sub_chi_structure_I_main_0.5_inter_0.1_n_700_p_33_dim_red_coeff__subpro_0.5_iter_100_nsub_200_EigenPrism_kernel_GCTA_kernel_est_total"
+result_path <- "result_list_fixed_sub_chi_structure_I_main_0.5_inter_0.1_n_1000_p_33_dim_red_coeff__subpro_0.5_iter_100_nsub_200_EigenPrism_kernel_GCTA_kernel_est_total"
 file_list_all <- list.files(paste0("./", result_path, "/")) %>% paste0(paste0("./", result_path, "/"),.)
 file_list <- file_list_all[grep(x = file_list_all, pattern = "sub_sampling",perl = TRUE)]
 sub_result <- lapply(file_list, function (x) {read.csv(x, header = TRUE, stringsAsFactors = FALSE)}) %>% rbindlist(., fill = TRUE)
@@ -233,7 +234,7 @@ summary_list <- append(summary_list, list(EigenPrism_CI_full_coverage_rate = Eig
                                           EigenPrism_CI_full_length_mean = EigenPrism_CI_full_length_mean))
 
 # add CI and covarage rate
-sub_CI_result <- sub_result[,.(var_total_effect =mean(var_total_effect, na.rm = TRUE), sub_CI1 = quantile(sub_EigenPrism_total, 0.025, na.rm = TRUE), sub_CI2 = quantile(sub_EigenPrism_total, 0.975,na.rm = TRUE)), by = i]
+sub_CI_result <- sub_result[,.(var_total_effect =mean(var_total_effect, na.rm = TRUE), sub_CI1 = quantile(sub_EigenPrism_total, lower, na.rm = TRUE), sub_CI2 = quantile(sub_EigenPrism_total, upper,na.rm = TRUE)), by = i]
 sub_CI_result[, sub_CI_coverage := (var_total_effect >= sub_CI1) & (var_total_effect <= sub_CI2)]
 sub_coverage_rate <- sub_CI_result[,mean(sub_CI_coverage)]
 sub_CI_length_mean <- sub_CI_result[, sub_CI2-sub_CI1] %>% mean(.)
@@ -266,12 +267,96 @@ summary_list <- append(summary_list, list(sub_data_mean = mean_table,
 
 
 # add CI 
-sub_CI_result <- sub_result[,.(var_total_effect = mean(var_total_effect), sub_CI1 = quantile(sub_GCTA_total, 0.025, na.rm = TRUE), sub_CI2 = quantile(sub_GCTA_total, 0.975, na.rm = TRUE)), by = i]
+sub_CI_result <- sub_result[,.(var_total_effect = mean(var_total_effect), sub_CI1 = quantile(sub_GCTA_total, lower, na.rm = TRUE), sub_CI2 = quantile(sub_GCTA_total, upper, na.rm = TRUE)), by = i]
 sub_CI_result[,sub_CI_length := sub_CI2 - sub_CI1]
 sub_CI_result[, coverage := (var_total_effect >= sub_CI1) & (var_total_effect <= sub_CI2)]
 sub_CI_coverage_rate <- sub_CI_result[,mean(coverage)]
 sub_CI_length_mean <- sub_CI_result[, mean(sub_CI_length)]
-full_CI_length <- sub_result[, (quantile(GCTA_total, 0.975,na.rm = TRUE)-quantile(GCTA_total, 0.025,na.rm = TRUE))]
+full_CI_length <- sub_result[, (quantile(GCTA_total, upper,na.rm = TRUE)-quantile(GCTA_total, lower,na.rm = TRUE))]
+summary_list <- append(summary_list, list(sub_CI_length_mean=sub_CI_length_mean, 
+                                          sub_CI_coverage_rate = sub_CI_coverage_rate, 
+                                          full_CI_length = full_CI_length))
+
+# save the result
+sink(paste0(save_path,result_path,".txt"))
+print(summary_list)
+sink()
+
+#############################################################################################################################
+## least + GCTA total
+#############################################################################################################################
+result_path <- "result_list_fixed_sub_chi_structure_un_main_0.5_inter_0.1_n_2000_p_33_dim_red_coeff__subpro_0.5_iter_100_nsub_200_least_square_kernel_GCTA_kernel_est_total"
+file_list_all <- list.files(paste0("./", result_path, "/")) %>% paste0(paste0("./", result_path, "/"),.)
+file_list <- file_list_all[grep(x = file_list_all, pattern = "sub_sampling",perl = TRUE)]
+sub_result <- lapply(file_list, function (x) {read.csv(x, header = TRUE, stringsAsFactors = FALSE)}) %>% rbindlist(., fill = TRUE)
+# summary tables
+
+## true
+summary_list <- list()
+summary_list <- append(summary_list, list(result_path))
+mean_table <- sub_result[, .(mean_main_true = mean(var_main_effect), 
+                             mean_inter_true = mean(var_inter_effect), 
+                             mean_cov_true = mean(cov_main_inter_effect),
+                             mean_total_true = mean(var_total_effect))]
+summary_list <- append(summary_list, list(true_value = mean_table))
+
+summary_list <- append(summary_list, list(method = "============Least_square==========="))
+## full data
+mean_table <- sub_result[, .(mean_total_full = mean(least_square_total))]
+var_table <- sub_result[, .(var_total_full = var(least_square_total))]
+summary_list <- append(summary_list, list(full_data_mean = mean_table, 
+                                          full_data_var = var_table))
+
+## sub-sampling_mean
+sub <- sub_result[, .(sub_total_mean = mean(sub_least_square_total, na.rm = TRUE),
+                      sub_total_var = var(sub_least_square_total, na.rm = TRUE)), by = i]
+mean_table <- sub[, .(mean_total_submean = mean(sub_total_mean))]
+var_table <- sub[, .(var_total_submean = var(sub_total_mean))]
+sub_var_table <- sub[,.(var_total_sub = mean(sub_total_var))] 
+summary_list <- append(summary_list, list(sub_data_mean = mean_table, 
+                                          sub_data_var = var_table,
+                                          sub_data_mean_var = sub_var_table))
+
+# add CI and covarage rate
+sub_CI_result <- sub_result[,.(var_total_effect =mean(var_total_effect, na.rm = TRUE), sub_CI1 = quantile(sub_least_square_total, lower, na.rm = TRUE), sub_CI2 = quantile(sub_least_square_total, upper,na.rm = TRUE)), by = i]
+sub_CI_result[, sub_CI_coverage := (var_total_effect >= sub_CI1) & (var_total_effect <= sub_CI2)]
+sub_coverage_rate <- sub_CI_result[,mean(sub_CI_coverage)]
+sub_CI_length_mean <- sub_CI_result[, sub_CI2-sub_CI1] %>% mean(.)
+summary_list <- append(summary_list, list(sub_coverage_rate=sub_coverage_rate,
+                                          sub_CI_length_mean = sub_CI_length_mean))
+summary_list <- append(summary_list, list(method = "============GCTA==========="))
+
+## GCTA
+## full data
+mean_table <- sub_result[, .(mean_total_full = mean(GCTA_total), 
+                             mean_inter_full = mean(GCTA_inter))]
+var_table <- sub_result[, .(var_total_full = var(GCTA_total), 
+                            var_inter_full = var(GCTA_inter))]
+summary_list <- append(summary_list, list(full_data_mean = mean_table, 
+                                          full_data_var = var_table))
+## sub-sampling_mean
+sub <- sub_result[, .(sub_total_mean = mean(sub_GCTA_total, na.rm = T),
+                      sub_inter_mean = mean(sub_GCTA_inter, na.rm = T),
+                      sub_total_var = var(sub_GCTA_total, na.rm = T),
+                      sub_inter_var = var(sub_GCTA_inter, na.rm = T)), by = i]
+mean_table <- sub[, .(mean_total_submean = mean(sub_total_mean),
+                      mean_inter_submean = mean(sub_inter_mean))]
+var_table <- sub[, .(var_total_submean = var(sub_total_mean),
+                     var_inter_submean = var(sub_inter_mean))]
+sub_var_table <- sub[,.(var_total_sub = mean(sub_total_var),
+                        var_inter_sub = mean(sub_inter_var))] 
+summary_list <- append(summary_list, list(sub_data_mean = mean_table, 
+                                          sub_data_var = var_table, 
+                                          sub_data_mean_var = sub_var_table))
+
+
+# add CI 
+sub_CI_result <- sub_result[,.(var_total_effect = mean(var_total_effect), sub_CI1 = quantile(sub_GCTA_total, lower, na.rm = TRUE), sub_CI2 = quantile(sub_GCTA_total, upper, na.rm = TRUE)), by = i]
+sub_CI_result[,sub_CI_length := sub_CI2 - sub_CI1]
+sub_CI_result[, coverage := (var_total_effect >= sub_CI1) & (var_total_effect <= sub_CI2)]
+sub_CI_coverage_rate <- sub_CI_result[,mean(coverage)]
+sub_CI_length_mean <- sub_CI_result[, mean(sub_CI_length)]
+full_CI_length <- sub_result[, (quantile(GCTA_total, upper)-quantile(GCTA_total, lower))]
 summary_list <- append(summary_list, list(sub_CI_length_mean=sub_CI_length_mean, 
                                           sub_CI_coverage_rate = sub_CI_coverage_rate, 
                                           full_CI_length = full_CI_length))

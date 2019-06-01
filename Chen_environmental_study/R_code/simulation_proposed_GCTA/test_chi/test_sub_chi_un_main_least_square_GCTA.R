@@ -20,7 +20,7 @@ seed_coef <- 1014
 # steup parameters
 
 # data generation
-n_total <- 1000
+n_total <- 528
 dist <- "chi"
 generate_data <- generate_chi
 structure <- "un"
@@ -31,7 +31,7 @@ p <- dim(pre_cor)[1]
 combine <- FALSE
 est <- "main"
 kernel <- least_square_kernel
-kernel_args <- NULL
+kernel_args <- list(decor = FALSE)
 kernel_name <- "least_square_kernel"
 kernel_result_col_names <- col_names_least_square
 

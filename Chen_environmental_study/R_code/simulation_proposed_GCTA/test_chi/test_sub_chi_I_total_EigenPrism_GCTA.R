@@ -20,7 +20,7 @@ seed_coef <- 1014
 # steup parameters
 
 # data generation
-n_total <- 700
+n_total <- 1000
 dist <- "chi"
 generate_data <- generate_chi
 structure <- "I"
