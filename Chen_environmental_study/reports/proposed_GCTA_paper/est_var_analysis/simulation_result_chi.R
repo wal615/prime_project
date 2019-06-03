@@ -285,7 +285,7 @@ sink()
 #############################################################################################################################
 ## least + GCTA total
 #############################################################################################################################
-result_path <- "result_list_fixed_sub_chi_structure_un_main_0.5_inter_0.1_n_2000_p_33_dim_red_coeff__subpro_0.5_iter_100_nsub_200_least_square_kernel_GCTA_kernel_est_total"
+result_path <- "result_list_fixed_sub_chi_structure_I_main_0.5_inter_0.1_n_2000_p_33_dim_red_coeff__subpro_0.5_iter_100_nsub_200_least_square_kernel_GCTA_kernel_est_total"
 file_list_all <- list.files(paste0("./", result_path, "/")) %>% paste0(paste0("./", result_path, "/"),.)
 file_list <- file_list_all[grep(x = file_list_all, pattern = "sub_sampling",perl = TRUE)]
 sub_result <- lapply(file_list, function (x) {read.csv(x, header = TRUE, stringsAsFactors = FALSE)}) %>% rbindlist(., fill = TRUE)

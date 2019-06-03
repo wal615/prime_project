@@ -1,0 +1,41 @@
+[[1]]
+[1] "result_list_fixed_sub_chi_structure_I_main_0.5_inter_0_n_1000_p_33_dim_red_coeff__subpro_0.5_iter_100_nsub_200_EigenPrism_kernel_GCTA_kernel_est_main"
+
+$true_value
+   mean_main_true mean_inter_true mean_cov_true mean_total_true
+1:       97.70243               0             0        97.70243
+
+$method
+[1] "============EgenPrism==========="
+
+$full_data
+   mean_main_full var_main_full
+1:       98.14488      5.487321
+
+$sub_data
+   mean_main_submean var_main_submean var_main_sub sub_NA
+1:          98.28004         5.785456      24.7869   1.62
+
+$Eigen_CI
+     EigenPrism_CI_length_mean EigenPrism_CI_coverage_rate
+[1,]                  110.2325                           1
+
+$sub_CI
+    sub_CI_length_mean sub_coverage_rate full_CI_length
+90%           12.66292                 1       5.769934
+
+$method
+[1] "============GCTA==========="
+
+$full_data
+   mean_main_full mean_inter_full var_main_full var_inter_full
+1:       97.60126               0      5.628213              0
+
+$sub_data
+   mean_main_submean mean_inter_submean var_main_submean var_inter_submean var_main_sub var_inter_sub sub_NA
+1:          97.55509                  0         5.724812                 0     25.02274             0      0
+
+$sub_CI
+    sub_CI_length_mean sub_CI_rate full_CI_length
+90%           12.70871           1       5.835743
+

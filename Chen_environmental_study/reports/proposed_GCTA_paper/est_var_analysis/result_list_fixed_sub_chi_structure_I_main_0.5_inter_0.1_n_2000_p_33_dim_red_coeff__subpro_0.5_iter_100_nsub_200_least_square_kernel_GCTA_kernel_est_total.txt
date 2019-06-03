@@ -1,0 +1,39 @@
+[[1]]
+[1] "result_list_fixed_sub_chi_structure_I_main_0.5_inter_0.1_n_2000_p_33_dim_red_coeff__subpro_0.5_iter_100_nsub_200_least_square_kernel_GCTA_kernel_est_total"
+
+$true_value
+   mean_main_true mean_inter_true mean_cov_true mean_total_true
+1:       97.62351        13.64248    -0.1753854        110.9152
+
+$method
+[1] "============Least_square==========="
+
+$true_value
+   mean_total_full
+1:        111.5317
+
+$sub_data
+   mean_total_submean var_total_submean var_total_sub sub_NA
+1:           111.4277          18.89205      30.80902      0
+
+$sub_coverage_rate
+[1] 0.89
+
+$sub_CI_length_mean
+[1] 14.03869
+
+$method
+[1] "============GCTA==========="
+
+$full_data
+   mean_total_full mean_inter_full var_total_full var_inter_full
+1:        111.8271               0       6.179938              0
+
+$sub_data
+   mean_total_submean mean_inter_submean var_total_submean var_inter_submean var_total_sub var_inter_sub sub_NA
+1:            112.765                  0          8.329135                 0       23.7757             0   0.03
+
+$sub_CI
+    sub_CI_length_mean sub_CI_rate full_CI_length
+90%           12.35279        0.91       6.048685
+

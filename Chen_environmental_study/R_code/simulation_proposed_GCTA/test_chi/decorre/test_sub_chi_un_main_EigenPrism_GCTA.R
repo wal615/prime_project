@@ -20,7 +20,7 @@ seed_coef <- 1014
 # steup parameters
 
 # data generation
-n_total <- 528/2
+n_total <- 528
 dist <- "chi"
 generate_data <- generate_chi
 structure <- "un"
@@ -42,8 +42,10 @@ kernel_name <- append(kernel_name,"GCTA_kernel") %>% paste(.,collapse = "_")
 kernel_result_col_names_2 <- col_names_GCTA
 
 # dim_reduction
-dim_red_method <- SVD_dim_reduction
-dim_red_args <- list(reduce_coef = 0.9)
+# dim_red_method <- SVD_dim_reduction
+# dim_red_args <- list(reduce_coef = 0.9)
+dim_red_method <- NULL
+dim_red_args <- NULL
 
 # coef
 main_fixed_var <- 0.5
