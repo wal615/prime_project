@@ -16,7 +16,7 @@ lower <- 0.1
 #############################################################################################################################
 ## Eg + GCTA main
 #############################################################################################################################
-result_path <- "result_list_fixed_sub_chi_structure_un_main_0.5_inter_0_n_264_p_33_dim_red_coeff__subpro_0.5_iter_100_nsub_200_EigenPrism_kernel_GCTA_kernel_est_main"
+result_path <- "result_list_fixed_sub_chi_structure_un_main_0.5_inter_0_n_528_p_33_dim_red_coeff__subpro_0.5_iter_100_nsub_200_EigenPrism_kernel_GCTA_kernel_est_main"
 file_list_all <- list.files(paste0("./", result_path, "/")) %>% paste0(paste0("./", result_path, "/"),.)
 file_list <- file_list_all[grep(x = file_list_all, pattern = "sub_sampling",perl = TRUE)]
 sub_result <- lapply(file_list, function (x) {read.csv(x, header = TRUE, stringsAsFactors = FALSE)}) %>% rbindlist(., fill = TRUE)
@@ -114,7 +114,7 @@ sink()
 #############################################################################################################################
 ## Eg + GCTA total
 #############################################################################################################################
-result_path <- "result_list_fixed_sub_chi_structure_un_main_0.5_inter_0.1_n_528_p_33_dim_red_coeff_0.9_subpro_0.5_iter_100_nsub_200_EigenPrism_kernel_GCTA_kernel_est_total/"
+result_path <- "result_list_fixed_sub_chi_structure_un_main_0.5_inter_0.1_n_264_p_33_dim_red_coeff_0.9_subpro_0.5_iter_100_nsub_200_EigenPrism_kernel_GCTA_kernel_est_total"
 file_list_all <- list.files(paste0("./", result_path, "/")) %>% paste0(paste0("./", result_path, "/"),.)
 file_list <- file_list_all[grep(x = file_list_all, pattern = "sub_sampling",perl = TRUE)]
 sub_result <- lapply(file_list, function (x) {read.csv(x, header = TRUE, stringsAsFactors = FALSE)}) %>% rbindlist(., fill = TRUE)

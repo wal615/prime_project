@@ -17,7 +17,7 @@ EigenPrism_kernel <- function(...){
   }
   fit[1:3]
 }
-col_names_Eigen <- c("Eigen_main", "CI1", "CI2")
+col_names_Eigen <- c("EigenPrism_main", "EigenPrism_CI1","EigenPrism_CI2")
 
 least_square_kernel <- function(...){
   args <- list(...)

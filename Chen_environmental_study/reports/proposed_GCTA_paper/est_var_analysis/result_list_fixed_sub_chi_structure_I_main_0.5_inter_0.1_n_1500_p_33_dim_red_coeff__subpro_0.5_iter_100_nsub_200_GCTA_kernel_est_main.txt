@@ -1,3 +1,0 @@
-[[1]]
-[1] "result_list_fixed_sub_chi_structure_I_main_0.5_inter_0.1_n_1500_p_33_dim_red_coeff__subpro_0.5_iter_100_nsub_200_GCTA_kernel_est_main"
-
