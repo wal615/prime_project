@@ -153,6 +153,8 @@ simulation_var_est_fn <- function(kernel = GCTA_kernel,
                                   n_sub,
                                   pro,
                                   bs,
+                                  rho_e,
+                                  emp_n = 10^5,
                                   uncorr_method = NULL,
                                   uncorr_args = NULL,
                                   dim_red_method = NULL,
@@ -166,6 +168,11 @@ simulation_var_est_fn <- function(kernel = GCTA_kernel,
     foreach::registerDoSEQ() 
   else 
     doParallel::registerDoParallel(cores = cores) # setting cores
+  # check some arguments
+  if(bs == "leave-1" & n_sub != gene_data_args$n){
+    warning("n_sub has to be same as the number of observation")
+    n_sub <- gene_data_args$n
+  }
   
   # generate coefficients
   if(is.null(gene_coeff_args)){
@@ -177,18 +184,18 @@ simulation_var_est_fn <- function(kernel = GCTA_kernel,
   betam_fixed <- generate_main(p, gene_coeff_args)
   # Generate interaction fixed gammas
   betai_fixed <- generate_inter(p, gene_coeff_args)
-  if(gene_data_args$structure != "I")
-    betai_fixed <- betai_fixed/5 # modfied the interaction effect to get consistent interaction effects
-  
+
   # Calculate the empirical covariance
   gene_data_args_emp <- gene_data_args
-  gene_data_args_emp$n <- 10^5
+  gene_data_args_emp$n <- emp_n
   x_emp_raw <- do.call(generate_data, gene_data_args_emp) 
   x_emp <- gene_model_data(x_emp_raw, p)
   sigma_main_emp <- var(x_emp$b_m)
   sigma_inter_emp <- var(x_emp$b_i)
   sigma_cov_emp <- cov(x_emp$b_m, x_emp$b_i)
   sigma_total_emp <- cbind(x_emp$b_m, x_emp$b_i) %>% var(.)
+  
+  # check the difference of empirical sigma and true sigma
   if (gene_data_args_emp$structure == "un"){
     if (attributes(x_emp_raw)$x_dist == "chi")
       sigma_main_approx <- mean(abs(sigma_main_emp - (gene_data_args_emp$pre_cor[[1]])^2))
@@ -225,22 +232,36 @@ simulation_var_est_fn <- function(kernel = GCTA_kernel,
     betam[sparse_index$index_main] <- 0
     betai[sparse_index$index_inter] <- 0
     
+    # rescale the magnitude of beta's
+      sigma_main_x <- var(b_gene_model$b_m)
+      sigma_inter_x <- var(b_gene_model$b_i)
+      sigma_total_x <- var(cbind(b_gene_model$b_m,b_gene_model$b_i))
+      if(combine == FALSE){
+        betam <- as.numeric(sqrt(10)/sqrt(t(betam)%*%sigma_main_x%*%betam))*betam # as.numieric is to transform from array to vector
+      } else {
+        betam <- as.numeric(sqrt(8)/sqrt(t(betam)%*%sigma_main_x%*%betam))*betam
+        betai <- as.numeric(sqrt(2)/sqrt(t(betai)%*%sigma_inter_x%*%betai))*betai
+        betat <- c(betam,betai)
+        betat <- as.numeric(sqrt(10)/sqrt(t(betat)%*%sigma_total_x%*%betat))*betat
+        betam <- betat[1:length(betam)]
+        betai <- betat[-(1:length(betam))]
+      }
+    
     # Generate the signals
     signalm <- b_gene_model$b_m%*%betam
     signali <- b_gene_model$b_i%*%betai    
       
-    
     # record all the variance 
     result_tmp[,1] <- t(betam)%*%sigma_main_emp%*%betam
     result_tmp[,2] <- t(betai)%*%sigma_inter_emp%*%betai
     result_tmp[,3] <- t(betam)%*%sigma_cov_emp%*%betai
     betat <- c(betam, betai)
     result_tmp[,4] <- t(betat)%*%sigma_total_emp%*%betat
-    # Generate health outcome given fixed random effects
-    y <- signalm+signali+rnorm(length(signalm),sd=4)
     
+    # Generate y given fixed random effects
+    sigma_e <- sqrt(10*((1-rho_e)/rho_e))
+    y <- signalm+signali+rnorm(length(signalm),sd=sigma_e)
     ## estimating model
-    
     # generate data for esitmating
     b_est_model <- est_model_data(b_raw,
                                   y,
@@ -268,7 +289,8 @@ simulation_var_est_fn <- function(kernel = GCTA_kernel,
                                            b_raw = b_raw), 
                                pro = pro,
                                bs = bs,
-                               n = length(y))
+                               n = length(y),
+                               iteration = i)
       
       b_tmp <- est_model_data(sub_data$b_raw,
                               sub_data$y,
@@ -299,6 +321,8 @@ simulation_var_est_fn <- function(kernel = GCTA_kernel,
                                             n = nrow(b_raw),
                                             pro = pro,
                                             n_sub = n_sub,
+                                            rho_e = rho_e,
+                                            emp_n = emp_n,
                                             inter_std = inter_std,
                                             sigma_main_approx = sigma_main_approx)))
     additional <- additional[unique(names(additional))] # remove duplicated attrs

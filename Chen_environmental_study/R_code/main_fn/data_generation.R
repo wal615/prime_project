@@ -263,11 +263,13 @@ generate_real_test <- function(data_path, pro, data_name=NULL, resp_name = "y", 
 }
 
 
-generate_sub <- function(data, pro, n, bs = FALSE) {
-  if(bs == TRUE) {
+generate_sub <- function(data, pro, n, bs = c("leave-d","leave-1","bs")[1], iteration = NULL) {
+  if(bs == "bs") {
     index <- sample(1:n, replace = TRUE)
-  } else {
+  } else if (bs == "leave-d") {
     index <- sample(1:n, round(pro*n,0), replace = FALSE)
+  } else if (bs == "leave-1") {
+    index <- (1:n)[-iteration]
   }
   sub_data <- lapply(data, FUN = function(x) x[index, ,drop = FALSE])
   sub_data

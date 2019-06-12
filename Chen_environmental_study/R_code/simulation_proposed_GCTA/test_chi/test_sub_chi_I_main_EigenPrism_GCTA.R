@@ -3,7 +3,7 @@ setwd("~/dev/projects/Chen_environmental_study/")
 R.utils::sourceDirectory("./R_code/main_fn",modifiedOnly = FALSE)
 source("./R_code/simulation_proposed_GCTA/local_helpers.R")
 data_path <- "~/dev/projects/Chen_environmental_study/R_code/data/pcb_99_13_no_missing.csv"
-save_path <- "~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/var_est/"
+save_path <- "~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/var_est/non_decore/"
 library(sas7bdat)
 library(MASS)
 library(tidyverse)
@@ -12,12 +12,16 @@ library(doRNG)
 library(doParallel)
 library(gtools) # for rbind based on columns
 
-cores <- 40
+cores <- 20
 n_iter <- 100
-n_sub <- 200
+n_sub <- 528
 seed_loop <- 1234
 seed_coef <- 1014
 # steup parameters
+
+# sub_sampling
+pro <- 101
+bs <- "leave-1"
 
 # data generation
 n_total <- 528
@@ -54,10 +58,6 @@ gene_coeff_args <- list(main_fixed_var = main_fixed_var,
                         main_random_var = main_random_var,
                         inter_fixed_var = inter_fixed_var,
                         inter_random_var = inter_random_var)
-
-# sub_sampling
-pro <- 0.5
-bs <- FALSE
 
 # generate args list
 args_all <- expand.grid(structure = structure, p = p, n = n_total, pre_cor = list(pre_cor))
