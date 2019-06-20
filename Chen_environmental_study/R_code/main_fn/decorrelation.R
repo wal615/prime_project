@@ -13,7 +13,6 @@ uncorr_fn <- function(input_data,
     args <- append(list(x = input_data), dim_red_args)
     input_data <- do.call(dim_red_method, args)
   }
-  
   # decorrelation
   args <- append(list(input_data = input_data), uncorr_args) # generate the args for the uncorrelation function
   res <- do.call(uncorr_method, args)

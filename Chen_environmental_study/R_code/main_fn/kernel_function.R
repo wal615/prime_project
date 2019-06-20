@@ -1,19 +1,26 @@
 GCTA_kernel <- function(...) {
   args <- list(...)
-  fit <- Yang(y = args$y, x = args$b_final, interact = args$interact)
-  fit_sub <- Yang(y = args$y, x = args$s_final, interact = args$interact)
-  c(fit$G, fit$RACT, fit_sub$G, fit_sub$RACT)
+  if(args$decor == TRUE){
+    fit <- Yang(y = args$y, 
+                x = args$s_final, 
+                interact = args$interact)  
+  } else {
+    fit <- Yang(y = args$y, 
+                x = args$b_final, 
+                interact = args$interact)
+  }
+  c(fit$G, fit$RACT)
 }
-col_names_GCTA <- c("GCTA_main", "GCTA_inter", "prop_main", "prop_inter")
+col_names_GCTA <- c("GCTA_main", "GCTA_inter")
 
 EigenPrism_kernel <- function(...){
   args <- list(...)
   if(args$decor == TRUE){
-    fit <- EigenPrism_m(y = args$y, 
-                        X = args$s_final)  
+    fit <- EigenPrism(y = args$y, 
+                      X = args$s_final)  
   } else {
-    fit <- EigenPrism_m(y = args$y, 
-                        X = args$b_final)  
+    fit <- EigenPrism(y = args$y, 
+                      X = args$b_final)  
   }
   fit[1:3]
 }

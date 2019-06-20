@@ -1,6 +1,6 @@
 library(cccp)
 
-EigenPrism <- function(y,X,invsqrtSig=NULL,alpha=0.05,target='beta2',zero.ind=c(),diagnostics=T){
+EigenPrism <- function(y,X,invsqrtSig=NULL,alpha=0.2,target='beta2',zero.ind=c(),diagnostics=F){
   # Author: Lucas Janson (statweb.stanford.edu/~ljanson)
   # Runs EigenPrism procedure for estimating and generating confidence
   #  intervals for variance components in high-dimensional linear model:
@@ -33,7 +33,7 @@ EigenPrism <- function(y,X,invsqrtSig=NULL,alpha=0.05,target='beta2',zero.ind=c(
 
   # Transform y and X to proper form
   y = y-mean(y)
-  X = scale(X,T,T)*n/(n-1)
+  # X = scale(X,T,T)*n/(n-1)
   if(!is.null(invsqrtSig)) X = X%*%invsqrtSig
 
   # Take singular value decomposition and rescale singular values
@@ -58,7 +58,6 @@ EigenPrism <- function(y,X,invsqrtSig=NULL,alpha=0.05,target='beta2',zero.ind=c(
   opt = cps(prob,ctrl(trace=F))
   v = getx(opt)[1]
   w = getx(opt)[-1]
-  
   # Compute estimate and y's variance
   est = sum(w*(t(svd$u)%*%y)^2)
   yvar = sum(y^2)/n
@@ -71,9 +70,12 @@ EigenPrism <- function(y,X,invsqrtSig=NULL,alpha=0.05,target='beta2',zero.ind=c(
   }
   
   # Generate list with results
-  result=list()
-  result$estimate = est
-  result$CI = CI
+  # result=list()
+  # result$estimate = est
+  # result$CI = CI
+  result= rep(NA,3)
+  result[1] = est
+  result[2:3] = CI
   
   # Generate diagnostic plots
   if(diagnostics){
@@ -108,7 +110,7 @@ EigenPrism <- function(y,X,invsqrtSig=NULL,alpha=0.05,target='beta2',zero.ind=c(
 }
 
 
-EigenPrism_m <- function(y,X,invsqrtSig=NULL,alpha=0.05,target='beta2',zero.ind=c(),diagnostics=F){
+EigenPrism_m <- function(y,X,invsqrtSig=NULL,alpha=0.2,target='beta2',zero.ind=c(),diagnostics=F){
   # Author: Lucas Janson (statweb.stanford.edu/~ljanson)
   # Runs EigenPrism procedure for estimating and generating confidence
   #  intervals for variance components in high-dimensional linear model:
@@ -140,8 +142,8 @@ EigenPrism_m <- function(y,X,invsqrtSig=NULL,alpha=0.05,target='beta2',zero.ind=
   p = ncol(X)
 
   # Transform y and X to proper formQ
-  y = y-mean(y)
-  X = scale(X,T,T)*n/(n-1)
+  # y = y-mean(y)
+  # X = scale(X,T,T)*n/(n-1)
   if(!is.null(invsqrtSig)) X = X%*%invsqrtSig
   
   # Take singular value decomposition and rescale singular values

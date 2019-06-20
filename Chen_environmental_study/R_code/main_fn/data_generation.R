@@ -275,33 +275,43 @@ generate_sub <- function(data, pro, n, bs = c("leave-d","leave-1","bs")[1], iter
   sub_data
 }
 
-gene_model_data <- function(b_raw, p){
+gene_model_data <- function(b_raw, p, combine = FALSE){
   # Standardized main covariates
-  b <- b_raw %>% std_fn(.) %>% add_inter(.)
-  b_m <- b[,1:p, drop = FALSE]
-  b_i <- b[,-(1:p), drop = FALSE]
+  b_m <- b_raw %>% std_fn(.)
+  b_i <- 0
+  if(combine == TRUE){
+    b <- b_raw %>% std_fn(.) %>% add_inter(.)
+    b_m <- b[,1:p, drop = FALSE]
+    b_i <- b[,-(1:p), drop = FALSE]
+  }
   list(b_m = b_m,
        b_i = b_i)
 }
 
-est_model_data <- function(b_raw, y, p, inter_std, combined, uncorr_method, uncorr_args, dim_red_method, dim_red_args){
+est_model_data <- function(b_raw, y, p, inter_std, combined, uncorr_method, uncorr_args, dim_red_method, dim_red_args, uncorre = FALSE){
   # Standardized main covariates
-  b <- b_raw %>% std_fn(.) %>% add_inter(.)
-  b_m <- b[,1:p, drop = FALSE]
-  b_i <- b[,-(1:p), drop = FALSE]
-  
-  # center the main/interaction terms
-  if(inter_std == TRUE)
-    b_i <- std_fn(b = b_i)
+  b_m <- b_raw %>% std_fn(.)
   
   if(combine == TRUE){
+    b <- b_raw %>% std_fn(.) %>% add_inter(.)
+    b_m <- b[,1:p, drop = FALSE]
+    b_i <- b[,-(1:p), drop = FALSE]
+    # center the main/interaction terms
+    if(inter_std == TRUE){
+      b_i <- std_fn(b = b_i)
+    }
     b_final <- cbind(b_m, b_i)
   } else {
     b_final <- b_m
   }
 
   # Uncorrelated data
-  s_final <- uncorr_fn(b_final, uncorr_method, uncorr_args, dim_red_method, dim_red_args)
+  if(uncorre == TRUE) {
+    s_final <- uncorr_fn(b_final, uncorr_method, uncorr_args, dim_red_method, dim_red_args)
+  } else {
+    s_final <- NA
+  }
+  
   
   list(b_final = b_final,
        s_final = s_final,
