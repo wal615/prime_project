@@ -12,9 +12,9 @@ library(doRNG)
 library(doParallel)
 library(gtools) # for rbind based on columns
 
-cores <- 30
-n_iter <- 10^3
-n_sub <- 200
+cores <- 1
+n_iter <- 1
+n_sub <- 2
 seed_loop <- 1234
 seed_coef <- 1014
 # steup parameters

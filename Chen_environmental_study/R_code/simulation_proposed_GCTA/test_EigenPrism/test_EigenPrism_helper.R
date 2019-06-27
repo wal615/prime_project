@@ -74,7 +74,8 @@ simulation_var_est_fn <- function(kernel = GCTA_kernel,
     
     # rescale the magnitude of beta's
     sigma_main <- diag(length(betam))
-    betam <- as.numeric(sqrt(p)/sqrt(t(betam)%*%sigma_main%*%betam))*betam # as.numieric is to transform from array to vector
+    true_value <- rho_e*p
+    betam <- as.numeric(sqrt(true_value)/sqrt(t(betam)%*%sigma_main%*%betam))*betam # as.numieric is to transform from array to vector
     
     # Generate the signals
     signalm <- b_gene_model$b_m%*%betam
@@ -83,7 +84,8 @@ simulation_var_est_fn <- function(kernel = GCTA_kernel,
     result_tmp[,1] <- t(betam)%*%sigma_main%*%betam
 
     # Generate y given fixed random effects
-    sigma_e <- sqrt(p*((1-rho_e)/rho_e))
+    # sigma_e <- sqrt(p*((1-rho_e)/rho_e))
+    sigma_e <- sqrt(p - true_value)
     y <- signalm+rnorm(length(signalm),sd=sigma_e)
     ## estimating model
     # generate data for esitmating
@@ -98,12 +100,17 @@ simulation_var_est_fn <- function(kernel = GCTA_kernel,
     # Call the original GCTA method 
     args <- append(b_est_model, kernel_args) 
     result_tmp[,(2:(1+length(kernel_result_col_names)))] <- do.call(kernel, args)
-    result_tmp
+    result_tmp 
   }
   
   
   # combined the all the attributes to b so we could plot them by the attributes
   additional <- list()
+  
+  args_tmp <- gene_data_args
+  args_tmp$n <- 2
+  b_raw <- do.call(generate_data, args_tmp)
+  
   additional <- append(additional, c(as.list(gene_data_args), 
                                      as.list(uncorr_args), 
                                      gene_coeff_args, 
@@ -112,7 +119,8 @@ simulation_var_est_fn <- function(kernel = GCTA_kernel,
                                      list(combine = combine, 
                                           n = n,
                                           rho_e = rho_e,
-                                          inter_std = inter_std)))
+                                          inter_std = inter_std,
+                                          dist = attributes(b_raw)$x_dist)))
   additional <- additional[unique(names(additional))] # remove duplicated attrs
   additional$pre_cor <- NULL # pre_cor is a covariance matrix so don't need to carry it to the output
   attributes(result_raw)$rng <- NULL # rm the random sampling info

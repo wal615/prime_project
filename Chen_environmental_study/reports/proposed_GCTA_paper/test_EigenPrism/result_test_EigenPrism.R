@@ -12,6 +12,7 @@ var <- function(x, ..., na.rm = TRUE) {
   stats::var(x, ..., na.rm = na.rm)
 }
 
+save_path <- "~/dev/GCTA-on-Environmental-data/draft/compare EigenPrism and GCTA method/fig/"
 upper = 0.9
 lower = 0.1
 z_p <-qnorm(lower, lower.tail = F)
@@ -28,7 +29,7 @@ summary_result <- result_list[, .(Eg_mean = mean(EigenPrism_main, na.rm = TRUE),
                                   Eg_mean_CI_length = CI_length(EigenPrism_main, upper = upper, lower = lower),
                                   Eg_mean_CI_z_length = 2 * sd(EigenPrism_main, na.rm = TRUE)*z_p,
                                   Eg_CI_length = mean(EigenPrism_CI2 - EigenPrism_CI1, na.rm = TRUE)), by = .(n,rho_e, p)] %>% setorder(., rho_e,n,p)
-# result_list[, test_fn(EigenPrism_main,EigenPrism_CI1,EigenPrism_CI2), by = .(n, rho_e, p)]
+summary_result[,CI_ratio := (Eg_CI_length - Eg_mean_CI_z_length)/Eg_mean_CI_z_length]
 CI_summary_result <- result_list[, .(coverage = (var_main_effect >= EigenPrism_CI1) & (var_main_effect <= EigenPrism_CI2),
                                      n =n,
                                      rho_e = rho_e,
@@ -43,6 +44,8 @@ mean_plot <- summary_result %>%
   ggtitle("Mean estimation of EigenPrism with Chi-square") +
   theme(plot.title = element_text(hjust = 0.5)) +
   theme_bw()
+ggsave(filename = paste0(save_path,"mean_plot_Chi.eps"), plot = mean_plot, dpi = 1200)
+
 
 coverage_rate_plot <- CI_coverage_rate %>%
   ggplot(., aes(x = n, y = coverage_rate, group = rho_e)) +
@@ -53,6 +56,7 @@ coverage_rate_plot <- CI_coverage_rate %>%
   ggtitle("Coverage rate of EigenPrism CI with Chi-square") +
   theme(plot.title = element_text(hjust = 0.5)) +
   theme_bw()
+ggsave(filename = paste0(save_path,"cover_rate_plot_Chi.eps"), plot = coverage_rate_plot, dpi = 1200)
 
 CI_plot <- summary_result %>%
   tidyr::gather(., c("Eg_mean_CI_z_length","Eg_CI_length"), key = "method", value = "value") %>%
@@ -63,3 +67,14 @@ CI_plot <- summary_result %>%
   ggtitle("CI widths of EigenPrism with Chi-square") +
   theme(plot.title = element_text(hjust = 0.5)) +
   theme_bw()
+ggsave(filename = paste0(save_path,"CI_plot_Chi.eps"), plot = CI_plot, dpi = 1200)
+
+CI_ratio_plot <- summary_result %>%
+  ggplot(., aes(x = n, y = CI_ratio, group = rho_e)) +
+  geom_line(aes(color = rho_e)) +
+  geom_point(aes(color = rho_e)) +
+  facet_wrap_paginate(facets = vars(p), ncol = 3 ,nrow = 1, scales = "free", labeller  = "label_both", page = 1) +
+  ggtitle("CI widths ratio of EigenPrism with Chi-square") +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme_bw()
+ggsave(filename = paste0(save_path,"CI_plot_ratio_Chi.eps"), plot = CI_ratio_plot, dpi = 1200)

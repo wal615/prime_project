@@ -2,7 +2,6 @@ options(warn = 1, error = bettertrace::stacktrace)
 setwd("~/dev/projects/Chen_environmental_study/")
 R.utils::sourceDirectory("./R_code/main_fn",modifiedOnly = FALSE)
 source("./R_code/simulation_proposed_GCTA/test_EigenPrism/test_EigenPrism_helper.R")
-data_path <- "~/dev/projects/Chen_environmental_study/R_code/data/pcb_99_13_no_missing.csv"
 save_path <- "~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/test_EigenPrism/"
 library(data.table)
 library(sas7bdat)
@@ -24,7 +23,7 @@ p <- c(500, 1000, 2000)
 # data generation
 n_total <- c(100, 500, 1000, 2000)
 dist <- "chi"
-generate_data <- generate_normal
+generate_data <- generate_chi
 structure <- "I"
 
 # est 

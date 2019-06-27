@@ -350,7 +350,7 @@ simulation_var_est_fn <- function(kernel = GCTA_kernel,
 
     # save the result
     if(!(is.null(inter_result_path))) data.frame(result_tmp, additional, i = ibrep) %>% write.csv(., 
-                                                                                                  file = paste0(inter_result_path, "rho_e_", rho_e, "_n_", nrow(b_raw), "_sub_sampling_",ibrep,".csv"), 
+                                                                                                  file = paste0(inter_result_path, "rho_e_", rho_e, "_n_", nrow(b_raw), "_pro_", pro,"_iteration_",ibrep,".csv"), 
                                                                                                   row.names = FALSE)
     paste0(ibrep, " is done at ", timestamp())
   }

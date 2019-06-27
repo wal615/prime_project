@@ -1,0 +1,3 @@
+"x_dist","structure","n","p","pro","decor","method","est_signal","true_CI_coverage_rate","true_emp_main","true_emp_inter","true_emp_cov","true_emp_total","est","var","CI_length","CI_coverage","sub_est_ave","sub_est_ave_var","sub_mean_of_var","sub_CI_length","sub_CI_coverage_rate","sub_eg_CI_length","sub_eg_CI_coverage"
+"normal","I",1000,1000,0.5,FALSE,"GCTA","main",0.8,10,0,0,0,10.377120380914,43.1046393860707,NA,NA,10.8365093362805,3.97410538706965,80.9426402447081,17.4668618969258,1,NA,NA
+"normal","I",1000,1000,0.5,FALSE,"EigenPrism","main",0.8,10,0,0,0,10.774235823154,61.8321201439899,14.7413828701855,0.844111111111111,11.935887353741,10.5859824028974,170.665470547469,21.3827950983165,1,25.5686904633522,0.836450678820491

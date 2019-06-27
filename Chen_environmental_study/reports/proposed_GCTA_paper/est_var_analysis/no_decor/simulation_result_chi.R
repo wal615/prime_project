@@ -73,11 +73,23 @@ coverage_rate_z <- function(x,true, upper, lower){
   return(true >= CI1 & true <= CI2)
 }
 
+jack_var <- function(true,x, pro = 0.5){
+  var_1 <- (true - x)^2 %>% sum(., na.rm = T)
+  var_2 <- (1 - pro)/pro * 1/length(x) * var_1
+  var_2
+}
+
+jack_correction <- function(true, x, pro = 0.5){
+  ave_1 <- mean(true - x, na.rm = T)
+  (1 - pro)/pro * ave_1^2
+}
+
 result_path <- result_list <- "result_list_fixed_sub_normal_structure_I_main_0.5_inter_0_n_100_500_1000_p_1000_rho_e_0.2_0.5_0.7_dim_red_coeff__subpro_0.5_iter_1000_nsub_200_EigenPrism_kernel_GCTA_kernel_est_main"
 file_list_all <- list.files(paste0("./", result_path, "/")) %>% paste0(paste0("./", result_path, "/"),.)
 file_list <- file_list_all[grep(x = file_list_all, pattern = "sub_sampling",perl = TRUE)]
 sub_result <- lapply(file_list, function (x) {read.csv(x, header = TRUE, stringsAsFactors = FALSE)}) %>% rbindlist(., fill = TRUE)
 sub_result[,CI_length_coverage := var_main_effect >= EigenPrism_CI1 & var_main_effect <= EigenPrism_CI2 ]
+
 # EigenPrsim
 summary_result_EigenPrism <- sub_result[, .(est_mean = mean(EigenPrism_main, na.rm = TRUE),
                                             est_var = var(EigenPrism_main, na.rm = TRUE),
@@ -88,13 +100,17 @@ summary_result_EigenPrism <- sub_result[, .(est_mean = mean(EigenPrism_main, na.
 
 sub_summary_result_EigenPrism_i <- sub_result[, .(sub_est_mean = mean(sub_EigenPrism_main, na.rm = TRUE),
                                                 sub_est_var = var(sub_EigenPrism_main, na.rm = TRUE),
+                                                sub_est_var_jack = jack_var(mean(EigenPrism_main, na.rm = T), sub_EigenPrism_main),
+                                                sub_est_var_corr = jack_correction(mean(EigenPrism_main, na.rm = T), sub_EigenPrism_main),
                                                 sub_est_mean_CI_emp_length = CI_length(sub_EigenPrism_main, upper = upper, lower = lower),
                                                 sub_est_mean_CI_emp_coverage = coverage_rate_emp(sub_EigenPrism_main, upper = upper, lower = lower, true = 10),
                                                 sub_est_mean_CI_z_length = 2 * sd(sub_EigenPrism_main, na.rm = TRUE)*z_p,
                                                 sub_est_mean_CI_z_coverage = coverage_rate_emp(sub_EigenPrism_main, upper = upper, lower = lower, true = 10),
                                                 sub_est_CI_length = mean(sub_EigenPrism_CI2 - sub_EigenPrism_CI1, na.rm = TRUE)), by = .(n,rho_e, p,i)] %>% setorder(., rho_e,n,p,i)
 sub_summary_result_EigenPrism <- sub_summary_result_EigenPrism_i[, lapply(.SD, mean), by = .(n,rho_e, p)][,i:=NULL]
-summary_final_EigenPrism <- cbind(summary_result_EigenPrism, sub_summary_result_EigenPrism, method = "EigenPrism")
+summary_final_EigenPrism <- merge(summary_result_EigenPrism, sub_summary_result_EigenPrism, by = c("n","rho_e","p"))
+summary_final_EigenPrism[,method := "EigenPrism"]
+
 # GCTA
 summary_result_GCTA <- sub_result[, .(est_mean = mean(GCTA_main, na.rm = TRUE),
                                             est_var = var(GCTA_main, na.rm = TRUE),
@@ -108,55 +124,183 @@ sub_summary_result_GCTA_i <- sub_result[, .(sub_est_mean = mean(sub_GCTA_main, n
                                                   sub_est_mean_CI_z_length = 2 * sd(sub_GCTA_main, na.rm = TRUE)*z_p,
                                                   sub_est_mean_CI_z_coverage = coverage_rate_emp(sub_GCTA_main, upper = upper, lower = lower, true = 10)), by = .(n,rho_e, p,i)] %>% setorder(., rho_e,n,p,i)
 sub_summary_result_GCTA <- sub_summary_result_GCTA_i[, lapply(.SD, mean), by = .(n,rho_e, p)][,i:=NULL]
-summary_final_GCTA <- cbind(summary_result_GCTA, sub_summary_result_GCTA, method = "GCTA")
+summary_final_GCTA <- merge(summary_result_GCTA, sub_summary_result_GCTA, by = c("n","rho_e","p"))
+summary_final_GCTA[,method:= "GCTA"]
 summary_final <- rbindlist(list(summary_final_EigenPrism, summary_final_GCTA), fill = TRUE)
+summary_final[,rho_e:= as.character(rho_e)]
+summary_final[, var_diff_ratio := (sub_est_var - est_var)/est_var]
+summary_final[, CI_diff_ratio := (sub_est_mean_CI_z_length - est_mean_CI_z_length)/sub_est_mean_CI_z_length]
+# make plots 
+save_path <- "~/dev/GCTA-on-Environmental-data/draft/compare EigenPrism and GCTA method/fig/"
+mean_plot_Eg_GCTA <- summary_final %>%
+  ggplot(., aes(x = n, y = est_mean, group = interaction(method, rho_e))) +
+  geom_line(aes(color = method, linetype = rho_e)) +
+  geom_point(aes(color = method)) +
+  facet_wrap_paginate(facets = vars(p), ncol = 3 ,nrow = 1, scales = "free", labeller  = "label_both", page = 1) +
+  ggtitle("Mean estimation of EigenPrism and GCTA with Chi-square") +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme_bw()
+ggsave(filename = paste0(save_path,"mean_plot_Eg_GCTA_Chi.eps"), plot = mean_plot_Eg_GCTA, dpi = 1200)
+
+var_plot_Eg_GCTA <- summary_final %>%
+  ggplot(., aes(x = n, y = est_var, group = interaction(method, rho_e))) +
+  geom_line(aes(color = method, linetype = rho_e)) +
+  geom_point(aes(color = method)) +
+  facet_wrap_paginate(facets = vars(p), ncol = 3 ,nrow = 1, scales = "free", labeller  = "label_both", page = 1) +
+  ggtitle("Var estimation of EigenPrism and GCTA with Chi-square") +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme_bw()
+ggsave(filename = paste0(save_path,"var_plot_Eg_GCTA_Chi.eps"), plot = var_plot_Eg_GCTA, dpi = 1200)
 
 
+mean_plot_sub_Eg_GCTA <- summary_final %>%
+  ggplot(., aes(x = n, y = sub_est_mean, group = interaction(method, rho_e))) +
+  geom_line(aes(color = method, linetype = rho_e)) +
+  geom_point(aes(color = method)) +
+  facet_wrap_paginate(facets = vars(p), ncol = 3 ,nrow = 1, scales = "free", labeller  = "label_both", page = 1) +
+  ggtitle("Mean estimation of EigenPrism and GCTA with Chi-square") +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme_bw()
+ggsave(filename = paste0(save_path,"mean_plot_sub_Eg_GCTA_Chi.eps"), plot = mean_plot_sub_Eg_GCTA, dpi = 1200)
+
+var_plot_sub_Eg_GCTA <- summary_final %>%
+  ggplot(., aes(x = n, y = var_diff_ratio, group = interaction(method, rho_e))) +
+  geom_line(aes(color = method, linetype = rho_e)) +
+  geom_point(aes(color = method)) +
+  facet_wrap_paginate(facets = vars(p), ncol = 3 ,nrow = 1, scales = "free", labeller  = "label_both", page = 1) +
+  ggtitle("Var estimation of EigenPrism and GCTA with Chi-square") +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme_bw()
+ggsave(filename = paste0(save_path,"var_plot_sub_Eg_GCTA_Chi.eps"), plot = var_plot_sub_Eg_GCTA, dpi = 1200)
 
 
+CI_plot_sub_Eg_GCTA <- summary_final %>%
+  ggplot(., aes(x = n, y = CI_diff_ratio, group = interaction(method, rho_e))) +
+  geom_line(aes(color = method, linetype = rho_e)) +
+  geom_point(aes(color = method)) +
+  facet_wrap_paginate(facets = vars(p), ncol = 3 ,nrow = 1, scales = "free", labeller  = "label_both", page = 1) +
+  ggtitle("CI widths estimation of EigenPrism and GCTA with Chi-square") +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme_bw()
+ggsave(filename = paste0(save_path,"CI_plot_sub_Eg_GCTA_Chi.eps"), plot = CI_plot_sub_Eg_GCTA, dpi = 1200)
+
+coverage_rate_plot_sub_Eg_GCTA <- summary_final %>%
+  ggplot(., aes(x = n, y = sub_est_mean_CI_z_coverage, group = interaction(method, rho_e))) +
+  geom_line(aes(color = method, linetype = rho_e)) +
+  geom_point(aes(color = method)) +
+  geom_hline(yintercept = 0.8) +
+  facet_wrap_paginate(facets = vars(p), ncol = 3 ,nrow = 1, scales = "free", labeller  = "label_both", page = 1) +
+  ggtitle("Coverage rate of EigenPrism and GCTA with Chi-square") +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme_bw()
+ggsave(filename = paste0(save_path,"rate_plot_sub_Eg_GCTA_Chi.eps"), plot = coverage_rate_plot_sub_Eg_GCTA, dpi = 1200)
 
 
-
-
-
-
-
-# total effect 
-
-result_path <- result_list <- "result_list_fixed_sub_chi_structure_I_main_0.5_inter_0.1_n_561_p_33_dim_red_coeff__subpro_0.5_iter_100_nsub_200_EigenPrism_kernel_GCTA_kernel_est_total"
+result_path <- result_list <- "result_list_fixed_sub_normal_structure_I_main_0.5_inter_0_n_500_p_1000_rho_e_0.5_dim_red_coeff__subpro_0.75_iter_1000_nsub_200_EigenPrism_kernel_GCTA_kernel_est_main"
 file_list_all <- list.files(paste0("./", result_path, "/")) %>% paste0(paste0("./", result_path, "/"),.)
 file_list <- file_list_all[grep(x = file_list_all, pattern = "sub_sampling",perl = TRUE)]
 sub_result <- lapply(file_list, function (x) {read.csv(x, header = TRUE, stringsAsFactors = FALSE)}) %>% rbindlist(., fill = TRUE)
-sub_result[,CI_length_coverage := var_total_effect >= EigenPrism_CI1 & var_total_effect <= EigenPrism_CI2 ]
+sub_result[,CI_length_coverage := var_main_effect >= EigenPrism_CI1 & var_main_effect <= EigenPrism_CI2 ]
+
 # EigenPrsim
-summary_result_EigenPrism <- sub_result[, .(est_mean = mean(EigenPrism_total, na.rm = TRUE),
-                                            est_var = var(EigenPrism_total, na.rm = TRUE),
-                                            est_mean_CI_emp_length = CI_length(EigenPrism_total, upper = upper, lower = lower),
-                                            est_mean_CI_z_length = 2 * sd(EigenPrism_total, na.rm = TRUE)*z_p,
+summary_result_EigenPrism <- sub_result[, .(est_mean = mean(EigenPrism_main, na.rm = TRUE),
+                                            est_var = var(EigenPrism_main, na.rm = TRUE),
+                                            est_mean_CI_emp_length = CI_length(EigenPrism_main, upper = upper, lower = lower),
+                                            est_mean_CI_z_length = 2 * sd(EigenPrism_main, na.rm = TRUE)*z_p,
                                             est_CI_length = mean(EigenPrism_CI2 - EigenPrism_CI1, na.rm = TRUE),
                                             est_CI_length_coverage = mean(CI_length_coverage, na.rm = TRUE)), by = .(n,rho_e, p)] %>% setorder(., rho_e,n,p)
 
-sub_summary_result_EigenPrism_i <- sub_result[, .(sub_est_mean = mean(sub_EigenPrism_total, na.rm = TRUE),
-                                                  sub_est_var = var(sub_EigenPrism_total, na.rm = TRUE),
-                                                  sub_est_mean_CI_emp_length = CI_length(sub_EigenPrism_total, upper = upper, lower = lower),
-                                                  sub_est_mean_CI_emp_coverage = coverage_rate_emp(sub_EigenPrism_total, upper = upper, lower = lower, true = 10),
-                                                  sub_est_mean_CI_z_length = 2 * sd(sub_EigenPrism_total, na.rm = TRUE)*z_p,
-                                                  sub_est_mean_CI_z_coverage = coverage_rate_emp(sub_EigenPrism_total, upper = upper, lower = lower, true = 10),
+sub_summary_result_EigenPrism_i <- sub_result[, .(sub_est_mean = mean(sub_EigenPrism_main, na.rm = TRUE),
+                                                  sub_est_var = var(sub_EigenPrism_main, na.rm = TRUE),
+                                                  sub_est_mean_CI_emp_length = CI_length(sub_EigenPrism_main, upper = upper, lower = lower),
+                                                  sub_est_mean_CI_emp_coverage = coverage_rate_emp(sub_EigenPrism_main, upper = upper, lower = lower, true = 10),
+                                                  sub_est_mean_CI_z_length = 2 * sd(sub_EigenPrism_main, na.rm = TRUE)*z_p,
+                                                  sub_est_mean_CI_z_coverage = coverage_rate_emp(sub_EigenPrism_main, upper = upper, lower = lower, true = 10),
                                                   sub_est_CI_length = mean(sub_EigenPrism_CI2 - sub_EigenPrism_CI1, na.rm = TRUE)), by = .(n,rho_e, p,i)] %>% setorder(., rho_e,n,p,i)
 sub_summary_result_EigenPrism <- sub_summary_result_EigenPrism_i[, lapply(.SD, mean), by = .(n,rho_e, p)][,i:=NULL]
-summary_final_EigenPrism <- cbind(summary_result_EigenPrism, sub_summary_result_EigenPrism, method = "EigenPrism")
-# GCTA
-summary_result_GCTA <- sub_result[, .(est_mean = mean(GCTA_total, na.rm = TRUE),
-                                      est_var = var(GCTA_total, na.rm = TRUE),
-                                      est_mean_CI_emp_length = CI_length(GCTA_total, upper = upper, lower = lower),
-                                      est_mean_CI_z_length = 2 * sd(GCTA_total, na.rm = TRUE)*z_p), by = .(n,rho_e, p)] %>% setorder(., rho_e,n,p)
+summary_final_EigenPrism <- merge(summary_result_EigenPrism, sub_summary_result_EigenPrism, by = c("n","rho_e","p"))
+summary_final_EigenPrism[,method := "EigenPrism"]
 
-sub_summary_result_GCTA_i <- sub_result[, .(sub_est_mean = mean(sub_GCTA_total, na.rm = TRUE),
-                                            sub_est_var = var(sub_GCTA_total, na.rm = TRUE),
-                                            sub_est_mean_CI_emp_length = CI_length(sub_GCTA_total, upper = upper, lower = lower),
-                                            sub_est_mean_CI_emp_coverage = coverage_rate_emp(sub_GCTA_total, upper = upper, lower = lower, true = 10),
-                                            sub_est_mean_CI_z_length = 2 * sd(sub_GCTA_total, na.rm = TRUE)*z_p,
-                                            sub_est_mean_CI_z_coverage = coverage_rate_emp(sub_GCTA_total, upper = upper, lower = lower, true = 10)), by = .(n,rho_e, p,i)] %>% setorder(., rho_e,n,p,i)
+# GCTA
+summary_result_GCTA <- sub_result[, .(est_mean = mean(GCTA_main, na.rm = TRUE),
+                                      est_var = var(GCTA_main, na.rm = TRUE),
+                                      est_mean_CI_emp_length = CI_length(GCTA_main, upper = upper, lower = lower),
+                                      est_mean_CI_z_length = 2 * sd(GCTA_main, na.rm = TRUE)*z_p), by = .(n,rho_e, p)] %>% setorder(., rho_e,n,p)
+
+sub_summary_result_GCTA_i <- sub_result[, .(sub_est_mean = mean(sub_GCTA_main, na.rm = TRUE),
+                                            sub_est_var = var(sub_GCTA_main, na.rm = TRUE),
+                                            sub_est_mean_CI_emp_length = CI_length(sub_GCTA_main, upper = upper, lower = lower),
+                                            sub_est_mean_CI_emp_coverage = coverage_rate_emp(sub_GCTA_main, upper = upper, lower = lower, true = 10),
+                                            sub_est_mean_CI_z_length = 2 * sd(sub_GCTA_main, na.rm = TRUE)*z_p,
+                                            sub_est_mean_CI_z_coverage = coverage_rate_emp(sub_GCTA_main, upper = upper, lower = lower, true = 10)), by = .(n,rho_e, p,i)] %>% setorder(., rho_e,n,p,i)
 sub_summary_result_GCTA <- sub_summary_result_GCTA_i[, lapply(.SD, mean), by = .(n,rho_e, p)][,i:=NULL]
-summary_final_GCTA <- cbind(summary_result_GCTA, sub_summary_result_GCTA, method = "GCTA")
+summary_final_GCTA <- merge(summary_result_GCTA, sub_summary_result_GCTA, by = c("n","rho_e","p"))
+summary_final_GCTA[,method:= "GCTA"]
 summary_final <- rbindlist(list(summary_final_EigenPrism, summary_final_GCTA), fill = TRUE)
+summary_final[,rho_e:= as.character(rho_e)]
+summary_final[, var_diff_ratio := (sub_est_var - est_var)/est_var]
+summary_final[, CI_diff_ratio := (sub_est_mean_CI_z_length - est_mean_CI_z_length)/sub_est_mean_CI_z_length]
+# make plots 
+save_path <- "~/dev/GCTA-on-Environmental-data/draft/compare EigenPrism and GCTA method/fig/"
+mean_plot_Eg_GCTA <- summary_final %>%
+  ggplot(., aes(x = n, y = est_mean, group = interaction(method, rho_e))) +
+  geom_line(aes(color = method, linetype = rho_e)) +
+  geom_point(aes(color = method)) +
+  facet_wrap_paginate(facets = vars(p), ncol = 3 ,nrow = 1, scales = "free", labeller  = "label_both", page = 1) +
+  ggtitle("Mean estimation of EigenPrism and GCTA with Chi-square") +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme_bw()
+ggsave(filename = paste0(save_path,"mean_plot_Eg_GCTA_Chi.eps"), plot = mean_plot_Eg_GCTA, dpi = 1200)
+
+var_plot_Eg_GCTA <- summary_final %>%
+  ggplot(., aes(x = n, y = est_var, group = interaction(method, rho_e))) +
+  geom_line(aes(color = method, linetype = rho_e)) +
+  geom_point(aes(color = method)) +
+  facet_wrap_paginate(facets = vars(p), ncol = 3 ,nrow = 1, scales = "free", labeller  = "label_both", page = 1) +
+  ggtitle("Var estimation of EigenPrism and GCTA with Chi-square") +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme_bw()
+ggsave(filename = paste0(save_path,"var_plot_Eg_GCTA_Chi.eps"), plot = var_plot_Eg_GCTA, dpi = 1200)
+
+
+mean_plot_sub_Eg_GCTA <- summary_final %>%
+  ggplot(., aes(x = n, y = sub_est_mean, group = interaction(method, rho_e))) +
+  geom_line(aes(color = method, linetype = rho_e)) +
+  geom_point(aes(color = method)) +
+  facet_wrap_paginate(facets = vars(p), ncol = 3 ,nrow = 1, scales = "free", labeller  = "label_both", page = 1) +
+  ggtitle("Mean estimation of EigenPrism and GCTA with Chi-square") +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme_bw()
+ggsave(filename = paste0(save_path,"mean_plot_sub_Eg_GCTA_Chi.eps"), plot = mean_plot_sub_Eg_GCTA, dpi = 1200)
+
+var_plot_sub_Eg_GCTA <- summary_final %>%
+  ggplot(., aes(x = n, y = var_diff_ratio, group = interaction(method, rho_e))) +
+  geom_line(aes(color = method, linetype = rho_e)) +
+  geom_point(aes(color = method)) +
+  facet_wrap_paginate(facets = vars(p), ncol = 3 ,nrow = 1, scales = "free", labeller  = "label_both", page = 1) +
+  ggtitle("Var estimation of EigenPrism and GCTA with Chi-square") +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme_bw()
+ggsave(filename = paste0(save_path,"var_plot_sub_Eg_GCTA_Chi.eps"), plot = var_plot_sub_Eg_GCTA, dpi = 1200)
+
+
+CI_plot_sub_Eg_GCTA <- summary_final %>%
+  ggplot(., aes(x = n, y = CI_diff_ratio, group = interaction(method, rho_e))) +
+  geom_line(aes(color = method, linetype = rho_e)) +
+  geom_point(aes(color = method)) +
+  facet_wrap_paginate(facets = vars(p), ncol = 3 ,nrow = 1, scales = "free", labeller  = "label_both", page = 1) +
+  ggtitle("CI widths estimation of EigenPrism and GCTA with Chi-square") +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme_bw()
+ggsave(filename = paste0(save_path,"CI_plot_sub_Eg_GCTA_Chi.eps"), plot = CI_plot_sub_Eg_GCTA, dpi = 1200)
+
+coverage_rate_plot_sub_Eg_GCTA <- summary_final %>%
+  ggplot(., aes(x = n, y = sub_est_mean_CI_z_coverage, group = interaction(method, rho_e))) +
+  geom_line(aes(color = method, linetype = rho_e)) +
+  geom_point(aes(color = method)) +
+  geom_hline(yintercept = 0.8) +
+  facet_wrap_paginate(facets = vars(p), ncol = 3 ,nrow = 1, scales = "free", labeller  = "label_both", page = 1) +
+  ggtitle("Coverage rate of EigenPrism and GCTA with Chi-square") +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme_bw()
+ggsave(filename = paste0(save_path,"rate_plot_sub_Eg_GCTA_Chi.eps"), plot = coverage_rate_plot_sub_Eg_GCTA, dpi = 1200)
