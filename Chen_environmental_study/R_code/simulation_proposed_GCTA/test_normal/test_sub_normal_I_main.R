@@ -12,15 +12,15 @@ library(doRNG)
 library(doParallel)
 library(gtools) # for rbind based on columns
 
-cores <- 1
-n_iter <- 1
-n_sub <- 2
-seed_loop <- 1234
-seed_coef <- 1014
+cores <- 20
+n_iter <- 10^3
+n_sub <- 500
+seed_loop <- 4321
+seed_coef <- 1010
 # steup parameters
 
 # sub_sampling
-pro <- c(0.1, 0.3, 0.6, 0.9)
+pro <- c(0.1,0.3,0.6,0.9)
 bs <- "leave-d"
 
 # data generation
@@ -83,6 +83,7 @@ dir.create(result_folder_path)
 result_list <- mapply(FUN = simulation_var_est_fn,
                       gene_data_args = gene_data_args_list,
                       rho_e = rho_e_list,
+                      pro = pro_list,
                       MoreArgs = list(p = p,
                                       kernel = kernel,
                                       kernel_args = kernel_args,
@@ -90,7 +91,6 @@ result_list <- mapply(FUN = simulation_var_est_fn,
                                       kernel_2 = kernel_2,
                                       kernel_args_2 = kernel_args_2,
                                       kernel_result_col_names_2 = kernel_result_col_names_2,
-                                      pro = pro,
                                       bs = bs,
                                       emp_n,
                                       combine = combine,

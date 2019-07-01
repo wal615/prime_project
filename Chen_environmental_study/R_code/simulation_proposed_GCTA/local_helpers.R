@@ -304,7 +304,6 @@ simulation_var_est_fn <- function(kernel = GCTA_kernel,
     }
     
     # generate sub_sampling effects
-
     for(i in 1:n_sub){
       sub_data <- generate_sub(data = list(y = y,
                                            b_raw = b_raw), 
@@ -349,7 +348,7 @@ simulation_var_est_fn <- function(kernel = GCTA_kernel,
     additional$pre_cor <- NULL # pre_cor is a covariance matrix so don't need to carry it to the output
 
     # save the result
-    if(!(is.null(inter_result_path))) data.frame(result_tmp, additional, i = ibrep) %>% write.csv(., 
+    if(!(is.null(inter_result_path))) data.frame(result_tmp, additional, i = ibrep, row.names = NULL, stringsAsFactors = FALSE) %>% write.csv(., 
                                                                                                   file = paste0(inter_result_path, "rho_e_", rho_e, "_n_", nrow(b_raw), "_pro_", pro,"_iteration_",ibrep,".csv"), 
                                                                                                   row.names = FALSE)
     paste0(ibrep, " is done at ", timestamp())

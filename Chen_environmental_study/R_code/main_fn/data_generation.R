@@ -267,7 +267,7 @@ generate_sub <- function(data, pro, n, bs = c("leave-d","leave-1","bs")[1], iter
   if(bs == "bs") {
     index <- sample(1:n, replace = TRUE)
   } else if (bs == "leave-d") {
-    index <- sample(1:n, round(pro*n,0), replace = FALSE)
+    index <- sample(1:n, as.numeric(round(pro*n,0)), replace = FALSE)
   } else if (bs == "leave-1") {
     index <- (1:n)[-iteration]
   }

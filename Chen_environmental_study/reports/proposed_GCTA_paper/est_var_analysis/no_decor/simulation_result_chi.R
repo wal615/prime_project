@@ -43,7 +43,6 @@ write.csv(file = "./result_list.csv",x = result_list, row.names = FALSE)
 
 
 setwd("~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/var_est/non_decore/")
-result_list <- "result_list_fixed_sub_normal_structure_I_main_0.5_inter_0_n_100_500_1000_p_1000_rho_e_0.2_0.5_0.7_dim_red_coeff__subpro_0.5_iter_1000_nsub_200_EigenPrism_kernel_GCTA_kernel_est_main"
 args_table <- args_table <- mapply(FUN = result_args_generate, long_name =result_list, SIMPLIFY = FALSE) %>% rbindlist(.) 
 result_list <- mapply(FUN = generate_result, 
                       result_path = args_table[,result_list_path],
@@ -73,18 +72,31 @@ coverage_rate_z <- function(x,true, upper, lower){
   return(true >= CI1 & true <= CI2)
 }
 
-jack_var <- function(true,x, pro = 0.5){
-  var_1 <- (true - x)^2 %>% sum(., na.rm = T)
-  var_2 <- (1 - pro)/pro * 1/length(x) * var_1
+jack_var <- function(x, pro = 0.5){
+  x_m <- mean(x, na.rm = T)
+  var_1 <- (x_m - x)^2 %>% sum(., na.rm = T)
+  if(pro == 101){
+    var_2 <-  (length(x) -1) * 1/length(x) * var_1
+  } else {
+    var_2 <- pro/(1-pro) * 1/length(x) * var_1
+  }
   var_2
 }
 
-jack_correction <- function(true, x, pro = 0.5){
-  ave_1 <- mean(true - x, na.rm = T)
-  (1 - pro)/pro * ave_1^2
+sub_CI_lenght <- function(x, pro = 0.5, z_p){
+  sd <- sqrt(jack_var(x, pro))
+  2 * sd *z_p
 }
 
-result_path <- result_list <- "result_list_fixed_sub_normal_structure_I_main_0.5_inter_0_n_100_500_1000_p_1000_rho_e_0.2_0.5_0.7_dim_red_coeff__subpro_0.5_iter_1000_nsub_200_EigenPrism_kernel_GCTA_kernel_est_main"
+sub_coverage_rate_z <- function(x,true, upper, lower,pro){
+  z_p <-qnorm(lower, lower.tail = F)
+  sd <- jack_var(x = x,pro = pro) %>% sqrt(.)
+  CI1 <- mean(x,rm.na = T) - sd*z_p
+  CI2 <- mean(x,rm.na = T) + sd*z_p
+  return(true >= CI1 & true <= CI2)
+}
+
+result_path <- "result_list_fixed_sub_chi_structure_I_main_0.5_inter_0_n_100_500_1000_p_1000_rho_e_0.2_0.5_0.7_dim_red_coeff__subpro_0.5_iter_1000_nsub_200_EigenPrism_kernel_GCTA_kernel_est_main"
 file_list_all <- list.files(paste0("./", result_path, "/")) %>% paste0(paste0("./", result_path, "/"),.)
 file_list <- file_list_all[grep(x = file_list_all, pattern = "sub_sampling",perl = TRUE)]
 sub_result <- lapply(file_list, function (x) {read.csv(x, header = TRUE, stringsAsFactors = FALSE)}) %>% rbindlist(., fill = TRUE)
@@ -96,40 +108,37 @@ summary_result_EigenPrism <- sub_result[, .(est_mean = mean(EigenPrism_main, na.
                                             est_mean_CI_emp_length = CI_length(EigenPrism_main, upper = upper, lower = lower),
                                             est_mean_CI_z_length = 2 * sd(EigenPrism_main, na.rm = TRUE)*z_p,
                                             est_CI_length = mean(EigenPrism_CI2 - EigenPrism_CI1, na.rm = TRUE),
-                                            est_CI_length_coverage = mean(CI_length_coverage, na.rm = TRUE)), by = .(n,rho_e, p)] %>% setorder(., rho_e,n,p)
+                                            est_CI_length_coverage = mean(CI_length_coverage, na.rm = TRUE)), by = .(n,rho_e, p, pro)] %>% setorder(., rho_e,n,p,pro)
 
 sub_summary_result_EigenPrism_i <- sub_result[, .(sub_est_mean = mean(sub_EigenPrism_main, na.rm = TRUE),
-                                                sub_est_var = var(sub_EigenPrism_main, na.rm = TRUE),
-                                                sub_est_var_jack = jack_var(mean(EigenPrism_main, na.rm = T), sub_EigenPrism_main),
-                                                sub_est_var_corr = jack_correction(mean(EigenPrism_main, na.rm = T), sub_EigenPrism_main),
-                                                sub_est_mean_CI_emp_length = CI_length(sub_EigenPrism_main, upper = upper, lower = lower),
-                                                sub_est_mean_CI_emp_coverage = coverage_rate_emp(sub_EigenPrism_main, upper = upper, lower = lower, true = 10),
-                                                sub_est_mean_CI_z_length = 2 * sd(sub_EigenPrism_main, na.rm = TRUE)*z_p,
-                                                sub_est_mean_CI_z_coverage = coverage_rate_emp(sub_EigenPrism_main, upper = upper, lower = lower, true = 10),
-                                                sub_est_CI_length = mean(sub_EigenPrism_CI2 - sub_EigenPrism_CI1, na.rm = TRUE)), by = .(n,rho_e, p,i)] %>% setorder(., rho_e,n,p,i)
-sub_summary_result_EigenPrism <- sub_summary_result_EigenPrism_i[, lapply(.SD, mean), by = .(n,rho_e, p)][,i:=NULL]
-summary_final_EigenPrism <- merge(summary_result_EigenPrism, sub_summary_result_EigenPrism, by = c("n","rho_e","p"))
+                                                sub_est_var_jack = jack_var(sub_EigenPrism_main, pro = pro),
+                                                sub_est_mean_CI_z_length = sub_CI_lenght(sub_EigenPrism_main, pro = pro,z_p = z_p),
+                                                sub_est_mean_CI_z_coverage = sub_coverage_rate_z(sub_EigenPrism_main, 10, upper = upper, lower = lower, pro = pro)), 
+                                              by = .(n,rho_e, p,i,pro)] %>% setorder(., rho_e,n,p,i,pro)
+sub_summary_result_EigenPrism <- sub_summary_result_EigenPrism_i[, lapply(.SD, mean), by = .(n,rho_e, p,pro)][,i:=NULL]
+summary_final_EigenPrism <- merge(summary_result_EigenPrism, sub_summary_result_EigenPrism, by = c("n","rho_e","p","pro"))
 summary_final_EigenPrism[,method := "EigenPrism"]
 
 # GCTA
 summary_result_GCTA <- sub_result[, .(est_mean = mean(GCTA_main, na.rm = TRUE),
                                             est_var = var(GCTA_main, na.rm = TRUE),
                                             est_mean_CI_emp_length = CI_length(GCTA_main, upper = upper, lower = lower),
-                                            est_mean_CI_z_length = 2 * sd(GCTA_main, na.rm = TRUE)*z_p), by = .(n,rho_e, p)] %>% setorder(., rho_e,n,p)
+                                            est_mean_CI_z_length = 2 * sd(GCTA_main, na.rm = TRUE)*z_p), by = .(n,rho_e, p,pro)] %>% setorder(., rho_e,n,p,pro)
 
 sub_summary_result_GCTA_i <- sub_result[, .(sub_est_mean = mean(sub_GCTA_main, na.rm = TRUE),
-                                                  sub_est_var = var(sub_GCTA_main, na.rm = TRUE),
-                                                  sub_est_mean_CI_emp_length = CI_length(sub_GCTA_main, upper = upper, lower = lower),
-                                                  sub_est_mean_CI_emp_coverage = coverage_rate_emp(sub_GCTA_main, upper = upper, lower = lower, true = 10),
-                                                  sub_est_mean_CI_z_length = 2 * sd(sub_GCTA_main, na.rm = TRUE)*z_p,
-                                                  sub_est_mean_CI_z_coverage = coverage_rate_emp(sub_GCTA_main, upper = upper, lower = lower, true = 10)), by = .(n,rho_e, p,i)] %>% setorder(., rho_e,n,p,i)
-sub_summary_result_GCTA <- sub_summary_result_GCTA_i[, lapply(.SD, mean), by = .(n,rho_e, p)][,i:=NULL]
-summary_final_GCTA <- merge(summary_result_GCTA, sub_summary_result_GCTA, by = c("n","rho_e","p"))
+                                                  sub_est_var_jack = jack_var(sub_GCTA_main, pro = pro),
+                                                  sub_est_mean_CI_z_length = sub_CI_lenght(sub_GCTA_main, pro = pro,z_p = z_p),
+                                                  sub_est_mean_CI_z_coverage = sub_coverage_rate_z(sub_GCTA_main, 10, upper = upper, lower = lower, pro = pro)), 
+                                              by = .(n,rho_e, p,i,pro)] %>% setorder(., rho_e,n,p,i,pro)
+
+sub_summary_result_GCTA <- sub_summary_result_GCTA_i[, lapply(.SD, mean), by = .(n,rho_e, p,pro)][,i:=NULL]
+summary_final_GCTA <- merge(summary_result_GCTA, sub_summary_result_GCTA, by = c("n","rho_e","p","pro"))
 summary_final_GCTA[,method:= "GCTA"]
 summary_final <- rbindlist(list(summary_final_EigenPrism, summary_final_GCTA), fill = TRUE)
 summary_final[,rho_e:= as.character(rho_e)]
 summary_final[, var_diff_ratio := (sub_est_var - est_var)/est_var]
 summary_final[, CI_diff_ratio := (sub_est_mean_CI_z_length - est_mean_CI_z_length)/sub_est_mean_CI_z_length]
+
 # make plots 
 save_path <- "~/dev/GCTA-on-Environmental-data/draft/compare EigenPrism and GCTA method/fig/"
 mean_plot_Eg_GCTA <- summary_final %>%
