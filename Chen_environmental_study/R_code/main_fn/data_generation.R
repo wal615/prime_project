@@ -90,7 +90,7 @@ generate_normal <- function(n, p, rho = NULL, sig_coef = 1,
       
       x <- mvrnorm(n = n,
                    mu = rep(0,p),
-                   Sigma = cor_str)
+                   Sigma = cor_str^2)
     }
     
     if(structure == "un"){
@@ -98,7 +98,7 @@ generate_normal <- function(n, p, rho = NULL, sig_coef = 1,
       cor_str <- pre_cor * sig_coef # to keep the covariance matrix same for each simulation iterations
       x <- mvrnorm(n = n,
                    mu = rep(0,p),
-                   Sigma = cor_str)
+                   Sigma = cor_str^2)
     }
     
     if(structure == "ar"){
@@ -107,7 +107,7 @@ generate_normal <- function(n, p, rho = NULL, sig_coef = 1,
       
       x <- mvrnorm(n = n,
                    mu = rep(0,p),
-                   Sigma = cor_str)
+                   Sigma = cor_str^2)
     }
     
     if(structure == "I"){
@@ -140,10 +140,9 @@ generate_chi <- function(n, p, rho = NULL, sig_coef = 1,
     cor_str <- matrix(rep(rho,p_normal^2), ncol = p_normal)
     diag(cor_str) <- 1
     cor_str <- cor_str * sig_coef # 
-    
     x <- mvrnorm(n = n,
                  mu = rep(0,p_normal),
-                 Sigma = cor_str) # square root: make the chi has same cov-structure as pre_cor
+                 Sigma = cor_str) 
   }
   
   if(structure == "un"){
@@ -157,14 +156,12 @@ generate_chi <- function(n, p, rho = NULL, sig_coef = 1,
   if(structure == "ar"){
     cor_str <- autocorr.mat(p_normal, rho)
     cor_str <- cor_str * sig_coef
-    
     x <- mvrnorm(n = n,
                  mu = rep(0,p_normal),
                  Sigma = cor_str)
   }
   
   if(structure == "I"){
-    
     x <- mvrnorm(n = n,
                  mu = rep(0,p_normal),
                  Sigma = diag(p_normal))
@@ -270,6 +267,8 @@ generate_sub <- function(data, pro, n, bs = c("leave-d","leave-1","bs")[1], iter
     index <- sample(1:n, as.numeric(round(pro*n,0)), replace = FALSE)
   } else if (bs == "leave-1") {
     index <- (1:n)[-iteration]
+  } else if (bs == "full"){
+    index <- 1:n
   }
   sub_data <- lapply(data, FUN = function(x) x[index, ,drop = FALSE])
   sub_data
@@ -278,7 +277,7 @@ generate_sub <- function(data, pro, n, bs = c("leave-d","leave-1","bs")[1], iter
 gene_model_data <- function(b_raw, p, combine = FALSE){
   # Standardized main covariates
   b_m <- b_raw %>% std_fn(.)
-  b_i <- 0
+  b_i <- matrix(0,nrow = nrow(b_raw))
   if(combine == TRUE){
     b <- b_raw %>% std_fn(.) %>% add_inter(.)
     b_m <- b[,1:p, drop = FALSE]
@@ -288,7 +287,12 @@ gene_model_data <- function(b_raw, p, combine = FALSE){
        b_i = b_i)
 }
 
-est_model_data <- function(b_raw, y, p, inter_std, combined, uncorr_method, uncorr_args, dim_red_method, dim_red_args, uncorre = FALSE){
+est_model_data <- function(b_raw, y, p, 
+                           inter_std, 
+                           combined, 
+                           uncorr_method, uncorr_args, 
+                           dim_red_method, dim_red_args, 
+                           uncorre = FALSE){
   # Standardized main covariates
   b_m <- b_raw %>% std_fn(.)
   

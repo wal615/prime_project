@@ -24,30 +24,13 @@ uncorr_fn <- function(input_data,
 ## SVD method of decorrelation method
 ##################################################################################
 
-SVD_method <- function(input_data, p, main = FALSE, inter = FALSE, main_pro = NULL) {
+SVD_method <- function(input_data) {
   
-  I_m <- diag(p)
-  I_i <- diag(p*(p-1)/2)
-  
-  if(main == TRUE) # only decorrelating main effect
-    I_m <- cov(input_data[,1:p])
-  
-  if(inter == TRUE) # only decorrelating inter effect
-    I_i <- cov(input_data[,-(1:p)])
-  
-  if(any(main, inter) == TRUE)
-    Sinvsqrt <- magic::adiag(invsqrt(I_m), invsqrt(I_i))
-  else {
-    Sigma <- cov(input_data,input_data)
-    Sinvsqrt <- invsqrt(Sigma)
-  } 
+  Sigma <- cov(input_data,input_data)
+  Sinvsqrt <- invsqrt(Sigma)
   
   # decorrelating the input_data
   uncorr_data=input_data%*%Sinvsqrt 
-  
-  # for main estimation
-  if(!is.null(main_pro))
-    uncorr_data <- uncorr_data[,(1:round(main_pro*p,0))]
   
   list(uncorr_data = uncorr_data)
 }

@@ -39,6 +39,21 @@ least_square_kernel <- function(...){
 }
 col_names_least_square <- c("least_square_main")
 
+least_square_kernel_e <- function(...){
+  args <- list(...)
+  if(args$decor == TRUE){
+    fit <- least_square_e(y = args$y, 
+                        x = args$s_final)  
+  } else {
+    fit <- least_square_e(y = args$y, 
+                        x = args$b_final)  
+  }
+  fit[1]
+}
+col_names_least_square_e <- c("least_square_e")
+
+
+
 signal_kernel <- function(...){
   args <- list(...)
   fit <- signal(args$b_raw, args$betam, args$betai)

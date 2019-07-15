@@ -12,36 +12,51 @@ library(doRNG)
 library(doParallel)
 library(gtools) # for rbind based on columns
 
-cores <- 20
-n_iter <- 10^3
-n_sub <- 500
-seed_loop <- 4321
-seed_coef <- 1010
+cores <- 15
+n_iter <- 500
+n_sub <- 200
+seed_loop <- 1234
+seed_coef <- 1014
 # steup parameters
 
 # sub_sampling
-pro <- c(0.1,0.3,0.6,0.9)
+pro <- 0.5
 bs <- "leave-d"
 
 # data generation
 emp_n <- 10^5
-# n_total <- c(100, 500, 1000)
-n_total <- 500
+n_total <- c(100, 500, 1000, 2000)
+# n_total <- 5000
 dist <- "normal"
 generate_data <- generate_normal
 structure <- "I"
 pre_cor <- real_data_corr.mat(data_path)
 # p <- dim(pre_cor)[1]
-p <- 10^3
+p <- 500
 
 # est 
-combine <- FALSE
-est <- "main"
-kernel <- EigenPrism_kernel
-kernel_args <- list(decor = FALSE)
-kernel_name <- "EigenPrism_kernel"
-kernel_result_col_names <- col_names_Eigen
+# combine <- FALSE
+# est <- "main"
+# kernel <- EigenPrism_kernel
+# kernel_args <- list(decor = FALSE)
+# kernel_name <- "EigenPrism_kernel"
+# kernel_result_col_names <- col_names_Eigen
 
+combine <- FALSE
+kernel_args <- list(interact = 0,decor = FALSE)
+kernel <- GCTA_kernel
+kernel_name <- "GCTA_kernel"
+kernel_result_col_names <- col_names_GCTA
+
+
+# combine <- FALSE
+# est <- "main"
+# kernel <- least_square_kernel
+# kernel_args <- list(decor = FALSE)
+# kernel_name <- "least_square_kernel"
+# kernel_result_col_names <- col_names_least_square
+
+ 
 # est2
 kernel_args_2 <- list(interact = 0,decor = FALSE)
 kernel_2 <- GCTA_kernel

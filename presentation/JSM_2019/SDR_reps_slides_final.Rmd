@@ -1,0 +1,43 @@
+---
+title: "Representative approach for big data dimension reduction with binary responses"
+short-title: "Representative approach"
+author: "Xuelong Wang, Jie Yang"
+date: '`r format(Sys.Date(), "%B %d, %Y")`'      # Month DD, YYYY (Main Slide)
+short-date: '`r format(Sys.Date(), "%m/%d/%Y")`' # MM/DD/YYYY (Lower Right)
+section-titles: false        # Provides slide headings
+safe-columns: true   # Enables special latex macros for columns.
+header-includes:
+   - \usepackage{amsmath, bbm}
+   - \newcommand{\vect}[1]{\boldsymbol{\mathbf{#1}}}
+output: 
+   uiucthemes::beamer_illinois: 
+       toc: true
+---
+
+
+# Background
+### Sufficient dimension reduction
+\[
+  Y\vect X|\eta^TX.
+\]
+### Central Subspace
+### Estimating the central subspace
+# Problem
+### Binary response
+Limited the number of sliced 
+For sir, it can only find one dimension
+the save stil possible find all the dimensions based on two sliced, but it still surfured from this 
+
+# Exsisting Solution
+
+# Representative approach 
+
+### method 
+
+### clustering steps also reducing the data size
+
+### parallel method 
+
+# Simulation result 
+
+# Future work

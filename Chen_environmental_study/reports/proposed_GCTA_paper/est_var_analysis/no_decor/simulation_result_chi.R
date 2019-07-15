@@ -1,4 +1,7 @@
 options(warn = 1, error = bettertrace::stacktrace)
+library(knitr)
+library(kableExtra)
+options(knitr.table.format = "latex")
 R.utils::sourceDirectory("~/dev/projects/Chen_environmental_study/R_code/main_fn",modifiedOnly = FALSE)
 setwd("~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/var_est/non_decore/")
 result_args_generate <- function(long_name){
@@ -42,7 +45,7 @@ result_list <- mapply(FUN = generate_result,
 write.csv(file = "./result_list.csv",x = result_list, row.names = FALSE)
 
 
-setwd("~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/var_est/non_decore/")
+setwd("~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/var_est/decor")
 args_table <- args_table <- mapply(FUN = result_args_generate, long_name =result_list, SIMPLIFY = FALSE) %>% rbindlist(.) 
 result_list <- mapply(FUN = generate_result, 
                       result_path = args_table[,result_list_path],
@@ -77,9 +80,18 @@ jack_var <- function(x, pro = 0.5){
   var_1 <- (x_m - x)^2 %>% sum(., na.rm = T)
   if(pro == 101){
     var_2 <-  (length(x) -1) * 1/length(x) * var_1
-  } else {
+  } else if (pro ==102){
+    var_2 <- 1/length(x) * var_1
+  } else{
     var_2 <- pro/(1-pro) * 1/length(x) * var_1
   }
+  var_2
+}
+
+jack_var_2 <- function(x, pro){
+  x_m <- mean(x, na.rm = T)
+  var_1 <- (x_m - x)^2 %>% sum(., na.rm = T)
+  var_2 <- (1+(100-1)*0.5)/(100*99)*var_1
   var_2
 }
 
@@ -90,19 +102,18 @@ sub_CI_lenght <- function(x, pro = 0.5, z_p){
 
 sub_coverage_rate_z <- function(x,true, upper, lower,pro){
   z_p <-qnorm(lower, lower.tail = F)
-  sd <- jack_var(x = x,pro = pro) %>% sqrt(.)
+  sd <- jack_var_2(x = x,pro = pro) %>% sqrt(.)
   CI1 <- mean(x,rm.na = T) - sd*z_p
   CI2 <- mean(x,rm.na = T) + sd*z_p
   return(true >= CI1 & true <= CI2)
 }
 
-result_path <- "result_list_fixed_sub_chi_structure_I_main_0.5_inter_0_n_100_500_1000_p_1000_rho_e_0.2_0.5_0.7_dim_red_coeff__subpro_0.5_iter_1000_nsub_200_EigenPrism_kernel_GCTA_kernel_est_main"
+result_path <- "result_list_fixed_sub_normal_structure_un_main_0.5_inter_0_n_100_500_p_500_rho_e_0.5_dim_red_coeff__last__decor_TRUE_subpro_0.5_iter_10_nsub_100_GCTA_kernel_GCTA_kernel_est_main"
 file_list_all <- list.files(paste0("./", result_path, "/")) %>% paste0(paste0("./", result_path, "/"),.)
-file_list <- file_list_all[grep(x = file_list_all, pattern = "sub_sampling",perl = TRUE)]
+file_list <- file_list_all[grep(x = file_list_all, pattern = "iteration",perl = TRUE)]
 sub_result <- lapply(file_list, function (x) {read.csv(x, header = TRUE, stringsAsFactors = FALSE)}) %>% rbindlist(., fill = TRUE)
-sub_result[,CI_length_coverage := var_main_effect >= EigenPrism_CI1 & var_main_effect <= EigenPrism_CI2 ]
-
 # EigenPrsim
+sub_result[,CI_length_coverage := var_main_effect >= EigenPrism_CI1 & var_main_effect <= EigenPrism_CI2 ]
 summary_result_EigenPrism <- sub_result[, .(est_mean = mean(EigenPrism_main, na.rm = TRUE),
                                             est_var = var(EigenPrism_main, na.rm = TRUE),
                                             est_mean_CI_emp_length = CI_length(EigenPrism_main, upper = upper, lower = lower),
@@ -113,11 +124,26 @@ summary_result_EigenPrism <- sub_result[, .(est_mean = mean(EigenPrism_main, na.
 sub_summary_result_EigenPrism_i <- sub_result[, .(sub_est_mean = mean(sub_EigenPrism_main, na.rm = TRUE),
                                                 sub_est_var_jack = jack_var(sub_EigenPrism_main, pro = pro),
                                                 sub_est_mean_CI_z_length = sub_CI_lenght(sub_EigenPrism_main, pro = pro,z_p = z_p),
-                                                sub_est_mean_CI_z_coverage = sub_coverage_rate_z(sub_EigenPrism_main, 10, upper = upper, lower = lower, pro = pro)), 
+                                                sub_est_mean_CI_z_coverage = sub_coverage_rate_z(sub_EigenPrism_main, 10, upper = upper, lower = lower, pro = pro)),
                                               by = .(n,rho_e, p,i,pro)] %>% setorder(., rho_e,n,p,i,pro)
 sub_summary_result_EigenPrism <- sub_summary_result_EigenPrism_i[, lapply(.SD, mean), by = .(n,rho_e, p,pro)][,i:=NULL]
 summary_final_EigenPrism <- merge(summary_result_EigenPrism, sub_summary_result_EigenPrism, by = c("n","rho_e","p","pro"))
 summary_final_EigenPrism[,method := "EigenPrism"]
+
+# least_square
+summary_result_least <- sub_result[, .(est_mean = mean(least_square_e, na.rm = TRUE),
+                                            est_var = var(least_square_e, na.rm = TRUE),
+                                            est_mean_CI_emp_length = CI_length(least_square_e, upper = upper, lower = lower),
+                                            est_mean_CI_z_length = 2 * sd(least_square_e, na.rm = TRUE)*z_p), by = .(n,rho_e, p, pro)] %>% setorder(., rho_e,n,p,pro)
+
+sub_summary_result_least_i <- sub_result[, .(sub_est_mean = mean(sub_least_square_e, na.rm = TRUE),
+                                                sub_est_var_jack = jack_var(sub_least_square_e, pro = pro),
+                                                sub_est_mean_CI_z_length = sub_CI_lenght(sub_least_square_e, pro = pro,z_p = z_p),
+                                                sub_est_mean_CI_z_coverage = sub_coverage_rate_z(sub_least_square_e, 10, upper = upper, lower = lower, pro = pro)),
+                                              by = .(n,rho_e, p,i,pro)] %>% setorder(., rho_e,n,p,i,pro)
+sub_summary_result_least <- sub_summary_result_least_i[, lapply(.SD, mean), by = .(n,rho_e, p,pro)][,i:=NULL]
+summary_final_least <- merge(summary_result_least, sub_summary_result_least, by = c("n","rho_e","p","pro"))
+summary_final_least[,method := "least_square_e"]
 
 # GCTA
 summary_result_GCTA <- sub_result[, .(est_mean = mean(GCTA_main, na.rm = TRUE),
@@ -126,7 +152,7 @@ summary_result_GCTA <- sub_result[, .(est_mean = mean(GCTA_main, na.rm = TRUE),
                                             est_mean_CI_z_length = 2 * sd(GCTA_main, na.rm = TRUE)*z_p), by = .(n,rho_e, p,pro)] %>% setorder(., rho_e,n,p,pro)
 
 sub_summary_result_GCTA_i <- sub_result[, .(sub_est_mean = mean(sub_GCTA_main, na.rm = TRUE),
-                                                  sub_est_var_jack = jack_var(sub_GCTA_main, pro = pro),
+                                                  sub_est_var_jack = jack_var_2(sub_GCTA_main, pro = pro),
                                                   sub_est_mean_CI_z_length = sub_CI_lenght(sub_GCTA_main, pro = pro,z_p = z_p),
                                                   sub_est_mean_CI_z_coverage = sub_coverage_rate_z(sub_GCTA_main, 10, upper = upper, lower = lower, pro = pro)), 
                                               by = .(n,rho_e, p,i,pro)] %>% setorder(., rho_e,n,p,i,pro)
@@ -136,8 +162,16 @@ summary_final_GCTA <- merge(summary_result_GCTA, sub_summary_result_GCTA, by = c
 summary_final_GCTA[,method:= "GCTA"]
 summary_final <- rbindlist(list(summary_final_EigenPrism, summary_final_GCTA), fill = TRUE)
 summary_final[,rho_e:= as.character(rho_e)]
-summary_final[, var_diff_ratio := (sub_est_var - est_var)/est_var]
+summary_final[, var_diff_ratio := (sub_est_var_jack - est_var)/est_var]
 summary_final[, CI_diff_ratio := (sub_est_mean_CI_z_length - est_mean_CI_z_length)/sub_est_mean_CI_z_length]
+summary_final <- rbindlist(list(s0,s1)) %>% setorder(.,method,dist,n)
+# make the latex code
+summary_final_1 <- summary_final
+summary_final <- rbindlist(list(summary_final, summary_final_1))
+summary_final %>% setorder(.,method, pro)
+
+kable(summary_final, "latex", booktabs = T) %>%
+  kable_styling(latex_options = c("scale_down"))
 
 # make plots 
 save_path <- "~/dev/GCTA-on-Environmental-data/draft/compare EigenPrism and GCTA method/fig/"
@@ -205,9 +239,9 @@ coverage_rate_plot_sub_Eg_GCTA <- summary_final %>%
 ggsave(filename = paste0(save_path,"rate_plot_sub_Eg_GCTA_Chi.eps"), plot = coverage_rate_plot_sub_Eg_GCTA, dpi = 1200)
 
 
-result_path <- result_list <- "result_list_fixed_sub_normal_structure_I_main_0.5_inter_0_n_500_p_1000_rho_e_0.5_dim_red_coeff__subpro_0.75_iter_1000_nsub_200_EigenPrism_kernel_GCTA_kernel_est_main"
+result_path <- result_list <- "result_list_fixed_sub_chi_structure_I_main_0.5_inter_0_n_500_5000_p_50_rho_e_0.5_dim_red_coeff__subpro_0.5_iter_1000_nsub_200_least_square_kernel_e_GCTA_kernel_est_main"
 file_list_all <- list.files(paste0("./", result_path, "/")) %>% paste0(paste0("./", result_path, "/"),.)
-file_list <- file_list_all[grep(x = file_list_all, pattern = "sub_sampling",perl = TRUE)]
+file_list <- file_list_all[grep(x = file_list_all, pattern = "iteration",perl = TRUE)]
 sub_result <- lapply(file_list, function (x) {read.csv(x, header = TRUE, stringsAsFactors = FALSE)}) %>% rbindlist(., fill = TRUE)
 sub_result[,CI_length_coverage := var_main_effect >= EigenPrism_CI1 & var_main_effect <= EigenPrism_CI2 ]
 
