@@ -198,14 +198,14 @@ generate_chi <- function(n, p, rho = NULL, sig_coef = 1,
 ##################################################################################
 ## subset PCB data
 ##################################################################################
-generate_PCB <- function(data_path, pro) {
+generate_PCB <- function(data_path) {
   b <- read.csv(data_path, stringsAsFactors = FALSE)
   
-  # subset b 
-  n <- nrow(b)
-  index <- sample(1:n, round(pro*n,0), replace = FALSE)
-  b <- b[index,]
-  
+  # # subset b 
+  # n <- nrow(b)
+  # index <- sample(1:n, round(pro*n,0), replace = FALSE)
+  # b <- b[index,]
+  # 
   # add distribution attributes
   attributes(b) <- append(attributes(b), 
                           list(x_dist = "PCB"))

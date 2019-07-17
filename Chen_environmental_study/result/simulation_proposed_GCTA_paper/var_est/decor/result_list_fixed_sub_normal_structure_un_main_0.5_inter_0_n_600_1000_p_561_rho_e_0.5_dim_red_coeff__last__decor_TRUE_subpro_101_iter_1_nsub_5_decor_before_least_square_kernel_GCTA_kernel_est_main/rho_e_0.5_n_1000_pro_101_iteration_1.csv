@@ -1,0 +1,6 @@
+"var_main_effect","var_inter_effect","cov_main_inter_effect","var_total_effect","least_square_main","sub_least_square_main","GCTA_main","GCTA_inter","sub_GCTA_main","sub_GCTA_inter","x_dist","structure","p","n","main_fixed_var","main_random_var","inter_fixed_var","inter_random_var","decor","interact","combine","pro","bs","n_sub","rho_e","emp_n","inter_std","i"
+10,0,0,0,10.107547770771,10.10899594651,10.0924295983663,0,10.1031424940926,0,"normal","un",561,1000,0.5,0,0,0,TRUE,0,FALSE,101,"leave-1",5,0.5,1000,TRUE,1
+10,0,0,0,10.107547770771,10.1053094785414,10.0924295983663,0,10.1023706549594,0,"normal","un",561,1000,0.5,0,0,0,TRUE,0,FALSE,101,"leave-1",5,0.5,1000,TRUE,1
+10,0,0,0,10.107547770771,10.1044799270099,10.0924295983663,0,10.1107375970644,0,"normal","un",561,1000,0.5,0,0,0,TRUE,0,FALSE,101,"leave-1",5,0.5,1000,TRUE,1
+10,0,0,0,10.107547770771,10.1122549488164,10.0924295983663,0,10.1083709897977,0,"normal","un",561,1000,0.5,0,0,0,TRUE,0,FALSE,101,"leave-1",5,0.5,1000,TRUE,1
+10,0,0,0,10.107547770771,10.1068667958879,10.0924295983663,0,10.1270737028045,0,"normal","un",561,1000,0.5,0,0,0,TRUE,0,FALSE,101,"leave-1",5,0.5,1000,TRUE,1

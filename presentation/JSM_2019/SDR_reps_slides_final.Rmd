@@ -16,21 +16,50 @@ output:
 
 
 # Background
-### Sufficient dimension reduction
+### Fundamental assumption
+Let random variable $X \in \mathbb{R}^p$, $Y \in \mathbb{R}$ and $\eta \in \mathbb{R}^d$, where $d << p$
 \[
-  Y\vect X|\eta^TX.
+Y|X \sim Y|\eta^T X
 \]
-### Central Subspace
+
+##### Example
+
+
+### Sufficient dimension reduction
+#### Dimension-reduction subspace
+\[
+  Y \vect X|\eta^TX \rightarrow Y\vect X|(\eta A)^TX \rightarrow Y\vect X|P_S^TX,
+\]
+Where $P_\mathcal{S}$ is the projection matrix of subspace $\mathcal{S}$  
+$\mathcal{S}$ is called the dimension-reduction subspace
+
+However, the $\mathcal{S}$ is not unique, i.e. if $\mathcal{S} \subset \mathcal{S}_1$, then $\mathcal{S}_1$ is also a dimension-reduction space.  
+
+
+#### Central Subspace
+\[
+S_{Y|X} = \cap S_{SDR}
+\]
+The target of sufficient dimension reduction is to estimate the structure of S_{Y|X}
+
 ### Estimating the central subspace
-# Problem
-### Binary response
+
+#### Sliced type regression 
+One potential issuse is that we cannot recover all the central space.
+
+### Problem
+#### Binary response
+
 Limited the number of sliced 
 For sir, it can only find one dimension
 the save stil possible find all the dimensions based on two sliced, but it still surfured from this 
 
 # Exsisting Solution
 
-# Representative approach 
+### Probability Enhanced method 
+
+# Our approach
+### Representative approach 
 
 ### method 
 

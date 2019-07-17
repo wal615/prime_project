@@ -8,7 +8,7 @@ SVD_dim_reduction <- function(x, reduce_coef=1, last = FALSE, method) {
   if(last==TRUE){
     dim <- n - 1
   } else {
-    dim <- round(min(n,p) * reduce_coef, 0)  
+    dim <- round(n * reduce_coef, 0)  
   }
   svd_x <- svd(x)
   x_r <- (svd_x$u[,1:dim]) %*% diag(svd_x$d[1:dim]) %*% t(svd_x$v[1:dim,1:dim]) # ignore the right U_3 part
@@ -62,7 +62,7 @@ pvalue_dim_reduction <- function(x, y, index, method) {
   beta_hat_seq = beta_estimate$beta_est
   beta_se_seq = beta_estimate$beta_se
   select_index =abs(beta_hat_seq/beta_se_seq)  %>% abs(.) %>% order(.,decreasing = T)
-  select_index <- select_index[1:nrow(x_select)]
+  select_index <- select_index[1:(round(0.4*500,0))]
   x_r <- x_select[,select_index]
   x_r
 }

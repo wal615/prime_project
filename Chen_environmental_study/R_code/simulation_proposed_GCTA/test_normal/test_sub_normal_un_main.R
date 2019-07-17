@@ -14,32 +14,29 @@ source("./R_code/simulation_proposed_GCTA/local_helpers.R")
 data_path <- "~/dev/projects/Chen_environmental_study/R_code/data/pcb_99_13_no_missing.csv"
 save_path <- "~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/var_est/decor/"
 
-cores <- 1
-n_iter <- 1
-n_sub <- 2
+cores <- 10
+n_iter <- 100
+n_sub <- 0
 seed_loop <- 1234
 seed_coef <- 1014
 # steup parameters
 
 # sub_sampling
-pro <- 0.5
-bs <- "leave-d"
+pro <- 101
+bs <- "leave-1"
 
 # data generation
 emp_n <- 10^5
-n_total <- c(100, 500)
+n_total <- c(1000)
 # n_total <- 5000
 dist <- "normal"
 generate_data <- generate_normal
 structure <- "un"
-p <- 500
-pre_cor <- unstr_corr.mat(p)
 
-# dim rediction
-alpha <- 0.05
-method <- "lm"
-# reduce_coef <- 1
-# last <- TRUE
+# pre_cor <- unstr_corr.mat(p)
+pre_cor <- real_data_corr.mat(data_path)
+p <- ncol(pre_cor)
+
 
 # est
 decor = TRUE
@@ -52,16 +49,16 @@ est <- "main"
 # kernel_result_col_names <- col_names_Eigen
 
 
-kernel_args <- list(interact = 0,decor = decor)
-kernel <- GCTA_kernel
-kernel_name <- "GCTA_kernel"
-kernel_result_col_names <- col_names_GCTA
+# kernel_args <- list(interact = 0,decor = decor)
+# kernel <- GCTA_kernel
+# kernel_name <- "GCTA_kernel"
+# kernel_result_col_names <- col_names_GCTA
 
 
-# kernel <- least_square_kernel
-# kernel_args <- list(decor = FALSE)
-# kernel_name <- "least_square_kernel"
-# kernel_result_col_names <- col_names_least_square
+kernel <- least_square_kernel
+kernel_args <- list(decor = decor)
+kernel_name <- "least_square_kernel"
+kernel_result_col_names <- col_names_least_square
 
 
 # est2
@@ -73,12 +70,9 @@ kernel_result_col_names_2 <- col_names_GCTA
 # dim_reduction
 # dim_red_method <- SVD_dim_reduction
 # dim_red_args <- list(reduce_coef=reduce_coef,last = last)
-# dim_red_method <- NULL
-# dim_red_args <- NULL
-dim_red_method <- pvalue_dim_reduction
-dim_red_args <- list(alpha = alpha,
-                     pro = pro,
-                     method = method)
+dim_red_method <- NULL
+dim_red_args <- NULL
+
   
 # coef
 main_fixed_var <- 0.5
@@ -104,6 +98,7 @@ result_name <- paste("result_list_fixed_sub", dist, "structure", structure, "mai
                      inter_fixed_var, "n", paste(n_total, collapse = "_"), "p", p, "rho_e", paste(rho_e,collapse = "_"), 
                      "dim_red_coeff", dim_red_args$reduce_coef, "last", dim_red_args$last,"decor",decor,
                      "subpro",paste(pro, collapse = "_"), "iter", n_iter, "nsub", n_sub,
+                     "decor_before",
                      kernel_name, "est", est, sep = "_")
 result_folder_path <- paste0(save_path, result_name, "/")
 dir.create(result_folder_path)
@@ -121,7 +116,7 @@ result_list <- mapply(FUN = simulation_var_est_fn,
                                       kernel_args_2 = kernel_args_2,
                                       kernel_result_col_names_2 = kernel_result_col_names_2,
                                       bs = bs,
-                                      emp_n,
+                                      emp_n = emp_n,
                                       combine = combine,
                                       gene_coeff_args = gene_coeff_args,
                                       uncorr_method = SVD_method,

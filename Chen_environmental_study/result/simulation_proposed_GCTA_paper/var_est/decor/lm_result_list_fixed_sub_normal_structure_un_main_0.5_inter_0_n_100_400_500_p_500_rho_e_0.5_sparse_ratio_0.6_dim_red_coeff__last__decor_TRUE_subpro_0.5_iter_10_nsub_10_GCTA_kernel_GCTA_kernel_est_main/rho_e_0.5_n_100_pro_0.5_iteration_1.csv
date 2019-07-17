@@ -1,0 +1,11 @@
+"var_main_effect","var_inter_effect","cov_main_inter_effect","var_total_effect","GCTA_main","GCTA_inter","sub_GCTA_main","sub_GCTA_inter","GCTA_main.1","GCTA_inter.1","sub_GCTA_main.1","sub_GCTA_inter.1","x_dist","structure","p","n","main_fixed_var","main_random_var","inter_fixed_var","inter_random_var","interact","decor","combine","pro","bs","n_sub","rho_e","emp_n","inter_std","i"
+10,0,0,0,0,0,23.0744899294152,0,0,0,23.0744899294152,0,"normal","un",500,100,0.5,0,0,0,0,TRUE,FALSE,0.5,"leave-d",10,0.5,1e+05,TRUE,1
+10,0,0,0,0,0,19.2632653599056,0,0,0,19.2632653599056,0,"normal","un",500,100,0.5,0,0,0,0,TRUE,FALSE,0.5,"leave-d",10,0.5,1e+05,TRUE,1
+10,0,0,0,0,0,15.6489415029236,0,0,0,15.6489415029236,0,"normal","un",500,100,0.5,0,0,0,0,TRUE,FALSE,0.5,"leave-d",10,0.5,1e+05,TRUE,1
+10,0,0,0,0,0,18.454943536492,0,0,0,18.454943536492,0,"normal","un",500,100,0.5,0,0,0,0,TRUE,FALSE,0.5,"leave-d",10,0.5,1e+05,TRUE,1
+10,0,0,0,0,0,19.2425891546229,0,0,0,19.2425891546229,0,"normal","un",500,100,0.5,0,0,0,0,TRUE,FALSE,0.5,"leave-d",10,0.5,1e+05,TRUE,1
+10,0,0,0,0,0,16.4724042651417,0,0,0,16.4724042651417,0,"normal","un",500,100,0.5,0,0,0,0,TRUE,FALSE,0.5,"leave-d",10,0.5,1e+05,TRUE,1
+10,0,0,0,0,0,18.9304989058633,0,0,0,18.9304989058633,0,"normal","un",500,100,0.5,0,0,0,0,TRUE,FALSE,0.5,"leave-d",10,0.5,1e+05,TRUE,1
+10,0,0,0,0,0,24.0512641684539,0,0,0,24.0512641684539,0,"normal","un",500,100,0.5,0,0,0,0,TRUE,FALSE,0.5,"leave-d",10,0.5,1e+05,TRUE,1
+10,0,0,0,0,0,19.5617185472883,0,0,0,19.5617185472883,0,"normal","un",500,100,0.5,0,0,0,0,TRUE,FALSE,0.5,"leave-d",10,0.5,1e+05,TRUE,1
+10,0,0,0,0,0,16.8075488447832,0,0,0,16.8075488447832,0,"normal","un",500,100,0.5,0,0,0,0,TRUE,FALSE,0.5,"leave-d",10,0.5,1e+05,TRUE,1
