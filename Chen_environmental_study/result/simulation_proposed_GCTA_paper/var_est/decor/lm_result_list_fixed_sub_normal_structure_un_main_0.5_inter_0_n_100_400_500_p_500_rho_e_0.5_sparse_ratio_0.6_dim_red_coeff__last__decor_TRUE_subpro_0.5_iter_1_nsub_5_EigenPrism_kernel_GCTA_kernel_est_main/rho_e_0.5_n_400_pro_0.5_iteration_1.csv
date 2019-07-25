@@ -1,6 +1,0 @@
-"var_main_effect","var_inter_effect","cov_main_inter_effect","var_total_effect","EigenPrism_main","EigenPrism_CI1","EigenPrism_CI2","sub_EigenPrism_main","sub_EigenPrism_CI1","sub_EigenPrism_CI2","GCTA_main","GCTA_inter","sub_GCTA_main","sub_GCTA_inter","x_dist","structure","p","n","main_fixed_var","main_random_var","inter_fixed_var","inter_random_var","decor","interact","combine","pro","bs","n_sub","rho_e","emp_n","inter_std","i"
-10,0,0,0,0,0,0,19.695040100995,-15.3417819335768,54.7318621355667,0,0,19.4918175070754,0,"normal","un",500,400,0.5,0,0,0,TRUE,0,FALSE,0.5,"leave-d",5,0.5,1e+05,TRUE,1
-10,0,0,0,0,0,0,26.2793118310138,-10.6222189481717,63.1808426101994,0,0,20.6485053573676,0,"normal","un",500,400,0.5,0,0,0,TRUE,0,FALSE,0.5,"leave-d",5,0.5,1e+05,TRUE,1
-10,0,0,0,0,0,0,16.1313492373191,-20.3753482072845,52.6380466819228,0,0,0,0,"normal","un",500,400,0.5,0,0,0,TRUE,0,FALSE,0.5,"leave-d",5,0.5,1e+05,TRUE,1
-10,0,0,0,0,0,0,15.8124752901274,-16.2821099039112,47.907060484166,0,0,0,0,"normal","un",500,400,0.5,0,0,0,TRUE,0,FALSE,0.5,"leave-d",5,0.5,1e+05,TRUE,1
-10,0,0,0,0,0,0,17.2817173873293,-18.8177118777824,53.3811466524411,0,0,0,0,"normal","un",500,400,0.5,0,0,0,TRUE,0,FALSE,0.5,"leave-d",5,0.5,1e+05,TRUE,1

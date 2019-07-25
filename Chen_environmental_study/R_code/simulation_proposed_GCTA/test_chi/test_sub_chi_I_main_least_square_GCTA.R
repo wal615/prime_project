@@ -1,71 +1,77 @@
-options(warn = 1, error = bettertrace::stacktrace)
-setwd("~/dev/projects/Chen_environmental_study/")
-R.utils::sourceDirectory("./R_code/main_fn",modifiedOnly = FALSE)
-source("./R_code/simulation_proposed_GCTA/local_helpers.R")
-data_path <- "~/dev/projects/Chen_environmental_study/R_code/data/pcb_99_13_no_missing.csv"
-save_path <- "~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/var_est/non_decore/"
 library(sas7bdat)
+library(R.utils)
 library(MASS)
 library(tidyverse)
 library(foreach)
 library(doRNG)
 library(doParallel)
 library(gtools) # for rbind based on columns
+options(warn = 1, error = bettertrace::stacktrace)
+setwd("~/dev/projects/Chen_environmental_study/")
+sourceDirectory("./R_code/main_fn/",modifiedOnly = FALSE, recursive = TRUE)
+sourceDirectory("./R_code/main_fn/method/",modifiedOnly = FALSE, recursive = TRUE)
+source("./R_code/simulation_proposed_GCTA/local_helpers.R")
+data_path <- "~/dev/projects/Chen_environmental_study/R_code/data/pcb_99_13_no_missing.csv"
+save_path <- "~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/var_est/decor/"
 
-cores <- 1
-n_iter <- 1
-n_sub <- 2
+cores <- 10
+n_iter <- 100
+n_sub <- 0
 seed_loop <- 1234
 seed_coef <- 1014
 # steup parameters
 
 # sub_sampling
-pro <- 0.5
-bs <- "leave-d"
+pro <- 101
+bs <- "leave-1"
 
 # data generation
 emp_n <- 10^5
-n_total <- c(100, 500, 1000, 2000)
+n_total <- c(1000)
 # n_total <- 5000
 dist <- "chi"
 generate_data <- generate_chi
 structure <- "I"
 pre_cor <- real_data_corr.mat(data_path)
-# p <- dim(pre_cor)[1]
-p <- 500
+p <- ncol(pre_cor)
+# pre_cor <- unstr_corr.mat(p)
 
-# est 
-# combine <- FALSE
-# est <- "main"
+
+# est
+decor = FALSE
+combine <- FALSE
+est <- "main"
+
 # kernel <- EigenPrism_kernel
-# kernel_args <- list(decor = FALSE)
+# kernel_args <- list(decor = decor)
 # kernel_name <- "EigenPrism_kernel"
 # kernel_result_col_names <- col_names_Eigen
 
-combine <- FALSE
-kernel_args <- list(interact = 0,decor = FALSE)
-kernel <- GCTA_kernel
-kernel_name <- "GCTA_kernel"
-kernel_result_col_names <- col_names_GCTA
+
+# kernel_args <- list(interact = 0,decor = decor)
+# kernel <- GCTA_kernel
+# kernel_name <- "GCTA_kernel"
+# kernel_result_col_names <- col_names_GCTA
 
 
-# combine <- FALSE
-# est <- "main"
-# kernel <- least_square_kernel
-# kernel_args <- list(decor = FALSE)
-# kernel_name <- "least_square_kernel"
-# kernel_result_col_names <- col_names_least_square
+kernel <- least_square_kernel
+kernel_args <- list(decor = decor)
+kernel_name <- "least_square_kernel"
+kernel_result_col_names <- col_names_least_square
 
 
 # est2
-# kernel_args_2 <- list(interact = 0,decor = FALSE)
-# kernel_2 <- GCTA_kernel
-# kernel_name <- append(kernel_name,"GCTA_kernel") %>% paste(.,collapse = "_")
-# kernel_result_col_names_2 <- col_names_GCTA
+kernel_args_2 <- list(interact = 0,decor = decor)
+kernel_2 <- GCTA_kernel
+kernel_name <- append(kernel_name,"GCTA_kernel") %>% paste(.,collapse = "_")
+kernel_result_col_names_2 <- col_names_GCTA
 
 # dim_reduction
+# dim_red_method <- SVD_dim_reduction
+# dim_red_args <- list(reduce_coef=reduce_coef,last = last)
 dim_red_method <- NULL
 dim_red_args <- NULL
+
 
 # coef
 main_fixed_var <- 0.5
@@ -80,16 +86,17 @@ gene_coeff_args <- list(main_fixed_var = main_fixed_var,
                         inter_random_var = inter_random_var)
 
 # generate args list
-args_all <- expand.grid(structure = structure, p = p, n = n_total, rho_e = rho_e, pro = pro)
-gene_data_args_list <- args_all[,1:3] %>% split(x = ., f = seq(nrow(.))) # generate a list from each row of a dataframe
-rho_e_list <- args_all[,4, drop = FALSE] %>% split(x = ., f = seq(nrow(.)))
-pro_list <-  args_all[,5, drop = FALSE] %>% split(x = ., f = seq(nrow(.)))
-uncorr_args <- list(p = p)
+args_all <- expand.grid(structure = structure, p = p, n = n_total, pre_cor = list(pre_cor),rho_e = rho_e, pro = pro)
+gene_data_args_list <- args_all[,1:4] %>% split(x = ., f = seq(nrow(.))) # generate a list from each row of a dataframe
+rho_e_list <- args_all[,5, drop = FALSE] %>% split(x = ., f = seq(nrow(.)))
+pro_list <-  args_all[,6, drop = FALSE] %>% split(x = ., f = seq(nrow(.)))
+
 
 # setup folders for results
 result_name <- paste("result_list_fixed_sub", dist, "structure", structure, "main", main_fixed_var, "inter",
                      inter_fixed_var, "n", paste(n_total, collapse = "_"), "p", p, "rho_e", paste(rho_e,collapse = "_"), 
-                     "dim_red_coeff", dim_red_args, "subpro",paste(pro, collapse = "_"), "iter", n_iter, "nsub", n_sub,
+                     "dim_red_coeff", dim_red_args$reduce_coef, "last", dim_red_args$last,"decor",decor,
+                     "subpro",paste(pro, collapse = "_"), "iter", n_iter, "nsub", n_sub,
                      kernel_name, "est", est, sep = "_")
 result_folder_path <- paste0(save_path, result_name, "/")
 dir.create(result_folder_path)
@@ -107,11 +114,10 @@ result_list <- mapply(FUN = simulation_var_est_fn,
                                       kernel_args_2 = kernel_args_2,
                                       kernel_result_col_names_2 = kernel_result_col_names_2,
                                       bs = bs,
-                                      emp_n,
+                                      emp_n = emp_n,
                                       combine = combine,
                                       gene_coeff_args = gene_coeff_args,
                                       uncorr_method = SVD_method,
-                                      uncorr_args = uncorr_args,
                                       dim_red_method = dim_red_method,
                                       dim_red_args = dim_red_args,
                                       generate_data = generate_data,

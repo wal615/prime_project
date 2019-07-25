@@ -15,15 +15,7 @@ SVD_dim_reduction <- function(x, reduce_coef=1, last = FALSE, method) {
   x_r
 }
 
-##################################################################################
-## PCA dimension reduction method
-##################################################################################
 
-PCA_dim_reduction <- function(x, method) {
-  pca_x <- prcomp(x, retx = TRUE)
-  x_r <- pca_x$x
-  x_r
-}
 
 ##################################################################################
 ## p-value variable selection dimension reduction method

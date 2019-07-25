@@ -15,7 +15,7 @@ data_path <- "~/dev/projects/Chen_environmental_study/R_code/data/pcb_99_13_no_m
 save_path <- "~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/var_est/decor/"
 
 cores <- 10
-n_iter <- 10
+n_iter <- 100
 n_sub <- 0
 seed_loop <- 1234
 seed_coef <- 1014
@@ -26,16 +26,16 @@ pro <- 101
 bs <- "leave-1"
 
 # data generation
-emp_n <- 10^4
-n_total <- c(600,1000)
+emp_n <- 10^5
+n_total <- c(1000)
 # n_total <- 5000
-dist <- "normal"
-generate_data <- generate_normal
+dist <- "chi"
+generate_data <- generate_chi
 structure <- "un"
-p <- 561
-pre_cor <- unstr_corr.mat(p)
-# pre_cor <- real_data_corr.mat(data_path)
-# p <- ncol(pre_cor)
+# p <- 33
+# pre_cor <- unstr_corr.mat(p)
+pre_cor <- real_data_corr.mat(data_path)
+p <- ncol(pre_cor)
 
 
 # est

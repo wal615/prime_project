@@ -39,14 +39,92 @@ SVD_method <- function(input_data) {
 ## GLASSO method of decorrelation method
 ##################################################################################
 
-GLASSO_method <- function(input_data, rho){
+GLASSO_method <- function(input_data, rho = 0.01){
   Sigma=cov(input_data, input_data)
-  
-  # Compute Sigma^{-1/2}
-  Sinvsqrt=glasso::glasso(s = Sigma, rho = rho, approx = TRUE)$wi
+  # Compute Sigma
+  Sigma <- glasso::glasso(s = Sigma, rho = rho, thr = 0.05)$w
+
+  # Compute Signa^{-1/2}
+  Sigma_isqrt <- invsqrt(Sigma)
+
+  # uncorrelated_data
+  uncorr_data=input_data%*%Sigma_isqrt
+
+  list(uncorr_data = uncorr_data)
+}
+
+# GLASSO_method <- function(input_data, rho = 0.01){
+#   Sigma=cov(input_data, input_data)
+#   # Compute Sigma
+#   Sigma <- glasso::glasso(s = Sigma, rho = rho, thr = 0.1)$wi
+#   
+#   # Compute Signa^{-1/2}
+#   Sigma_isqrt <- t(chol(Sigma, pivot = TRUE))
+#   
+#   # uncorrelated_data  
+#   uncorr_data=input_data%*%Sigma_isqrt
+#   
+#   list(uncorr_data = uncorr_data)
+# }
+
+dgpGLASSO_method <- function(input_data, rho = 0.01){
+  Sigma=cov(input_data, input_data)
+  # Compute Sigma^{-1}
+  Sigma_i <- dpglasso::dpglasso(Sigma = Sigma, rho = rho, outer.tol = 0.05)$X
+
+  # Compute Signa^{-1/2}
+  Sigma_isqrt <- msqrt(Sigma_i)
   
   # uncorrelated_data  
-  uncorr_data=input_data%*%Sinvsqrt
+  uncorr_data=input_data%*%Sigma_isqrt
   
   list(uncorr_data = uncorr_data)
+}
+
+QUIC_method <- function(input_data, rho = 0.1){
+  Sigma<-cov(input_data, input_data)
+  Sigma_i <- QUIC::QUIC(S = Sigma, rho = rho, tol = 0.05)$W
+  # Compute Signa^{-1/2}
+  Sigma_isqrt <- msqrt(Sigma_i)
+  
+  # uncorrelated_data  
+  uncorr_data=input_data%*%Sigma_isqrt
+  
+  list(uncorr_data = uncorr_data)
+}
+
+##################################################################################
+## PCA dimension reduction method
+##################################################################################
+
+# PCA_method <- function(input_data,p = NULL, combine = FALSE) {
+#   if(combine == TRUE){
+#     pca_main <-prcomp(input_data[,1:p], retx = TRUE)
+#     pca_inter <- prcomp(input_data[,-(1:p)], retx = TRUE)
+#     uncorr_data <- cbind(SVD_method(input_data[,1:p])$uncorr_data, pca_inter$x)
+#   } else {
+#     pca_x <- prcomp(input_data, retx = TRUE)
+#     uncorr_data <- pca_x$x  
+#   }
+#   
+#   list(uncorr_data = uncorr_data)
+# }
+
+PCA_method <- function(input_data) {
+  pca_x <- prcomp(input_data, retx = TRUE)
+  uncorr_data <- pca_x$x  
+  list(uncorr_data = uncorr_data)
+}
+
+##################################################################################
+## using true value
+##################################################################################
+true_value_method <- function(input_data, Sigma){
+  Sigma_isqrt <- invsqrt(cov2cor(Sigma))
+  
+  # uncorrelated_data
+  uncorr_data=input_data%*%Sigma_isqrt
+  
+  list(uncorr_data = uncorr_data)
+  
 }

@@ -11,10 +11,10 @@ setwd("~/dev/projects/Chen_environmental_study/")
 sourceDirectory("./R_code/main_fn/",modifiedOnly = FALSE, recursive = TRUE)
 sourceDirectory("./R_code/main_fn/method/",modifiedOnly = FALSE, recursive = TRUE)
 source("./R_code/simulation_proposed_GCTA/local_helpers.R")
-data_path <- "~/dev/projects/Chen_environmental_study/R_code/data/pcb_99_13_no_missing.csv"
+data_path <- "~/dev/projects/Chen_environmental_study/R_code/data/real_data/NHANES/hemoglobin/nhanceMiceImpute25_no_y.csv"
 save_path <- "~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/var_est/decor/"
 
-cores <- 10
+cores <- 15
 n_iter <- 100
 n_sub <- 0
 seed_loop <- 1234
@@ -22,31 +22,55 @@ seed_coef <- 1014
 # steup parameters
 
 # sub_sampling
+# pro <- 0
+# bs <- "full"
 pro <- 101
 bs <- "leave-1"
 
 # data generation
 emp_n <- 10^5
-n_total <- c(1000)
+n_total <- c(500)
 # n_total <- 5000
 dist <- "normal"
 generate_data <- generate_normal
 structure <- "un"
 
-# pre_cor <- unstr_corr.mat(p)
-pre_cor <- real_data_corr.mat(data_path)
-p <- ncol(pre_cor)
+p <- 800
+pre_cor <- unstr_corr.mat(p,k=5)
+ 
+# pre_cor <- real_data_corr.mat(data_path)
+# diag(pre_cor) <- 0
+# pre_cor[which(pre_cor1 >= 0.95, arr.ind = TRUE)] <- NA
+# pre_cor <- pre_cor[complete.cases(pre_cor1),complete.cases(pre_cor1)]
+# diag(pre_cor) <- 1
+# p <- ncol(pre_cor)
 
-
+# decorr
+decor_method <- "PCA"
+# uncorr_method <- SVD_method
+# uncorr_args <- NULL
+# uncorr_method <- GLASSO_method
+# uncorr_args <- NULL
+# uncorr_method <- dgpGLASSO_method
+# uncorr_args <- NULL
+# uncorr_method <- QUIC_method
+# uncorr_args <- NULL
+uncorr_method <- PCA_method
+uncorr_args <- NULL
+# uncorr_method <- SVD_method
+# uncorr_args <- NULL
 # est
-decor = TRUE
+decor <- T
+if(decor == FALSE) {
+  decor_method <- "None"
+}
 combine <- FALSE
 est <- "main"
 
-# kernel <- EigenPrism_kernel
-# kernel_args <- list(decor = decor)
-# kernel_name <- "EigenPrism_kernel"
-# kernel_result_col_names <- col_names_Eigen
+kernel <- EigenPrism_kernel
+kernel_args <- list(decor = decor)
+kernel_name <- "EigenPrism_kernel"
+kernel_result_col_names <- col_names_Eigen
 
 
 # kernel_args <- list(interact = 0,decor = decor)
@@ -55,10 +79,10 @@ est <- "main"
 # kernel_result_col_names <- col_names_GCTA
 
 
-kernel <- least_square_kernel
-kernel_args <- list(decor = decor)
-kernel_name <- "least_square_kernel"
-kernel_result_col_names <- col_names_least_square
+# kernel <- least_square_kernel
+# kernel_args <- list(decor = decor)
+# kernel_name <- "least_square_kernel"
+# kernel_result_col_names <- col_names_least_square
 
 
 # est2
@@ -94,11 +118,10 @@ pro_list <-  args_all[,6, drop = FALSE] %>% split(x = ., f = seq(nrow(.)))
 
 
 # setup folders for results
-result_name <- paste("result_list_fixed_sub", dist, "structure", structure, "main", main_fixed_var, "inter",
+result_name <- paste("decor_method",decor_method,"result_list_fixed_sub", dist, "structure", structure, "main", main_fixed_var, "inter",
                      inter_fixed_var, "n", paste(n_total, collapse = "_"), "p", p, "rho_e", paste(rho_e,collapse = "_"), 
                      "dim_red_coeff", dim_red_args$reduce_coef, "last", dim_red_args$last,"decor",decor,
                      "subpro",paste(pro, collapse = "_"), "iter", n_iter, "nsub", n_sub,
-                     "decor_before",
                      kernel_name, "est", est, sep = "_")
 result_folder_path <- paste0(save_path, result_name, "/")
 dir.create(result_folder_path)
@@ -119,7 +142,8 @@ result_list <- mapply(FUN = simulation_var_est_fn,
                                       emp_n = emp_n,
                                       combine = combine,
                                       gene_coeff_args = gene_coeff_args,
-                                      uncorr_method = SVD_method,
+                                      uncorr_method = uncorr_method,
+                                      uncorr_args = uncorr_args,
                                       dim_red_method = dim_red_method,
                                       dim_red_args = dim_red_args,
                                       generate_data = generate_data,

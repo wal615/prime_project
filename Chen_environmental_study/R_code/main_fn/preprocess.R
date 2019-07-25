@@ -113,3 +113,33 @@ invsqrt <- function(Sigma, tol = 1e-15) {
   eign_value_rec_sqrt <- if_else(eign_value > tol, 1/sqrt(eign_value), 0)
   Seign$vectors %*% diag(eign_value_rec_sqrt) %*% t(Seign$vectors)
 }
+
+##################################################################################
+## inverse
+##################################################################################
+
+inv <- function(Sigma, tol = 1e-15) {
+  ## get rid of zero egienvalues
+  Seign <- eigen(Sigma)
+  eign_value <- Seign$values
+  eign_value_sqrt <- if_else(eign_value > tol, 1/eign_value, 0)
+  Seign$vectors %*% diag(eign_value_sqrt) %*% t(Seign$vectors)
+}
+
+
+##################################################################################
+## square-root
+##################################################################################
+
+msqrt <- function(Sigma) {
+  ## get rid of zero egienvalues
+  Seign <- eigen(Sigma)
+  eign_value <- Seign$values
+  if(any(eign_value<0)) stop("cov matrix has to be PSD")
+  eign_value_sqrt <- sqrt(eign_value)
+  Seign$vectors %*% diag(eign_value_sqrt) %*% t(Seign$vectors)
+}
+
+mdist <- function(A,B){
+  sum((A-B)^2) 
+}

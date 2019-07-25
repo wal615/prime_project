@@ -14,8 +14,8 @@ source("./R_code/simulation_proposed_GCTA/local_helpers.R")
 data_path <- "~/dev/projects/Chen_environmental_study/R_code/data/pcb_99_13_no_missing.csv"
 save_path <- "~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/var_est/decor/"
 
-cores <- 1
-n_iter <- 1
+cores <- 10
+n_iter <- 100
 n_sub <- 0
 seed_loop <- 1234
 seed_coef <- 1014
@@ -28,9 +28,11 @@ bs <- "leave-1"
 # data generation
 dist <- "PCB"
 generate_data <- generate_PCB
+PCB_data <- read.csv(data_path,stringsAsFactors = F)
+p <- ncol(PCB_data)
+n <- 1000
 structure <- "un"
-p <- ncol(pre_cor)
-# pre_cor <- unstr_corr.mat(p)
+emp_n <- 2000
 
 
 # est
@@ -82,15 +84,15 @@ gene_coeff_args <- list(main_fixed_var = main_fixed_var,
                         inter_random_var = inter_random_var)
 
 # generate args list
-args_all <- expand.grid(data_path = data_path, pro = pro)
-gene_data_args_list <- args_all[,1:4] %>% split(x = ., f = seq(nrow(.))) # generate a list from each row of a dataframe
-rho_e_list <- args_all[,5, drop = FALSE] %>% split(x = ., f = seq(nrow(.)))
-pro_list <-  args_all[,6, drop = FALSE] %>% split(x = ., f = seq(nrow(.)))
+args_all <- expand.grid(data_path = data_path, n = n, structure = structure, rho_e = rho_e, pro = pro,stringsAsFactors = FALSE)
+gene_data_args_list <- args_all[,1:3, drop = FALSE] %>% split(x = ., f = seq(nrow(.))) # generate a list from each row of a dataframe
+rho_e_list <- args_all[,4, drop = FALSE] %>% split(x = ., f = seq(nrow(.)))
+pro_list <-  args_all[,5, drop = FALSE] %>% split(x = ., f = seq(nrow(.)))
 
 
 # setup folders for results
-result_name <- paste("result_list_fixed_sub", dist, "structure", structure, "main", main_fixed_var, "inter",
-                     inter_fixed_var, "n", paste(n_total, collapse = "_"), "p", p, "rho_e", paste(rho_e,collapse = "_"), 
+result_name <- paste("result_list_fixed_sub", dist, "main", main_fixed_var, "inter",
+                     inter_fixed_var,"n",n, "p", p, "rho_e", paste(rho_e,collapse = "_"), 
                      "dim_red_coeff", dim_red_args$reduce_coef, "last", dim_red_args$last,"decor",decor,
                      "subpro",paste(pro, collapse = "_"), "iter", n_iter, "nsub", n_sub,
                      kernel_name, "est", est, sep = "_")

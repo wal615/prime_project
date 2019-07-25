@@ -198,8 +198,13 @@ generate_chi <- function(n, p, rho = NULL, sig_coef = 1,
 ##################################################################################
 ## subset PCB data
 ##################################################################################
-generate_PCB <- function(data_path) {
-  b <- read.csv(data_path, stringsAsFactors = FALSE)
+generate_PCB <- function(data_path, n, structure) {
+  b <- read.csv(data_path, stringsAsFactors = FALSE) %>% data.matrix(.)
+  if(nrow(b) >= n){
+    b <- b[1:n,]
+  } else {
+    stop("n is too large then the real data")
+  }
   
   # # subset b 
   # n <- nrow(b)
@@ -290,7 +295,7 @@ gene_model_data <- function(b_raw, p, combine = FALSE){
 est_model_data <- function(b_raw, y, p, 
                            inter_std, 
                            combined, 
-                           uncorr_method, uncorr_args, 
+                           uncorr_method, uncorr_args,
                            dim_red_method, dim_red_args, 
                            uncorre = FALSE){
   # Standardized main covariates

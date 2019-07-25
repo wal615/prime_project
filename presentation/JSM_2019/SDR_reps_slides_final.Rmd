@@ -4,31 +4,64 @@ short-title: "Representative approach"
 author: "Xuelong Wang, Jie Yang"
 date: '`r format(Sys.Date(), "%B %d, %Y")`'      # Month DD, YYYY (Main Slide)
 short-date: '`r format(Sys.Date(), "%m/%d/%Y")`' # MM/DD/YYYY (Lower Right)
+institute: "University of Illinois at Chicago"
+short-institute: "UIC"
+department: "Department of Mathematics, Computer Science and Statistics"  
 section-titles: false        # Provides slide headings
 safe-columns: true   # Enables special latex macros for columns.
 header-includes:
-   - \usepackage{amsmath, bbm}
-   - \newcommand{\vect}[1]{\boldsymbol{\mathbf{#1}}}
+   - \usepackage{amsmath, bbm, graphicx}
+   - \usepackage{booktabs}
+   - \usepackage{longtable}
+   - \usepackage{array}
+   - \usepackage{multirow}
+   - \usepackage{wrapfig}
+   - \usepackage{float}
+   - \usepackage{colortbl}
+   - \usepackage{pdflscape}
+   - \usepackage{tabu}
+   - \usepackage{threeparttable}
+   - \usepackage{threeparttablex}
+   - \usepackage[normalem]{ulem}
+   - \usepackage{makecell}
+   - \usepackage{xcolor}
+   - \newcommand{\indep}{\rotatebox[origin=c]{90}{$\models$}}
 output: 
    uiucthemes::beamer_illinois: 
        toc: true
 ---
 
+```{r,include=F}
+library(kableExtra)
+library(tidyverse)
+library(gridExtra)
+library(data.table)
+library(ggpubr)
+theme_set(theme_gray(base_size = 22))
+source("~/dev/dr_sim_code/Binary_response/Reports/representative_binary_response/make_table_JSM_slides.R")
+```
 
 # Background
 ### Fundamental assumption
-Let random variable $X \in \mathbb{R}^p$, $Y \in \mathbb{R}$ and $\eta \in \mathbb{R}^d$, where $d << p$
+Let random variable $X \in \mathbb{R}^p$, $Y \in \mathbb{R}$ and $\eta \in \mathbb{R}^{p\times d}$, where $d << p$
 \[
 Y|X \sim Y|\eta^T X
 \]
 
 ##### Example
 
+1. Linear regression: $Y = a + \beta_1^TX + \beta_2^TX + \epsilon$  
+
+2. NonLinear regression: $Y = a + \exp(\beta^TX) + \sin(\beta_2^TX) \epsilon$  
+
+3. Generalized linear regression: $probit(p) = a + \beta_1^TX + \beta_2^TX$  
+
+Where $\eta$ is a set of basis of $span(\beta_1, \beta_2)$
 
 ### Sufficient dimension reduction
 #### Dimension-reduction subspace
 \[
-  Y \vect X|\eta^TX \rightarrow Y\vect X|(\eta A)^TX \rightarrow Y\vect X|P_S^TX,
+  Y \indep X|\eta^TX \rightarrow Y \indep X|(\eta A)^TX \rightarrow Y \indep X|P_SX,
 \]
 Where $P_\mathcal{S}$ is the projection matrix of subspace $\mathcal{S}$  
 $\mathcal{S}$ is called the dimension-reduction subspace
@@ -40,33 +73,153 @@ However, the $\mathcal{S}$ is not unique, i.e. if $\mathcal{S} \subset \mathcal{
 \[
 S_{Y|X} = \cap S_{SDR}
 \]
-The target of sufficient dimension reduction is to estimate the structure of S_{Y|X}
+The target of sufficient dimension reduction is to estimate the structure of $S_{Y|X}$
 
 ### Estimating the central subspace
 
-#### Sliced type regression 
-One potential issuse is that we cannot recover all the central space.
+![](./pic/sir_method.png){width=500px}
 
-### Problem
-#### Binary response
 
-Limited the number of sliced 
-For sir, it can only find one dimension
-the save stil possible find all the dimensions based on two sliced, but it still surfured from this 
+### Problem with Binary response
 
-# Exsisting Solution
+- Limited the number of sliced 
+- For SIR, it can only find one basis at most
+- For SAVE, it also suffers from the limit number of slices
 
-### Probability Enhanced method 
+# Existing Solution
+
+### Probability Enhanced method for binary response
+
+#### Main idea
+- $S_{Y|X} = S_{P(Y|X)|X}$
+- Estimated the Probability related rank by weighted support vector machine(WSVM)
+- It enriches the information of response 
+
+### Scalability of large data 
+
+- Kernel matrix 
+- tunning parameter
+
 
 # Our approach
+
 ### Representative approach 
+#### Representative 
+A Representative is a summary statistic of data points within a cluster:
+For $(X_i, Y_i), i \in I_k$
+\[
+  X^*_k = R(X_{1}, \dots, X_{nk}),~~ Y^*_k = R(Y_{1}, \dots, Y_{nk}),
+\]
+where $R: \mathbb{R}^p \rightarrow \mathbb{R}^p$ is the summarizing function.
 
-### method 
+#### Main idea
+After transformation $Y^*$ will become continuous, but the relation (the $\beta's$) of $Y^*$ and $X^*$ will almost keep the same:
+\[
+Y = f(X^T\beta_1, \dots, X^T\beta_k) \rightarrow Y^* \approx G({X^*}^T\beta_1, \dots, {X^*}^T\beta_k)
+\]
 
-### clustering steps also reducing the data size
+### Method 
+#### Steps
+- Split the $(X,Y)$ into K clusters $I_1, \dots, I_K$
+- Summary the representative for each cluster k
+\[
+  Y^*_k = \bar{Y}_k = \frac{\sum_i Y_i}{nk}, ~~ X^*_k = \bar{X}_k = \frac{\sum_i X_i}{nk}, ~~ i\in I_k
+\]
+Note that we choose the cluster average as the summary statistics $R$
+- Apply SDR methods on the representatives
 
-### parallel method 
+### Method
+
+#### The representatives keeps the relations $\beta's$
+The representatives of Y actually is actually the conditional probability of $P(Y|X)$, 
+\[
+\bar{Y}_k \rightarrow P(Y=1|X=X_k) \text{ as } N,K,N/K \to \infty
+\]
+It's can be shown that 
+\[
+  S_{Y|X} = S_{P(Y|X)|X},
+\]
+
+### Additional value: Big data solution (n is large)
+
+#### Clustering step
+Clustering step reduced the sample size from $N$ to $K$   
+
+- $(Y_1,X_1) \dots (Y_N,X_N) \to (Y^*_{1},X^*_{1}) \dots (Y^*_K,X^*_K)$   
+
+- Note if the data set is too large, we could also use the online clustering method  
+
+### Additional value: Big data solution (n is large)
+
+#### Parallel Algorithm for SIR and SAVE 
+1. Split the sliced data into b blocks, $X_1, \dots X_b$    
+1. Load each block X_B and Calculate the statistics for each block such as $\bar{X}_b, \bar{X}_{hb}, n_{hb}, X^T_{hb}X_{hb}$  
+1. Summary the statsitics across the blocks and slices to get the candidate matrix $M_{SIR}, M_{SAVE}$  
+# Simulation result 
 
 # Simulation result 
 
+### Simulation setup 
+
+#### Data generation Model:laten model
+\[
+    Y=\left\{
+                \begin{array}{ll}
+                  0 ~~~(X\beta_1)^2*e^{(X\beta_2)}*\sin(X\beta_3) + \epsilon < 0 \\
+                  1 ~~~\text{Otherwise} \\
+                \end{array}
+      \right. 
+\]
+where 
+
+- $X \in \mathbb{R}^6 \sim N(0_6, I_6)$  
+- $\beta_i = e_i = (0,\dots, 1,0,\dots,0)^T$, so in our case the linear combination is $X_1,X_2,X_3$
+- $\epsilon \sim N(0,1)$   
+
+### Simulation result
+
+#### Performance Evaluation
+
+- Hypothesis Test: Test how many bases of the Central space 
+- Distance: Measure the distance between the estimated $\hat{\beta}'s$ and true $\beta's$
+
+#### Result summary
+- The true basis is $(e^T_1,e^T_2, e^T_3)$  
+- For SAVE, it can only find 2 of the 3 basis  
+- For the representative SAVE, it can find all of them  
+
+### Simulation result
+
+```{r, echo=FALSE}
+kable(rbind(dir_sir_table,dist_sir_table), "latex", booktabs = T) %>%
+kable_styling(latex_options = "scale_down") %>%
+column_spec(6:9, bold = T) %>%
+add_header_above(c(" ", "Log_n" = 12)) %>%
+add_header_above(c(" ", "sir_original" = 4, 
+                        "sir_rep" = 4,
+                        "sir_p" = 4))
+```
+
+
+### Simulation result
+```{r, echo=FALSE}
+kable(rbind(dir_save_table,dist_save_table), "latex", booktabs = T) %>%
+kable_styling(latex_options = "scale_down") %>%
+column_spec(6:9, bold = T) %>%
+add_header_above(c(" ", "Log_n" = 12)) %>%
+add_header_above(c(" ", "save_original" = 4, 
+                        "save_rep" = 4,
+                        "save_p" = 4))
+```
+
+
 # Future work
+
+### Future work
+
+```{r, echo=FALSE, eval=FALSE}
+grid.arrange(plot_direction_save_y5_representative_0.4,
+             plot_direction_save_y5_representative_0.6, ncol =2, nrow =2)
+```
+
+- A different choice of K will affect the performance of SDR methods

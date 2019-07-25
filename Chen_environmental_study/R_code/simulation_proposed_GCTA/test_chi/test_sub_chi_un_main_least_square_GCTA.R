@@ -15,37 +15,50 @@ data_path <- "~/dev/projects/Chen_environmental_study/R_code/data/pcb_99_13_no_m
 save_path <- "~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/var_est/decor/"
 
 cores <- 10
-n_iter <- 100
-n_sub <- 0
+n_iter <- 10
+n_sub <- 1
 seed_loop <- 1234
 seed_coef <- 1014
 # steup parameters
 
 # sub_sampling
-pro <- 101
-bs <- "leave-1"
+pro <- 0
+bs <- "full"
 
 # data generation
-emp_n <- 10^5
-n_total <- c(1000)
+emp_n <- 10^3
+n_total <- c(400)
 # n_total <- 5000
 dist <- "chi"
 generate_data <- generate_chi
 structure <- "un"
-pre_cor <- real_data_corr.mat(data_path)
-p <- ncol(pre_cor)
-# pre_cor <- unstr_corr.mat(p)
+p <- 500
+# pre_cor <- autocorr.mat(p, 0.9)
+pre_cor <- unstr_corr.mat(p,k=5)
+# pre_cor <- real_data_corr.mat(data_path)
+# p <- ncol(pre_cor)
 
+# decorr
+# uncorr_method <- SVD_method
+# uncorr_args <- NULL
+# uncorr_method <- GLASSO_method
+# uncorr_args <- NULL
+uncorr_method <- dgpGLASSO_method
+uncorr_args <- NULL
+# uncorr_method <- QUIC_method
+# uncorr_args <- NULL
+# uncorr_method <- PCA_method
+# uncorr_args <- NULL
 
 # est
-decor = TRUE
+decor <- F
 combine <- FALSE
 est <- "main"
 
-# kernel <- EigenPrism_kernel
-# kernel_args <- list(decor = decor)
-# kernel_name <- "EigenPrism_kernel"
-# kernel_result_col_names <- col_names_Eigen
+kernel <- EigenPrism_kernel
+kernel_args <- list(decor = decor)
+kernel_name <- "EigenPrism_kernel"
+kernel_result_col_names <- col_names_Eigen
 
 
 # kernel_args <- list(interact = 0,decor = decor)
@@ -54,10 +67,10 @@ est <- "main"
 # kernel_result_col_names <- col_names_GCTA
 
 
-kernel <- least_square_kernel
-kernel_args <- list(decor = decor)
-kernel_name <- "least_square_kernel"
-kernel_result_col_names <- col_names_least_square
+# kernel <- least_square_kernel
+# kernel_args <- list(decor = decor)
+# kernel_name <- "least_square_kernel"
+# kernel_result_col_names <- col_names_least_square
 
 
 # est2
@@ -117,7 +130,8 @@ result_list <- mapply(FUN = simulation_var_est_fn,
                                       emp_n = emp_n,
                                       combine = combine,
                                       gene_coeff_args = gene_coeff_args,
-                                      uncorr_method = SVD_method,
+                                      uncorr_method = uncorr_method,
+                                      uncorr_args = uncorr_args,
                                       dim_red_method = dim_red_method,
                                       dim_red_args = dim_red_args,
                                       generate_data = generate_data,

@@ -14,39 +14,63 @@ source("./R_code/simulation_proposed_GCTA/local_helpers.R")
 data_path <- "~/dev/projects/Chen_environmental_study/R_code/data/pcb_99_13_no_missing.csv"
 save_path <- "~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/var_est/decor/"
 
-cores <- 15
-n_iter <- 100
-n_sub <- 0
+cores <- 10
+n_iter <- 200
+n_sub <- 1
 seed_loop <- 1234
 seed_coef <- 1014
 # steup parameters
 
 # sub_sampling
-pro <- 101
-bs <- "leave-1"
+pro <- 0
+bs <- "full"
 
 # data generation
 emp_n <- 10^5
-n_total <- c(1000)
+n_total <- c(500)
 # n_total <- 5000
 dist <- "normal"
 generate_data <- generate_normal
 structure <- "un"
-# p <- 561
-# pre_cor <- unstr_corr.mat(p)
-pre_cor <- real_data_corr.mat(data_path)
-p <- ncol(pre_cor)
+p <- 33
+pre_cor <- unstr_corr.mat(p,k=5)
 
+# pre_cor <- real_data_corr.mat(data_path)
+# p <- ncol(pre_cor)
+
+
+# pre_cor <- real_data_corr.mat(data_path)
+# diag(pre_cor) <- 0
+# pre_cor[which(pre_cor >= 0.95, arr.ind = TRUE)] <- NA
+# pre_cor <- pre_cor[complete.cases(pre_cor),complete.cases(pre_cor)]
+# diag(pre_cor) <- 1
+# p <- ncol(pre_cor)
 
 # est
-decor = TRUE
+decor <- T
+if(decor == FALSE) {
+  decor_method <- "None"
+}
 combine <- TRUE
-est <- "main"
+est <- "total"
 
-# kernel <- EigenPrism_kernel
-# kernel_args <- list(decor = decor)
-# kernel_name <- "EigenPrism_kernel"
-# kernel_result_col_names <- col_names_Eigen
+# decorr
+decor_method <- "PCA"
+# uncorr_method <- SVD_method
+# uncorr_args <- NULL
+# uncorr_method <- GLASSO_method
+# uncorr_args <- NULL
+# uncorr_method <- dgpGLASSO_method
+# uncorr_args <- NULL
+# uncorr_method <- QUIC_method
+# uncorr_args <- NULL
+uncorr_method <- PCA_method
+uncorr_args <- NULL
+
+kernel <- EigenPrism_kernel
+kernel_args <- list(decor = decor)
+kernel_name <- "EigenPrism_kernel"
+kernel_result_col_names <- col_names_Eigen
 
 
 # kernel_args <- list(interact = 0,decor = decor)
@@ -55,10 +79,10 @@ est <- "main"
 # kernel_result_col_names <- col_names_GCTA
 
 
-kernel <- least_square_kernel
-kernel_args <- list(decor = decor)
-kernel_name <- "least_square_kernel"
-kernel_result_col_names <- col_names_least_square
+# kernel <- least_square_kernel
+# kernel_args <- list(decor = decor)
+# kernel_name <- "least_square_kernel"
+# kernel_result_col_names <- col_names_least_square
 
 
 # est2
@@ -94,7 +118,7 @@ pro_list <-  args_all[,6, drop = FALSE] %>% split(x = ., f = seq(nrow(.)))
 
 
 # setup folders for results
-result_name <- paste("result_list_fixed_sub", dist, "structure", structure, "main", main_fixed_var, "inter",
+result_name <- paste("decor_method",decor_method,"result_list_fixed_sub", dist, "structure", structure, "main", main_fixed_var, "inter",
                      inter_fixed_var, "n", paste(n_total, collapse = "_"), "p", p, "rho_e", paste(rho_e,collapse = "_"), 
                      "dim_red_coeff", dim_red_args$reduce_coef, "last", dim_red_args$last,"decor",decor,
                      "subpro",paste(pro, collapse = "_"), "iter", n_iter, "nsub", n_sub,
@@ -118,7 +142,8 @@ result_list <- mapply(FUN = simulation_var_est_fn,
                                       emp_n = emp_n,
                                       combine = combine,
                                       gene_coeff_args = gene_coeff_args,
-                                      uncorr_method = SVD_method,
+                                      uncorr_method = uncorr_method,
+                                      uncorr_args = uncorr_args,
                                       dim_red_method = dim_red_method,
                                       dim_red_args = dim_red_args,
                                       generate_data = generate_data,

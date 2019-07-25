@@ -1,3 +1,0 @@
-"var_main_effect","var_inter_effect","cov_main_inter_effect","var_total_effect","EigenPrism_main","EigenPrism_CI1","EigenPrism_CI2","sub_EigenPrism_main","sub_EigenPrism_CI1","sub_EigenPrism_CI2","GCTA_main","GCTA_inter","sub_GCTA_main","sub_GCTA_inter","x_dist","structure","p","n","main_fixed_var","main_random_var","inter_fixed_var","inter_random_var","decor","interact","combine","pro","bs","n_sub","rho_e","emp_n","inter_std","i"
-10,0,0,0,0,0,0,6.89003370922513,-5.14382473451992,18.9238921529702,0,0,8.22536251133829,0,"normal","un",500,100,0.5,0,0,0,TRUE,0,FALSE,0.5,"leave-d",2,0.5,1e+05,TRUE,1
-10,0,0,0,0,0,0,-1.1808227479483,-9.12924440392187,6.76759890802527,0,0,6.21116953380287,0,"normal","un",500,100,0.5,0,0,0,TRUE,0,FALSE,0.5,"leave-d",2,0.5,1e+05,TRUE,1
