@@ -60,7 +60,7 @@ sub_coverage_rate_z <- function(x,true, upper, lower,pro){
 
 
 
-result_path <- "decor_method_PCA_result_list_fixed_sub_normal_structure_un_main_0.5_inter_0.1_n_190_p_19_rho_e_0.5_dim_red_coeff__last__decor_TRUE_subpro_0_iter_10_nsub_1_EigenPrism_kernel_GCTA_kernel_est_total"
+result_path <- "decor_method_None_result_list_fixed_sub_normal_structure_un_main_0.5_inter_0.1_n_500_p_33_rho_e_0.5_dim_red_coeff__last__decor_FALSE_subpro_0_iter_200_nsub_1_EigenPrism_kernel_GCTA_kernel_est_total"
 file_list_all <- list.files(paste0("./", result_path, "/")) %>% paste0(paste0("./", result_path, "/"),.)
 file_list <- file_list_all[grep(x = file_list_all, pattern = "iteration",perl = TRUE)]
 sub_result <- lapply(file_list, function (x) {read.csv(x, header = TRUE, stringsAsFactors = FALSE)}) %>% rbindlist(., fill = TRUE)
@@ -119,7 +119,7 @@ summary_final <- cbind(summary_final, additional)
 
 summary_tmp <- rbind(summary_tmp, summary_final) 
 
-write.csv(table, file = "~/dev/projects/Chen_environmental_study/reports/proposed_GCTA_paper/est_var_analysis/decor/main_result.csv", row.names = F)
+write.csv(summary_tmp, file = "~/dev/projects/Chen_environmental_study/reports/proposed_GCTA_paper/est_var_analysis/decor/glasso_total.csv", row.names = F)
 table <- read.csv("~/dev/projects/Chen_environmental_study/reports/proposed_GCTA_paper/est_var_analysis/decor/main_result.csv",stringsAsFactors = F) %>% data.table(.) 
 table <- table[x_dist != "PCB"]
 table[,X:=NULL]

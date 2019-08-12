@@ -1,0 +1,172 @@
+---
+title: "Decorrelation methods study"
+author: "Xuelong Wang"
+date: "`r Sys.Date()`"
+output: 
+  pdf_document:
+  toc: true
+number_sections: true
+keep_tex: true
+fig_width: 12
+fig_height: 4.5
+header-includes:
+  - \usepackage{float,amsmath, bbm, siunitx, bm}
+  - \usepackage{pdfpages}
+  - \floatplacement{figure}{H}
+  - \newcommand{\indep}{\rotatebox[origin=c]{90}{$\models$}}
+editor_options: 
+  chunk_output_type: console
+---
+  
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, comment = FALSE, message = FALSE, warning = FALSE, fig.height = 10)
+library(MASS)
+library(tidyverse)
+library(knitr)
+library(kableExtra)
+options(knitr.table.format = "latex")
+R.utils::sourceDirectory("~/dev/projects/Chen_environmental_study/R_code/main_fn",modifiedOnly = FALSE)
+setwd("~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/var_est/decor")
+
+# for a singal file
+upper = 0.9
+lower = 0.1
+z_p <-qnorm(lower, lower.tail = F)
+CI_length <- function(x, upper, lower){
+  CI_precentile <- quantile(x, c(lower, upper),na.rm = T)
+  CI_precentile[2] - CI_precentile[1]
+}
+coverage_rate_emp <- function(x,true, upper, lower){
+  CI1 <- quantile(x, lower ,na.rm = T)
+  CI2 <- quantile(x, upper, na.rm = T)
+  return(true >= CI1 & true <= CI2)
+}
+coverage_rate_z <- function(x,true, upper, lower){
+  z_p <-qnorm(lower, lower.tail = F)
+  CI1 <- mean(x,rm.na = T) - sd(x, rm.na = T)*z_p
+  CI2 <- mean(x,rm.na = T) + sd(x, rm.na = T)*z_p
+  return(true >= CI1 & true <= CI2)
+}
+
+jack_var <- function(x, pro = 0.5){
+  x_m <- mean(x, na.rm = T)
+  n_sub <- length(x) - sum(is.na(x)) # count for the NA data
+  var_1 <- (x_m - x)^2 %>% sum(., na.rm = T)
+  if(pro == 101){
+    var_2 <-  (length(x) -1) * 1/n_sub * var_1
+  } else if (pro ==102){
+    var_2 <- 1/n_sub * var_1
+  } else{
+    var_2 <- pro/(1-pro) * 1/n_sub * var_1
+  }
+  var_2
+}
+
+jack_var_2 <- function(x, pro){
+  n_sub <- length(x) - is.na(x)
+  x_m <- mean(x, na.rm = T)
+  var_1 <- (x_m - x)^2 %>% sum(., na.rm = T)
+  var_2 <- (1+(n_sub-1)*0.5)/(n_sub*(n_sub - 1))*var_1
+  var_2
+}
+
+sub_CI_lenght <- function(x, pro = 0.5, z_p){
+  sd <- sqrt(jack_var(x, pro))
+  2 * sd *z_p
+}
+
+sub_coverage_rate_z <- function(x,true, upper, lower,pro){
+  z_p <-qnorm(lower, lower.tail = F)
+  sd <- jack_var(x = x,pro = pro) %>% sqrt(.)
+  CI1 <- mean(x,rm.na = T) - sd*z_p
+  CI2 <- mean(x,rm.na = T) + sd*z_p
+  return(true >= CI1 & true <= CI2)
+}
+
+```
+
+# Motivation
+To decorrelate the covariate X, so that $Cov(X) = I$ or $Cov(X) = \Sigma_p$,   $\Sigma_p$'s off diaognal elements are 0s. 
+We found that after we could decorrelate the data correctly, the GCTA and EigenPrsim method can work well. 
+
+# Method 
+- SVD   
+- PCA   
+- Presicion matrix estimated by glasso and other methods  
+
+# Diffculty 
+For $n >p$ case, the SVD method can work well. Basically, we just SVD to estimate the eigenvalue $\lambda's$ and find $1/\sqrt{\lambda}$.
+However, when $n <p$ or even $n \approx p$, SVD method fails because the nearly 0 values of $\lambda's$.
+
+# solution
+
+### Main idea of PCA 
+
+#### Singular Value Decomposition
+\[
+X_s = UDV^T, ~\text{where} ~x_{ij,s} = \frac{x_{ij} - \bar{x}}{s_j}
+\]
+
+- $U = (u_1, \dots, u_r)$ is a n by r orthogonal matrix  
+- $D = diag(d_1, \dots, d_r)$ is a r by r diagonal matrix  
+- $V = (v_1, \dots, v_r)$ is a p by r orthogonal matrix
+
+
+#### Principle Component and Loading
+\begin{align*} 
+X_s &= \underbrace{\begin{bmatrix} d_1u_1 \hdots  d_ru_r \end{bmatrix} }_\text{PCs}
+\underbrace{\begin{bmatrix} v_1^T \\
+\vdots \\
+v_r^T \\
+\end{bmatrix}}_\text{Loading}
+\end{align*} 
+
+- $PC_j = d_j\pmb{u_j} = X\pmb{v_j}$ is the jth principle component 
+- The sample variance of $PC_j$ is $d_j^2/n$
+
+#### Using PCA to reduce the X's dimension
+\[
+  X_{s,k} = \sum_{j=1}^{k}d_j\pmb{u_jv_k} = U_kD_kV_k^T,~~ \text{Its Variation} ~~  \sum_{j=1}^kd_j^2/n.
+  \]
+
+\[
+  X_r(k) = XV_k = UD \begin{bmatrix} 
+  V_k^T \\
+  V_{(p-k)}^T 
+  \end{bmatrix} V_k=  UD \begin{bmatrix} 
+  I_k \\
+  0 
+  \end{bmatrix}= U_kD_k
+  \]
+
+- Note that $Var(X_k) = diag(D_i^2), i \in \{1, \dots, k\}$, which means we don't need to decorrelated it again.
+
+
+#### Simulation set up
+
+\[
+X = [x_1^2, \dots, x_p^2]^T
+\]
+
+- $p = 500,800,1000$  
+- $x_i \stackrel{iid}{\sim} N(0,1)$  
+
+#### Simulation result
+- If you include all the PCs, the we will get the exact same result using original data   
+- The less the number of PCs included, the small the value will be   
+- Need to find a way to choice the number of PC's
+
+### Presicion matrix estimation
+
+#### Glasso
+
+It seems work for EigenPrism and covariates are normal distribution
+
+#### dgplasso
+
+\[
+  \min_X \log \det (X) + trace(X \Sigma) + \rho |X|_1
+
+\]
+
+#### 

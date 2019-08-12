@@ -1,0 +1,389 @@
+---
+title: 'Total Effects Estimation of a group of Environmental Mixtures'
+short-title: "GCTA"
+author: "Xuelong Wang"
+date: '`r format(Sys.Date(), "%B %d, %Y")`'      # Month DD, YYYY (Main Slide)
+short-date: '`r format(Sys.Date(), "%m/%d/%Y")`' # MM/DD/YYYY (Lower Right)
+section-titles: false                            # Provides slide headings
+safe-columns: true   # Enables special latex macros for columns.
+header-includes:
+   - \usepackage{amsmath, bbm}
+   - \newcommand{\vect}[1]{\boldsymbol{\mathbf{#1}}}
+   - \DeclareMathOperator*{\argmax}{arg\,max}
+   - \DeclareMathOperator*{\argmin}{arg\,min}
+   - \usepackage{caption}
+   - \captionsetup{skip=0pt}
+output: 
+   uiucthemes::beamer_illinois: 
+       toc: true
+---
+
+```{r, echo = F, message=F}
+library(ggplot2)
+library(sas7bdat)
+library(R.utils)
+library(MASS)
+library(tidyverse)
+library(foreach)
+library(doRNG)
+library(doParallel)
+library(gtools) # for rbind based on columns
+setwd("~/dev/projects/Chen_environmental_study/")
+sourceDirectory("./R_code/main_fn/",modifiedOnly = FALSE, recursive = TRUE)
+sourceDirectory("./R_code/main_fn/method/",modifiedOnly = FALSE, recursive = TRUE)
+source("./R_code/simulation_proposed_GCTA/local_helpers.R")
+data_path <- "~/dev/projects/Chen_environmental_study/R_code/data/pcb_99_13_no_missing.csv"
+save_path <- "~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/var_est/decor/prime_0806/"
+pre_cor <- real_data_corr.mat(data_path) 
+pre_cor_inv <- inv(pre_cor)
+colnames(pre_cor_inv) <- colnames(pre_cor)
+rownames(pre_cor_inv) <- rownames(pre_cor)
+h1 <- ggplot(data = melt(pre_cor), aes(x=Var1, y=Var2, fill=value)) + 
+  scale_fill_gradient(low = "white", high = "blue") +
+  geom_tile()
+h2 <- ggplot(data = melt(pre_cor>0.9), aes(x=Var1, y=Var2, fill=value)) + 
+  geom_tile()
+h1_inv <- ggplot(data = melt(pre_cor_inv), aes(x=Var1, y=Var2, fill=value)) + 
+  geom_tile()
+h2_inv <- ggplot(data = melt(abs(pre_cor_inv)< 0.01), aes(x=Var1, y=Var2, fill=value)) + 
+  geom_tile()
+
+```
+
+
+# Background
+
+### A motivation example
+
+#### Goal 
+Investigate the association between environmental exposures and a health outcome
+
+#### A linear model 
+\[
+Y = \beta^TX + \epsilon
+\]
+
+- $Y$ is a heath outcome(e.g. glycohemoglobin),  
+- $X = (X_1, \dots, X_p)$ are environmental exposures, e.g. PCBs, 
+- $\beta = (\beta_1, \dots, \beta_p)$, $\epsilon \sim N(0, \sigma^2_{\epsilon})$.
+
+### A motivation example
+
+#### Variable selection and coefficient estimation (e.g. Lasso) 
+This approach may not work well due to :   
+
+- Low level of exposures and possibly weak effects 
+    * Sparsity assumption
+- High correlation among the exposures 
+    * Collinearity
+
+
+### Association and Variation
+
+#### Heritability
+Heritability is a statistics that summarizes how much variation of a quantitative trait attribute to genetic factors
+\[
+H^2 = \frac{\sigma^2_g}{\sigma^2_y}
+\]
+
+#### Total effects 
+\[
+  Var(\beta^TX) \text{ or } \frac{Var(\beta^TX)}{Var(Y)}
+\]
+Note that we assume that $X$ and/or $\beta$ are random vector(s)
+
+# Goal
+
+### Model
+
+#### Mixed model
+
+\begin{align}
+Y &= \beta_0 + \beta^TX+ \epsilon \\
+Y &= \beta_0 + \beta^TX + X^T \Gamma X + \epsilon
+\end{align}
+Where $Y$ is the health outcome, $X_{p \times1}$ is the exposures, $\beta_{p\times1}$ is the main effect, $\Gamma_{p \times p}$ are the interaction effect, $\epsilon$ is the error term.  
+Note that $X$ is a random vector, $\beta$ and $\Gamma$ could be random or fixed effects.
+
+### Goal
+
+#### Specific goals 
+- Estimate of total main effect $Var(\beta^TX)$ and total combined effect $Var(\beta^TX + X^T \Gamma X)$
+- Estimate the variance of the total effects
+
+### Estimation methods of Total effect
+
+#### GCTA: Genome-wide complex trait analysis (Yang et al (2010))
+- use a working mixed model to estimate the total effect
+- work with $n <p$ and $n >p$ case
+- covariates need to be independent to each other 
+- no variance estimation and inference
+
+#### EigenPrism (Janson et al (2017))
+
+- work only with $n <p$
+- covariates need to be independent to each other
+- provides a conservative confidence interval for estimated total effect when $n < p$
+
+# Challenges
+
+### Challenge 
+
+1. Estimate the total effect of mixtures under high correlation and high dimension setup
+1. Statistical inference of the estimated total effects
+1. Estimate the total main and interaction effect of mixtures
+
+# Solution
+
+### Decorrelation 
+
+#### Total effect is invariant of linear transformation
+
+\[
+     Y = \beta_0 +\beta^TX + \epsilon,
+\]
+The variance of Y explained by X is $Var(\beta^TX) = \beta^T Var(X)\beta$
+\[
+  Z = AX
+\]
+In order to keep the same model, $\beta \to \gamma$ and $\gamma = A^{-1}\beta$
+\[
+    Y = \beta_0 +\gamma^TZ + \epsilon,
+\]
+
+The variance of $Y$ explained by $Z$ is same as $X$ 
+\[
+    Var(\gamma^TZ) = \gamma^TVar(Z)\gamma = \beta^T Var(X)\beta = Var(\beta^TX)
+\]
+
+### Decorrelation 
+
+#### Linear transformation to remove correlation
+
+Let $\Sigma = Var(X)$, $A = \Sigma^{-1/2}$, 
+
+\[
+  Z = AX \Rightarrow Var(Z) = I_p,
+\]
+Moreover,
+\[
+Var(\beta^tX) = Var(\gamma^TZ) = \sum_{i = 1}^p \gamma_i^2.
+\]
+Therefore, the task is to estimate $\Sigma^{-1/2}$ correctly
+
+### How to estimate the $\Sigma^{-1/2}$
+
+1. Spectral decomposition
+\[
+\hat{\Sigma} = \frac{1}{n-1}\sum_{i =1}^n(X_i - \bar{X})(X_i - \bar{X})^T = UDU^T
+\]
+where $X_i$ with $p \times1$ and $U$ is $p \times p$ matrix, $D$ is a diagonal matrix with $diag(D) = (d_1,\dots,d_p)$,
+\[
+\hat{\Sigma}^{-1/2} = UD^{-1/2}U^T
+\]
+where $diag(D^{-1/2}) = (d^{-1/2}_1, \dots, d^{-1/2}_p)$
+
+### Simulation setup
+#### Data generating model 
+\[
+Y = X\beta + \epsilon
+\]
+
+- $Y$ is a $n \times 1$ vector, $X$ is a $n \times p$ matrix, $\beta$ is a  $p \times 1$ vector
+- $n = 200, 500, 1000$, $p = 500$
+- $X$ follows Normal or $\chi^2_{1}$ and $Var(X) =  \Sigma_{un}$
+- $\epsilon \sim N(0,\sigma^2_{\epsilon})$
+- $\frac{Var(X\beta)}{Var(Y)} = 0.5$, $Var(X\beta) = 10$ 
+
+<!-- #### 4 situations  -->
+<!-- \begin{table}[H] -->
+<!-- \centering -->
+<!-- \begin{tabular}{@{}|l|l|l|@{}} -->
+<!--             & n \textgreater{}p & n\textless{}p    \\  -->
+<!-- Independent   & GCTA(Least)       & GCTA(EigenPrism) \\  -->
+<!-- Dependent & GCTA(Least)       & ??               \\  -->
+<!-- \end{tabular} -->
+<!-- \end{table} -->
+
+### Simulation result
+\begin{table}[]
+\centering
+\caption{Simulation result without decorrelation}
+\resizebox{\textwidth}{!}{%
+\renewcommand{\arraystretch}{0.9}
+\begin{tabular}{|c|c|cc|cc|cc|}
+\hline
+x\_dist                 & n    & effect\_EP & effect\_GCTA & var\_EP & var\_GCTA & MSE\_EP & MSE\_GCTA \\ \hline
+\multirow{3}{*}{chi}    & 200  & 13.89                 & 13.58           & 15.2                 & 14.25          & 30.12           & 26.89     \\
+                        & 500  & 14.66                 & 14.62           & 7.11                 & 7.36           & 28.66           & 28.6      \\
+                        & 1000 & NA                    & 14.75           & NA                   & 2.37           & NA              & 24.93     \\ \hline
+\multirow{3}{*}{normal} & 200  & 13.48                 & 13.77           & 21.55                & 21.06          & 33.24           & 35.05     \\
+                        & 500  & 14.57                 & 14.46           & 6.88                 & 6.32           & 27.68           & 26.11     \\
+                        & 1000 & NA                    & 15.19           & NA                   & 2.79           & NA              & 29.7      \\ \hline
+\end{tabular}%
+}
+\end{table}
+
+\begin{table}[]
+\centering
+\caption{Simulation result with decorrelation by spectral decomposition}
+\resizebox{\textwidth}{!}{%
+\renewcommand{\arraystretch}{0.9}
+\begin{tabular}{|c|c|cc|cc|cc|}
+\hline
+x\_dist                 & n    & effect\_EP & effect\_GCTA & var\_EP & var\_GCTA & MSE\_EP & MSE\_GCTA \\ \hline
+\multirow{3}{*}{chi}    & 200  & 49.87                 & 22.9            & 27.96                & 634.85         & 1615.79         & 794.93    \\
+                        & 500  & 20.12                 & 12.82           & 2.78                 & 95.68          & 105.13          & 102.62    \\
+                        & 1000 & NA                    & \color{blue}\textbf{9.8}            & NA                   & \color{blue}\textbf{0.97}           & NA              & \color{blue}\textbf{1}         \\ \hline
+\multirow{3}{*}{normal} & 200  & 51.54                 & 24.2            & 19.79                & 677.04         & 1744.29         & 872.02    \\
+                        & 500  & 20.05                 & 10.2            & 1.77                 & 101.69         & 102.75          & 100.69    \\
+                        & 1000 & NA                    & \color{blue}\textbf{9.95}            & NA                   & \color{blue}\textbf{0.96}           & NA              & \color{blue}\textbf{0.95}      \\ \hline
+\end{tabular}%
+}
+\end{table}
+
+### Sigularity of $\hat{\Sigma}$ when $n < p$ 
+If $n<p$, $\hat{\Sigma}$ is a unbiased and consistent estimator of $\Sigma$.
+However, $\hat{\Sigma}$ will be singular when $n <p$, which means some of $d_i's$ are zeros. 
+So that is the reason $\hat{\Sigma}^{-1/2}$ are not stable. 
+
+#### Solutions
+1. Use historical data to get a good estimation of $\hat{\Sigma}$
+1. Use methods for large (High dimension) covariance matrix and precision matrix estimation
+    * Sparse precision matrix estimation method
+    * Factor model
+    
+### Simulation result: Use historical data and spectral decompostion
+
+\[
+  \hat{\Sigma}_h = \frac{1}{n_h-1} \sum_{i =1}^{n_h}(X_i - \bar{X})(X_i - \bar{X})^T
+\]
+Where $n_h$ is the sample size of historical data.
+
+\begin{table}[]
+\centering
+\caption{Simulation result with decorrelation by spectral decomposition}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{|c|c|cc|cc|cc|}
+\hline
+x\_dist                 & n    & effect\_EP & effect\_GCTA & var\_EP & var\_GCTA & MSE\_EP & MSE\_GCTA      \\ \hline
+\multirow{3}{*}{chi}    & 200  & \textbf{9.99}         & \textbf{9.67}   & \textbf{6.04}        & \textbf{6.43}  & \textbf{5.98}   & \textbf{6.47}  \\
+                        & 500  & \textbf{9.83}         & \textbf{9.83}   & \textbf{2.93}        & \textbf{2.85}  & \textbf{2.93}   & \textbf{2.85}  \\
+                        & 1000 & NA                    & \textbf{9.72}   & NA                   & \textbf{0.75}  & NA              & \textbf{0.82}  \\ \hline
+\multirow{3}{*}{normal} & 200  & \textbf{9.48}         & \textbf{9.13}   & \textbf{9.37}        & \textbf{11.02} & \textbf{9.55}   & \textbf{11.67} \\
+                        & 500  & \textbf{10.05}        & \textbf{9.88}   & \textbf{2.19}        & \textbf{2.19}  & \textbf{2.17}   & \textbf{2.18}  \\
+                        & 1000 & NA                    & \textbf{10.05}  & NA                   & \textbf{0.89}  & NA              & \textbf{0.89}  \\ \hline
+\end{tabular}%
+}
+\end{table}
+
+### Large covariance matrix estimation
+
+#### Sparse precision matrix estimation:Glasso
+\[
+  \hat{\Theta} = \argmin_{\Theta = (\theta_{ij})_{p\times p}} \left\{ tr(\hat{\Sigma}\Theta) + \log |\Theta| + \sum_{i \neq j}P(|\theta_{ij}|) \right\}
+\]
+where $\Theta = \Sigma^{-1}$ and assume it is sparse $P$ is the penalty.
+
+#### Factor model
+\[
+  X_t = Bf_t + \mu_t
+\]
+Where $B = (b_1, \dots, b_p)^T$, $f_t$ with $p \times 1$ is the common factor and $\mu_t = (\mu_{1t}, \dots, \mu_{pt})^T$.
+\[
+Var(X_t) = B cov(f_t) B^T + \Sigma_{\mu} 
+\]
+Where $\Sigma_{\mu} = Var(\mu_t)$ is sparse.
+
+
+### Restricted to PCBs covariance structures
+
+```{r, echo=F, fig.cap="Sample covariance correlation of PCBs from 1999 - 2013"}
+h1
+```
+
+### Restricted to PCBs covariance structures
+
+```{r, echo=F, fig.cap="all the correlation > 0.9"}
+h2
+```
+
+### Variance estimation
+
+#### Jackknife variance estimation
+\[
+\hat{Var}(\beta^TX)= \hat{\theta}
+\]
+\begin{enumerate}
+    \item Sub-sample $X_d$ a $(n-d) \times p$ matrix and $Y_d$ is a $(n-d) \times 1$ from $X$ and $Y$
+    \item Use the $X_d, Y_d$ to fit the model and get the estimation $\hat{\theta}_{-d}$ 
+    \item Iterate the whole process $S$ times and get the sub-sampling-variance as $Var(\hat{\theta}) = \frac{n -d}{d} \frac{1}{S}\sum_s(\hat{\theta}_{-d_s} - \hat{\theta_{.}})^2$,
+    where $\hat{\theta_{.}} = \frac{\sum_s\hat{\theta}_{-d_s}}{S}$
+\end{enumerate}
+Note if we set d = 1, then we will have the leave-1-out estimator. 
+
+### Simulation result
+Leave-1 out method may be the best choice.
+\begin{itemize}
+    \item $n = 500$, $p = 1000$
+    \item $X \sim N(0, I)$
+    \item Nominal coverage rate is $80\%$
+\end{itemize}
+\begin{table}[]
+\centering
+\caption{}
+\label{tab:my-table}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{|c|c|c|cc|ccc|cc|c|}
+\hline
+x\_dist                 & method                      & delete & effect            & var              & var\_jack     & CI\_width\_sub & coverage\_sub & CI\_width       & coverage & var\_diff\_ratio \\ \hline
+\multirow{8}{*}{normal} & \multirow{4}{*}{EigenPrism} & 0.7    & \multirow{4}{*}{10.14} & \multirow{4}{*}{4.24} & 12.67         & 9.09           & 0.96             & \multirow{4}{*}{5.71} & \multirow{4}{*}{0.85}     & 1.99             \\
+                        &                             & 0.4    &                        &                       & 8.76          & 7.56           & 0.93             &                       &                           & 1.07             \\
+                        &                             & 0.1    &                        &                       & 7.55          & 7.01           & 0.91             &                       &                           & 0.78             \\
+                        &                             & 1      &                        &                       & \color{blue}\textbf{7.48} & \color{blue}\textbf{6.98}  & \color{blue}\textbf{0.9}     &                       &                           & \color{blue}\textbf{0.76}    \\ \cline{2-11} 
+                        & \multirow{4}{*}{GCTA}       & 0.7    & \multirow{4}{*}{10.05} & \multirow{4}{*}{4.37} & 12.78         & 9.13           & 0.97             & NA                    & NA                        & 1.92             \\
+                        &                             & 0.4    &                        &                       & 9.34          & 7.79           & 0.94             & NA                    & NA                        & 1.14             \\
+                        &                             & 0.1    &                        &                       & 7.71          & 7.06           & 0.91             & NA                    & NA                        & 0.76             \\
+                        &                             & 1      &                        &                       & \color{blue}\textbf{7.52} & \color{blue}\textbf{6.98}  & \color{blue}\textbf{0.91}    & NA                    & NA                        & \color{blue}\textbf{0.72}    \\ \hline
+\end{tabular}%
+}
+\end{table}
+
+### Simulation result 
+The bias will be reduced when n is increasing.
+\begin{itemize}
+    \item $n = 500, 1000, 2000$, $p = 500$
+    \item $X$ follows independent normal or chi
+    \item Nominal coverage rate is $80\%$
+\end{itemize}
+
+\begin{table}[]
+\centering
+\caption{Simulation result of GCTA with sub-sampling}
+\label{tab:my-table}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{|c|c|cc|cc|c|}
+\hline
+x\_dist                 & n    & var & var\_jack & CI\_width\_sub & coverage\_sub & var\_diff\_ratio \\ \hline
+\multirow{3}{*}{normal} & 500  & 2.5      & 5.55      & 6.01           & 0.92             & 1.22             \\
+                        & 1000 & 0.9      & 1.5       & 3.13           & 0.89             & 0.67             \\
+                        & 2000 & 0.31     & 0.46      & 1.73           & 0.85             & 0.48             \\ \hline
+\multirow{3}{*}{chi}    & 500  & 2.45     & 5.51      & 5.99           & 0.92             & 1.25             \\
+                        & 1000 & 0.81     & 1.5       & 3.13           & 0.89             & 0.85             \\
+                        & 2000 & 0.28     & 0.47      & 1.75           & 0.89             & 0.68             \\ \hline
+\end{tabular}%
+}
+\end{table}
+
+# Summary 
+
+### Summary and future work
+
+#### Summary
+
+1. Unbiased total effect by appropriate linear transformation 
+1. conservative variance estimation of total effect by Jackknife method
+
+#### Future work 
+1. Precision matrix estimation under high dimension setup
+1. Variance estimation bias correction

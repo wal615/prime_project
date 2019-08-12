@@ -12,10 +12,10 @@ sourceDirectory("./R_code/main_fn/",modifiedOnly = FALSE, recursive = TRUE)
 sourceDirectory("./R_code/main_fn/method/",modifiedOnly = FALSE, recursive = TRUE)
 source("./R_code/simulation_proposed_GCTA/local_helpers.R")
 data_path <- "~/dev/projects/Chen_environmental_study/R_code/data/pcb_99_13_no_missing.csv"
-save_path <- "~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/var_est/decor/"
+save_path <- "~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/var_est/decor/prime_0806/"
 
-cores <- 1
-n_iter <- 1
+cores <- 15
+n_iter <- 100
 n_sub <- 1
 seed_loop <- 1234
 seed_coef <- 1014
@@ -27,23 +27,23 @@ bs <- "full"
 
 # data generation
 emp_n <- 10^5
-n_total <- c(500)
+n_total <- c(200,500,1000)
 # n_total <- 5000
 dist <- "normal"
 generate_data <- generate_normal
 structure <- "un"
-p <- 800
+p <- 500
 
 pre_cor <- unstr_corr.mat(p,k=5)
 # pre_cor <- real_data_corr.mat(data_path)
 # p <- ncol(pre_cor)
 
 # decorr
-decor_method <- "GLASSO"
-# uncorr_method <- SVD_method
-# uncorr_args <- NULL
-uncorr_method <- true_value_method
+decor_method <- "SVD"
+uncorr_method <- SVD_method
 uncorr_args <- NULL
+# uncorr_method <- true_value_method
+# uncorr_args <- NULL
 # uncorr_method <- dgpGLASSO_method
 # uncorr_args <- NULL
 # uncorr_method <- QUIC_method

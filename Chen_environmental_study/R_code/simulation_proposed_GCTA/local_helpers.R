@@ -77,7 +77,6 @@ simulation_var_est_fn <- function(kernel = GCTA_kernel,
   # } else if (gene_data_args_emp$structure == "I"){
   #     sigma_main_approx <- mean(abs(sigma_main_emp - diag(p)))
   # }
-  
   # Calcualte the effects
   result_raw <- foreach(ibrep = 1:brep, .combine = rbind, .verbose = TRUE, .errorhandling = "remove", .options.RNG = seed_loop) %dorng%   {
     # Initial output 

@@ -26,13 +26,14 @@ coverage_rate_z <- function(x,true, upper, lower){
 
 jack_var <- function(x, pro = 0.5){
   x_m <- mean(x, na.rm = T)
+  n_sub <- length(x) - sum(is.na(x)) # count for the NA data
   var_1 <- (x_m - x)^2 %>% sum(., na.rm = T)
   if(pro == 101){
-    var_2 <-  (length(x) -1) * 1/length(x) * var_1
+    var_2 <-  (length(x) -1) * 1/n_sub * var_1
   } else if (pro ==102){
-    var_2 <- 1/length(x) * var_1
+    var_2 <- 1/n_sub * var_1
   } else{
-    var_2 <- pro/(1-pro) * 1/length(x) * var_1
+    var_2 <- pro/(1-pro) * 1/n_sub * var_1
   }
   var_2
 }
@@ -60,7 +61,7 @@ sub_coverage_rate_z <- function(x,true, upper, lower,pro){
 
 
 
-result_path <- "decor_method_None_result_list_fixed_sub_chi_structure_un_main_0.5_inter_0_n_500_p_800_rho_e_0.5_dim_red_coeff__last__decor_FALSE_subpro_0_iter_100_nsub_1_EigenPrism_kernel_GCTA_kernel_est_main"
+result_path <- "result_list_fixed_sub_normal_structure_un_main_0.5_inter_0.1_n_2000_p_33_rho_e_0.5_dim_red_coeff__last__decor_TRUE_subpro_0_iter_200_nsub_1_least_square_kernel_GCTA_kernel_est_main"
 file_list_all <- list.files(paste0("./", result_path, "/")) %>% paste0(paste0("./", result_path, "/"),.)
 file_list <- file_list_all[grep(x = file_list_all, pattern = "iteration",perl = TRUE)]
 sub_result <- lapply(file_list, function (x) {read.csv(x, header = TRUE, stringsAsFactors = FALSE)}) %>% rbindlist(., fill = TRUE)
@@ -119,7 +120,7 @@ summary_final <- cbind(summary_final, additional)
 
 summary_tmp <- rbind(summary_tmp, summary_final) 
 
-write.csv(table, file = "~/dev/projects/Chen_environmental_study/reports/proposed_GCTA_paper/est_var_analysis/decor/main_result.csv", row.names = F)
+write.csv(summary_tmp, file = "~/dev/projects/Chen_environmental_study/reports/proposed_GCTA_paper/est_var_analysis/decor/PCA_main.csv", row.names = F)
 table <- read.csv("~/dev/projects/Chen_environmental_study/reports/proposed_GCTA_paper/est_var_analysis/decor/main_result.csv",stringsAsFactors = F) %>% data.table(.) 
 table <- table[x_dist != "PCB"]
 table[,X:=NULL]

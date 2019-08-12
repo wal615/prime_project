@@ -12,10 +12,10 @@ sourceDirectory("./R_code/main_fn/",modifiedOnly = FALSE, recursive = TRUE)
 sourceDirectory("./R_code/main_fn/method/",modifiedOnly = FALSE, recursive = TRUE)
 source("./R_code/simulation_proposed_GCTA/local_helpers.R")
 data_path <- "~/dev/projects/Chen_environmental_study/R_code/data/pcb_99_13_no_missing.csv"
-save_path <- "~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/var_est/decor/"
+save_path <- "~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/var_est/decor/prime_0806/"
 
-cores <- 10
-n_iter <- 20
+cores <- 15
+n_iter <- 100
 n_sub <- 1
 seed_loop <- 1234
 seed_coef <- 1014
@@ -27,33 +27,53 @@ bs <- "full"
 
 # data generation
 emp_n <- 10^5
-n_total <- c(100, 500, 1000)
+n_total <- c(200,500,1000)
 # n_total <- 5000
 dist <- "normal"
 generate_data <- generate_normal
 structure <- "un"
-p <- 1000
-pre_cor <- unstr_corr.mat(1000)
+p <- 500
 
+pre_cor <- unstr_corr.mat(p,k=5)
+# pre_cor <- real_data_corr.mat(data_path)
+# p <- ncol(pre_cor)
+
+# decorr
+decor_method <- "GLASSO"
+# uncorr_method <- SVD_method
+# uncorr_args <- NULL
+# uncorr_method <- true_value_method
+# uncorr_args <- NULL
+# uncorr_method <- dgpGLASSO_method
+# uncorr_args <- NULL
+# uncorr_method <- QUIC_method
+# uncorr_args <- NULL
+# uncorr_method <- PCA_method
+# uncorr_args <- NULL
+uncorr_method <- GLASSO_method
+uncorr_args <- NULL
 # est
-decor = TRUE
+decor <- T
+if(decor == FALSE) {
+  decor_method <- "None"
+}
 combine <- FALSE
 est <- "main"
 
-# kernel <- EigenPrism_kernel
-# kernel_args <- list(decor = decor)
-# kernel_name <- "EigenPrism_kernel"
-# kernel_result_col_names <- col_names_Eigen
+kernel <- EigenPrism_kernel
+kernel_args <- list(decor = decor)
+kernel_name <- "EigenPrism_kernel"
+kernel_result_col_names <- col_names_Eigen
 
 
-kernel_args <- list(interact = 0,decor = decor)
-kernel <- GCTA_kernel
-kernel_name <- "GCTA_kernel"
-kernel_result_col_names <- col_names_GCTA
+# kernel_args <- list(interact = 0,decor = decor)
+# kernel <- GCTA_kernel
+# kernel_name <- "GCTA_kernel"
+# kernel_result_col_names <- col_names_GCTA
 
 
 # kernel <- least_square_kernel
-# kernel_args <- list(decor = FALSE)
+# kernel_args <- list(decor = decor)
 # kernel_name <- "least_square_kernel"
 # kernel_result_col_names <- col_names_least_square
 
@@ -65,10 +85,11 @@ kernel_name <- append(kernel_name,"GCTA_kernel") %>% paste(.,collapse = "_")
 kernel_result_col_names_2 <- col_names_GCTA
 
 # dim_reduction
-dim_red_method <- SVD_dim_reduction
-dim_red_args <- list(reduce_coef=1,last = FALSE)
-# dim_red_method <- NULL
-# dim_red_args <- NULL
+# dim_red_method <- SVD_dim_reduction
+# dim_red_args <- list(reduce_coef=reduce_coef,last = last)
+dim_red_method <- NULL
+dim_red_args <- NULL
+
 
 # coef
 main_fixed_var <- 0.5
@@ -90,7 +111,7 @@ pro_list <-  args_all[,6, drop = FALSE] %>% split(x = ., f = seq(nrow(.)))
 
 
 # setup folders for results
-result_name <- paste("result_list_fixed_sub", dist, "structure", structure, "main", main_fixed_var, "inter",
+result_name <- paste("decor_method",decor_method,"result_list_fixed_sub", dist, "structure", structure, "main", main_fixed_var, "inter",
                      inter_fixed_var, "n", paste(n_total, collapse = "_"), "p", p, "rho_e", paste(rho_e,collapse = "_"), 
                      "dim_red_coeff", dim_red_args$reduce_coef, "last", dim_red_args$last,"decor",decor,
                      "subpro",paste(pro, collapse = "_"), "iter", n_iter, "nsub", n_sub,
@@ -111,10 +132,11 @@ result_list <- mapply(FUN = simulation_var_est_fn,
                                       kernel_args_2 = kernel_args_2,
                                       kernel_result_col_names_2 = kernel_result_col_names_2,
                                       bs = bs,
-                                      emp_n,
+                                      emp_n = emp_n,
                                       combine = combine,
                                       gene_coeff_args = gene_coeff_args,
-                                      uncorr_method = SVD_method,
+                                      uncorr_method = uncorr_method,
+                                      uncorr_args = uncorr_args,
                                       dim_red_method = dim_red_method,
                                       dim_red_args = dim_red_args,
                                       generate_data = generate_data,

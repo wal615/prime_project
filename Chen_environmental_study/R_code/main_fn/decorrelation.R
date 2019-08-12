@@ -39,7 +39,7 @@ SVD_method <- function(input_data) {
 ## GLASSO method of decorrelation method
 ##################################################################################
 
-GLASSO_method <- function(input_data, rho = 0.01){
+GLASSO_method <- function(input_data, rho = 0.001){
   Sigma=cov(input_data, input_data)
   # Compute Sigma
   Sigma <- glasso::glasso(s = Sigma, rho = rho, thr = 0.05)$w
@@ -67,7 +67,7 @@ GLASSO_method <- function(input_data, rho = 0.01){
 #   list(uncorr_data = uncorr_data)
 # }
 
-dgpGLASSO_method <- function(input_data, rho = 0.01){
+dgpGLASSO_method <- function(input_data, rho = 0.005){
   Sigma=cov(input_data, input_data)
   # Compute Sigma^{-1}
   Sigma_i <- dpglasso::dpglasso(Sigma = Sigma, rho = rho, outer.tol = 0.05)$X
@@ -81,7 +81,7 @@ dgpGLASSO_method <- function(input_data, rho = 0.01){
   list(uncorr_data = uncorr_data)
 }
 
-QUIC_method <- function(input_data, rho = 0.1){
+QUIC_method <- function(input_data, rho = 0.005){
   Sigma<-cov(input_data, input_data)
   Sigma_i <- QUIC::QUIC(S = Sigma, rho = rho, tol = 0.05)$W
   # Compute Signa^{-1/2}
@@ -110,11 +110,19 @@ QUIC_method <- function(input_data, rho = 0.1){
 #   list(uncorr_data = uncorr_data)
 # }
 
+
 PCA_method <- function(input_data) {
   pca_x <- prcomp(input_data, retx = TRUE)
-  uncorr_data <- pca_x$x  
+  uncorr_data <- pca_x$x
   list(uncorr_data = uncorr_data)
 }
+
+# PCA_method <- function(input_data) {
+#   pca_x <- prcomp(input_data, retx = TRUE)
+#   index <- pca_x$sdev >= 0.009
+#   uncorr_data <- pca_x$x[,index]
+#   list(uncorr_data = uncorr_data)
+# }
 
 ##################################################################################
 ## using true value

@@ -12,10 +12,10 @@ sourceDirectory("./R_code/main_fn/",modifiedOnly = FALSE, recursive = TRUE)
 sourceDirectory("./R_code/main_fn/method/",modifiedOnly = FALSE, recursive = TRUE)
 source("./R_code/simulation_proposed_GCTA/local_helpers.R")
 data_path <- "~/dev/projects/Chen_environmental_study/R_code/data/pcb_99_13_no_missing.csv"
-save_path <- "~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/var_est/decor/"
+save_path <- "~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/var_est/decor/test_tol/"
 
 cores <- 10
-n_iter <- 10
+n_iter <- 20
 n_sub <- 1
 seed_loop <- 1234
 seed_coef <- 1014
@@ -26,34 +26,47 @@ pro <- 0
 bs <- "full"
 
 # data generation
-emp_n <- 10^3
-n_total <- c(400)
+emp_n <- 10^5
+n_total <- c(500)
 # n_total <- 5000
 dist <- "chi"
 generate_data <- generate_chi
 structure <- "un"
-p <- 500
-# pre_cor <- autocorr.mat(p, 0.9)
-pre_cor <- unstr_corr.mat(p,k=5)
+# p <- 33
+# pre_cor <- unstr_corr.mat(p,k=5)
+
+pre_cor <- real_data_corr.mat(data_path)
+p <- ncol(pre_cor)
+
+
 # pre_cor <- real_data_corr.mat(data_path)
+# diag(pre_cor) <- 0
+# pre_cor[which(pre_cor >= 0.95, arr.ind = TRUE)] <- NA
+# pre_cor <- pre_cor[complete.cases(pre_cor),complete.cases(pre_cor)]
+# diag(pre_cor) <- 1
 # p <- ncol(pre_cor)
 
+# est
+decor <- T
+if(decor == FALSE) {
+  decor_method <- "None"
+}
+combine <- TRUE
+est <- "total"
+rho <- 0.001
+
 # decorr
+decor_method <- "GLASSO"
 # uncorr_method <- SVD_method
 # uncorr_args <- NULL
-# uncorr_method <- GLASSO_method
-# uncorr_args <- NULL
-uncorr_method <- dgpGLASSO_method
-uncorr_args <- NULL
+uncorr_method <- GLASSO_method
+uncorr_args <- list(rho = rho)
+# uncorr_method <- dgpGLASSO_method
+# uncorr_args <- list(rho = rho)
 # uncorr_method <- QUIC_method
-# uncorr_args <- NULL
+# uncorr_args <- list(rho = rho)
 # uncorr_method <- PCA_method
 # uncorr_args <- NULL
-
-# est
-decor <- F
-combine <- FALSE
-est <- "main"
 
 kernel <- EigenPrism_kernel
 kernel_args <- list(decor = decor)
@@ -89,7 +102,7 @@ dim_red_args <- NULL
 # coef
 main_fixed_var <- 0.5
 main_random_var <- 0
-inter_fixed_var <- 0
+inter_fixed_var <- 0.1
 inter_random_var <- 0
 # rho_e <- c(0.2, 0.5, 0.7)
 rho_e <- 0.5
@@ -106,7 +119,7 @@ pro_list <-  args_all[,6, drop = FALSE] %>% split(x = ., f = seq(nrow(.)))
 
 
 # setup folders for results
-result_name <- paste("result_list_fixed_sub", dist, "structure", structure, "main", main_fixed_var, "inter",
+result_name <- paste("decor_method",decor_method,"rho", rho, "result_list_fixed_sub", dist, "structure", structure, "main", main_fixed_var, "inter",
                      inter_fixed_var, "n", paste(n_total, collapse = "_"), "p", p, "rho_e", paste(rho_e,collapse = "_"), 
                      "dim_red_coeff", dim_red_args$reduce_coef, "last", dim_red_args$last,"decor",decor,
                      "subpro",paste(pro, collapse = "_"), "iter", n_iter, "nsub", n_sub,

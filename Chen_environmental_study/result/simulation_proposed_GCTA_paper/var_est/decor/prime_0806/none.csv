@@ -1,0 +1,7 @@
+"x_dist","n","est_mean_EigenPrism","est_mean_GCTA","est_var_EigenPrism","est_var_GCTA","MSE_EigenPrism","MSE_GCTA"
+"chi",200,13.89,13.58,15.2,14.25,30.12,26.89
+"chi",500,14.66,14.62,7.11,7.36,28.66,28.6
+"chi",1000,NA,14.75,NA,2.37,NA,24.93
+"normal",200,13.48,13.77,21.55,21.06,33.24,35.05
+"normal",500,14.57,14.46,6.88,6.32,27.68,26.11
+"normal",1000,NA,15.19,NA,2.79,NA,29.7

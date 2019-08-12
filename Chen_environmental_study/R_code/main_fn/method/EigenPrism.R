@@ -30,7 +30,7 @@ EigenPrism <- function(y,X,invsqrtSig=NULL,alpha=0.2,target='beta2',zero.ind=c()
   # Get dimensionality of problem
   n = nrow(X)
   p = ncol(X)
-
+  if(n > p) return(rep(NA,3))
   # Transform y and X to proper form
   y = y-mean(y)
   # X = scale(X,T,T)*n/(n-1)

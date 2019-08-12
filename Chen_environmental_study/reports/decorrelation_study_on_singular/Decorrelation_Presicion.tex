@@ -1,0 +1,244 @@
+\documentclass[]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \ifxetex
+    \usepackage{mathspec}
+  \else
+    \usepackage{fontspec}
+  \fi
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+\hypersetup{unicode=true,
+            pdftitle={Decorrelation methods study},
+            pdfauthor={Xuelong Wang},
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{0}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+%%% Use protect on footnotes to avoid problems with footnotes in titles
+\let\rmarkdownfootnote\footnote%
+\def\footnote{\protect\rmarkdownfootnote}
+
+%%% Change title format to be more compact
+\usepackage{titling}
+
+% Create subtitle command for use in maketitle
+\providecommand{\subtitle}[1]{
+  \posttitle{
+    \begin{center}\large#1\end{center}
+    }
+}
+
+\setlength{\droptitle}{-2em}
+
+  \title{Decorrelation methods study}
+    \pretitle{\vspace{\droptitle}\centering\huge}
+  \posttitle{\par}
+    \author{Xuelong Wang}
+    \preauthor{\centering\large\emph}
+  \postauthor{\par}
+      \predate{\centering\large\emph}
+  \postdate{\par}
+    \date{2019-07-28}
+
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage[table]{xcolor}
+\usepackage{wrapfig}
+\usepackage{float}
+\usepackage{colortbl}
+\usepackage{pdflscape}
+\usepackage{tabu}
+\usepackage{threeparttable}
+\usepackage{threeparttablex}
+\usepackage[normalem]{ulem}
+\usepackage{makecell}
+
+\usepackage{float,amsmath, bbm, siunitx, bm}
+\usepackage{pdfpages}
+\floatplacement{figure}{H}
+\newcommand{\indep}{\rotatebox[origin=c]{90}{$\models$}}
+
+\begin{document}
+\maketitle
+
+\section{Motivation}\label{motivation}
+
+To decorrelate the covariate X, so that \(Cov(X) = I\) or
+\(Cov(X) = \Sigma_p\), \(\Sigma_p\)'s off diaognal elements are 0s. We
+found that after we could decorrelate the data correctly, the GCTA and
+EigenPrsim method can work well.
+
+\section{Method}\label{method}
+
+\begin{itemize}
+\tightlist
+\item
+  SVD\\
+\item
+  PCA\\
+\item
+  Presicion matrix estimated by glasso and other methods
+\end{itemize}
+
+\section{Diffculty}\label{diffculty}
+
+For \(n >p\) case, the SVD method can work well. Basically, we just SVD
+to estimate the eigenvalue \(\lambda's\) and find \(1/\sqrt{\lambda}\).
+However, when \(n <p\) or even \(n \approx p\), SVD method fails because
+the nearly 0 values of \(\lambda's\).
+
+\section{solution}\label{solution}
+
+\subsubsection{Main idea of PCA}\label{main-idea-of-pca}
+
+\paragraph{Singular Value
+Decomposition}\label{singular-value-decomposition}
+
+\[
+X_s = UDV^T, ~\text{where} ~x_{ij,s} = \frac{x_{ij} - \bar{x}}{s_j}
+\]
+
+\begin{itemize}
+\tightlist
+\item
+  \(U = (u_1, \dots, u_r)\) is a n by r orthogonal matrix\\
+\item
+  \(D = diag(d_1, \dots, d_r)\) is a r by r diagonal matrix\\
+\item
+  \(V = (v_1, \dots, v_r)\) is a p by r orthogonal matrix
+\end{itemize}
+
+\paragraph{Principle Component and
+Loading}\label{principle-component-and-loading}
+
+\begin{align*} 
+X_s &= \underbrace{\begin{bmatrix} d_1u_1 \hdots  d_ru_r \end{bmatrix} }_\text{PCs}
+\underbrace{\begin{bmatrix} v_1^T \\
+\vdots \\
+v_r^T \\
+\end{bmatrix}}_\text{Loading}
+\end{align*}
+
+\begin{itemize}
+\tightlist
+\item
+  \(PC_j = d_j\pmb{u_j} = X\pmb{v_j}\) is the jth principle component
+\item
+  The sample variance of \(PC_j\) is \(d_j^2/n\)
+\end{itemize}
+
+\paragraph{Using PCA to reduce the X's
+dimension}\label{using-pca-to-reduce-the-xs-dimension}
+
+\[
+  X_{s,k} = \sum_{j=1}^{k}d_j\pmb{u_jv_k} = U_kD_kV_k^T,~~ \text{Its Variation} ~~  \sum_{j=1}^kd_j^2/n.
+  \]
+
+\[
+  X_r(k) = XV_k = UD \begin{bmatrix} 
+  V_k^T \\
+  V_{(p-k)}^T 
+  \end{bmatrix} V_k=  UD \begin{bmatrix} 
+  I_k \\
+  0 
+  \end{bmatrix}= U_kD_k
+  \]
+
+\begin{itemize}
+\tightlist
+\item
+  Note that \(Var(X_k) = diag(D_i^2), i \in \{1, \dots, k\}\), which
+  means we don't need to decorrelated it again.
+\end{itemize}
+
+\paragraph{Simulation set up}\label{simulation-set-up}
+
+\[
+X = [x_1^2, \dots, x_p^2]^T
+\]
+
+\begin{itemize}
+\tightlist
+\item
+  \(p = 500,800,1000\)\\
+\item
+  \(x_i \stackrel{iid}{\sim} N(0,1)\)
+\end{itemize}
+
+\paragraph{Simulation result}\label{simulation-result}
+
+\begin{itemize}
+\tightlist
+\item
+  If you include all the PCs, the we will get the exact same result
+  using original data\\
+\item
+  The less the number of PCs included, the small the value will be\\
+\item
+  Need to find a way to choice the number of PC's
+\end{itemize}
+
+\subsubsection{Presicion matrix
+estimation}\label{presicion-matrix-estimation}
+
+\paragraph{Glasso}\label{glasso}
+
+It seems work for EigenPrism and covariates are normal distribution
+
+\paragraph{dgplasso}\label{dgplasso}
+
+{[} \min\_X \log \det (X) + trace(X \Sigma) +
+\rho \textbar{}X\textbar{}\_1
+
+{]}
+
+\paragraph{}\label{section}
+
+
+\end{document}
