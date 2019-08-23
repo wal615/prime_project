@@ -1,0 +1,144 @@
+---
+title: "Low level of covariance simulation"
+author: "Xuelong Wang"
+date: "`r Sys.Date()`"
+output: 
+  pdf_document:
+    toc: true
+    number_sections: true
+    keep_tex: true
+    fig_width: 12
+    fig_height: 3
+header-includes:
+    - \usepackage{float,amsmath, bbm, siunitx, bm}
+    - \usepackage{pdfpages}
+    - \floatplacement{figure}{H}
+    - \newcommand{\indep}{\rotatebox[origin=c]{90}{$\models$}}
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, comment = "", message = FALSE, warning = FALSE, fig.height = 10)
+options(scipen=1, digits=2)
+
+library(MASS)
+library(tidyverse)
+require(gridExtra)
+
+# heat map function for correlation matrxi
+
+h_map <- function(x,cor = F) {
+  if(cor == F){
+    Cor <- cor(x) %>% abs(.)
+  } else {
+    Cor <- x %>% abs(.)
+  }
+    
+  h1 <- ggplot(data = melt(Cor), aes(x=(Var1), y= (Var2), fill=value)) + 
+    scale_fill_gradient(low = "white", high = "blue") +
+    geom_tile() +
+    theme(axis.text.x  = element_text(angle=90))
+  h1
+}
+```
+
+# Motivation
+
+Based on the investigation of the covariance matrix patter of the PCBs from 1999 - 2004, we found some patterns that appears among the covariance matrix of PCBs from differert years. Besides, we also use the historical data to estimate the covariance matrix, then use the sample covariance matrix to decorrelate the PCBs for each year. For most years, the decorrelation procedure can reduce the correlation, e.g 1999-2001, but there are some years which the correlations still are high after decorrelation, e.g 2005-2006. 
+
+Since we are trying to borrow information of historical dataset, the decorrelated data will probably not be perfert uncorrelted. In other words, we will end up with data with low correlations among their coveriates. So the goal of this report is to see if the GCTA and EigenPrism method could work well under the low correlation setup.
+
+
+# setup 
+
+## Sample covariance matrix
+
+I use two different sample covariane matrices: 1999-2001 and 2007 -2008. 
+
+```{r, include=FALSE}
+source("~/dev/projects/Chen_environmental_study/reports/proposed_GCTA_paper/est_var_analysis/est_combined_data/covaraites_summary_1999_2004.R")
+```
+
+```{r, fig.cap = "1999-2000"}
+grid.arrange(h_map(PCB_1999_2004_common[SDDSRVYR == 1, ..PCB_common]),
+             h_map(data.matrix(PCB_1999_2004_common[SDDSRVYR == 1, ..PCB_common]) %*% invsqrt(cov_1999_2004)), 
+             ncol=2,
+             respect=TRUE)
+```
+
+```{r, fig.cap = "Combined main and interaction 1999-2000"}
+grid.arrange(h_map(Combined_PCB_1999_2004_common[SDDSRVYR == 1, ..Combined_PCB_common]),
+             h_map(data.matrix(Combined_PCB_1999_2004_common[SDDSRVYR == 1, ..Combined_PCB_common]) %*% invsqrt(Combined_cov_1999_2004)), 
+             ncol=2,
+             respect=TRUE)
+```
+
+```{r, echo = FALSE}
+cov_tmp <- cor(data.matrix(Combined_PCB_1999_2004_common[SDDSRVYR == 1, ..Combined_PCB_common]))
+hist(cov_tmp[upper.tri(cov_tmp)], main = "correlation of main and inter")
+```
+
+```{r, echo = FALSE}
+cov_tmp <- cor(data.matrix(Combined_PCB_1999_2004_common[SDDSRVYR == 1, ..Combined_PCB_common]) %*% invsqrt(Combined_cov_1999_2004))
+hist(cov_tmp[upper.tri(cov_tmp)], main = "decorrelated correlation of main and inter")
+```
+
+```{r, include=FALSE}
+source("~/dev/projects/Chen_environmental_study/reports/proposed_GCTA_paper/est_var_analysis/est_combined_data/covaraites_summary_2005_2014.R")
+```
+
+```{r, fig.cap = "2005-2006"}
+grid.arrange(h_map(PCB_2005_2014_common[SDDSRVYR == 4, ..PCB_common]),
+             h_map(data.matrix(PCB_2005_2014_common[SDDSRVYR == 4, ..PCB_common]) %*% invsqrt(cov_2005_2014)), 
+             ncol=2,
+             respect=TRUE)
+```
+
+```{r, fig.cap = "Combined main and interaction 2005-2006"}
+grid.arrange(h_map(Combined_PCB_2005_2014_common[SDDSRVYR == 4, ..Combined_PCB_common]),
+             h_map(data.matrix(Combined_PCB_2005_2014_common[SDDSRVYR == 4, ..Combined_PCB_common]) %*% invsqrt(Combined_cov_2005_2014)), 
+             ncol=2,
+             respect=TRUE)
+```
+
+```{r, echo = FALSE}
+cov_tmp <- cor(data.matrix(Combined_PCB_2005_2014_common[SDDSRVYR == 4, ..Combined_PCB_common]))
+hist(cov_tmp[upper.tri(cov_tmp)], main = "correlation of main and inter")
+```
+
+```{r, echo = FALSE}
+cov_tmp <- cor(data.matrix(Combined_PCB_2005_2014_common[SDDSRVYR == 4, ..Combined_PCB_common]) %*% invsqrt(Combined_cov_2005_2014))
+hist(cov_tmp[upper.tri(cov_tmp)], main = "decorrelated correlation of main and inter")
+```
+
+\newpage
+
+## Simulation setup 
+1. p = `r ncol(Combined_cov_1999_2004)` for 1999  or `r ncol(Combined_cov_2005_2014)` for 2005  
+2. $n \in \{100, 150, p\}$  
+3. the simulated covariates will follow Normal or Chi with df = 1  
+4. Variance estimation method will be GCTA and EigenPrism method  
+5. Iteration time is 100  
+
+# Result
+
+## 1999
+
+```{r, include=FALSE}
+source("~/dev/projects/Chen_environmental_study/reports/proposed_GCTA_paper/est_var_analysis/est_combined_data/simulation_result_main_1999.R")
+```
+
+```{r, echo = FALSE }
+summary_final_c[,!c("var_inter_effect", "cov_main_inter_effect","var_total_effect", "structure", "traget")]
+```
+
+## 2005
+
+```{r, include=FALSE}
+source("~/dev/projects/Chen_environmental_study/reports/proposed_GCTA_paper/est_var_analysis/est_combined_data/simulation_result_main_2005.R")
+```
+
+```{r, echo = FALSE }
+summary_final_c[,!c("var_inter_effect", "cov_main_inter_effect","var_total_effect", "structure", "traget")]
+```

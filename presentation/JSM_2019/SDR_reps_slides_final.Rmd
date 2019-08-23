@@ -29,7 +29,8 @@ header-includes:
    - \newcommand{\indep}{\rotatebox[origin=c]{90}{$\models$}}
 output: 
    uiucthemes::beamer_illinois: 
-       toc: true
+      toc: true
+      keep_tex: true
 ---
 
 ---

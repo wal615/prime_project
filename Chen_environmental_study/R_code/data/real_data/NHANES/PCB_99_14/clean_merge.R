@@ -34,16 +34,23 @@ for(i in 1:length(name_list)) {
   # merge with demo info
   data_m <- merge(data_tmp, demo_tmp, by = "SEQN", all.x = T) 
   
-  colnames(data_tmp) <- gsub(x = colnames(data_tmp), pattern = "(LBD|LBX)", replacement = "PCB")
-  data_tmp[,date:= strsplit(name_list[i], "_")[[1]][2]]
+  colnames(data_m) <- gsub(x = colnames(data_m), pattern = "(LBD|LBX)", replacement = "PCB")
   write.csv(x = data_m,
             file = paste0("~/dev/projects/Chen_environmental_study/R_code/data/real_data/NHANES/PCB_99_14/clean/individual/PCB", "_", strsplit(name_list[i], "_")[[1]][2], "_clean.csv"),
             row.names = F)
 } 
 
 
+
+
+
+#############
+## 2005 -2014
+#############
+
+
 setwd("~/dev/projects/Chen_environmental_study/R_code/data/real_data/NHANES/PCB_99_14/raw/pooled/")
-name_list <- list.files(pattern = ".XPT",full.names = T)
+name_list <- list.files(pattern = "PCB",full.names = T)
 data_list <- as.list(numeric(length(name_list)))
 
 for(i in 1:length(name_list)) {
@@ -54,42 +61,24 @@ for(i in 1:length(name_list)) {
   colnames(data_tmp) <- gsub(pattern = "WTBSMSMA", replacement = "WTSMSMPA", x = colnames(data_tmp), perl = TRUE)
   # select only PCBs
   select_index <- grep(pattern = "(LBD|LBX)\\d", colnames(data_tmp),perl = T,value = T)
-  select_index <- c("SAMPLEID", "RIDAGGRP", "RIAGENDR", "RIANSMP",  "WTSMSMPA",
-                    select_index)
   if("RIDRETH" %in% colnames(data_tmp)){
     select_index <- c("SAMPLEID", "RIDRETH", "RIDAGGRP", "RIAGENDR", "RIANSMP",  "WTSMSMPA",
                       select_index)
+  } else {
+    select_index <- c("SAMPLEID", "RIDAGGRP", "RIAGENDR", "RIANSMP",  "WTSMSMPA",
+                      select_index)
   }
   
+  # get realse year from demo data 
+  demo_tmp <- read.xport(name_list[i] %>% gsub(pattern = "PCB",replacement = "DEMO" )) %>% data.table(.)
+  SDDSRVYR <- demo_tmp[1,SDDSRVYR] %>% as.numeric(.)
+  
   data_tmp <- data_tmp[,..select_index]
+  data_tmp[, SDDSRVYR := SDDSRVYR]
+  
   colnames(data_tmp) <- gsub(x = colnames(data_tmp), pattern = "(LBD|LBX)", replacement = "PCB")
-  data_tmp[,date:= strsplit(name_list[i], "_")[[1]][2]]
   write.csv(x = data_tmp,
             file = paste0("~/dev/projects/Chen_environmental_study/R_code/data/real_data/NHANES/PCB_99_14/clean/pooled/PCB", "_", strsplit(name_list[i], "_")[[1]][2], "_clean_P.csv"),
             row.names = F)
 }
-
-#################
-## merge with DEMO 1999 -2003
-#################
-setwd("~/dev/projects/Chen_environmental_study/R_code/data/real_data/NHANES/PCB_99_14/raw/individual/")
-name_list <- list.files(pattern = ".XPT",full.names = T)
-data_list <- as.list(numeric(length(name_list)))
-
-for(i in 1:length(name_list)) {
-  data_tmp <- read.xport(name_list[i]) %>% data.table(.)
-  # unify the PCB's names
-  colnames(data_tmp) <- gsub(pattern = "LBC", replacement = "LBX", x = colnames(data_tmp), fixed = TRUE)
-  
-  # select only PCBs
-  select_index <- grep(pattern = "(LBD|LBX)\\d", colnames(data_tmp),perl = T,value = T)
-  select_index <- c("SEQN", select_index)
-  data_tmp <- data_tmp[,..select_index]
-  
-  colnames(data_tmp) <- gsub(x = colnames(data_tmp), pattern = "(LBD|LBX)", replacement = "PCB")
-  data_tmp[,date:= strsplit(name_list[i], "_")[[1]][2]]
-  write.csv(x = data_tmp,
-            file = paste0("~/dev/projects/Chen_environmental_study/R_code/data/real_data/NHANES/PCB_99_14/clean/individual/PCB", "_", strsplit(name_list[i], "_")[[1]][2], "_clean.csv"),
-            row.names = F)
-} 
 

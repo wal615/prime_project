@@ -14,7 +14,7 @@ source("./R_code/simulation_proposed_GCTA/local_helpers.R")
 data_path <- "~/dev/projects/Chen_environmental_study/R_code/data/real_data/NHANES/hemoglobin/nhanceMiceImpute25_no_y.csv"
 save_path <- "~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/var_est/decor/prime_0806/"
 
-cores <- 20
+cores <- 10
 n_iter <- 100
 n_sub <- 1
 seed_loop <- 1234
@@ -60,7 +60,7 @@ uncorr_args <- NULL
 # uncorr_method <- SVD_method
 # uncorr_args <- NULL
 # est
-decor <- T
+decor <- F
 if(decor == FALSE) {
   decor_method <- "None"
 }
