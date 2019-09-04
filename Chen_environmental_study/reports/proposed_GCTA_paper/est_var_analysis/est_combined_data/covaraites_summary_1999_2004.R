@@ -33,7 +33,9 @@ PCB_1999_2004_common <- PCB_1999_2004_raw[,..select_index] %>% na.omit(.)
 # main effect
 cov_1999_2004 <- cov(PCB_1999_2004_common[,..PCB_common])
 PCB_common_1999 <- PCB_common
-
+# write.csv(PCB_1999_2004_common[,..PCB_common], "~/dev/projects/Chen_environmental_study/R_code/data/real_data/NHANES/PCB_99_14/clean/individual/PCB_1999_2004_common.csv", row.names = F)
+# x_tmp <- PCB_1999_2004_common[,..PCB_common] %>% data.matrix(.) %>% std_fn(.)
+# write.csv(x_tmp, "~/dev/projects/Chen_environmental_study/R_code/data/real_data/NHANES/PCB_99_14/clean/individual/std_PCB_1999_2004_common.csv", row.names = F)
 
 # add interaction terms 
 main <- PCB_1999_2004_common[,..PCB_common]
@@ -42,4 +44,4 @@ Combined_PCB_common <- colnames(main_inter)
 Combined_PCB_1999_2004_common <- cbind(PCB_1999_2004_common[,c("SEQN","RIAGENDR","RIDRETH","SDDSRVYR")], main_inter)
 Combined_cov_1999_2004 <- cov(Combined_PCB_1999_2004_common[,..Combined_PCB_common])
 Combined_PCB_common_1999 <- Combined_PCB_common
-
+# write.csv(x = Combined_PCB_1999_2004_common[,..Combined_PCB_common], file = "~/dev/projects/Chen_environmental_study/R_code/data/real_data/NHANES/PCB_99_14/clean/individual/Combined_PCB_1999_2004_common.csv", row.names = F)

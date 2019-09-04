@@ -130,8 +130,14 @@ source("~/dev/projects/Chen_environmental_study/reports/proposed_GCTA_paper/est_
 ```
 
 ```{r, echo = FALSE }
-summary_final_c[,!c("var_inter_effect", "cov_main_inter_effect","var_total_effect", "structure", "traget")]
+summary_final_c_o[,!c("var_inter_effect", "cov_main_inter_effect","var_total_effect", "structure", "target","decor")]
 ```
+
+```{r, echo = FALSE }
+summary_final_c_d[,!c("var_inter_effect", "cov_main_inter_effect","var_total_effect", "structure", "target","decor")]
+```
+
+\newpage
 
 ## 2005
 
@@ -140,5 +146,9 @@ source("~/dev/projects/Chen_environmental_study/reports/proposed_GCTA_paper/est_
 ```
 
 ```{r, echo = FALSE }
-summary_final_c[,!c("var_inter_effect", "cov_main_inter_effect","var_total_effect", "structure", "traget")]
+summary_final_c_o[,!c("var_inter_effect", "cov_main_inter_effect","var_total_effect", "structure", "target","decor")]
+```
+
+```{r, echo = FALSE }
+summary_final_c_d[,!c("var_inter_effect", "cov_main_inter_effect","var_total_effect", "structure", "target","decor")]
 ```

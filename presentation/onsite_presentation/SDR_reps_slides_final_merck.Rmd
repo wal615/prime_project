@@ -1,0 +1,423 @@
+---
+title: "Representative approach for \n big data dimension reduction with binary responses"
+short-title: "Representative approach"
+author: "Xuelong Wang and Jie Yang"
+date: '`r format(Sys.Date(), "%B %d, %Y")`'      # Month DD, YYYY (Main Slide)
+short-date: '`r format(Sys.Date(), "%m/%d/%Y")`' # MM/DD/YYYY (Lower Right)
+institute: "University of Illinois at Chicago"
+short-institute: "UIC"
+department: "Department of Mathematics, Computer Science, and Statistics"  
+section-titles: true        # Provides slide headings
+safe-columns: true   # Enables special latex macros for columns.
+bibliography: bibliography.bib
+header-includes:
+   - \usepackage{amsmath, bbm, graphicx,multirow}
+   - \usepackage{booktabs}
+   - \usepackage{longtable}
+   - \usepackage{array}
+   - \usepackage{multirow}
+   - \usepackage{wrapfig}
+   - \usepackage{float}
+   - \usepackage{colortbl}
+   - \usepackage{pdflscape}
+   - \usepackage{tabu}
+   - \usepackage{threeparttable}
+   - \usepackage{threeparttablex}
+   - \usepackage[normalem]{ulem}
+   - \usepackage{makecell}
+   - \usepackage{xcolor}
+   - \newcommand{\indep}{\rotatebox[origin=c]{90}{$\models$}}
+output: 
+   uiucthemes::beamer_illinois: 
+      toc: true
+      keep_tex: true
+      slide_level: 3
+---
+
+---
+notice: | 
+  @ref6
+  @ref7
+  @ref8
+  @ref9
+...
+
+```{r,include=F, warning=F}
+library(kableExtra)
+library(tidyverse)
+library(gridExtra)
+library(data.table)
+library(ggpubr)
+theme_set(theme_gray(base_size = 22))
+source("~/dev/dr_sim_code/Binary_response/Reports/representative_binary_response/make_table_JSM_slides.R")
+source("~/dev/dr_sim_code/Binary_response/Reports/representative_binary_response/make_plot_dr_WDBC.R")
+```
+
+# Background
+
+## Motivation 
+
+### Motivation of reducing the dimension of the data
+
+#### Curse of dimensionality  
+
+#### Two approaches
+1. Variable selection (feature selection)
+    * Lasso
+2. \textbf{Dimension reduction} (feature projection)
+    * Principle component analysis
+    * Sufficient dimension reduction
+
+### An example: Breast Cancer data
+
+#### Data
+Features are computed from a digitized image of a fine needle aspirate (FNA) of a breast mass
+
+- Y: Diagnosis results (1 = malignant, 0 = benign)
+- X: 30 real-valued features of each each cell nucleus
+      * e.g. radius, texture, area
+
+picture 
+
+#### Goal 
+
+Classificantion: Diagnose breast cancer from image-processed nuclear features of fine needle aspirates 
+
+### An example: Breast Cancer data
+
+```{r, echo = F, fig.align='center'}
+ggarrange(plot_PCA_1, plot_PCA_2, plot_sir, plot_pre_2, nrow = 2, ncol = 2)
+```
+
+## SDR
+
+### Subspace
+
+- Vector space U: $\vec{\mathbf{a}}, \vec{\mathbf{b}} \in U$ 
+    1. $\vec{\mathbf{a}} + \vec{\mathbf{b}} \in U$   
+    2. $\lambda \vec{\mathbf{a}} \in U, \lambda \in \mathbb{R}$  
+    
+- Span: Given $\mathbf{A} = (\vec{\mathbf{a}}_1, \dots, \vec{\mathbf{a}}_k), ~~\vec{\mathbf{a}}_k \in \mathbb{R}^n$, a k-dimension subspace $V$ spanned by $\mathbf{A}$ is all the linear combinations of $(\vec{\mathbf{a}}_1, \dots, \vec{\mathbf{a}}_k)$
+\[
+V = \mathcal{L}((\vec{\mathbf{a}}_1, \dots, \vec{\mathbf{a}}_k) = \{\sum_{i = 1}^k\lambda_ia_i, \lambda_i\in \mathbb{R}\}
+\]
+
+- A basis of $V$: $(\vec{\mathbf{a}}_1, \dots, \vec{\mathbf{a}}_k)$ is called a basis of $V$, but it is not unique
+
+### Sufficient dimension reduction
+
+#### Fundamental assumption
+Let random vector $X \in \mathbb{R}^{p \times 1}$, $Y \in \mathbb{R}$, $B = (b_1, \dots,b_d) \in \mathbb{R}^{p\times d}$, where $d << p$ and $A \in \mathbb{R}^{d\times d}$ is a non-singular matrix. 
+\[
+Y|X \stackrel{d}{=} Y|B^T X
+\]
+
+\[
+  Y \indep X|B^TX \Rightarrow Y \indep X|(BA)^TX, 
+\]
+So $B$ is not identifiable, but $span(B)$ is identifiable.
+
+### Sufficient dimension reduction
+
+#### Dimension-reduction subspace (DRS)
+\[
+  Y \indep X|P_SX,~~ P_\mathcal{S} = B(B^TB)^{-1}B^T
+\]
+$\mathcal{S}$ is called the dimension-reduction subspace.
+
+However,$\mathcal{S}$ is not unique. Actually if $\mathcal{S} \subset \mathcal{S}_1$, then $\mathcal{S}_1$ is also a dimension-reduction space.  
+
+
+#### Target: Central Subspace
+\[
+S_{Y|X} = \cap S_{DRS}
+\]
+Under mild conditions, $S_{Y|X}$ is unique and a DRS subspace itself (Cook, 1996). 
+
+## Estimating the central subspace
+
+### Estimating the central subspace 
+
+\begin{block}{Sliced Inverse Regression (SIR) (Li 1991)}
+\[
+E(X|Y) - E(X) \in \Sigma_XS_{Y|X} = Span(b_k\Sigma_{X}),k = 1, \dots, K
+\]
+\end{block}
+
+1. $E(X|Y) - E(X)$ is p-dimensional curves as Y varies and lies in a K-dimensional subspace
+1. The covariance matrix of $E(X|Y) - E(X)$ is degenerate at any direction that orthogonal to $b_k\Sigma_{X},k = 1, \dots, K$
+1. Condidate Matrix:  $M_{SIR} = Var(E(X|Y))$
+1. $S_{SIR} := Span(\Sigma_{X}^{-1}M) \subseteq S_{Y|X}$
+1. $\Sigma_{X}^{-1}Mb = \lambda b \Rightarrow Mb = \lambda\Sigma_{X}b$
+
+
+### Estimating the central subspace cont. 
+\begin{block}{Sliced Average Variance Estimation (SAVE) (Cook et al. 1991)} 
+\[
+span(\Sigma_x - \Sigma_{X|\tilde{Y}}) \subseteq S_{Y|X} \Rightarrow \hat{B} = (\hat{b}_1, \dots, \hat{b}_d)
+\]
+\end{block}
+- There are many other methods using first and second monments togehter
+    * Directional regression etc.
+
+### How to estimate the $E(X|Y)$?
+
+1. Sort the data based on the response $Y_1 \dots, Y_n$     
+1. Split data into H slices based on the sorted responses$Y^{(1)},\dots,Y^{(n)}$  
+1. Within each slice, replace the responses with slice lable $h \in {1, \dots, H}$  
+1. Within the slice h, calculate the average of X, $\tilde{X}_h = \hat{E}(X|Y = \tilde{Y}_h)$
+![](./pic/slice method.png){width=400px}  
+
+
+### Issue with Binary response
+
+Binary response only has two levels, e.g. $0,1$. So that only two slices are available
+
+#### 2 slices affects the performances of SDR method
+  - For SIR, it can only find one direction at most  
+  - For SAVE, it also suffers from the limit number of slices
+
+# Existing solution
+
+## PRE
+
+### Probability Enhanced (PRE) method (Shin et al. 2014)
+
+#### Main idea
+- $S_{Y|X} = S_{P(X)}$, $P(x) = \mathcal{P}(Y = 1|X = x)$ is the conditional probability
+- $Y \Rightarrow P(X) \in [0,1]$
+- Weighted Support Vector Machine(WSVM) to estimate the $\hat{P}(X)$
+
+#### Computational time
+- SVM method is sensitive to the number of observation N
+
+# Our approach
+
+## Rep
+
+### Representative approach 
+#### Representative 
+A Representative is a summary statistic of data points within a cluster:
+For $(X_i, Y_i), i \in I_k$ and $n_k$ is sample size of $I_k$ 
+\[
+  \bar{X}_k = R(X_{1}, \dots, X_{n_k}) = \frac{\sum_i X_i}{n_k},~~ \bar{Y}_k = R(Y_{1}, \dots, Y_{n_k}) = \frac{\sum_i Y_i}{n_k},
+\]
+where $R$ is the summarizing function.
+
+#### Steps
+1. Cluster $(X_1, \dots,X_N)$ into K groups $I_1, \dots, I_K$, e.g.K-means 
+1. Calculate the representatives for each cluster $I_k$
+1. Apply dimension reduction methods on the K representatives
+
+### How it works
+#### Main idea
+Y and $P(X)$ have identical central space: $S_{Y|X} = S_{P(X)|X}$
+
+\begin{center}
+$Y = f(b_1^TX, \dots, b_d^TX,\epsilon)$
+$\Rightarrow$
+$\mathcal{P}(Y = 1 |X) = P(X) = G(b_1^TX, \dots, b_d^TX)$
+\end{center}
+
+#### For the Representative
+\begin{center}
+$\bar{Y}_k = \hat{\mathcal{P}}(Y = 1|X_i, i\in I_k) \approx G(b_1^T\bar{X}_k, \dots, b_d^T\bar{X}_k)$
+\end{center}
+
+
+### Aysmptotic property with fixed clusters
+
+\begin{block}{Fixed cluster}
+\begin{align*}
+\bar{Y}_k - G(\bar{\mathbf X}_k) &\stackrel{P}{\longrightarrow} \mu_g - G(\boldsymbol{\mu}_k)\\
+& = p_k^{-1} \int_{B_k} G({\mathbf x}) F(d{\mathbf x}) - G\left(p_k^{-1} \int_{B_k} {\mathbf x} F(d{\mathbf x})\right)
+\end{align*}
+\end{block}
+
+- Note that with fixed cluster, there is a bias between the representative version of conditional probability
+- To remove the bias we need to reduce the size of cluster when N is increaseing
+
+
+### Aysmptotic property with shrinking clusters
+
+\begin{block}{Shrinking cluster}
+\[
+E([\bar{Y}_k - G(\bar{\mathbf X}_k)]^2) = O(N^{-\delta(r)})
+\]
+\end{block}
+Where $\delta(r) = \min\{4/(rd), 1-1/r\}$ for $r>1$, which is maximized at $r = 1 + 4/d$.
+In other words, the minimum decreasing rate of $E([\bar{Y}_k - G(\bar{\mathbf X}_k)]^2)$ is $O(N^{-4/(d+4)})$ which is attained at $r= 1 + 4/d$.
+ 
+ 
+### Additional value: Big data solution (N is large)
+
+#### Clustering step
+Clustering step reduced the sample size from $N$ to $K$.   
+
+- $(Y_1,X_1) \dots (Y_N,X_N) \to (Y^*_{1},X^*_{1}) \dots (\bar{Y}_k,\bar{X}_k)$   
+
+- Note if the data set is too large, we could also use the online clustering method.  
+
+### Additional value: Big data solution (N is large)
+
+#### Parallel Algorithm for SIR and SAVE 
+1. Split the sliced data into b blocks, $X_1, \dots X_B$    
+1. Load each block $X_b$ and calculate the statistics for each block such as $\bar{X}_b, \bar{X}_{hb}, n_{hb}, X^T_{hb}X_{hb}$  
+1. Summary the statistics across the blocks and slices to get the candidate matrix $M_{SIR}, M_{SAVE}$  
+
+# Simulation Study
+
+## 
+
+### Simulation setup 
+
+\begin{block}{Data generation model: logit model}
+\[
+    \log\left(\frac{\mathcal{P}(Y=1|X=x)}{1-\mathcal{P}(Y=1|X=x)}\right) = b_1^Tx \cdot sin(b_2^Tx) \cdot exp(b_3^Tx)
+\]
+
+- $n = \{10^3, 10^4, 10^5,10^6\}$
+- $X \in \mathbb{R}^6$
+- $b_1 = e_i = (0, \dots, 1, \dots,0) \in \mathbb{R}^6$
+- $S_{Y|X} = Span(e_1, e_2, e_3)$
+\end{block}
+Note that the central subspace is a 3-dimensional subspace in a 6-dimensional space
+
+### How to evaluate esimated central subspace
+
+
+#### The number of direction 
+1. Hypothesis Test: test if a eigenvalue is significant than 0
+1. Ad-hoc: select all the eigenvalues whcih are larger then a cutoff value
+
+#### The distrance of the true subspace
+1. Fourbin distance 
+1. trace correlation
+
+
+### Simulation result of SAVE
+
+\begin{table}[]
+\centering
+\caption{Simulation result of SAVE}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{|c|c|cccc|cccc|}
+\hline
+\multicolumn{2}{|c|}{\multirow{2}{*}{}}              & \multicolumn{4}{c|}{Original SAVE} & \multicolumn{4}{c|}{Proposed SAVE}                \\ \cline{3-10} 
+\multicolumn{2}{|c|}{}                               & \multicolumn{8}{c|}{log n}                                                      \\ \hline
+                          & $H_0$ vs $H_1$       & 3      & 4      & 5      & 6      & 3    & 4    & 5             & 6             \\ \hline
+\multirow{3}{*}{Power}    & 0D vs \textgreater{}= 1D & 0.9    & 1      & 1      & 1      & 0    & 0.05 & \color{blue}\textbf{1}    & \color{blue}\textbf{1}    \\
+                          & 1D vs \textgreater{}= 2D & 0.08   & 0.52   & 0.52   & 0.5    & 0    & 0    & \color{blue}\textbf{1}    & \color{blue}\textbf{1}    \\
+                          & 2D vs \textgreater{}= 3D & 0      & 0.05   & 0.06   & 0.06   & 0    & 0    & 0.05          & \color{blue}\textbf{1}    \\ \hline
+\multirow{3}{*}{Type-I}   & 3D vs \textgreater{}= 4D & 0      & 0      & 0      & 0.01   & 0    & 0    & 0             & 0.14          \\
+                          & 4D vs \textgreater{}= 5D & 0      & 0      & 0      & 0      & 0    & 0    & 0             & 0.03             \\
+                          & 5D vs \textgreater{}= 6D & 0      & 0      & 0      & 0      & 0    & 0    & 0             & 0.02             \\ \hline
+\multirow{2}{*}{Distance} & F                        & 1.47   & 1.2    & 1.21   & 1.21   & . & 1.44 & \color{blue}\textbf{1.00} & \color{blue}\textbf{0.39} \\
+                          & R                        & 0.06   & 0.01   & 0.01   & 0.01   & . & 0.02  & \color{blue}\textbf{0.01} & \color{blue}\textbf{0.04}    \\ \hline
+\end{tabular}%
+}
+\end{table}
+
+### Simulation result of SIR
+
+\begin{table}[]
+\centering
+\caption{Simulation result of SIR}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{|c|c|cccc|cccc|cccc|}
+\hline
+\multicolumn{2}{|l|}{\multirow{2}{*}{}}              & \multicolumn{4}{c|}{SIR\_Binary} & \multicolumn{4}{c|}{SIR\_PRE} & \multicolumn{4}{c|}{SIR\_R}                 \\ \cline{3-14}
+\multicolumn{2}{|l|}{}                               & \multicolumn{12}{c|}{log n}                                                                                    \\ \hline
+\multicolumn{1}{|l|}{}    & Direction/Distance       & 3      & 4      & 5      & 6     & 3        & 4    & 5    & 6    & 3    & 4          & 5          & 6          \\
+\multirow{3}{*}{Power}    & 0D vs \textgreater{}= 1D & 1      & 1      & 1      & 1     & 1        & .    & .    & .    & 0.75 & \color{blue}\textbf{1} & \color{blue}\textbf{1} & \color{blue}\textbf{1} \\
+                          & 1D vs \textgreater{}= 2D & .      & .      & .      & .     & 1        & .    & .    & .    & 0.16 & \color{blue}\textbf{1} & \color{blue}\textbf{1} & \color{blue}\textbf{1} \\
+                          & 2D vs \textgreater{}= 3D & .      & .      & .      & .     & 1     & .    & .    & .    & 0.01 & 0.01       & 0          & 0.01       \\ \hline
+\multirow{3}{*}{Type-I}   & 3D vs \textgreater{}= 4D & .      & .      & .      & .     & 0      & .    & .    & .    & 0    & 0          & 0          & 0          \\
+                          & 4D vs \textgreater{}= 5D & .      & .      & .      & .     & 0      & .    & .    & .    & 0    & 0          & 0          & 0          \\
+                          & 5D vs \textgreater{}= 6D & .      & .      & .      & .     & 0    & .    & .    & .    & 0    & 0          & 0          & 0          \\ \hline
+\multirow{2}{*}{Distance} & F                        & 1.14   & 1.12   & 1.14   & 1.13  & \color{red}\textbf{0.88}     & .    & .    & .    & 1.47 & 1.13       & \color{blue}\textbf{1.01}       & \color{blue}\textbf{1}       \\
+                          & R                        & 0.01   & 0   & 0   & 0  & \color{blue}\textbf{0.06}     & .    & .    & .    & 0.06 & \color{blue}\textbf{0.02}   & \color{blue}\textbf{0}       & \color{blue}\textbf{0}       \\ \hline
+\end{tabular}%
+}
+\end{table}
+
+# Conclusion
+
+### Conclusion and Future work
+
+#### Conclusion 
+- Better recover the central space in binary responses
+- Greatly shorten the running time in big data
+
+#### Future work
+- Investigate optimal the choice of k to achieve the best performance of SDR methods.
+
+
+### Reference 
+
+<div id="refs"></div>
+
+
+```{r, child = "merck_backup.Rmd"}
+```
+<!-- ### Simulation result of SIR -->
+
+<!-- ```{r, echo=FALSE,eval=F} -->
+<!-- kable(sir_final, "latex", booktabs = T) %>% -->
+<!-- kable_styling(latex_options = "scale_down") %>% -->
+<!-- add_header_above(c(" ", "Log_n" = 12)) %>% -->
+<!-- add_header_above(c(" ", "SIR_original" = 4,  -->
+<!--                         "SIR_PRE" = 4, -->
+<!--                         "SIR_R" = 4)) -->
+<!-- ``` -->
+
+
+<!-- \begin{table}[] -->
+<!-- \centering -->
+<!-- \caption{Simulation result of SIR} -->
+<!-- \resizebox{\textwidth}{!}{% -->
+<!-- \begin{tabular}{|c|c|cccc|cccc|cccc|} -->
+<!-- \hline -->
+<!-- \multicolumn{2}{|l|}{\multirow{2}{*}{}}              & \multicolumn{4}{c|}{SIR\_Binary} & \multicolumn{4}{c|}{SIR\_PRE} & \multicolumn{4}{c|}{SIR\_R}                 \\ \cline{3-14}  -->
+<!-- \multicolumn{2}{|l|}{}                               & \multicolumn{12}{c|}{log n}                                                                                    \\ \hline -->
+<!-- \multicolumn{1}{|l|}{}    & Direction/Distance       & 3      & 4      & 5      & 6     & 3        & 4    & 5    & 6    & 3    & 4          & 5          & 6          \\ -->
+<!-- \multirow{3}{*}{Power}    & 0D vs \textgreater{}= 1D & 1      & 1      & 1      & 1     & 1        & .    & .    & .    & 0.75 & \textbf{1} & \textbf{1} & \textbf{1} \\ -->
+<!--                           & 1D vs \textgreater{}= 2D & .      & .      & .      & .     & 1        & .    & .    & .    & 0.16 & \textbf{1} & \textbf{1} & \textbf{1} \\ -->
+<!--                           & 2D vs \textgreater{}= 3D & .      & .      & .      & .     & 0.96     & .    & .    & .    & 0.01 & 0.01       & 0          & 0.01       \\ \hline -->
+<!-- \multirow{3}{*}{Type-I}   & 3D vs \textgreater{}= 4D & .      & .      & .      & .     & 0.5      & .    & .    & .    & 0    & 0          & 0          & 0          \\ -->
+<!--                           & 4D vs \textgreater{}= 5D & .      & .      & .      & .     & 0.1      & .    & .    & .    & 0    & 0          & 0          & 0          \\ -->
+<!--                           & 5D vs \textgreater{}= 6D & .      & .      & .      & .     & 0.01     & .    & .    & .    & 0    & 0          & 0          & 0          \\ \hline -->
+<!-- \multirow{2}{*}{Distance} & F                        & 1.13   & 1.05   & 1.06   & 1.09  & 1.14     & .    & .    & .    & 1.37 & 1.29       & 1.24       & 1.29       \\ -->
+<!--                           & R                        & 0.14   & 0.14   & 0.14   & 0.15  & 0.12     & .    & .    & .    & 0.18 & 0.15       & 0.15       & 0.15       \\ \hline -->
+<!-- \end{tabular}% -->
+<!-- } -->
+<!-- \end{table} -->
+<!-- Iteration time is 200 and significant level is 0.05 -->
+
+
+<!-- #### Performance evaluation -->
+<!-- 1. The number of directions of the central space: Hypothesis Test   -->
+<!-- 1. Difference between a true bias B and an estimated $\hat{B}$:    -->
+<!--     * Trace correlation: $R = 1 - \frac{1}{k}\sum_{i = 1}^k \rho_i^2$, where $\rho^2_i$ is the i-th eigenvalue of $\hat{B}^TBB^T\hat{B}$.   -->
+<!--     * Frobenius distance: $F = \Vert P_B - P_{\hat{B}}\Vert_F$.  -->
+<!--     where $P_A = A(A^TA)^{-1}A$ and $\Vert A\Vert_F = \sqrt{\sum_i\sum_j a^2_{ij}}$.  -->
+
+
+<!-- ### Simulation setup  -->
+
+<!-- #### Data generation model: Latent model -->
+<!-- \[ -->
+<!--     Y=\left\{ -->
+<!--                 \begin{array}{ll} -->
+<!--                   0 ~~~(b_1^TX)^2*e^{(b_2^TX)}*\sin(b_3^TX) + \epsilon < 0 \\ -->
+<!--                   1 ~~~\text{Otherwise} \\ -->
+<!--                 \end{array} -->
+<!--       \right.  -->
+<!-- \] -->
+<!-- where  -->
+
+<!-- - $X \in \mathbb{R}^6 \sim N(\mathbf 0, \mathbf I)$   -->
+<!-- - $b_i = e_i = (0,\dots, 1,0,\dots,0)^T$, so $b_1^TX = X_1, b_2^TX = X_2, b_3^TX = X_3$ -->
+<!-- - $\epsilon \sim N(0,1)$ -->
+<!-- - $P(X) = \Phi((b_1^TX)^2*e^{(b_2^TX)}*\sin(b_3^TX))$, where $\Phi$ is the CDF of standard normal distribution. -->
+

@@ -1,3 +1,10 @@
+##################################################################################
+## matrix off diag element 
+##################################################################################
+offdiag <- function(M) {
+  index <- upper.tri(M)
+  M[index] %>% as.vector(.)
+}
 
 ##################################################################################
 ## uncorrelated function
@@ -127,11 +134,21 @@ PCA_method <- function(input_data) {
 ##################################################################################
 ## using true value
 ##################################################################################
-true_value_method <- function(input_data, Sigma){
-  Sigma_isqrt <- invsqrt(cov2cor(Sigma))
+true_value_method <- function(input_data, Sigma=NULL, 
+                              emp = FALSE, combine = NULL,
+                              sigma_total_emp = NULL, sigma_main_emp = NULL){
+  if (emp == TRUE) {
+    if(combine == TRUE){
+      Sigma <- sigma_total_emp
+    } else {
+      Sigma <- sigma_main_emp
+    }
+  }
+  
+  Sigma_isqrt <- invsqrt(Sigma)  
   
   # uncorrelated_data
-  uncorr_data=input_data%*%Sigma_isqrt
+  uncorr_data <- input_data%*%Sigma_isqrt
   
   list(uncorr_data = uncorr_data)
   

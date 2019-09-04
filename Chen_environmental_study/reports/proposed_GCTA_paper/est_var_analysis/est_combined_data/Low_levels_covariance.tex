@@ -175,63 +175,71 @@ I use two different sample covariane matrices: 1999-2001 and 2007 -2008.
 \subsection{1999}\label{section}
 
 \begin{verbatim}
-      n  MSE est_var est_mean     method target var_main_effect decor
- 1: 100 19.6    18.9     10.9 EigenPrism   main              10 FALSE
- 2: 150  8.7     8.7     10.2 EigenPrism   main              10 FALSE
- 3: 231  5.5     5.5     10.1 EigenPrism   main              10 FALSE
- 4: 100 21.3    21.4     10.3       GCTA   main              10 FALSE
- 5: 150  9.3     9.4     10.1       GCTA   main              10 FALSE
- 6: 231  5.0     5.1     10.0       GCTA   main              10 FALSE
- 7: 100 20.6    20.6     10.4 EigenPrism   main              10 FALSE
- 8: 150 10.4    10.4      9.7 EigenPrism   main              10 FALSE
- 9: 231  5.3     5.2     10.4 EigenPrism   main              10 FALSE
-10: 100 20.7    21.0     10.0       GCTA   main              10 FALSE
-11: 150 10.9    10.6      9.4       GCTA   main              10 FALSE
-12: 231  4.8     4.7     10.4       GCTA   main              10 FALSE
-    x_dist
- 1:    chi
- 2:    chi
- 3:    chi
- 4:    chi
- 5:    chi
- 6:    chi
- 7: normal
- 8: normal
- 9: normal
-10: normal
-11: normal
-12: normal
+      n MSE est_var est_mean NA_total     method var_main_effect x_dist
+ 1: 100 626     138       32        9 EigenPrism              10    chi
+ 2: 150 790     140       36        0 EigenPrism              10    chi
+ 3: 231 740      61       36        0 EigenPrism              10    chi
+ 4: 100 852     242       35        0       GCTA              10    chi
+ 5: 150 848     191       36        0       GCTA              10    chi
+ 6: 231 702      66       35        0       GCTA              10    chi
+ 7: 100 504     100       30        4 EigenPrism              10 normal
+ 8: 150 604      74       33        0 EigenPrism              10 normal
+ 9: 231 700      70       35        0 EigenPrism              10 normal
+10: 100 649     173       32        0       GCTA              10 normal
+11: 150 656      99       34        0       GCTA              10 normal
+12: 231 705     101       35        0       GCTA              10 normal
 \end{verbatim}
+
+\begin{verbatim}
+      n  MSE est_var est_mean NA_total     method var_main_effect x_dist
+ 1: 100 16.9    16.9      9.7        0 EigenPrism              10    chi
+ 2: 150  9.4     9.5     10.0        0 EigenPrism              10    chi
+ 3: 231  5.2     5.2     10.2        0 EigenPrism              10    chi
+ 4: 100 19.0    18.5      9.1        0       GCTA              10    chi
+ 5: 150  8.5     8.6      9.9        0       GCTA              10    chi
+ 6: 231  4.8     4.9     10.1        0       GCTA              10    chi
+ 7: 100 19.2    19.4      9.9        0 EigenPrism              10 normal
+ 8: 150 13.3    13.2     10.5        0 EigenPrism              10 normal
+ 9: 231  4.6     4.6     10.0        0 EigenPrism              10 normal
+10: 100 22.0    22.1      9.6        0       GCTA              10 normal
+11: 150 13.0    13.0     10.3        0       GCTA              10 normal
+12: 231  4.1     4.1     10.0        0       GCTA              10 normal
+\end{verbatim}
+
+\newpage
 
 \subsection{2005}\label{section-1}
 
 \begin{verbatim}
-      n  MSE est_var est_mean     method target var_main_effect decor
- 1: 100 16.4    15.8     10.9 EigenPrism   main              10 FALSE
- 2: 150 13.3    11.6     11.3 EigenPrism   main              10 FALSE
- 3: 300  4.5     4.6      9.9 EigenPrism   main              10 FALSE
- 4: 100 12.3    11.2     11.1       GCTA   main              10 FALSE
- 5: 150 11.0     7.7     11.8       GCTA   main              10 FALSE
- 6: 300  3.7     3.0     10.9       GCTA   main              10 FALSE
- 7: 100 15.1    13.6     11.3 EigenPrism   main              10 FALSE
- 8: 150 11.4    10.6     11.0 EigenPrism   main              10 FALSE
- 9: 300  6.7     6.7     10.3 EigenPrism   main              10 FALSE
-10: 100 12.1    10.2     11.4       GCTA   main              10 FALSE
-11: 150  9.4     7.2     11.5       GCTA   main              10 FALSE
-12: 300  4.4     3.4     11.0       GCTA   main              10 FALSE
-    x_dist
- 1:    chi
- 2:    chi
- 3:    chi
- 4:    chi
- 5:    chi
- 6:    chi
- 7: normal
- 8: normal
- 9: normal
-10: normal
-11: normal
-12: normal
+      n  MSE est_var est_mean NA_total     method var_main_effect x_dist
+ 1: 100  897     132       38        6 EigenPrism              10    chi
+ 2: 150 1131     140       41        0 EigenPrism              10    chi
+ 3: 300 1574     109       48       44 EigenPrism              10    chi
+ 4: 100 1274     287       41        0       GCTA              10    chi
+ 5: 150 1673     327       47        0       GCTA              10    chi
+ 6: 300 2090     213       53        0       GCTA              10    chi
+ 7: 100 1250     173       43        6 EigenPrism              10 normal
+ 8: 150 1162     129       42        0 EigenPrism              10 normal
+ 9: 300 1404     104       46       45 EigenPrism              10 normal
+10: 100 1789     366       48        0       GCTA              10 normal
+11: 150 1570     266       46        0       GCTA              10 normal
+12: 300 2069     257       53        0       GCTA              10 normal
+\end{verbatim}
+
+\begin{verbatim}
+      n  MSE est_var est_mean NA_total     method var_main_effect x_dist
+ 1: 100 16.4    15.8     10.9        0 EigenPrism              10    chi
+ 2: 150 13.3    11.6     11.3        0 EigenPrism              10    chi
+ 3: 300  4.5     4.6      9.9        0 EigenPrism              10    chi
+ 4: 100 12.3    11.2     11.1        0       GCTA              10    chi
+ 5: 150 11.0     7.7     11.8        0       GCTA              10    chi
+ 6: 300  3.7     3.0     10.9        0       GCTA              10    chi
+ 7: 100 15.1    13.6     11.3        0 EigenPrism              10 normal
+ 8: 150 11.4    10.6     11.0        0 EigenPrism              10 normal
+ 9: 300  6.7     6.7     10.3        0 EigenPrism              10 normal
+10: 100 12.1    10.2     11.4        0       GCTA              10 normal
+11: 150  9.4     7.2     11.5        0       GCTA              10 normal
+12: 300  4.4     3.4     11.0        0       GCTA              10 normal
 \end{verbatim}
 
 

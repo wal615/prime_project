@@ -7,39 +7,63 @@ library(doRNG)
 library(doParallel)
 library(gtools) # for rbind based on columns
 options(warn = 1, error = bettertrace::stacktrace)
-# options(error = recover)
 setwd("~/dev/projects/Chen_environmental_study/")
 sourceDirectory("./R_code/main_fn/",modifiedOnly = FALSE, recursive = TRUE)
 sourceDirectory("./R_code/main_fn/method/",modifiedOnly = FALSE, recursive = TRUE)
 source("./R_code/simulation_proposed_GCTA/local_helpers.R")
-data_path <- "~/dev/projects/Chen_environmental_study/R_code/data/pcb_99_13_no_missing.csv"
-save_path <- "~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/var_est/decor/"
+# source("./reports/proposed_GCTA_paper/est_var_analysis/est_combined_data/covaraites_summary_2005_2014.R")
+source("./reports/proposed_GCTA_paper/est_var_analysis/est_combined_data/covaraites_summary_1999_2004.R")
+year <- "1999"
+cov <- "TRUE"
+save_path <- "~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/var_est/combined_effects_PCBs_report_08_30_2019/"
 
-cores <- 1
-n_iter <- 1
-n_sub <- 0
+cores <- 10
+n_iter <- 100
+n_sub <- 1
 seed_loop <- 1234
 seed_coef <- 1014
 # steup parameters
 
 # sub_sampling
-pro <- 101
-bs <- "leave-1"
+pro <- 0
+bs <- "full"
 
 # data generation
 emp_n <- 10^5
-n_total <- c(1000)
-# n_total <- 5000
+n_total <- c(100,200,500,1000)
 dist <- "normal"
 generate_data <- generate_normal
-structure <- "I"
-pre_cor <- real_data_corr.mat(data_path)
-p <- ncol(pre_cor)
-# pre_cor <- unstr_corr.mat(p)
+structure <- "un"
 
+# low-covariance matrix from PCBs
+# pre_cor <- cor(data.matrix(Combined_PCB_1999_2004_common[SDDSRVYR == 1, ..Combined_PCB_common]))
+
+set.seed(123)
+index <- sample(1:nrow(PCB_1999_2004_common), 100, replace = F)
+# pre_cor <- cor(data.matrix(PCB_1999_2004_common[index, ..PCB_common]) %*% invsqrt(cov_1999_2004))
+pre_cor <- cov(data.matrix(PCB_1999_2004_common[index, ..PCB_common])) %>% diag(.) %>% diag(.)
+p <- ncol(pre_cor)
+
+# decorr
+decor_method <- "hist"
+# uncorr_method <- SVD_method
+# uncorr_args <- NULL
+uncorr_method <- true_value_method
+uncorr_args <- list(emp = TRUE, combine = combine)
+# uncorr_method <- dgpGLASSO_method
+# uncorr_args <- NULL
+# uncorr_method <- QUIC_method
+# uncorr_args <- NULL
+# uncorr_method <- PCA_method
+# uncorr_args <- NULL
 
 # est
-decor = FALSE
+decor <- FALSE
+if(decor == FALSE) {
+  decor_method <- "None"
+  uncorr_method <- NULL
+  uncorr_args <- NULL
+}
 combine <- FALSE
 est <- "main"
 
@@ -54,7 +78,7 @@ kernel <- GCTA_kernel
 kernel_name <- "GCTA_kernel"
 kernel_result_col_names <- col_names_GCTA
 
-# 
+
 # kernel <- least_square_kernel
 # kernel_args <- list(decor = decor)
 # kernel_name <- "least_square_kernel"
@@ -66,6 +90,11 @@ kernel_result_col_names <- col_names_GCTA
 # kernel_2 <- GCTA_kernel
 # kernel_name <- append(kernel_name,"GCTA_kernel") %>% paste(.,collapse = "_")
 # kernel_result_col_names_2 <- col_names_GCTA
+kernel_args_2 <- NULL
+kernel_2 <- NULL
+kernel_name <- NULL
+kernel_result_col_names_2 <- NULL
+
 
 # dim_reduction
 # dim_red_method <- SVD_dim_reduction
@@ -94,11 +123,11 @@ pro_list <-  args_all[,6, drop = FALSE] %>% split(x = ., f = seq(nrow(.)))
 
 
 # setup folders for results
-result_name <- paste("result_list_fixed_sub", dist, "structure", structure, "main", main_fixed_var, "inter",
+result_name <- paste("decor_method",decor_method,"result_list_fixed_sub", dist, "structure", structure, "main", main_fixed_var, "inter",
                      inter_fixed_var, "n", paste(n_total, collapse = "_"), "p", p, "rho_e", paste(rho_e,collapse = "_"), 
-                     "dim_red_coeff", dim_red_args$reduce_coef, "last", dim_red_args$last,"decor",decor,
+                     "dim_red_coeff", dim_red_args$reduce_coef,"decor",decor,
                      "subpro",paste(pro, collapse = "_"), "iter", n_iter, "nsub", n_sub,
-                     kernel_name, "est", est, sep = "_")
+                     kernel_name, "est", est, "year", year, "cov", cov, sep = "_")
 result_folder_path <- paste0(save_path, result_name, "/")
 dir.create(result_folder_path)
 
@@ -118,7 +147,8 @@ result_list <- mapply(FUN = simulation_var_est_fn,
                                       emp_n = emp_n,
                                       combine = combine,
                                       gene_coeff_args = gene_coeff_args,
-                                      uncorr_method = SVD_method,
+                                      uncorr_method = uncorr_method,
+                                      uncorr_args = uncorr_args,
                                       dim_red_method = dim_red_method,
                                       dim_red_args = dim_red_args,
                                       generate_data = generate_data,
@@ -127,6 +157,6 @@ result_list <- mapply(FUN = simulation_var_est_fn,
                                       seed_loop = seed_loop,
                                       seed_coef = seed_coef,
                                       cores = cores,
-                                      inter_std = TRUE,
+                                      inter_std = FALSE,
                                       inter_result_path = result_folder_path),
                       SIMPLIFY = FALSE)

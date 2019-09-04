@@ -11,9 +11,11 @@ setwd("~/dev/projects/Chen_environmental_study/")
 sourceDirectory("./R_code/main_fn/",modifiedOnly = FALSE, recursive = TRUE)
 sourceDirectory("./R_code/main_fn/method/",modifiedOnly = FALSE, recursive = TRUE)
 source("./R_code/simulation_proposed_GCTA/local_helpers.R")
-source("./reports/proposed_GCTA_paper/est_var_analysis/est_combined_data/covaraites_summary_2005_2014.R")
-year <- "2005"
-save_path <- "~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/var_est/non_decore/low_covariance/"
+# source("./reports/proposed_GCTA_paper/est_var_analysis/est_combined_data/covaraites_summary_2005_2014.R")
+# year <- "2005"
+source("./reports/proposed_GCTA_paper/est_var_analysis/est_combined_data/covaraites_summary_1999_2004.R")
+year <- "1999"
+save_path <- "~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/var_est/non_decore/low_covariance/original_cov/"
 
 cores <- 10
 n_iter <- 100
@@ -28,13 +30,13 @@ bs <- "full"
 
 # data generation
 emp_n <- 10^5
-n_total <- c(100,150,300)
+n_total <- c(100,150,231)
 dist <- "normal"
 generate_data <- generate_normal
 structure <- "un"
 
 # low-covariance matrix from PCBs
-pre_cor <- cor(data.matrix(Combined_PCB_2005_2014_common[SDDSRVYR == 4, ..Combined_PCB_common]) %*% invsqrt(Combined_cov_2005_2014))
+pre_cor <- cor(data.matrix(Combined_PCB_1999_2004_common[SDDSRVYR == 1, ..Combined_PCB_common]))
 p <- ncol(pre_cor)
 
 # decorr
@@ -54,7 +56,10 @@ p <- ncol(pre_cor)
 decor <- FALSE
 if(decor == FALSE) {
   decor_method <- "None"
+  uncorr_method <- NULL
+  uncorr_args <- NULL
 }
+
 combine <- FALSE
 est <- "main"
 

@@ -240,90 +240,90 @@ add_header_above(c(" ", "SAVE_original" = 4,
 
 
 
-<!-- ### Backup -->
+### Backup
 
-<!-- \begin{examples} -->
+\begin{examples}
 
-<!-- 1. Linear regression: $Y = a + b_1^TX + b_2^TX + \epsilon$ -->
+1. Linear regression: $Y = a + b_1^TX + b_2^TX + \epsilon$
 
-<!-- 2. NonLinear regression: $Y = a + \exp(b_1^TX) + \sin(b_2^TX) + \epsilon$ -->
+2. NonLinear regression: $Y = a + \exp(b_1^TX) + \sin(b_2^TX) + \epsilon$
 
-<!-- 3. More general: $Y = f(b_1^TX, b_2^TX, \epsilon)$ -->
-<!-- \end{examples} -->
+3. More general: $Y = f(b_1^TX, b_2^TX, \epsilon)$
+\end{examples}
 
-<!-- ### Simulation result of SIR -->
+### Simulation result of SIR
 
-<!-- ```{r, echo=FALSE,eval=F} -->
-<!-- kable(sir_final, "latex", booktabs = T) %>% -->
-<!-- kable_styling(latex_options = "scale_down") %>% -->
-<!-- add_header_above(c(" ", "Log_n" = 12)) %>% -->
-<!-- add_header_above(c(" ", "SIR_original" = 4,  -->
-<!--                         "SIR_PRE" = 4, -->
-<!--                         "SIR_R" = 4)) -->
-<!-- ``` -->
-
-
-<!-- \begin{table}[] -->
-<!-- \centering -->
-<!-- \caption{Simulation result of SIR} -->
-<!-- \resizebox{\textwidth}{!}{% -->
-<!-- \begin{tabular}{|c|c|cccc|cccc|cccc|} -->
-<!-- \hline -->
-<!-- \multicolumn{2}{|l|}{\multirow{2}{*}{}}              & \multicolumn{4}{c|}{SIR\_Binary} & \multicolumn{4}{c|}{SIR\_PRE} & \multicolumn{4}{c|}{SIR\_R}                 \\ \cline{3-14}  -->
-<!-- \multicolumn{2}{|l|}{}                               & \multicolumn{12}{c|}{log n}                                                                                    \\ \hline -->
-<!-- \multicolumn{1}{|l|}{}    & Direction/Distance       & 3      & 4      & 5      & 6     & 3        & 4    & 5    & 6    & 3    & 4          & 5          & 6          \\ -->
-<!-- \multirow{3}{*}{Power}    & 0D vs \textgreater{}= 1D & 1      & 1      & 1      & 1     & 1        & .    & .    & .    & 0.75 & \textbf{1} & \textbf{1} & \textbf{1} \\ -->
-<!--                           & 1D vs \textgreater{}= 2D & .      & .      & .      & .     & 1        & .    & .    & .    & 0.16 & \textbf{1} & \textbf{1} & \textbf{1} \\ -->
-<!--                           & 2D vs \textgreater{}= 3D & .      & .      & .      & .     & 0.96     & .    & .    & .    & 0.01 & 0.01       & 0          & 0.01       \\ \hline -->
-<!-- \multirow{3}{*}{Type-I}   & 3D vs \textgreater{}= 4D & .      & .      & .      & .     & 0.5      & .    & .    & .    & 0    & 0          & 0          & 0          \\ -->
-<!--                           & 4D vs \textgreater{}= 5D & .      & .      & .      & .     & 0.1      & .    & .    & .    & 0    & 0          & 0          & 0          \\ -->
-<!--                           & 5D vs \textgreater{}= 6D & .      & .      & .      & .     & 0.01     & .    & .    & .    & 0    & 0          & 0          & 0          \\ \hline -->
-<!-- \multirow{2}{*}{Distance} & F                        & 1.13   & 1.05   & 1.06   & 1.09  & 1.14     & .    & .    & .    & 1.37 & 1.29       & 1.24       & 1.29       \\ -->
-<!--                           & R                        & 0.14   & 0.14   & 0.14   & 0.15  & 0.12     & .    & .    & .    & 0.18 & 0.15       & 0.15       & 0.15       \\ \hline -->
-<!-- \end{tabular}% -->
-<!-- } -->
-<!-- \end{table} -->
-<!-- Iteration time is 200 and significant level is 0.05 -->
+```{r, echo=FALSE,eval=F}
+kable(sir_final, "latex", booktabs = T) %>%
+kable_styling(latex_options = "scale_down") %>%
+add_header_above(c(" ", "Log_n" = 12)) %>%
+add_header_above(c(" ", "SIR_original" = 4,
+                        "SIR_PRE" = 4,
+                        "SIR_R" = 4))
+```
 
 
-<!-- #### Performance evaluation -->
-<!-- 1. The number of directions of the central space: Hypothesis Test   -->
-<!-- 1. Difference between a true bias B and an estimated $\hat{B}$:    -->
-<!--     * Trace correlation: $R = 1 - \frac{1}{k}\sum_{i = 1}^k \rho_i^2$, where $\rho^2_i$ is the i-th eigenvalue of $\hat{B}^TBB^T\hat{B}$.   -->
-<!--     * Frobenius distance: $F = \Vert P_B - P_{\hat{B}}\Vert_F$.  -->
-<!--     where $P_A = A(A^TA)^{-1}A$ and $\Vert A\Vert_F = \sqrt{\sum_i\sum_j a^2_{ij}}$.  -->
+\begin{table}[]
+\centering
+\caption{Simulation result of SIR}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{|c|c|cccc|cccc|cccc|}
+\hline
+\multicolumn{2}{|l|}{\multirow{2}{*}{}}              & \multicolumn{4}{c|}{SIR\_Binary} & \multicolumn{4}{c|}{SIR\_PRE} & \multicolumn{4}{c|}{SIR\_R}                 \\ \cline{3-14}
+\multicolumn{2}{|l|}{}                               & \multicolumn{12}{c|}{log n}                                                                                    \\ \hline
+\multicolumn{1}{|l|}{}    & Direction/Distance       & 3      & 4      & 5      & 6     & 3        & 4    & 5    & 6    & 3    & 4          & 5          & 6          \\
+\multirow{3}{*}{Power}    & 0D vs \textgreater{}= 1D & 1      & 1      & 1      & 1     & 1        & .    & .    & .    & 0.75 & \textbf{1} & \textbf{1} & \textbf{1} \\
+                          & 1D vs \textgreater{}= 2D & .      & .      & .      & .     & 1        & .    & .    & .    & 0.16 & \textbf{1} & \textbf{1} & \textbf{1} \\
+                          & 2D vs \textgreater{}= 3D & .      & .      & .      & .     & 0.96     & .    & .    & .    & 0.01 & 0.01       & 0          & 0.01       \\ \hline
+\multirow{3}{*}{Type-I}   & 3D vs \textgreater{}= 4D & .      & .      & .      & .     & 0.5      & .    & .    & .    & 0    & 0          & 0          & 0          \\
+                          & 4D vs \textgreater{}= 5D & .      & .      & .      & .     & 0.1      & .    & .    & .    & 0    & 0          & 0          & 0          \\
+                          & 5D vs \textgreater{}= 6D & .      & .      & .      & .     & 0.01     & .    & .    & .    & 0    & 0          & 0          & 0          \\ \hline
+\multirow{2}{*}{Distance} & F                        & 1.13   & 1.05   & 1.06   & 1.09  & 1.14     & .    & .    & .    & 1.37 & 1.29       & 1.24       & 1.29       \\
+                          & R                        & 0.14   & 0.14   & 0.14   & 0.15  & 0.12     & .    & .    & .    & 0.18 & 0.15       & 0.15       & 0.15       \\ \hline
+\end{tabular}%
+}
+\end{table}
+Iteration time is 200 and significant level is 0.05
 
 
-<!-- ### Simulation setup  -->
+#### Performance evaluation
+1. The number of directions of the central space: Hypothesis Test
+1. Difference between a true bias B and an estimated $\hat{B}$:
+    * Trace correlation: $R = 1 - \frac{1}{k}\sum_{i = 1}^k \rho_i^2$, where $\rho^2_i$ is the i-th eigenvalue of $\hat{B}^TBB^T\hat{B}$.
+    * Frobenius distance: $F = \Vert P_B - P_{\hat{B}}\Vert_F$.
+    where $P_A = A(A^TA)^{-1}A$ and $\Vert A\Vert_F = \sqrt{\sum_i\sum_j a^2_{ij}}$.
 
-<!-- #### Data generation model: Latent model -->
-<!-- \[ -->
-<!--     Y=\left\{ -->
-<!--                 \begin{array}{ll} -->
-<!--                   0 ~~~(b_1^TX)^2*e^{(b_2^TX)}*\sin(b_3^TX) + \epsilon < 0 \\ -->
-<!--                   1 ~~~\text{Otherwise} \\ -->
-<!--                 \end{array} -->
-<!--       \right.  -->
-<!-- \] -->
-<!-- where  -->
 
-<!-- - $X \in \mathbb{R}^6 \sim N(\mathbf 0, \mathbf I)$   -->
-<!-- - $b_i = e_i = (0,\dots, 1,0,\dots,0)^T$, so $b_1^TX = X_1, b_2^TX = X_2, b_3^TX = X_3$ -->
-<!-- - $\epsilon \sim N(0,1)$ -->
-<!-- - $P(X) = \Phi((b_1^TX)^2*e^{(b_2^TX)}*\sin(b_3^TX))$, where $\Phi$ is the CDF of standard normal distribution. -->
+### Simulation setup
 
-<!-- ### How it works -->
-<!-- #### Main idea -->
-<!-- Y and $P(X)$ have identical central space: $S_{Y|X} = S_{P(X)|X}$  -->
+#### Data generation model: Latent model
+\[
+    Y=\left\{
+                \begin{array}{ll}
+                  0 ~~~(b_1^TX)^2*e^{(b_2^TX)}*\sin(b_3^TX) + \epsilon < 0 \\
+                  1 ~~~\text{Otherwise} \\
+                \end{array}
+      \right.
+\]
+where
 
-<!-- \begin{center} -->
-<!-- $Y = f(b_1^TX, \dots, b_d^TX)$ -->
-<!-- $\Rightarrow$ -->
-<!-- $\mathcal{P}(Y = 1 |X) = P(X) = P(b_1^TX, \dots, b_d^TX)$ -->
-<!-- \end{center} -->
+- $X \in \mathbb{R}^6 \sim N(\mathbf 0, \mathbf I)$
+- $b_i = e_i = (0,\dots, 1,0,\dots,0)^T$, so $b_1^TX = X_1, b_2^TX = X_2, b_3^TX = X_3$
+- $\epsilon \sim N(0,1)$
+- $P(X) = \Phi((b_1^TX)^2*e^{(b_2^TX)}*\sin(b_3^TX))$, where $\Phi$ is the CDF of standard normal distribution.
 
-<!-- #### For the Representative -->
-<!-- \begin{center} -->
-<!-- $Y^*_k = \hat{\mathcal{P}}(Y = 1|X_i, i\in I_k) \approx P(b_1^T\bar{X}_k, \dots, b_d^T\bar{X}_k)$ -->
-<!-- $Y^*_k \rightarrow P(Y=1|X=x_k) \text{ as } N,K,N/K \to \infty$ -->
-<!-- \end{center} -->
+### How it works
+#### Main idea
+Y and $P(X)$ have identical central space: $S_{Y|X} = S_{P(X)|X}$
+
+\begin{center}
+$Y = f(b_1^TX, \dots, b_d^TX)$
+$\Rightarrow$
+$\mathcal{P}(Y = 1 |X) = P(X) = P(b_1^TX, \dots, b_d^TX)$
+\end{center}
+
+#### For the Representative
+\begin{center}
+$Y^*_k = \hat{\mathcal{P}}(Y = 1|X_i, i\in I_k) \approx P(b_1^T\bar{X}_k, \dots, b_d^T\bar{X}_k)$
+$Y^*_k \rightarrow P(Y=1|X=x_k) \text{ as } N,K,N/K \to \infty$
+\end{center}

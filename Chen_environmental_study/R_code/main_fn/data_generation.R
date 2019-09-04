@@ -198,46 +198,23 @@ generate_chi <- function(n, p, rho = NULL, sig_coef = 1,
 ##################################################################################
 ## subset PCB data
 ##################################################################################
-generate_PCB <- function(data_path, n, structure) {
-  b <- read.csv(data_path, stringsAsFactors = FALSE) %>% data.matrix(.)
-  if(nrow(b) >= n){
-    b <- b[1:n,]
-  } else {
-    stop("n is too large then the real data")
-  }
-  
-  # # subset b 
-  # n <- nrow(b)
-  # index <- sample(1:n, round(pro*n,0), replace = FALSE)
-  # b <- b[index,]
-  # 
-  # add distribution attributes
-  attributes(b) <- append(attributes(b), 
-                          list(x_dist = "PCB"))
-  b
-}
 
-##################################################################################
-## real data 
-##################################################################################
+generate_PCB <- function(data_path, n, p = NULL, data_name = NULL, structure) {
 
-generate_real <- function(data_path, pro, data_name=NULL) {
-  data <- read.csv(data_path)
-  
+  data <- fread(data_path)
+
   # subset 
-  n <- nrow(data)
-  index <- sample(1:n, round(pro*n,0), replace = FALSE)
+  n_total <- nrow(data)
+  index <- sample(1:n_total, n, replace = FALSE)
   data <- data[index,]
   
   # covaraites
-  x <- data[,!(colnames(data) %in% "y")]  %>% data.matrix(.)
+  x <- data %>% data.matrix(.)
+  
   # add distribution attributes
   attributes(x) <- append(attributes(x), 
                           list(x_dist = data_name))
-  
-  # response
-  y <- data[,"y", drop = FALSE]  %>% data.matrix(.)
-  b <- list(x = x, y = y)
+  x
 }
 
 generate_real_test <- function(data_path, pro, data_name=NULL, resp_name = "y", tran_fn_y, tran_fn_x) {
@@ -279,18 +256,67 @@ generate_sub <- function(data, pro, n, bs = c("leave-d","leave-1","bs")[1], iter
   sub_data
 }
 
+# gene_model_data <- function(b_raw, p, combine = FALSE){
+#   # Standardized main covariates
+#   b_m <- b_raw %>% std_fn(.)
+#   b_i <- matrix(0,nrow = nrow(b_raw))
+#   if(combine == TRUE){
+#     b <- b_raw %>% std_fn(.) %>% add_inter(.)
+#     b_m <- b[,1:p, drop = FALSE]
+#     b_i <- b[,-(1:p), drop = FALSE]
+#   }
+#   list(b_m = b_m,
+#        b_i = b_i)
+# }
+# 
+# est_model_data <- function(b_raw, y, p, 
+#                            inter_std, 
+#                            combined, 
+#                            uncorr_method, uncorr_args,
+#                            dim_red_method, dim_red_args, 
+#                            uncorre = FALSE){
+#   # Standardized main covariates
+#   b_m <- b_raw %>% std_fn(.)
+#   
+#   if(combine == TRUE){
+#     b <- b_raw %>% std_fn(.) %>% add_inter(.)
+#     b_m <- b[,1:p, drop = FALSE]
+#     b_i <- b[,-(1:p), drop = FALSE]
+#     # center the main/interaction terms
+#     if(inter_std == TRUE){
+#       b_i <- std_fn(b = b_i)
+#     }
+#     b_final <- cbind(b_m, b_i)
+#   } else {
+#     b_final <- b_m
+#   }
+# 
+#   # Uncorrelated data
+#   if(uncorre == TRUE) {
+#     s_final <- uncorr_fn(b_final, uncorr_method, uncorr_args, dim_red_method, dim_red_args)
+#   } else {
+#     s_final <- NA
+#   }
+#   
+#   
+#   list(b_final = b_final,
+#        s_final = s_final,
+#        y = y)
+# }
+
 gene_model_data <- function(b_raw, p, combine = FALSE){
   # Standardized main covariates
-  b_m <- b_raw %>% std_fn(.)
+  b_m <- b_raw
   b_i <- matrix(0,nrow = nrow(b_raw))
   if(combine == TRUE){
-    b <- b_raw %>% std_fn(.) %>% add_inter(.)
+    b <- b_raw %>%  add_inter(.)
     b_m <- b[,1:p, drop = FALSE]
     b_i <- b[,-(1:p), drop = FALSE]
   }
   list(b_m = b_m,
        b_i = b_i)
 }
+
 
 est_model_data <- function(b_raw, y, p, 
                            inter_std, 
@@ -299,10 +325,10 @@ est_model_data <- function(b_raw, y, p,
                            dim_red_method, dim_red_args, 
                            uncorre = FALSE){
   # Standardized main covariates
-  b_m <- b_raw %>% std_fn(.)
+  b_m <- b_raw
   
   if(combine == TRUE){
-    b <- b_raw %>% std_fn(.) %>% add_inter(.)
+    b <- b_raw %>% add_inter(.)
     b_m <- b[,1:p, drop = FALSE]
     b_i <- b[,-(1:p), drop = FALSE]
     # center the main/interaction terms
@@ -313,15 +339,13 @@ est_model_data <- function(b_raw, y, p,
   } else {
     b_final <- b_m
   }
-
+  
   # Uncorrelated data
   if(uncorre == TRUE) {
     s_final <- uncorr_fn(b_final, uncorr_method, uncorr_args, dim_red_method, dim_red_args)
   } else {
     s_final <- NA
   }
-  
-  
   list(b_final = b_final,
        s_final = s_final,
        y = y)

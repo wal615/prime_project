@@ -11,11 +11,14 @@ setwd("~/dev/projects/Chen_environmental_study/")
 sourceDirectory("./R_code/main_fn/",modifiedOnly = FALSE, recursive = TRUE)
 sourceDirectory("./R_code/main_fn/method/",modifiedOnly = FALSE, recursive = TRUE)
 source("./R_code/simulation_proposed_GCTA/local_helpers.R")
-data_path <- "~/dev/projects/Chen_environmental_study/R_code/data/real_data/NHANES/hemoglobin/nhanceMiceImpute25_no_y.csv"
-save_path <- "~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/var_est/decor/prime_0806/"
+# source("./reports/proposed_GCTA_paper/est_var_analysis/est_combined_data/covaraites_summary_2005_2014.R")
+source("./reports/proposed_GCTA_paper/est_var_analysis/est_combined_data/covaraites_summary_1999_2004.R")
+year <- "1999"
+cov <- "TRUE"
+save_path <- "~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/var_est/combined_effects_PCBs_report_08_30_2019/"
 
-cores <- 10
-n_iter <- 100
+cores <- 1
+n_iter <- 1
 n_sub <- 1
 seed_loop <- 1234
 seed_coef <- 1014
@@ -24,45 +27,42 @@ seed_coef <- 1014
 # sub_sampling
 pro <- 0
 bs <- "full"
-# pro <- 101
-# bs <- "leave-1"
 
 # data generation
 emp_n <- 10^5
-n_total <- c(200)
-# n_total <- 5000
+n_total <- c(100,150,231)
 dist <- "normal"
 generate_data <- generate_normal
 structure <- "un"
 
-p <- 500
-pre_cor <- unstr_corr.mat(p,k=5)
- 
-# pre_cor <- real_data_corr.mat(data_path)
-# diag(pre_cor) <- 0
-# pre_cor[which(pre_cor1 >= 0.95, arr.ind = TRUE)] <- NA
-# pre_cor <- pre_cor[complete.cases(pre_cor1),complete.cases(pre_cor1)]
-# diag(pre_cor) <- 1
-# p <- ncol(pre_cor)
+# low-covariance matrix from PCBs
+# pre_cor <- cor(data.matrix(Combined_PCB_1999_2004_common[SDDSRVYR == 1, ..Combined_PCB_common]))
+
+set.seed(123)
+index <- sample(1:nrow(PCB_1999_2004_common), 100, replace = F)
+# pre_cor <- cor(data.matrix(PCB_1999_2004_common[index, ..PCB_common]) %*% invsqrt(cov_1999_2004))
+pre_cor <- cov(data.matrix(PCB_1999_2004_common[index, ..PCB_common]))
+p <- ncol(pre_cor)
 
 # decorr
-decor_method <- "GLASSO"
+decor_method <- "hist"
 # uncorr_method <- SVD_method
 # uncorr_args <- NULL
-uncorr_method <- GLASSO_method
-uncorr_args <- NULL
+uncorr_method <- true_value_method
+uncorr_args <- list(emp = TRUE, combine = combine)
 # uncorr_method <- dgpGLASSO_method
 # uncorr_args <- NULL
 # uncorr_method <- QUIC_method
 # uncorr_args <- NULL
 # uncorr_method <- PCA_method
 # uncorr_args <- NULL
-# uncorr_method <- SVD_method
-# uncorr_args <- NULL
+
 # est
-decor <- F
+decor <- FALSE
 if(decor == FALSE) {
   decor_method <- "None"
+  uncorr_method <- NULL
+  uncorr_args <- NULL
 }
 combine <- FALSE
 est <- "main"
@@ -97,7 +97,7 @@ kernel_result_col_names_2 <- col_names_GCTA
 dim_red_method <- NULL
 dim_red_args <- NULL
 
-  
+
 # coef
 main_fixed_var <- 0.5
 main_random_var <- 0
@@ -120,9 +120,9 @@ pro_list <-  args_all[,6, drop = FALSE] %>% split(x = ., f = seq(nrow(.)))
 # setup folders for results
 result_name <- paste("decor_method",decor_method,"result_list_fixed_sub", dist, "structure", structure, "main", main_fixed_var, "inter",
                      inter_fixed_var, "n", paste(n_total, collapse = "_"), "p", p, "rho_e", paste(rho_e,collapse = "_"), 
-                     "dim_red_coeff", dim_red_args$reduce_coef, "last", dim_red_args$last,"decor",decor,
+                     "dim_red_coeff", dim_red_args$reduce_coef,"decor",decor,
                      "subpro",paste(pro, collapse = "_"), "iter", n_iter, "nsub", n_sub,
-                     kernel_name, "est", est, sep = "_")
+                     kernel_name, "est", est, "year", year, "cov", cov, sep = "_")
 result_folder_path <- paste0(save_path, result_name, "/")
 dir.create(result_folder_path)
 
@@ -152,6 +152,6 @@ result_list <- mapply(FUN = simulation_var_est_fn,
                                       seed_loop = seed_loop,
                                       seed_coef = seed_coef,
                                       cores = cores,
-                                      inter_std = TRUE,
+                                      inter_std = FALSE,
                                       inter_result_path = result_folder_path),
                       SIMPLIFY = FALSE)

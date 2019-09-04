@@ -9,7 +9,8 @@ library(doParallel)
 ## YANG's REML function
 ##################################################################################
 # interact parameter indicates if the model includes interaction terms (interact == 0) 
-Yang=function(y,x,interact=0, target = "beta2"){  
+Yang=function(y,x,interact=0, target = "beta2"){ 
+  x <- std_fn(x)
   ## data y[1:nr], x[1:nr,1:nc]
   nr=dim(x)[1]
   nc=dim(x)[2]

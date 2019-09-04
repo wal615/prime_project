@@ -1,0 +1,58 @@
+---
+title: "PCB sub sampling simulation 2"
+author: "Xuelong Wang"
+date: "`r Sys.Date()`"
+output: 
+  pdf_document:
+    toc: true
+    number_sections: true
+    keep_tex: true
+    fig_width: 12
+    fig_height: 3
+header-includes:
+    - \usepackage{float,amsmath, bbm, siunitx, bm}
+    - \usepackage{pdfpages}
+    - \floatplacement{figure}{H}
+    - \newcommand{\indep}{\rotatebox[origin=c]{90}{$\models$}}
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, comment = "", message = FALSE, warning = FALSE, fig.height = 10)
+options(scipen=1, digits=2)
+
+library(MASS)
+library(tidyverse)
+require(gridExtra)
+
+# heat map function for correlation matrxi
+
+h_map <- function(x,cor = F) {
+  if(cor == F){
+    Cor <- cor(x) %>% abs(.)
+  } else {
+    Cor <- x %>% abs(.)
+  }
+  
+  h1 <- ggplot(data = melt(Cor), aes(x=(Var1), y= (Var2), fill=value)) + 
+    scale_fill_gradient(low = "white", high = "blue") +
+    geom_tile() +
+    theme(axis.text.x  = element_text(angle=90))
+  h1
+}
+source("~/dev/projects/Chen_environmental_study/reports/proposed_GCTA_paper/est_var_analysis/est_combined_data/simulation_result_total_PCB_1999.R")
+source("~/dev/projects/Chen_environmental_study/reports/proposed_GCTA_paper/est_var_analysis/est_combined_data/covaraites_summary_1999_2004.R")
+```
+
+# Standardization
+
+Based on the PCB data simulation results, if we don't do the standardization than there tends to have a larger bias for the estimated total effect than do the standardization. So for the following section, we try to figure out what are the exact reasons.
+
+1. Adding the interaction which affects the signal of main effect 
+    * So try to only do the main effect model 
+1. Long tail distrbution?
+    * Try the normal distribution
+1. Using the correlation data instead of usning the covariance matrix, so that we only brorrow the information of the correlation coefficients  
+1. Since after the standardization, the model are different so that 
+

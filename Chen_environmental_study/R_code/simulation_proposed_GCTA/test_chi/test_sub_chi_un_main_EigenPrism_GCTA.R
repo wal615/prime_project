@@ -11,10 +11,12 @@ setwd("~/dev/projects/Chen_environmental_study/")
 sourceDirectory("./R_code/main_fn/",modifiedOnly = FALSE, recursive = TRUE)
 sourceDirectory("./R_code/main_fn/method/",modifiedOnly = FALSE, recursive = TRUE)
 source("./R_code/simulation_proposed_GCTA/local_helpers.R")
-data_path <- "~/dev/projects/Chen_environmental_study/R_code/data/pcb_99_13_no_missing.csv"
-save_path <- "~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/var_est/decor/prime_0806/"
+# source("./reports/proposed_GCTA_paper/est_var_analysis/est_combined_data/covaraites_summary_2005_2014.R")
+source("./reports/proposed_GCTA_paper/est_var_analysis/est_combined_data/covaraites_summary_1999_2004.R")
+year <- "1999"
+save_path <- "~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/var_est/decor/"
 
-cores <- 15
+cores <- 20
 n_iter <- 100
 n_sub <- 1
 seed_loop <- 1234
@@ -27,23 +29,22 @@ bs <- "full"
 
 # data generation
 emp_n <- 10^5
-n_total <- c(200,500,1000)
-# n_total <- 5000
+n_total <- c(100,150,231)
 dist <- "chi"
 generate_data <- generate_chi
 structure <- "un"
-p <- 500
 
-pre_cor <- unstr_corr.mat(p,k=5)
-# pre_cor <- real_data_corr.mat(data_path)
-# p <- ncol(pre_cor)
+# low-covariance matrix from PCBs
+# pre_cor <- cor(data.matrix(Combined_PCB_1999_2004_common[SDDSRVYR == 1, ..Combined_PCB_common]))
+pre_cor <- cor(data.matrix(PCB_1999_2004_common[, ..PCB_common]))
+p <- ncol(pre_cor)
 
 # decorr
-decor_method <- "SVD"
-uncorr_method <- SVD_method
-uncorr_args <- NULL
-# uncorr_method <- true_value_method
+decor_method <- "hist"
+# uncorr_method <- SVD_method
 # uncorr_args <- NULL
+uncorr_method <- true_value_method
+uncorr_args <- list(emp = TRUE, combine = combine)
 # uncorr_method <- dgpGLASSO_method
 # uncorr_args <- NULL
 # uncorr_method <- QUIC_method
@@ -52,12 +53,14 @@ uncorr_args <- NULL
 # uncorr_args <- NULL
 
 # est
-decor <- T
+decor <- TRUE
 if(decor == FALSE) {
   decor_method <- "None"
+  uncorr_method <- NULL
+  uncorr_args <- NULL
 }
-combine <- FALSE
-est <- "main"
+combine <- TRUE
+est <- "total"
 
 kernel <- EigenPrism_kernel
 kernel_args <- list(decor = decor)
@@ -93,7 +96,7 @@ dim_red_args <- NULL
 # coef
 main_fixed_var <- 0.5
 main_random_var <- 0
-inter_fixed_var <- 0
+inter_fixed_var <- 0.1
 inter_random_var <- 0
 # rho_e <- c(0.2, 0.5, 0.7)
 rho_e <- 0.5
@@ -103,7 +106,7 @@ gene_coeff_args <- list(main_fixed_var = main_fixed_var,
                         inter_random_var = inter_random_var)
 
 # generate args list
-args_all <- expand.grid(structure = structure, p = p, n = n_total, pre_cor = list(pre_cor),rho_e = rho_e, pro = pro)
+args_all <- expand.grid(structure = structure, p = p, n = n_total, pre_cor = list(pre_cor),rho_e = rho_e, pro = pro, pre_cor = list(pre_cor))
 gene_data_args_list <- args_all[,1:4] %>% split(x = ., f = seq(nrow(.))) # generate a list from each row of a dataframe
 rho_e_list <- args_all[,5, drop = FALSE] %>% split(x = ., f = seq(nrow(.)))
 pro_list <-  args_all[,6, drop = FALSE] %>% split(x = ., f = seq(nrow(.)))
@@ -112,9 +115,9 @@ pro_list <-  args_all[,6, drop = FALSE] %>% split(x = ., f = seq(nrow(.)))
 # setup folders for results
 result_name <- paste("decor_method",decor_method,"result_list_fixed_sub", dist, "structure", structure, "main", main_fixed_var, "inter",
                      inter_fixed_var, "n", paste(n_total, collapse = "_"), "p", p, "rho_e", paste(rho_e,collapse = "_"), 
-                     "dim_red_coeff", dim_red_args$reduce_coef, "last", dim_red_args$last,"decor",decor,
+                     "dim_red_coeff", dim_red_args$reduce_coef,"decor",decor,
                      "subpro",paste(pro, collapse = "_"), "iter", n_iter, "nsub", n_sub,
-                     kernel_name, "est", est, sep = "_")
+                     kernel_name, "est", est, "year", year, sep = "_")
 result_folder_path <- paste0(save_path, result_name, "/")
 dir.create(result_folder_path)
 

@@ -34,6 +34,7 @@ EigenPrism <- function(y,X,invsqrtSig=NULL,alpha=0.2,target='beta2',zero.ind=c()
   # Transform y and X to proper form
   y = y-mean(y)
   # X = scale(X,T,T)*n/(n-1)
+  X = std_fn(X)
   if(!is.null(invsqrtSig)) X = X%*%invsqrtSig
 
   # Take singular value decomposition and rescale singular values

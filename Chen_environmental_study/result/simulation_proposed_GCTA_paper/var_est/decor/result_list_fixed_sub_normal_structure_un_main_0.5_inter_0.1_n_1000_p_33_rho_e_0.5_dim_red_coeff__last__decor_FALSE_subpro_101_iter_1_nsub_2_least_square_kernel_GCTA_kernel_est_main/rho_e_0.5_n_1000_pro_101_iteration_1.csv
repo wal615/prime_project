@@ -1,3 +1,0 @@
-"var_main_effect","var_inter_effect","cov_main_inter_effect","var_total_effect","least_square_total","sub_least_square_total","GCTA_total","GCTA_inter","sub_GCTA_total","sub_GCTA_inter","x_dist","structure","p","n","main_fixed_var","main_random_var","inter_fixed_var","inter_random_var","decor","interact","combine","pro","bs","n_sub","rho_e","emp_n","inter_std","i"
-8,2,-0.00182706513002104,9.99634586973996,6.90233138933522,6.89274409038315,20.2449515590905,0,20.3453174859506,0,"normal","un",33,1000,0.5,0,0.1,0,FALSE,0,TRUE,101,"leave-1",2,0.5,1e+05,TRUE,1
-8,2,-0.00182706513002104,9.99634586973996,6.90233138933522,6.91890448000504,20.2449515590905,0,20.2595202201751,0,"normal","un",33,1000,0.5,0,0.1,0,FALSE,0,TRUE,101,"leave-1",2,0.5,1e+05,TRUE,1

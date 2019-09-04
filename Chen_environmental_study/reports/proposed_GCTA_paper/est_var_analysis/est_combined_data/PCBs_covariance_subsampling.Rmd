@@ -1,0 +1,121 @@
+---
+title: "PCB sub sampling simulation"
+author: "Xuelong Wang"
+date: "`r Sys.Date()`"
+output: 
+  pdf_document:
+    toc: true
+    number_sections: true
+    keep_tex: true
+    fig_width: 12
+    fig_height: 3
+header-includes:
+    - \usepackage{float,amsmath, bbm, siunitx, bm}
+    - \usepackage{pdfpages}
+    - \floatplacement{figure}{H}
+    - \newcommand{\indep}{\rotatebox[origin=c]{90}{$\models$}}
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, comment = "", message = FALSE, warning = FALSE, fig.height = 10)
+options(scipen=1, digits=2)
+
+library(MASS)
+library(tidyverse)
+require(gridExtra)
+
+# heat map function for correlation matrxi
+
+h_map <- function(x,cor = F) {
+  if(cor == F){
+    Cor <- cor(x) %>% abs(.)
+  } else {
+    Cor <- x %>% abs(.)
+  }
+  
+  h1 <- ggplot(data = melt(Cor), aes(x=(Var1), y= (Var2), fill=value)) + 
+    scale_fill_gradient(low = "white", high = "blue") +
+    geom_tile() +
+    theme(axis.text.x  = element_text(angle=90))
+  h1
+}
+source("~/dev/projects/Chen_environmental_study/reports/proposed_GCTA_paper/est_var_analysis/est_combined_data/simulation_result_total_PCB_1999.R")
+source("~/dev/projects/Chen_environmental_study/reports/proposed_GCTA_paper/est_var_analysis/est_combined_data/covaraites_summary_1999_2004.R")
+```
+
+# Motivation
+
+Based on the previous simulation results, we found that after using the historical data to decorrelate the data, the covariates still have some low correlations among them. But it seems that GCTA and EigenPrism could work well even the covariate have some low correlations among them. To further mimic the real data situation, we using the combined PCBs 1999 - 2004 data to simulate the high dimensional data and try to estimate the combined total vairance by using GCTA and EigenPrism.  
+
+# Simulation 
+
+## Simulation result
+
+### Chi
+
+- $cov(X) = cor(PCB|year = 1999)$
+- $p = 21$
+- target is the combined main and interaction effect
+- X ~ $\chi^2_1$ 
+- $n = 100, 150, 231$
+
+```{r}
+rbind(summary_final_chi_none, summary_final_chi_decor)
+```
+
+### PCBs
+
+- X: will be 21 PCBs or after adding interaction terms 231 
+- n: 100,150,231
+- traget: $\beta^T\hat{\Sigma}_h\beta$. Since we don't know the extact covariance matrix of the PCBs so we are using the all the historical data to estate the covariance matrix $\hat{\Sigma}_h$
+
+```{r}
+rbind(summary_final_std_PCB_none, summary_final_std_PCB_decor)
+```
+
+\newpage
+#### Simulation result with larger n
+
+If we subset data as the corresponding years, then it seems that we can get covariance matrix which is very close to $I$. However, if the size of the sub-sample is small, e.i.100, then the decorrelated covariance matrix may be not close to $I$
+
+- $n \in \{100, 500, 1000, 2000\}$
+
+```{r, fig.cap = "Combined main and interaction 1999-2000"}
+set.seed(123)
+index <- sample(1:nrow(Combined_PCB_1999_2004_common), 100, replace = F)
+cov_tmp <- cor(data.matrix(Combined_PCB_1999_2004_common[index, ..Combined_PCB_common]) %*% invsqrt(Combined_cov_1999_2004))
+par(mfrow=c(2,2))
+h1 <- hist(cov_tmp[upper.tri(cov_tmp)], main = "decorrelated correlation of main and inter with n = 100")
+index <- sample(1:nrow(Combined_PCB_1999_2004_common), 500, replace = F)
+cov_tmp <- cor(data.matrix(Combined_PCB_1999_2004_common[index, ..Combined_PCB_common]) %*% invsqrt(Combined_cov_1999_2004))
+h2 <- hist(cov_tmp[upper.tri(cov_tmp)], main = "decorrelated correlation of main and inter  with n = 500")
+index <- sample(1:nrow(Combined_PCB_1999_2004_common), 1000, replace = F)
+cov_tmp <- cor(data.matrix(Combined_PCB_1999_2004_common[index, ..Combined_PCB_common]) %*% invsqrt(Combined_cov_1999_2004))
+h3 <- hist(cov_tmp[upper.tri(cov_tmp)], main = "decorrelated correlation of main and inter  with n = 1000")
+index <- sample(1:nrow(Combined_PCB_1999_2004_common), 2000, replace = F)
+cov_tmp <- cor(data.matrix(Combined_PCB_1999_2004_common[index, ..Combined_PCB_common]) %*% invsqrt(Combined_cov_1999_2004))
+h3 <- hist(cov_tmp[upper.tri(cov_tmp)], main = "decorrelated correlation of main and inter  with n = 2000")
+```
+
+```{r}
+summary_final_std_2000_PCB_decor
+```
+
+# problems
+
+## Interaction and decorrelation
+
+The procedure to generate and estimate the combined main and interaction effect is followings:
+
+1. $X \rightarrow X_t = (X, X_{inter}) \rightarrow Y = X^t\beta_t + \epsilon$
+1. $X \rightarrow X_t = (X, X_{inter}) \rightarrow Z_t = X_t^T \Sigma_h^{-1/2} \rightarrow \hat{Var}(X_t^T\beta_t)$
+
+The problem I encounter is that if I did not standerdize the PCBs then it seems that the estimated combined effect is close to the target even if we don't apply the decorrelation procedure. 
+
+```{r}
+rbind(summary_final_PCB_none, summary_final_PCB_decor)
+```
+
+After some simulation, I found it is possible because of the small values of the PCBs. Although the correlation of PBCs are high, the covariance of PCBs are small because of the small values of PCB. decorerlation i
