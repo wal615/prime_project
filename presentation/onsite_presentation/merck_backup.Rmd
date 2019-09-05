@@ -43,6 +43,28 @@ output:
 3. More general: $Y = f(b_1^TX, b_2^TX, \epsilon)$
 \end{examples}
 
+### Subspace
+
+- Vector space U: $\vec{\mathbf{a}}, \vec{\mathbf{b}} \in U$ 
+    1. $\vec{\mathbf{a}} + \vec{\mathbf{b}} \in U$   
+    2. $\lambda \vec{\mathbf{a}} \in U, \lambda \in \mathbb{R}$  
+    
+- Subspace $V$: Given k independent vectors $(\vec{\mathbf{a}}_1, \dots, \vec{\mathbf{a}}_k), ~~\vec{\mathbf{a}}_i \in \mathbb{R}^p$, 
+\[
+V = \mathcal{L}((\vec{\mathbf{a}}_1, \dots, \vec{\mathbf{a}}_k) = \{\sum_{i = 1}^k\lambda_ia_i, \lambda_i\in \mathbb{R}\}
+\]
+$V$ is spaced by $(\vec{\mathbf{a}}_1, \dots, \vec{\mathbf{a}}_k)$
+
+- A basis of $V$: $(\vec{\mathbf{a}}_1, \dots, \vec{\mathbf{a}}_k)$ is called a basis of $V$, but it is not unique
+
+### SIR
+1. $E(X|Y) - E(X)$ is p-dimensional curves as Y varies and lies in a k-dimensional subspace
+1. The covariance matrix of $E(X|Y) - E(X)$ is degenerate at any direction that orthogonal to $\Sigma_{X}b_i,i = 1, \dots, d$
+1. Condidate Matrix:  $M_{SIR} = Var(E(X|Y) - E(X)) = Var(E(X|Y))$
+1. $S_{SIR} := Span(\Sigma_{X}^{-1}M_{SIR}) \subseteq S_{Y|X}$
+1. $\Sigma_{X}^{-1}M_{SIR}b_i = \lambda_i b_i$ $b_i$ is the ith eigenvector of $\Sigma_{X}^{-1}M_{SIR}$ 
+
+
 ### SUSY data 
 
 ### SUSY data cont.

@@ -145,9 +145,9 @@ Department of Mathematics, Computer Science, and Statistics \\
 University of Illinois at Chicago
 }
 \date[
-09/04/2019
+09/05/2019
 ]{
-September 04, 2019
+September 05, 2019
 }
 
 % Option to fake out the raw_tex plugin and, thus, enabling the embedding of
@@ -185,9 +185,9 @@ responses
 \tableofcontents[hideallsubsections]
 \end{frame}
 
-\section{Background}\label{background}
+\section{Motivation}\label{motivation}
 
-\subsection{Motivation}\label{motivation}
+\subsection{Motivation}\label{motivation-1}
 
 \begin{frame}{Motivation of reducing the dimension of the data}
 
@@ -209,7 +209,7 @@ responses
 \def\labelenumi{\arabic{enumi}.}
 \tightlist
 \item
-  Variable selection (feature selection)
+  Variable selection
 
   \begin{itemize}
   \tightlist
@@ -217,7 +217,7 @@ responses
     Forward/Backward selection, Lasso, etc.
   \end{itemize}
 \item
-  \textbf{Dimension reduction} (feature projection)
+  \textbf{Dimension reduction} (Variable Projection)
 
   \begin{itemize}
   \tightlist
@@ -234,33 +234,38 @@ responses
 
 \begin{frame}{An example: Breast Cancer data}
 
-\begin{block}{Data}
+\begin{figure}
+\centering
+\includegraphics{./pic/breast_cancer.png}
+\caption{}
+\end{figure}
 
-Features are computed from a digitized image of a fine needle aspirate
-(FNA) of a breast mass
+\end{frame}
+
+\begin{frame}{An example: Breast Cancer data (Cont.)}
+
+\begin{block}{Data}
 
 \begin{itemize}
 \tightlist
 \item
-  Y: Diagnosis results (1 = malignant, 0 = benign)
-\item
-  X: 30 features of each each cell nucleus
+  X: Dependent variables are computed from a digitized image of a fine
+  needle aspirate (FNA) of a breast mass
 
   \begin{itemize}
   \tightlist
   \item
     e.g.~radius, texture, area
   \end{itemize}
+\item
+  Y: Diagnosis results (1 = malignant, 0 = benign)
 \end{itemize}
-
-picture
 
 \end{block}
 
 \begin{block}{Goal}
 
-Classificantion: Diagnose breast cancer from image-processed nuclear
-features of fine needle aspirates
+Classificantion: Diagnose breast cancer from image-processed variables
 
 \end{block}
 
@@ -272,33 +277,33 @@ features of fine needle aspirates
 
 \end{frame}
 
+\section{Background and Issue}\label{background-and-issue}
+
 \subsection{SDR}\label{sdr}
 
-\begin{frame}{Subspace}
+\begin{frame}{Span and basis}
 
-\begin{itemize}
-\item
-  Vector space U: \(\vec{\mathbf{a}}, \vec{\mathbf{b}} \in U\)
+Given k independent vectors
+\(B = (\vec{\mathbf{b}}_1, \dots, \vec{\mathbf{b}}_d), ~~\vec{\mathbf{b}}_i \in \mathbb{R}^p\),
+\[
+V = \mathcal{L}((\vec{\mathbf{b}}_1, \dots, \vec{\mathbf{b}}_d) = \{\sum_{i = 1}^k\lambda_i\vec{\mathbf{b}}_i, \lambda_i\in \mathbb{R}\}
+\] - \(V\) is spaced by B -
+\(B = (\vec{\mathbf{b}}_1, \dots, \vec{\mathbf{b}}_d)\) is a basis of
+\(V\)
 
-  \begin{enumerate}
-  \def\labelenumi{\arabic{enumi}.}
-  \tightlist
-  \item
-    \(\vec{\mathbf{a}} + \vec{\mathbf{b}} \in U\)\\
-  \item
-    \(\lambda \vec{\mathbf{a}} \in U, \lambda \in \mathbb{R}\)
-  \end{enumerate}
-\item
-  Subspace \(V\): Given k independent vectors
-  \((\vec{\mathbf{a}}_1, \dots, \vec{\mathbf{a}}_k), ~~\vec{\mathbf{a}}_i \in \mathbb{R}^p\),
-  \[
-  V = \mathcal{L}((\vec{\mathbf{a}}_1, \dots, \vec{\mathbf{a}}_k) = \{\sum_{i = 1}^k\lambda_ia_i, \lambda_i\in \mathbb{R}\}
-  \] \(V\) is spaced by
-  \((\vec{\mathbf{a}}_1, \dots, \vec{\mathbf{a}}_k)\)
-\item
-  A basis of \(V\): \((\vec{\mathbf{a}}_1, \dots, \vec{\mathbf{a}}_k)\)
-  is called a basis of \(V\), but it is not unique
-\end{itemize}
+\begin{block}{Basis is not unique}
+
+\includegraphics{./pic/axes_rotatio.jpg} \[
+  Span(\begin{bmatrix}
+    1 & 0 \\
+    0 & 1
+  \end{bmatrix}) = Span(\begin{bmatrix}
+    1 & ~~~1 \\
+    1 & -1
+  \end{bmatrix}) 
+\]
+
+\end{block}
 
 \end{frame}
 
@@ -346,14 +351,18 @@ itself (Cook, 1996).
 
 \end{frame}
 
-\begin{frame}{Comment}
+\begin{frame}{Take home message}
 
 \begin{itemize}
 \tightlist
 \item
-  No model assumption between X and Y
+  No model assumption between X and Y\\
 \item
-  Target is a subspace not a specific values coefficients
+  Target is a basis of the central subspace not specific values of
+  coefficients(a vector)
+\item
+  A basis of subspace is
+  \(B = (\vec{\mathbf{b}}_1, \dots, \vec{\mathbf{b}}_d)\)
 \end{itemize}
 
 \end{frame}
@@ -363,55 +372,66 @@ subspace}\label{estimating-the-central-subspace}
 
 \begin{frame}{Estimating the central subspace}
 
-\begin{block}{Sliced Inverse Regression (SIR) (Li 1991)}
-\[
-E(X|Y) - E(X) \in \Sigma_XS_{Y|X} = Span(\Sigma_{X}b_i),i = 1, \dots, d
-\]
-\end{block}
+\begin{block}{Principle component analysis (PCA)}
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
 \tightlist
 \item
-  \(E(X|Y) - E(X)\) is p-dimensional curves as Y varies and lies in a
-  k-dimensional subspace
+  \(M = \hat{Var}(X) = \frac{1}{N}\sum_{i = 1}^N(X_i-\bar{X})(X_i-\bar{X})^T\)\\
 \item
-  The covariance matrix of \(E(X|Y) - E(X)\) is degenerate at any
-  direction that orthogonal to \(\Sigma_{X}b_i,i = 1, \dots, d\)
+  Fine the eigenvalues of \(M\) and arrange them in decending order
+  \(\lambda_1 \geq \dots, \lambda_p\) and their corresponding
+  eigenvectors \((u_1, \dots, u_p)\)\\
 \item
-  Condidate Matrix: \(M_{SIR} = Var(E(X|Y) - E(X)) = Var(E(X|Y))\)
-\item
-  \(S_{SIR} := Span(\Sigma_{X}^{-1}M_{SIR}) \subseteq S_{Y|X}\)
-\item
-  \(\Sigma_{X}^{-1}M_{SIR}b_i = \lambda_i b_i\) \(b_i\) is the ith
-  eigenvector of \(\Sigma_{X}^{-1}M_{SIR}\)
+  Select first several eigenvectors based on the total variation\\
+  Note that \[
+  (u_1, \dots, u_d) = (\hat{b}_1, \dots, \hat{b}_d)
+  \]
 \end{enumerate}
+
+\end{block}
 
 \end{frame}
 
 \begin{frame}{Estimating the central subspace (cont.)}
 
-\begin{block}{Sliced Average Variance Estimation (SAVE) (Cook et al. 1991)} 
-\[
-span(\Sigma_x - \Sigma_{X|\tilde{Y}}) \subseteq S_{Y|X} \Rightarrow  ({b}_1, \dots, {b}_d)
-\]
-\end{block}
+\begin{block}{Sliced Inverse Regression (SIR) (Li 1991)}
 
-\begin{itemize}
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
 \tightlist
 \item
-  There are many other methods using first and second monments togehter
+  \(Z = \Sigma_X^{-1/2}(X - E(X))\)
+\item
+  \(M_{SIR} := \Sigma_X^{1/2}Var(E(Z|Y))\)
+\item
+  Find the eigenvalues and eigenvectors of \(M_{SIR}\)
+\end{enumerate}
 
-  \begin{itemize}
-  \tightlist
-  \item
-    Directional regression etc.
-  \end{itemize}
-\end{itemize}
+\end{block}
+
+\begin{block}{Sliced Average Variance Estimation (SAVE) (Cook et al.
+1991)}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \(Z = \Sigma_X^{-1/2}(X - E(X))\)
+\item
+  \(Var(Z|Y)\) is the conditional variance of X given Y
+\item
+  \(M_{SAVE} := f(Var(Z|Y))\)
+\item
+  Find the eigenvalues and eigenvectors of \(M_{SAVE}\)
+\end{enumerate}
+
+\end{block}
 
 \end{frame}
 
-\begin{frame}{How to estimate the \(E(X|Y)\), \(\Sigma_{X|\tilde{Y}}\)?}
+\begin{frame}{How to estimate the \(E(Z|Y)\), \(Var(Z|Y)\)?}
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
@@ -421,10 +441,10 @@ span(\Sigma_x - \Sigma_{X|\tilde{Y}}) \subseteq S_{Y|X} \Rightarrow  ({b}_1, \do
     Y_1 \dots, Y_n \Rightarrow Y^{(1)},\dots,Y^{(n)} 
   \]
 \item
-  Split data into H slices and set \(Y = \tilde{Y}_h, h = 1,\dots H\)
+  Split data into H slices based on sorted \(Y^{(i)}\)
 \item
-  Within the slice h, calculate the average of X,
-  \[\tilde{X}_h = \hat{E}(X|Y = \tilde{Y}_h)\]
+  Within the slice h, calculate the \(\hat{E}(Z|Y)\),
+  \(\hat{Var}(Z|Y)\),
   \includegraphics[width=4.16667in]{./pic/slice method.png}
 \end{enumerate}
 
@@ -583,10 +603,11 @@ E([\bar{Y}_k - G(\bar{\mathbf X}_k)]^2) = O(N^{-\delta(r)})
 \]
 \end{block}
 
-Where \(\delta(r) = \min\{4/(rd), 1-1/r\}\) for \(r>1\), which is
-maximized at \(r = 1 + 4/d\). In other words, the minimum decreasing
-rate of \(E([\bar{Y}_k - G(\bar{\mathbf X}_k)]^2)\) is
-\(O(N^{-4/(d+4)})\) which is attained at \(r= 1 + 4/d\).
+\begin{itemize}
+\tightlist
+\item
+  \(\delta(r)\) is maximized at \(r = 1 + 4/d\)
+\end{itemize}
 
 \end{frame}
 
@@ -639,11 +660,12 @@ Clustering step reduced the sample size from \(N\) to \(k\).
 \[
     \log\left(\frac{\mathcal{P}(Y=1|X=x)}{1-\mathcal{P}(Y=1|X=x)}\right) = b_1^Tx \cdot sin(b_2^Tx) \cdot exp(b_3^Tx)
 \]
-
-- $n = \{10^3, 10^4, 10^5,10^6\}$  
-- $X \in \mathbb{R}^6$  
-- $b_1 = e_i = (0, \dots, 1, \dots,0) \in \mathbb{R}^6$  
-- $S_{Y|X} = Span(e_1, e_2, e_3)$  
+\begin{itemize}
+\item $n = \{10^3, 10^4, 10^5,10^6\}$    
+\item $X \in \mathbb{R}^6$   
+\item $b_1 = e_i = (0, \dots, 1, \dots,0) \in \mathbb{R}^6$  
+\item $S_{Y|X} = Span(e_1, e_2, e_3)$   
+\end{itemize}
 \end{block}
 
 Note that the central subspace is a 3-dimensional subspace in a
@@ -654,31 +676,43 @@ Note that the central subspace is a 3-dimensional subspace in a
 \begin{frame}{How to evaluate esimated central subspace}
 
 \begin{block}{The number of direction}
+\begin{itemize}
+\item Hypothesis Test: test if a eigenvalue is significant than 0
+\item Total Variance: $T = \frac{\sum_i^d \lambda_i}{\sum_j^p \lambda_j}$
+\end{itemize}
+\end{block}
+
+\begin{columns}
+\begin{column}{0.5\textwidth}
+   \begin{block}{Frobenius Distance (F)}
+    \[
+      frob = \Vert P_B - P_A\Vert_F 
+    \]
+    
+    where $P_A = A(A^TA)^{-1}A$ \\
+    $\Vert A\Vert_F = \sqrt{\sum_i\sum_j a^2_{ij}}$
+   \end{block}
+\end{column}
+\begin{column}{0.5\textwidth}  %%<--- here
+    \begin{block}{right}
+    \end{block}
+\end{column}
+\end{columns}
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
-\tightlist
 \item
-  Hypothesis Test: test if a eigenvalue is significant than 0
 \item
-  Ad-hoc: select all the eigenvalues whcih are larger then a cutoff
-  value
+  Trace correlation \[
+    r^2 = \frac{1}{k}\sum_{i=1}^k\rho_i^2
+  \]
 \end{enumerate}
 
-\end{block}
-
-\begin{block}{The distrance of the true subspace}
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
+\begin{itemize}
 \tightlist
 \item
-  Fourbin distance
-\item
-  trace correlation
-\end{enumerate}
-
-\end{block}
+  \(R = 1 - r^2\)
+\end{itemize}
 
 \end{frame}
 
@@ -794,6 +828,56 @@ Classification.''
 
 3. More general: $Y = f(b_1^TX, b_2^TX, \epsilon)$
 \end{examples}
+
+\end{frame}
+
+\begin{frame}{Subspace}
+
+\begin{itemize}
+\item
+  Vector space U: \(\vec{\mathbf{a}}, \vec{\mathbf{b}} \in U\)
+
+  \begin{enumerate}
+  \def\labelenumi{\arabic{enumi}.}
+  \tightlist
+  \item
+    \(\vec{\mathbf{a}} + \vec{\mathbf{b}} \in U\)\\
+  \item
+    \(\lambda \vec{\mathbf{a}} \in U, \lambda \in \mathbb{R}\)
+  \end{enumerate}
+\item
+  Subspace \(V\): Given k independent vectors
+  \((\vec{\mathbf{a}}_1, \dots, \vec{\mathbf{a}}_k), ~~\vec{\mathbf{a}}_i \in \mathbb{R}^p\),
+  \[
+  V = \mathcal{L}((\vec{\mathbf{a}}_1, \dots, \vec{\mathbf{a}}_k) = \{\sum_{i = 1}^k\lambda_ia_i, \lambda_i\in \mathbb{R}\}
+  \] \(V\) is spaced by
+  \((\vec{\mathbf{a}}_1, \dots, \vec{\mathbf{a}}_k)\)
+\item
+  A basis of \(V\): \((\vec{\mathbf{a}}_1, \dots, \vec{\mathbf{a}}_k)\)
+  is called a basis of \(V\), but it is not unique
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{SIR}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \(E(X|Y) - E(X)\) is p-dimensional curves as Y varies and lies in a
+  k-dimensional subspace
+\item
+  The covariance matrix of \(E(X|Y) - E(X)\) is degenerate at any
+  direction that orthogonal to \(\Sigma_{X}b_i,i = 1, \dots, d\)
+\item
+  Condidate Matrix: \(M_{SIR} = Var(E(X|Y) - E(X)) = Var(E(X|Y))\)
+\item
+  \(S_{SIR} := Span(\Sigma_{X}^{-1}M_{SIR}) \subseteq S_{Y|X}\)
+\item
+  \(\Sigma_{X}^{-1}M_{SIR}b_i = \lambda_i b_i\) \(b_i\) is the ith
+  eigenvector of \(\Sigma_{X}^{-1}M_{SIR}\)
+\end{enumerate}
 
 \end{frame}
 
