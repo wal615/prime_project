@@ -59,11 +59,13 @@ source("~/dev/dr_sim_code/Binary_response/Reports/representative_binary_response
 
 ### Motivation of reducing the dimension of the data
 
-#### Curse of dimensionality  
+#### Curse of dimensionality (p is large)  
+- Data becomes sparse (need more data to get same level of accuracy)
+- Model Overfitting
 
 #### Two approaches
 1. Variable selection (feature selection)
-    * Lasso
+    * Forward/Backward selection, Lasso, etc.
 2. \textbf{Dimension reduction} (feature projection)
     * Principle component analysis
     * Sufficient dimension reduction
@@ -74,7 +76,7 @@ source("~/dev/dr_sim_code/Binary_response/Reports/representative_binary_response
 Features are computed from a digitized image of a fine needle aspirate (FNA) of a breast mass
 
 - Y: Diagnosis results (1 = malignant, 0 = benign)
-- X: 30 real-valued features of each each cell nucleus
+- X: 30 features of each each cell nucleus
       * e.g. radius, texture, area
 
 picture 
@@ -97,10 +99,11 @@ ggarrange(plot_PCA_1, plot_PCA_2, plot_sir, plot_pre_2, nrow = 2, ncol = 2)
     1. $\vec{\mathbf{a}} + \vec{\mathbf{b}} \in U$   
     2. $\lambda \vec{\mathbf{a}} \in U, \lambda \in \mathbb{R}$  
     
-- Span: Given $\mathbf{A} = (\vec{\mathbf{a}}_1, \dots, \vec{\mathbf{a}}_k), ~~\vec{\mathbf{a}}_k \in \mathbb{R}^n$, a k-dimension subspace $V$ spanned by $\mathbf{A}$ is all the linear combinations of $(\vec{\mathbf{a}}_1, \dots, \vec{\mathbf{a}}_k)$
+- Subspace $V$: Given k independent vectors $(\vec{\mathbf{a}}_1, \dots, \vec{\mathbf{a}}_k), ~~\vec{\mathbf{a}}_i \in \mathbb{R}^p$, 
 \[
 V = \mathcal{L}((\vec{\mathbf{a}}_1, \dots, \vec{\mathbf{a}}_k) = \{\sum_{i = 1}^k\lambda_ia_i, \lambda_i\in \mathbb{R}\}
 \]
+$V$ is spaced by $(\vec{\mathbf{a}}_1, \dots, \vec{\mathbf{a}}_k)$
 
 - A basis of $V$: $(\vec{\mathbf{a}}_1, \dots, \vec{\mathbf{a}}_k)$ is called a basis of $V$, but it is not unique
 
@@ -134,62 +137,87 @@ S_{Y|X} = \cap S_{DRS}
 \]
 Under mild conditions, $S_{Y|X}$ is unique and a DRS subspace itself (Cook, 1996). 
 
+### Comment
+
+- No model assumption between X and Y
+- Target is a subspace not a specific values coefficients
+
+
 ## Estimating the central subspace
 
 ### Estimating the central subspace 
 
 \begin{block}{Sliced Inverse Regression (SIR) (Li 1991)}
 \[
-E(X|Y) - E(X) \in \Sigma_XS_{Y|X} = Span(b_k\Sigma_{X}),k = 1, \dots, K
+E(X|Y) - E(X) \in \Sigma_XS_{Y|X} = Span(\Sigma_{X}b_i),i = 1, \dots, d
 \]
 \end{block}
 
-1. $E(X|Y) - E(X)$ is p-dimensional curves as Y varies and lies in a K-dimensional subspace
-1. The covariance matrix of $E(X|Y) - E(X)$ is degenerate at any direction that orthogonal to $b_k\Sigma_{X},k = 1, \dots, K$
-1. Condidate Matrix:  $M_{SIR} = Var(E(X|Y))$
-1. $S_{SIR} := Span(\Sigma_{X}^{-1}M) \subseteq S_{Y|X}$
-1. $\Sigma_{X}^{-1}Mb = \lambda b \Rightarrow Mb = \lambda\Sigma_{X}b$
+1. $E(X|Y) - E(X)$ is p-dimensional curves as Y varies and lies in a k-dimensional subspace
+1. The covariance matrix of $E(X|Y) - E(X)$ is degenerate at any direction that orthogonal to $\Sigma_{X}b_i,i = 1, \dots, d$
+1. Condidate Matrix:  $M_{SIR} = Var(E(X|Y) - E(X)) = Var(E(X|Y))$
+1. $S_{SIR} := Span(\Sigma_{X}^{-1}M_{SIR}) \subseteq S_{Y|X}$
+1. $\Sigma_{X}^{-1}M_{SIR}b_i = \lambda_i b_i$ $b_i$ is the ith eigenvector of $\Sigma_{X}^{-1}M_{SIR}$ 
 
 
-### Estimating the central subspace cont. 
+### Estimating the central subspace (cont.) 
 \begin{block}{Sliced Average Variance Estimation (SAVE) (Cook et al. 1991)} 
 \[
-span(\Sigma_x - \Sigma_{X|\tilde{Y}}) \subseteq S_{Y|X} \Rightarrow \hat{B} = (\hat{b}_1, \dots, \hat{b}_d)
+span(\Sigma_x - \Sigma_{X|\tilde{Y}}) \subseteq S_{Y|X} \Rightarrow  ({b}_1, \dots, {b}_d)
 \]
 \end{block}
 - There are many other methods using first and second monments togehter
     * Directional regression etc.
 
-### How to estimate the $E(X|Y)$?
 
-1. Sort the data based on the response $Y_1 \dots, Y_n$     
-1. Split data into H slices based on the sorted responses$Y^{(1)},\dots,Y^{(n)}$  
-1. Within each slice, replace the responses with slice lable $h \in {1, \dots, H}$  
-1. Within the slice h, calculate the average of X, $\tilde{X}_h = \hat{E}(X|Y = \tilde{Y}_h)$
+
+### How to estimate the $E(X|Y)$, $\Sigma_{X|\tilde{Y}}$?
+
+1. Sort the data based on the response 
+\[
+  Y_1 \dots, Y_n \Rightarrow Y^{(1)},\dots,Y^{(n)} 
+\]
+1. Split data into H slices and set $Y = \tilde{Y}_h, h = 1,\dots H$
+1. Within the slice h, calculate the average of X,
+$$\tilde{X}_h = \hat{E}(X|Y = \tilde{Y}_h)$$
 ![](./pic/slice method.png){width=400px}  
 
 
 ### Issue with Binary response
 
-Binary response only has two levels, e.g. $0,1$. So that only two slices are available
+- Binary response only has two levels, e.g. $0,1$. 
 
-#### 2 slices affects the performances of SDR method
-  - For SIR, it can only find one direction at most  
-  - For SAVE, it also suffers from the limit number of slices
+- Only two slices are available after slicing
+
+- SIR can only find one direction
+
 
 # Existing solution
+
+## Variance matrix
+
+### Using conditional variance (Cook. 1999)
+
+#### Main Idea
+
+$\Delta = \Sigma_{X|Y = 1} - \Sigma_{X|Y = 0}$ could contain all the information of the central space
+
+#### Not full rank
+
+There is cases that $\hat \Delta$ is not full rank or even is 0 matrix 
 
 ## PRE
 
 ### Probability Enhanced (PRE) method (Shin et al. 2014)
 
 #### Main idea
-- $S_{Y|X} = S_{P(X)}$, $P(x) = \mathcal{P}(Y = 1|X = x)$ is the conditional probability
-- $Y \Rightarrow P(X) \in [0,1]$
-- Weighted Support Vector Machine(WSVM) to estimate the $\hat{P}(X)$
+- $S_{Y|X} = S_{G(X)}$, $G(x) = \mathcal{P}(Y = 1|X = x)$ is the conditional probability
+- $Y \Rightarrow G(X) \in [0,1]$
+- Weighted Support Vector Machine(WSVM) to estimate the $\hat{G}(X)$
 
 #### Computational time
 - SVM method is sensitive to the number of observation N
+- Tunning parameters
 
 # Our approach
 
@@ -205,18 +233,18 @@ For $(X_i, Y_i), i \in I_k$ and $n_k$ is sample size of $I_k$
 where $R$ is the summarizing function.
 
 #### Steps
-1. Cluster $(X_1, \dots,X_N)$ into K groups $I_1, \dots, I_K$, e.g.K-means 
+1. Cluster $(X_1, \dots,X_N)$ into k groups $I_1, \dots, I_k$, e.g.k-means 
 1. Calculate the representatives for each cluster $I_k$
-1. Apply dimension reduction methods on the K representatives
+1. Apply dimension reduction methods on the k representatives
 
 ### How it works
 #### Main idea
-Y and $P(X)$ have identical central space: $S_{Y|X} = S_{P(X)|X}$
+Y and $G(X)$ have identical central space: $S_{Y|X} = S_{G(X)|X}$
 
 \begin{center}
 $Y = f(b_1^TX, \dots, b_d^TX,\epsilon)$
 $\Rightarrow$
-$\mathcal{P}(Y = 1 |X) = P(X) = G(b_1^TX, \dots, b_d^TX)$
+$\mathcal{P}(Y = 1 |X) = G(b_1^TX, \dots, b_d^TX)$
 \end{center}
 
 #### For the Representative
@@ -252,7 +280,7 @@ In other words, the minimum decreasing rate of $E([\bar{Y}_k - G(\bar{\mathbf X}
 ### Additional value: Big data solution (N is large)
 
 #### Clustering step
-Clustering step reduced the sample size from $N$ to $K$.   
+Clustering step reduced the sample size from $N$ to $k$.   
 
 - $(Y_1,X_1) \dots (Y_N,X_N) \to (Y^*_{1},X^*_{1}) \dots (\bar{Y}_k,\bar{X}_k)$   
 
@@ -276,10 +304,10 @@ Clustering step reduced the sample size from $N$ to $K$.
     \log\left(\frac{\mathcal{P}(Y=1|X=x)}{1-\mathcal{P}(Y=1|X=x)}\right) = b_1^Tx \cdot sin(b_2^Tx) \cdot exp(b_3^Tx)
 \]
 
-- $n = \{10^3, 10^4, 10^5,10^6\}$
-- $X \in \mathbb{R}^6$
-- $b_1 = e_i = (0, \dots, 1, \dots,0) \in \mathbb{R}^6$
-- $S_{Y|X} = Span(e_1, e_2, e_3)$
+- $n = \{10^3, 10^4, 10^5,10^6\}$  
+- $X \in \mathbb{R}^6$  
+- $b_1 = e_i = (0, \dots, 1, \dots,0) \in \mathbb{R}^6$  
+- $S_{Y|X} = Span(e_1, e_2, e_3)$  
 \end{block}
 Note that the central subspace is a 3-dimensional subspace in a 6-dimensional space
 
