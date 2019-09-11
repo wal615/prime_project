@@ -60,11 +60,62 @@ $V$ is spaced by $(\vec{\mathbf{a}}_1, \dots, \vec{\mathbf{a}}_k)$
 ### SIR
 1. $E(X|Y) - E(X)$ is p-dimensional curves as Y varies and lies in a k-dimensional subspace
 1. The covariance matrix of $E(X|Y) - E(X)$ is degenerate at any direction that orthogonal to $\Sigma_{X}b_i,i = 1, \dots, d$
-1. Condidate Matrix:  $M_{SIR} = Var(E(X|Y) - E(X)) = Var(E(X|Y))$
+1. Candidate Matrix:  $M_{SIR} = Var(E(X|Y) - E(X)) = Var(E(X|Y))$
 1. $S_{SIR} := Span(\Sigma_{X}^{-1}M_{SIR}) \subseteq S_{Y|X}$
 1. $\Sigma_{X}^{-1}M_{SIR}b_i = \lambda_i b_i$ $b_i$ is the ith eigenvector of $\Sigma_{X}^{-1}M_{SIR}$ 
 
 
-### SUSY data 
 
-### SUSY data cont.
+```{r, echo = FALSE}
+dir_list <- readRDS("~/dev/projects/presentation/onsite_presentation/est_dir")
+```
+### Simulation estimated direction: Proposed SAVE
+```{r, echo = FALSE, comment="", fig.cap="rep SAVE"}
+dir_list$rep_save %>% round(.,2) 
+```
+
+### Simulation estimated direction: Proposed SIR
+```{r, echo = FALSE, comment="", fig.cap="rep SAVE"}
+dir_list$rep_sir %>% round(.,2) 
+```
+
+### Simulation estimated direction: PRE SIR
+```{r, echo = FALSE, comment="", fig.cap="rep SAVE"}
+dir_list$PRE_sir %>% round(.,2) 
+```
+
+### Real Data analysis 
+
+#### SUSY data
+- $n = 5 \times 10^7$
+- $X$ are 18 features of a physics experiment of particles in high-energy
+- $Y$ is binary 
+
+#### How evalute the estimated directions
+- Don't know the true central space so no distance measure
+- Classification performance but depends on the classification model
+
+
+
+<!-- \begin{table}[] -->
+<!-- \centering -->
+<!-- \caption{Simulation result of SIR  \newline  -->
+<!--          Significant level 0.05\newline  -->
+<!--          directions of central subsapce $d =3$} -->
+<!-- \resizebox{\textwidth}{!}{% -->
+<!-- \begin{tabular}{|c|c|cccc|cccc|cccc|} -->
+<!-- \hline -->
+<!-- \multicolumn{2}{|l|}{\multirow{2}{*}{}}              & \multicolumn{4}{c|}{Original SIR} & \multicolumn{4}{c|}{PRE SIR} & \multicolumn{4}{c|}{Proposed SIR}                 \\ \cline{3-14} -->
+<!-- \multicolumn{2}{|l|}{}                               & \multicolumn{12}{c|}{log n}                                                                                    \\ \hline -->
+<!-- \multicolumn{1}{|l|}{}    & Direction/Distance       & 3      & 4      & 5      & 6     & 3        & 4    & 5    & 6    & 3    & 4          & 5          & 6          \\ -->
+<!-- \multirow{3}{*}{Power}    & 0D vs \textgreater{}= 1D & 1      & 1      & 1      & 1     & 1        & .    & .    & .    & 0.75 & \color{blue}\textbf{1} & \color{blue}\textbf{1} & \color{blue}\textbf{1} \\ -->
+<!--                           & 1D vs \textgreater{}= 2D & .      & .      & .      & .     & 1        & .    & .    & .    & 0.16 & \color{blue}\textbf{1} & \color{blue}\textbf{1} & \color{blue}\textbf{1} \\ -->
+<!--                           & 2D vs \textgreater{}= 3D & .      & .      & .      & .     & 1     & .    & .    & .    & 0.01 & 0.01       & 0          & 0.01       \\ \hline -->
+<!-- \multirow{3}{*}{Type-I}   & 3D vs \textgreater{}= 4D & .      & .      & .      & .     & 0      & .    & .    & .    & 0    & 0          & 0          & 0          \\ -->
+<!--                           & 4D vs \textgreater{}= 5D & .      & .      & .      & .     & 0      & .    & .    & .    & 0    & 0          & 0          & 0          \\ -->
+<!--                           & 5D vs \textgreater{}= 6D & .      & .      & .      & .     & 0    & .    & .    & .    & 0    & 0          & 0          & 0          \\ \hline -->
+<!-- \multirow{2}{*}{Distance} & F                        & 1.14   & 1.12   & 1.14   & 1.13  & \color{red}\textbf{0.88}     & .    & .    & .    & 1.47 & 1.13       & \color{blue}\textbf{1.01}       & \color{blue}\textbf{1}       \\ -->
+<!--                           & R                        & 0.01   & 0   & 0   & 0  & \color{blue}\textbf{0.06}     & .    & .    & .    & 0.06 & 0.02  & \color{blue}\textbf{0}       & \color{blue}\textbf{0}       \\ \hline -->
+<!-- \end{tabular}% -->
+<!-- } -->
+<!-- \end{table} -->

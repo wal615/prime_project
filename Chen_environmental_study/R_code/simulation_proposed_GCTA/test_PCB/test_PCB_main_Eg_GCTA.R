@@ -13,12 +13,14 @@ sourceDirectory("./R_code/main_fn/method/",modifiedOnly = FALSE, recursive = TRU
 source("./R_code/simulation_proposed_GCTA/local_helpers.R")
 # source("./reports/proposed_GCTA_paper/est_var_analysis/est_combined_data/covaraites_summary_2005_2014.R")
 source("./reports/proposed_GCTA_paper/est_var_analysis/est_combined_data/covaraites_summary_1999_2004.R")
+c_betam <- 8
+c_betai <- 2
 year <- "1999"
-std <- "TRUE"
+std <- "FALSE"
 save_path <- "~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/var_est/combined_effects_PCBs_report_08_30_2019/"
 data_path <- "~/dev/projects/Chen_environmental_study/R_code/data/real_data/NHANES/PCB_99_14/clean/individual/PCB_1999_2004_common.csv"
-cores <- 1
-n_iter <- 1
+cores <- 20
+n_iter <- 100
 n_sub <- 1
 seed_loop <- 1234
 seed_coef <- 1014
@@ -51,7 +53,7 @@ uncorr_args <- list(emp = TRUE, combine = combine)
 # uncorr_args <- NULL
 
 # est
-decor <- FALSE
+decor <- TRUE
 if(decor == FALSE) {
   decor_method <- "None"
   uncorr_method <- NULL
@@ -122,7 +124,7 @@ result_name <- paste("decor_method",decor_method,"result_list_fixed_sub", dist, 
                      inter_fixed_var, "n", paste(n, collapse = "_"), "p", p, "rho_e", paste(rho_e,collapse = "_"), 
                      "dim_red_coeff", dim_red_args$reduce_coef,"decor",decor,
                      "subpro",paste(pro, collapse = "_"), "iter", n_iter, "nsub", n_sub,
-                     kernel_name, "est", est, "year", year,"std_PCB",std, sep = "_")
+                     kernel_name, "est", est, "year", year,"std_PCB",std, "c_betam", c_betam, "c_betai", c_betai, sep = "_")
 result_folder_path <- paste0(save_path, result_name, "/")
 dir.create(result_folder_path)
 

@@ -1,0 +1,2 @@
+"var_main_effect","var_inter_effect","cov_main_inter_effect","var_total_effect","EigenPrism_main","EigenPrism_CI1","EigenPrism_CI2","sub_EigenPrism_main","sub_EigenPrism_CI1","sub_EigenPrism_CI2","GCTA_main","GCTA_inter","sub_GCTA_main","sub_GCTA_inter","x_dist","structure","p","n","emp","combine","main_fixed_var","main_random_var","inter_fixed_var","inter_random_var","decor","interact","pro","bs","n_sub","rho_e","emp_n","inter_std","i"
+113.232875340061,0,0,0,NA,NA,NA,0,0,0,124.738179796142,0,0,0,"chi","un",21,100,TRUE,FALSE,0.5,0,0,0,TRUE,0,0,"full",1,0.5,1e+05,FALSE,3

@@ -119,8 +119,10 @@
 \setcounter{secnumdepth}{0}
 \usepackage{amsmath, bbm, graphicx,multirow}
 \usepackage{booktabs}
+\usepackage{caption}
 \usepackage{longtable}
 \usepackage{array}
+\usepackage{blkarray}
 \usepackage{multirow}
 \usepackage{wrapfig}
 \usepackage{float}
@@ -132,6 +134,7 @@
 \usepackage[normalem]{ulem}
 \usepackage{makecell}
 \usepackage{xcolor}
+\newcolumntype{Z}{>{\setbox0=\hbox\bgroup}c<{\egroup}@{\hspace*{-\tabcolsep}}}
 \newcommand{\indep}{\rotatebox[origin=c]{90}{$\models$}}
 
 
@@ -145,9 +148,9 @@ Department of Mathematics, Computer Science, and Statistics \\
 University of Illinois at Chicago
 }
 \date[
-09/05/2019
+09/09/2019
 ]{
-September 05, 2019
+September 09, 2019
 }
 
 % Option to fake out the raw_tex plugin and, thus, enabling the embedding of
@@ -189,16 +192,16 @@ responses
 
 \subsection{Motivation}\label{motivation-1}
 
-\begin{frame}{Motivation of reducing the dimension of the data}
+\begin{frame}{Motivation of dimension reduction}
 
-\begin{block}{Curse of dimensionality (p is large)}
+\begin{block}{Issues of high dimensional data (p is large)}
 
 \begin{itemize}
 \tightlist
 \item
-  Data becomes sparse (need more data to get same level of accuracy)
+  Curse of dimensionality (e.g.~data points become sparse)\\
 \item
-  Model Overfitting
+  Model overfitting
 \end{itemize}
 
 \end{block}
@@ -214,7 +217,7 @@ responses
   \begin{itemize}
   \tightlist
   \item
-    Forward/Backward selection, Lasso, etc.
+    Forward/Backward selection, Shrinkage method (Lasso), etc.
   \end{itemize}
 \item
   \textbf{Dimension reduction} (Variable Projection)
@@ -232,46 +235,34 @@ responses
 
 \end{frame}
 
-\begin{frame}{An example: Breast Cancer data}
+\begin{frame}{An example: Breast cancer data}
 
-\begin{figure}
-\centering
-\includegraphics{./pic/breast_cancer.png}
-\caption{}
-\end{figure}
-
-\end{frame}
-
-\begin{frame}{An example: Breast Cancer data (Cont.)}
-
-\begin{block}{Data}
-
-\begin{itemize}
-\tightlist
-\item
-  X: Dependent variables are computed from a digitized image of a fine
-  needle aspirate (FNA) of a breast mass
-
-  \begin{itemize}
-  \tightlist
-  \item
-    e.g.~radius, texture, area
-  \end{itemize}
-\item
-  Y: Diagnosis results (1 = malignant, 0 = benign)
-\end{itemize}
-
-\end{block}
+\begin{columns}
+\begin{column}{0.5\textwidth}
+   \begin{block}{Data}
+    \begin{itemize}
+    \item X: 30 Dependent variables are computed from a digitized image of a breast mass
+    \item Y: Diagnosis results\\ 
+    (1 = malignant, 0 = benign)
+    \end{itemize}
+   \end{block}
+\end{column}
+\begin{column}{0.5\textwidth}  %%<--- here
+    \begin{block}{A Sample picture}
+    \includegraphics{./pic/breast_cancer.png}
+    \end{block}
+\end{column}
+\end{columns}
 
 \begin{block}{Goal}
 
-Classificantion: Diagnose breast cancer from image-processed variables
+Classification: Diagnose breast cancer from image-processed variables
 
 \end{block}
 
 \end{frame}
 
-\begin{frame}{An example: Breast Cancer data}
+\begin{frame}{An example: Breast cancer data}
 
 \begin{center}\includegraphics{SDR_reps_slides_final_merck_files/figure-beamer/unnamed-chunk-2-1} \end{center}
 
@@ -283,27 +274,50 @@ Classificantion: Diagnose breast cancer from image-processed variables
 
 \begin{frame}{Span and basis}
 
-Given k independent vectors
-\(B = (\vec{\mathbf{b}}_1, \dots, \vec{\mathbf{b}}_d), ~~\vec{\mathbf{b}}_i \in \mathbb{R}^p\),
+Given d independent vectors
+\(B = (\mathbf{b}_1, \dots, \mathbf{b}_d), ~~\mathbf{b}_i \in \mathbb{R}^p\),
 \[
-V = \mathcal{L}((\vec{\mathbf{b}}_1, \dots, \vec{\mathbf{b}}_d) = \{\sum_{i = 1}^k\lambda_i\vec{\mathbf{b}}_i, \lambda_i\in \mathbb{R}\}
-\] - \(V\) is spaced by B -
-\(B = (\vec{\mathbf{b}}_1, \dots, \vec{\mathbf{b}}_d)\) is a basis of
-\(V\)
-
-\begin{block}{Basis is not unique}
-
-\includegraphics{./pic/axes_rotatio.jpg} \[
-  Span(\begin{bmatrix}
-    1 & 0 \\
-    0 & 1
-  \end{bmatrix}) = Span(\begin{bmatrix}
-    1 & ~~~1 \\
-    1 & -1
-  \end{bmatrix}) 
+\text{Subspace }V = \mathcal{L}(\mathbf{b}_1, \dots, \mathbf{b}_d) = \{\sum_{i = 1}^k\lambda_i\mathbf{b}_i, \lambda_i\in \mathbb{R}\}
 \]
 
-\end{block}
+\begin{itemize}
+\tightlist
+\item
+  \(V = span(\mathbf{b}_1, \dots, \mathbf{b}_d)\), \(V\) is spanned by
+  B,\\
+\item
+  \(B = (\mathbf{b}_1, \dots, \mathbf{b}_d)\) is a basis of \(V\)\\
+
+  \begin{columns}
+  \begin{column}{0.6\textwidth}
+     \begin{block}{Basis is not unique}
+  \[
+    Span
+  \begin{blockarray}{cc}
+  b_1 & b_2  \\
+  \begin{block}{(cc)}
+    1 & 0 \\
+    0 & 1 \\
+  \end{block}
+  \end{blockarray} \Leftrightarrow 
+   Span
+  \begin{blockarray}{cc}
+  b'_1 & b'_2  \\
+  \begin{block}{(cc)}
+    1 & 1 \\
+    1 & -1 \\
+  \end{block}
+  \end{blockarray}
+    \]
+     \end{block}
+  \end{column}
+  \begin{column}{0.4\textwidth}  %%<--- here
+  \begin{block}{Example}
+  \includegraphics[height=3cm]{./pic/axes-rotation.jpg}
+  \end{block}
+  \end{column}
+  \end{columns}
+\end{itemize}
 
 \end{frame}
 
@@ -313,8 +327,9 @@ V = \mathcal{L}((\vec{\mathbf{b}}_1, \dots, \vec{\mathbf{b}}_d) = \{\sum_{i = 1}
 
 Let random vector \(X \in \mathbb{R}^{p \times 1}\),
 \(Y \in \mathbb{R}\),
-\(B = (b_1, \dots,b_d) \in \mathbb{R}^{p\times d}\), where \(d << p\)
-and \(A \in \mathbb{R}^{d\times d}\) is a non-singular matrix. \[
+\(B = (\mathbf{b}_1, \dots,\mathbf{b}_d) \in \mathbb{R}^{p\times d}\),
+where \(d << p\) and \(A \in \mathbb{R}^{d\times d}\) is a non-singular
+matrix. \[
 Y|X \stackrel{d}{=} Y|B^T X
 \]
 
@@ -359,10 +374,9 @@ itself (Cook, 1996).
   No model assumption between X and Y\\
 \item
   Target is a basis of the central subspace not specific values of
-  coefficients(a vector)
+  coefficients
 \item
-  A basis of subspace is
-  \(B = (\vec{\mathbf{b}}_1, \dots, \vec{\mathbf{b}}_d)\)
+  A basis of subspace is \(B = (\mathbf{b}_1, \dots, \mathbf{b}_d)\)
 \end{itemize}
 
 \end{frame}
@@ -378,16 +392,15 @@ subspace}\label{estimating-the-central-subspace}
 \def\labelenumi{\arabic{enumi}.}
 \tightlist
 \item
-  \(M = \hat{Var}(X) = \frac{1}{N}\sum_{i = 1}^N(X_i-\bar{X})(X_i-\bar{X})^T\)\\
+  \(M = {Var}(X)\)\\
 \item
-  Fine the eigenvalues of \(M\) and arrange them in decending order
+  Find the eigenvalues of \(M\) and arrange them in descending order
   \(\lambda_1 \geq \dots, \lambda_p\) and their corresponding
   eigenvectors \((u_1, \dots, u_p)\)\\
 \item
   Select first several eigenvectors based on the total variation\\
-  Note that \[
-  (u_1, \dots, u_d) = (\hat{b}_1, \dots, \hat{b}_d)
-  \]
+\item
+  \((\hat u_1, \dots, \hat u_d) = (\hat{\mathbf{b}}_1, \dots, \hat{\mathbf{b}}_d)\)
 \end{enumerate}
 
 \end{block}
@@ -454,7 +467,7 @@ subspace}\label{estimating-the-central-subspace}
 
 \begin{itemize}
 \item
-  Binary response only has two levels, e.g. \(0,1\).
+  A binary response only has two levels, e.g. \(0,1\).
 \item
   Only two slices are available after slicing
 \item
@@ -478,7 +491,8 @@ information of the central space
 
 \begin{block}{Not full rank}
 
-There is cases that \(\hat \Delta\) is not full rank or even is 0 matrix
+There are cases that \(\hat \Delta\) is not full rank or even is 0
+matrix
 
 \end{block}
 
@@ -493,7 +507,7 @@ There is cases that \(\hat \Delta\) is not full rank or even is 0 matrix
 \begin{itemize}
 \tightlist
 \item
-  \(S_{Y|X} = S_{G(X)}\), \(G(x) = \mathcal{P}(Y = 1|X = x)\) is the
+  \(S_{Y|X} = S_{G(X)|X}\), \(G(x) = \mathcal{P}(Y = 1|X = x)\) is the
   conditional probability
 \item
   \(Y \Rightarrow G(X) \in [0,1]\)
@@ -519,7 +533,7 @@ There is cases that \(\hat \Delta\) is not full rank or even is 0 matrix
 
 \section{Our approach}\label{our-approach}
 
-\subsection{Rep}\label{rep}
+\subsection{Representative}\label{representative}
 
 \begin{frame}{Representative approach}
 
@@ -557,9 +571,9 @@ For \((X_i, Y_i), i \in I_k\) and \(n_k\) is sample size of \(I_k\) \[
 Y and \(G(X)\) have identical central space: \(S_{Y|X} = S_{G(X)|X}\)
 
 \begin{center}
-$Y = f(b_1^TX, \dots, b_d^TX,\epsilon)$
+$Y = f(\mathbf{b}_1^TX, \dots, \mathbf{b}_d^TX,\epsilon)$
 $\Rightarrow$
-$\mathcal{P}(Y = 1 |X) = G(b_1^TX, \dots, b_d^TX)$
+$\mathcal{P}(Y = 1 |X) = G(\mathbf{b}_1^TX, \dots, \mathbf{b}_d^TX)$
 \end{center}
 
 \end{block}
@@ -567,37 +581,27 @@ $\mathcal{P}(Y = 1 |X) = G(b_1^TX, \dots, b_d^TX)$
 \begin{block}{For the Representative}
 
 \begin{center}
-$\bar{Y}_k = \hat{\mathcal{P}}(Y = 1|X_i, i\in I_k) \approx G(b_1^T\bar{X}_k, \dots, b_d^T\bar{X}_k)$
+$\bar{Y}_k = \hat{\mathcal{P}}(Y = 1|X_i, i\in I_k) \approx  G(\bar{X}_k) = G(\mathbf{b}_1^T\bar{X}_k, \dots, \mathbf{b}_d^T\bar{X}_k)$
 \end{center}
 
 \end{block}
 
 \end{frame}
 
-\begin{frame}{Aysmptotic property with fixed clusters}
+\begin{frame}{Aysmptotic property}
 
-\begin{block}{Fixed cluster}
-\begin{align*}
-\bar{Y}_k - G(\bar{\mathbf X}_k) &\stackrel{P}{\longrightarrow} \mu_g - G(\boldsymbol{\mu}_k)\\
-& = p_k^{-1} \int_{B_k} G({\mathbf x}) F(d{\mathbf x}) - G\left(p_k^{-1} \int_{B_k} {\mathbf x} F(d{\mathbf x})\right)
-\end{align*}
+Let \(K\) be the total number of clusters, \(n_k\) be the total
+observations within cluster k, \(v_k\) be the cluster's volume.
+
+\begin{block}{Cluster with fixed volume}
+In this case, K and $v_k$ are fixed, $n_k \to \infty$ as $N \to \infty$
+\[
+\bar{Y}_k - G(\bar{\mathbf X}_k) \stackrel{P}{\longrightarrow} \mu_g - G(\boldsymbol{\mu}_k)  \neq 0
+\]
 \end{block}
 
-\begin{itemize}
-\tightlist
-\item
-  Note that with fixed cluster, there is a bias between the
-  representative version of conditional probability
-\item
-  To remove the bias we need to reduce the size of cluster when N is
-  increaseing
-\end{itemize}
-
-\end{frame}
-
-\begin{frame}{Aysmptotic property with shrinking clusters}
-
-\begin{block}{Shrinking cluster}
+\begin{block}{Cluster with shrinking volume}
+In this case, $K \to \infty,~v_k \to 0, n_k \to \infty $ as $N \to \infty$
 \[
 E([\bar{Y}_k - G(\bar{\mathbf X}_k)]^2) = O(N^{-\delta(r)})
 \]
@@ -606,7 +610,7 @@ E([\bar{Y}_k - G(\bar{\mathbf X}_k)]^2) = O(N^{-\delta(r)})
 \begin{itemize}
 \tightlist
 \item
-  \(\delta(r)\) is maximized at \(r = 1 + 4/d\)
+  \(K = O(N^\frac{p}{4+p})\)
 \end{itemize}
 
 \end{frame}
@@ -615,21 +619,15 @@ E([\bar{Y}_k - G(\bar{\mathbf X}_k)]^2) = O(N^{-\delta(r)})
 
 \begin{block}{Clustering step}
 
-Clustering step reduced the sample size from \(N\) to \(k\).
+Clustering step reduced the sample size from \(N\) to \(K\).
 
 \begin{itemize}
+\tightlist
 \item
-  \((Y_1,X_1) \dots (Y_N,X_N) \to (Y^*_{1},X^*_{1}) \dots (\bar{Y}_k,\bar{X}_k)\)
-\item
-  Note if the data set is too large, we could also use the online
-  clustering method.
+  \((Y_1,X_1) \dots (Y_N,X_N) \to (\bar{Y}_1,\bar{X}_1) \dots (\bar{Y}_k,\bar{X}_K)\)
 \end{itemize}
 
 \end{block}
-
-\end{frame}
-
-\begin{frame}{Additional value: Big data solution (N is large)}
 
 \begin{block}{Parallel Algorithm for SIR and SAVE}
 
@@ -640,10 +638,10 @@ Clustering step reduced the sample size from \(N\) to \(k\).
   Split the sliced data into b blocks, \(X_1, \dots X_B\)\\
 \item
   Load each block \(X_b\) and calculate the statistics for each block
-  such as \(\bar{X}_b, \bar{X}_{hb}, n_{hb}, X^T_{hb}X_{hb}\)\\
+  such as \(\bar{X}_b, X^T_{b}X_{b}\)\\
 \item
-  Summary the statistics across the blocks and slices to get the
-  candidate matrix \(M_{SIR}, M_{SAVE}\)
+  Summary the statistics across the blocks to get the candidate matrix
+  \(M_{SIR}, M_{SAVE}\)
 \end{enumerate}
 
 \end{block}
@@ -658,61 +656,79 @@ Clustering step reduced the sample size from \(N\) to \(k\).
 
 \begin{block}{Data generation model: logit model}
 \[
-    \log\left(\frac{\mathcal{P}(Y=1|X=x)}{1-\mathcal{P}(Y=1|X=x)}\right) = b_1^Tx \cdot sin(b_2^Tx) \cdot exp(b_3^Tx)
+    \log\left(\frac{\mathcal{P}(Y=1|X)}{\mathcal{P}(Y=0|X)}\right) = (\mathbf{b}_1^TX)^2 \cdot sin(\mathbf{b}_2^TX) \cdot exp(\mathbf{b}_3^TX)
 \]
 \begin{itemize}
-\item $n = \{10^3, 10^4, 10^5,10^6\}$    
 \item $X \in \mathbb{R}^6$   
-\item $b_1 = e_i = (0, \dots, 1, \dots,0) \in \mathbb{R}^6$  
-\item $S_{Y|X} = Span(e_1, e_2, e_3)$   
+\item $\mathbf{b}_i = \mathbf{e}_i = (0, \dots, 1, \dots,0) \in \mathbb{R}^6$  
+\item $S_{Y|X} = Span(\mathbf{e}_1, \mathbf{e}_2, \mathbf{e}_3)$   
+\item $n = \{10^3, 10^4, 10^5,10^6\}$    
 \end{itemize}
 \end{block}
 
-Note that the central subspace is a 3-dimensional subspace in a
-6-dimensional space
-
 \end{frame}
 
-\begin{frame}{How to evaluate esimated central subspace}
+\begin{frame}{How to evaluate estimated central subspace}
 
 \begin{block}{The number of direction}
 \begin{itemize}
-\item Hypothesis Test: test if a eigenvalue is significant than 0
-\item Total Variance: $T = \frac{\sum_i^d \lambda_i}{\sum_j^p \lambda_j}$
+\item Hypothesis Test: test if a eigenvalue is significant different than 0
 \end{itemize}
 \end{block}
 
 \begin{columns}
 \begin{column}{0.5\textwidth}
-   \begin{block}{Frobenius Distance (F)}
+   \begin{block}{Frobenius Distance}
     \[
-      frob = \Vert P_B - P_A\Vert_F 
+      F = \Vert P_B - P_A\Vert_F
     \]
+    \begin{itemize}
+    \item $P_A = A(A^TA)^{-1}A$
+    \item $\Vert A\Vert_F = \sqrt{\sum_i\sum_j a^2_{ij}}$
+    \item small value is better 
+    \item 0 means $Span(A) = Span(B)$
+    \end{itemize}
     
-    where $P_A = A(A^TA)^{-1}A$ \\
-    $\Vert A\Vert_F = \sqrt{\sum_i\sum_j a^2_{ij}}$
    \end{block}
 \end{column}
 \begin{column}{0.5\textwidth}  %%<--- here
-    \begin{block}{right}
+    \begin{block}{Trace correlation (R)}
+    \[
+    R = 1 - \frac{1}{k}\sum_{i=1}^k\rho_i^2
+    \]
+    \begin{itemize}
+      \item $\rho_i^2$ is the eigenvalues of $B^TAA^TB$
+      \item small value is better
+      \item 0 means $Span(A) \subseteq Span(B)$
+    \end{itemize}
     \end{block}
 \end{column}
 \end{columns}
 
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\item
-\item
-  Trace correlation \[
-    r^2 = \frac{1}{k}\sum_{i=1}^k\rho_i^2
-  \]
-\end{enumerate}
+\end{frame}
 
-\begin{itemize}
-\tightlist
-\item
-  \(R = 1 - r^2\)
-\end{itemize}
+\begin{frame}{Result table}
+
+\begin{table}[]
+\centering
+\caption{Simulation result of table}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{|c|c|ZZZZ|ZZZZ|}
+\hline
+\multicolumn{2}{|c|}{\multirow{2}{*}{}}              & \multicolumn{4}{c|}{ Method A } & \multicolumn{4}{c|}{ Method B}                \\ \cline{3-10} 
+\multicolumn{2}{|c|}{}                               & \multicolumn{8}{c|}{log n}                                                      \\ \hline
+                          & $H_0$ vs $H_1$       & 3      & 4      & 5      & 6      & 3    & 4    & 5             & 6             \\ \hline
+\multirow{3}{*}{Power}    & 0D vs \textgreater{}= 1D & 0.9    & 1      & 1      & 1      & 0    & 0.05 & \color{blue}\textbf{1}    & \color{blue}\textbf{1}    \\
+                          & 1D vs \textgreater{}= 2D & 0.08   & 0.52   & 0.52   & 0.5    & 0    & 0    & \color{blue}\textbf{1}    & \color{blue}\textbf{1}    \\
+                          & 2D vs \textgreater{}= 3D & 0      & 0.05   & 0.06   & 0.06   & 0    & 0    & 0.05          & \color{blue}\textbf{1}    \\ \hline
+\multirow{3}{*}{Type-I error}   & 3D vs \textgreater{}= 4D & 0      & 0      & 0      & 0.01   & 0    & 0    & 0             & 0.14          \\
+                          & 4D vs \textgreater{}= 5D & 0      & 0      & 0      & 0      & 0    & 0    & 0             & 0.03             \\
+                          & 5D vs \textgreater{}= 6D & 0      & 0      & 0      & 0      & 0    & 0    & 0             & 0.02             \\ \hline
+\multirow{2}{*}{Distance} & Frobenius                        & 1.47   & 1.2    & 1.21   & 1.21   & NA & 1.44 & \color{blue}\textbf{1.00} & \color{blue}\textbf{0.39} \\
+                          & Trace                        & 0.06   & 0.01   & 0.01   & 0.01   & NA & 0.02  & \color{blue}\textbf{0.01} & \color{blue}\textbf{0.04}    \\ \hline
+\end{tabular}%
+}
+\end{table}
 
 \end{frame}
 
@@ -720,7 +736,55 @@ Note that the central subspace is a 3-dimensional subspace in a
 
 \begin{table}[]
 \centering
-\caption{Simulation result of SAVE}
+\caption{Simulation result of SAVE  \newline 
+         Significant level 0.05\newline 
+         directions of central subsapce $d =3$}\resizebox{\textwidth}{!}{%
+\begin{tabular}{|c|c|cccc|cccc|}
+\hline
+\multicolumn{2}{|c|}{\multirow{2}{*}{}}              & \multicolumn{4}{c|}{Original SAVE} & \multicolumn{4}{c|}{Proposed SAVE}                \\ \cline{3-10} 
+\multicolumn{2}{|c|}{}                               & \multicolumn{8}{c|}{log n}                                                      \\ \hline
+                          & $H_0$ vs $H_1$       & 3      & 4      & 5      & 6      & 3    & 4    & 5             & 6             \\ \hline
+\multirow{3}{*}{Power}    & 0D vs \textgreater{}= 1D & 0.9    & 1      & 1      & 1      & 0    & 0.05 & \color{blue}\textbf{1}    & \color{blue}\textbf{1}    \\
+                          & 1D vs \textgreater{}= 2D & 0.08   & 0.52   & 0.52   & 0.5    & 0    & 0    & \color{blue}\textbf{1}    & \color{blue}\textbf{1}    \\
+                          & 2D vs \textgreater{}= 3D & 0      & 0.05   & 0.06   & 0.06   & 0    & 0    & 0.05          & \color{blue}\textbf{1}    \\ \hline
+\end{tabular}%
+}
+\end{table}
+
+\end{frame}
+
+\begin{frame}{Simulation result of SAVE}
+
+\begin{table}[]
+\centering
+\caption{Simulation result of SAVE  \newline 
+         Significant level 0.05\newline 
+         directions of central subsapce $d =3$}\resizebox{\textwidth}{!}{%
+\begin{tabular}{|c|c|cccc|cccc|}
+\hline
+\multicolumn{2}{|c|}{\multirow{2}{*}{}}              & \multicolumn{4}{c|}{Original SAVE} & \multicolumn{4}{c|}{Proposed SAVE}                \\ \cline{3-10} 
+\multicolumn{2}{|c|}{}                               & \multicolumn{8}{c|}{log n}                                                      \\ \hline
+                          & $H_0$ vs $H_1$       & 3      & 4      & 5      & 6      & 3    & 4    & 5             & 6             \\ \hline
+\multirow{3}{*}{Power}    & 0D vs \textgreater{}= 1D & 0.9    & 1      & 1      & 1      & 0    & 0.05 & \color{blue}\textbf{1}    & \color{blue}\textbf{1}    \\
+                          & 1D vs \textgreater{}= 2D & 0.08   & 0.52   & 0.52   & 0.5    & 0    & 0    & \color{blue}\textbf{1}    & \color{blue}\textbf{1}    \\
+                          & 2D vs \textgreater{}= 3D & 0      & 0.05   & 0.06   & 0.06   & 0    & 0    & 0.05          & \color{blue}\textbf{1}    \\ \hline
+\multirow{3}{*}{Type-I error}   & 3D vs \textgreater{}= 4D & 0      & 0      & 0      & 0.01   & 0    & 0    & 0             & 0.14          \\
+                          & 4D vs \textgreater{}= 5D & 0      & 0      & 0      & 0      & 0    & 0    & 0             & 0.03             \\
+                          & 5D vs \textgreater{}= 6D & 0      & 0      & 0      & 0      & 0    & 0    & 0             & 0.02             \\ \hline
+
+\end{tabular}%
+}
+\end{table}
+
+\end{frame}
+
+\begin{frame}{Simulation result of SAVE}
+
+\begin{table}[]
+\centering
+\caption{Simulation result of SAVE  \newline 
+         Significant level 0.05\newline 
+         directions of central subsapce $d =3$}
 \resizebox{\textwidth}{!}{%
 \begin{tabular}{|c|c|cccc|cccc|}
 \hline
@@ -730,11 +794,11 @@ Note that the central subspace is a 3-dimensional subspace in a
 \multirow{3}{*}{Power}    & 0D vs \textgreater{}= 1D & 0.9    & 1      & 1      & 1      & 0    & 0.05 & \color{blue}\textbf{1}    & \color{blue}\textbf{1}    \\
                           & 1D vs \textgreater{}= 2D & 0.08   & 0.52   & 0.52   & 0.5    & 0    & 0    & \color{blue}\textbf{1}    & \color{blue}\textbf{1}    \\
                           & 2D vs \textgreater{}= 3D & 0      & 0.05   & 0.06   & 0.06   & 0    & 0    & 0.05          & \color{blue}\textbf{1}    \\ \hline
-\multirow{3}{*}{Type-I}   & 3D vs \textgreater{}= 4D & 0      & 0      & 0      & 0.01   & 0    & 0    & 0             & 0.14          \\
+\multirow{3}{*}{Type-I error}   & 3D vs \textgreater{}= 4D & 0      & 0      & 0      & 0.01   & 0    & 0    & 0             & 0.14          \\
                           & 4D vs \textgreater{}= 5D & 0      & 0      & 0      & 0      & 0    & 0    & 0             & 0.03             \\
                           & 5D vs \textgreater{}= 6D & 0      & 0      & 0      & 0      & 0    & 0    & 0             & 0.02             \\ \hline
-\multirow{2}{*}{Distance} & F                        & 1.47   & 1.2    & 1.21   & 1.21   & . & 1.44 & \color{blue}\textbf{1.00} & \color{blue}\textbf{0.39} \\
-                          & R                        & 0.06   & 0.01   & 0.01   & 0.01   & . & 0.02  & \color{blue}\textbf{0.01} & \color{blue}\textbf{0.04}    \\ \hline
+\multirow{2}{*}{Distance} & Frobenius                        & 1.47   & 1.2    & 1.21   & 1.21   & NA & 1.44 & \color{blue}\textbf{1.00} & \color{blue}\textbf{0.39} \\
+                          & Trace                        & 0.06   & 0.01   & 0.01   & 0.01   & NA & 0.02  & \color{blue}\textbf{0.01} & \color{blue}\textbf{0.04}    \\ \hline
 \end{tabular}%
 }
 \end{table}
@@ -745,21 +809,71 @@ Note that the central subspace is a 3-dimensional subspace in a
 
 \begin{table}[]
 \centering
-\caption{Simulation result of SIR}
+\caption{Simulation result of SIR  \newline
+\newline
+         $\textcolor{red}{(\mathbf{b}_1^Tx)^2} \cdot sin(\mathbf{b}_2^Tx) \cdot exp(\mathbf{b}_3^Tx)$}
 \resizebox{\textwidth}{!}{%
-\begin{tabular}{|c|c|cccc|cccc|cccc|}
+\begin{tabular}{|c|c|cccc|cccc|}
 \hline
-\multicolumn{2}{|l|}{\multirow{2}{*}{}}              & \multicolumn{4}{c|}{SIR\_Binary} & \multicolumn{4}{c|}{SIR\_PRE} & \multicolumn{4}{c|}{SIR\_R}                 \\ \cline{3-14}
-\multicolumn{2}{|l|}{}                               & \multicolumn{12}{c|}{log n}                                                                                    \\ \hline
-\multicolumn{1}{|l|}{}    & Direction/Distance       & 3      & 4      & 5      & 6     & 3        & 4    & 5    & 6    & 3    & 4          & 5          & 6          \\
-\multirow{3}{*}{Power}    & 0D vs \textgreater{}= 1D & 1      & 1      & 1      & 1     & 1        & .    & .    & .    & 0.75 & \color{blue}\textbf{1} & \color{blue}\textbf{1} & \color{blue}\textbf{1} \\
-                          & 1D vs \textgreater{}= 2D & .      & .      & .      & .     & 1        & .    & .    & .    & 0.16 & \color{blue}\textbf{1} & \color{blue}\textbf{1} & \color{blue}\textbf{1} \\
-                          & 2D vs \textgreater{}= 3D & .      & .      & .      & .     & 1     & .    & .    & .    & 0.01 & 0.01       & 0          & 0.01       \\ \hline
-\multirow{3}{*}{Type-I}   & 3D vs \textgreater{}= 4D & .      & .      & .      & .     & 0      & .    & .    & .    & 0    & 0          & 0          & 0          \\
-                          & 4D vs \textgreater{}= 5D & .      & .      & .      & .     & 0      & .    & .    & .    & 0    & 0          & 0          & 0          \\
-                          & 5D vs \textgreater{}= 6D & .      & .      & .      & .     & 0    & .    & .    & .    & 0    & 0          & 0          & 0          \\ \hline
-\multirow{2}{*}{Distance} & F                        & 1.14   & 1.12   & 1.14   & 1.13  & \color{red}\textbf{0.88}     & .    & .    & .    & 1.47 & 1.13       & \color{blue}\textbf{1.01}       & \color{blue}\textbf{1}       \\
-                          & R                        & 0.01   & 0   & 0   & 0  & \color{blue}\textbf{0.06}     & .    & .    & .    & 0.06 & \color{blue}\textbf{0.02}   & \color{blue}\textbf{0}       & \color{blue}\textbf{0}       \\ \hline
+\multicolumn{2}{|l|}{\multirow{2}{*}{}}              & \multicolumn{4}{c|}{Original SIR} & \multicolumn{4}{c|}{Proposed SIR}                 \\ \cline{3-10}
+\multicolumn{2}{|l|}{}                               & \multicolumn{8}{c|}{log n}                                                                                    \\ \hline
+\multicolumn{1}{|l|}{}    & Direction/Distance       & 3      & 4      & 5      & 6      & 3    & 4          & 5          & 6          \\
+\multirow{3}{*}{Power}    & 0D vs \textgreater{}= 1D & 1      & 1      & 1      & 1      & 0.75 & \color{blue}\textbf{1} & \color{blue}\textbf{1} & \color{blue}\textbf{1} \\
+                          & 1D vs \textgreater{}= 2D & NA      & NA      & NA      & NA      & 0.16 & \color{blue}\textbf{1} & \color{blue}\textbf{1} & \color{blue}\textbf{1} \\
+                          & 2D vs \textgreater{}= 3D & NA      & NA      & NA      & NA      & 0.01 & 0.01       & 0          & 0.01       \\ \hline
+\end{tabular}%
+}
+\end{table}
+
+\end{frame}
+
+\begin{frame}{Simulation result of SIR}
+
+\begin{table}[]
+\centering
+\caption{Simulation result of SIR  \newline 
+         Significant level 0.05\newline 
+         directions of central subsapce $d =3$}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{|c|c|cccc|cccc|}
+\hline
+\multicolumn{2}{|l|}{\multirow{2}{*}{}}              & \multicolumn{4}{c|}{Original SIR} & \multicolumn{4}{c|}{Proposed SIR}                 \\ \cline{3-10}
+\multicolumn{2}{|l|}{}                               & \multicolumn{8}{c|}{log n}                                                                                    \\ \hline
+\multicolumn{1}{|l|}{}    & Direction/Distance       & 3      & 4      & 5      & 6      & 3    & 4          & 5          & 6          \\
+\multirow{3}{*}{Power}    & 0D vs \textgreater{}= 1D & 1      & 1      & 1      & 1      & 0.75 & \color{blue}\textbf{1} & \color{blue}\textbf{1} & \color{blue}\textbf{1} \\
+                          & 1D vs \textgreater{}= 2D & NA      & NA      & NA      & NA      & 0.16 & \color{blue}\textbf{1} & \color{blue}\textbf{1} & \color{blue}\textbf{1} \\
+                          & 2D vs \textgreater{}= 3D & NA      & NA      & NA      & NA      & 0.01 & 0.01       & 0          & 0.01       \\ \hline
+\multirow{3}{*}{Type-I error}   & 3D vs \textgreater{}= 4D & NA      & NA      & NA      & NA      & 0    & 0          & 0          & 0          \\
+                          & 4D vs \textgreater{}= 5D & NA      & NA      & NA      & NA      & 0    & 0          & 0          & 0          \\
+                          & 5D vs \textgreater{}= 6D & NA      & NA      & NA      & NA      & 0    & 0          & 0          & 0          \\ \hline
+
+\end{tabular}%
+}
+\end{table}
+
+\end{frame}
+
+\begin{frame}{Simulation result of SIR}
+
+\begin{table}[]
+\centering
+\caption{Simulation result of SIR  \newline 
+         Significant level 0.05\newline 
+         directions of central subsapce $d =3$}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{|c|c|cccc|cccc|}
+\hline
+\multicolumn{2}{|l|}{\multirow{2}{*}{}}              & \multicolumn{4}{c|}{Original SIR} & \multicolumn{4}{c|}{Proposed SIR}                 \\ \cline{3-10}
+\multicolumn{2}{|l|}{}                               & \multicolumn{8}{c|}{log n}                                                                                    \\ \hline
+\multicolumn{1}{|l|}{}    & Direction/Distance       & 3      & 4      & 5      & 6      & 3    & 4          & 5          & 6          \\
+\multirow{3}{*}{Power}    & 0D vs \textgreater{}= 1D & 1      & 1      & 1      & 1      & 0.75 & \color{blue}\textbf{1} & \color{blue}\textbf{1} & \color{blue}\textbf{1} \\
+                          & 1D vs \textgreater{}= 2D & NA      & NA      & NA      & NA      & 0.16 & \color{blue}\textbf{1} & \color{blue}\textbf{1} & \color{blue}\textbf{1} \\
+                          & 2D vs \textgreater{}= 3D & NA      & NA      & NA      & NA      & 0.01 & 0.01       & 0          & 0.01       \\ \hline
+\multirow{3}{*}{Type-I error}   & 3D vs \textgreater{}= 4D & NA      & NA      & NA      & NA      & 0    & 0          & 0          & 0          \\
+                          & 4D vs \textgreater{}= 5D & NA      & NA      & NA      & NA      & 0    & 0          & 0          & 0          \\
+                          & 5D vs \textgreater{}= 6D & NA      & NA      & NA      & NA      & 0    & 0          & 0          & 0          \\ \hline
+\multirow{2}{*}{Distance} & Frobenius                        & 1.14   & 1.12   & 1.14   & 1.13   & 1.47 & 1.13       & \color{blue}\textbf{1.01}       & \color{blue}\textbf{1}       \\
+                          & Trace                        & 0.01   & 0   & 0   & 0   & 0.06 & 0.02  & \color{blue}\textbf{0}       & \color{blue}\textbf{0}       \\ \hline
 \end{tabular}%
 }
 \end{table}
@@ -770,28 +884,50 @@ Note that the central subspace is a 3-dimensional subspace in a
 
 \begin{frame}{Conclusion and Future work}
 
-\begin{block}{Conclusion}
+\begin{block}{Pros}
 
 \begin{itemize}
 \tightlist
 \item
-  Better recover the central space in binary responses
+  Better recover the \(S_{Y|X}\) in binary responses
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Proposed SAVE can find all the basis of central space
+  \item
+    Proposed SIR can find more then 1 direction as long as the
+    directions are not symmteric
+  \end{itemize}
 \item
   Greatly shorten the running time in big data
 \end{itemize}
 
 \end{block}
 
-\begin{block}{Future work}
+\begin{block}{Cons}
 
 \begin{itemize}
 \tightlist
 \item
-  Investigate optimal the choice of k to achieve the best performance of
-  SDR methods.
+  Need large sample (\(N = 10^5\)) to have accurate estimation
+\item
+  Need to find a better hypothesis test for representative approach
 \end{itemize}
 
 \end{block}
+
+\end{frame}
+
+\begin{frame}{Future work}
+
+\begin{itemize}
+\tightlist
+\item
+  Apply our proposed method to a real dataset
+\item
+  Combine the SDR method with classification methods
+\end{itemize}
 
 \end{frame}
 
@@ -815,6 +951,13 @@ Reduction.''
 Shin, Seung Jun, Yichao Wu, Hao Helen Zhang, and Yufeng Liu. 2014.
 ``Probability-Enhanced Sufficient Dimension Reduction for Binary
 Classification.''
+
+\end{frame}
+
+\begin{frame}{}
+
+\centering \Huge
+ \emph{Thank You}
 
 \end{frame}
 
@@ -871,7 +1014,7 @@ Classification.''
   The covariance matrix of \(E(X|Y) - E(X)\) is degenerate at any
   direction that orthogonal to \(\Sigma_{X}b_i,i = 1, \dots, d\)
 \item
-  Condidate Matrix: \(M_{SIR} = Var(E(X|Y) - E(X)) = Var(E(X|Y))\)
+  Candidate Matrix: \(M_{SIR} = Var(E(X|Y) - E(X)) = Var(E(X|Y))\)
 \item
   \(S_{SIR} := Span(\Sigma_{X}^{-1}M_{SIR}) \subseteq S_{Y|X}\)
 \item
@@ -881,11 +1024,76 @@ Classification.''
 
 \end{frame}
 
-\begin{frame}{SUSY data}
+\begin{frame}[fragile]{Simulation estimated direction: Proposed SAVE}
+
+\begin{verbatim}
+      [,1]  [,2]  [,3]
+[1,]  1.00  0.05 -0.02
+[2,] -0.02 -0.01 -1.00
+[3,]  0.05 -1.00  0.01
+[4,]  0.01  0.00 -0.01
+[5,] -0.02  0.00 -0.05
+[6,]  0.00  0.01  0.02
+\end{verbatim}
 
 \end{frame}
 
-\begin{frame}{SUSY data cont.}
+\begin{frame}[fragile]{Simulation estimated direction: Proposed SIR}
+
+\begin{verbatim}
+      [,1]  [,2]
+[1,]  0.00 -0.01
+[2,] -0.01 -1.00
+[3,] -1.00  0.01
+[4,]  0.00 -0.03
+[5,]  0.01 -0.01
+[6,]  0.00  0.03
+\end{verbatim}
+
+\end{frame}
+
+\begin{frame}[fragile]{Simulation estimated direction: PRE SIR}
+
+\begin{verbatim}
+      [,1]  [,2]  [,3]
+[1,] -0.06 -0.01 -0.85
+[2,]  0.01  0.98 -0.14
+[3,] -0.97  0.00 -0.13
+[4,]  0.03  0.26  0.11
+[5,]  0.14 -0.13 -0.28
+[6,]  0.20 -0.11 -0.35
+\end{verbatim}
+
+\end{frame}
+
+\begin{frame}{Real Data analysis}
+
+\begin{block}{SUSY data}
+
+\begin{itemize}
+\tightlist
+\item
+  \(n = 5 \times 10^7\)
+\item
+  \(X\) are 18 features of a physics experiment of particles in
+  high-energy
+\item
+  \(Y\) is binary
+\end{itemize}
+
+\end{block}
+
+\begin{block}{How evalute the estimated directions}
+
+\begin{itemize}
+\tightlist
+\item
+  Don't know the true central space so no distance measure
+\item
+  Classification performance but depends on the classification model
+\end{itemize}
+
+\end{block}
 
 \end{frame}
 

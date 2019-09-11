@@ -12,6 +12,8 @@ simulation_var_est_fn <- function(kernel = GCTA_kernel,
                                   kernel_args_2 = NULL,
                                   kernel_result_col_names_2 = NULL,
                                   p,
+                                  c_betai = 2,
+                                  c_betam = 8,
                                   combine = FALSE,
                                   gene_coeff_args = NULL,
                                   generate_data,
@@ -102,16 +104,15 @@ simulation_var_est_fn <- function(kernel = GCTA_kernel,
     betai[sparse_index$index_inter] <- 0
     
     # rescale the magnitude of beta's: beta^T * Var(x) * beta = 10
-    if(combine == FALSE){
-      betam <- as.numeric(sqrt(10)/sqrt(t(betam)%*%sigma_main_emp%*%betam))*betam # as.numieric is to transform from array to vector
-    } else {
-      betam <- as.numeric(sqrt(8)/sqrt(t(betam)%*%sigma_main_emp%*%betam))*betam
-      betai <- as.numeric(sqrt(2)/sqrt(t(betai)%*%sigma_inter_emp%*%betai))*betai
-      betat <- c(betam,betai)
-      betam <- betat[1:length(betam)]
-      betai <- betat[-(1:length(betam))]
-    }
-    
+    # if(combine == FALSE){
+    #   betam <- as.numeric(sqrt(c_betam)/sqrt(t(betam)%*%sigma_main_emp%*%betam))*betam # as.numieric is to transform from array to vector
+    # } else {
+    #   betam <- as.numeric(sqrt(c_betam)/sqrt(t(betam)%*%sigma_main_emp%*%betam))*betam
+    #   betai <- as.numeric(sqrt(c_betai)/sqrt(t(betai)%*%sigma_inter_emp%*%betai))*betai
+    #   betat <- c(betam,betai)
+    #   betam <- betat[1:length(betam)]
+    #   betai <- betat[-(1:length(betam))]
+    # }
     # Generate the signals
     signalm <- b_gene_model$b_m%*%betam
     if(combine == TRUE) {
@@ -122,19 +123,23 @@ simulation_var_est_fn <- function(kernel = GCTA_kernel,
     
     # record all the variance 
     if(combine == FALSE){
-      result_tmp[,1] <- t(betam)%*%sigma_main_emp%*%betam
+      total_signal  <- result_tmp[,1] <- t(betam)%*%sigma_main_emp%*%betam
     } else {
       result_tmp[,1] <- t(betam)%*%sigma_main_emp%*%betam
       result_tmp[,2] <- t(betai)%*%sigma_inter_emp%*%betai
       result_tmp[,3] <- t(betam)%*%sigma_cov_emp%*%betai
       betat <- c(betam, betai)
-      result_tmp[,4] <- t(betat)%*%sigma_total_emp%*%betat  
+      total_signal  <- result_tmp[,4] <- t(betat)%*%sigma_total_emp%*%betat  
     }
 
     # Set the heritability ratio
     rho_e <- as.numeric(rho_e)
-    sigma_e <- sqrt(10*((1-rho_e)/rho_e))
-    
+    # if(combine == TRUE) {
+    #   sigma_e <- sqrt(10*((1-rho_e)/rho_e))
+    # } else {
+    #   sigma_e <- sqrt(8*((1-rho_e)/rho_e))
+    # }
+    sigma_e <- sqrt(total_signal*((1-rho_e)/rho_e))
     # Generate y
     y <- signalm+signali+rnorm(length(signalm),sd=sigma_e)
     ## estimating model
@@ -154,7 +159,6 @@ simulation_var_est_fn <- function(kernel = GCTA_kernel,
                                   dim_red_method, 
                                   dim_red_args,
                                   uncorre = kernel_args$decor)
-
     # Call the methods 
     args <- append(b_est_model, kernel_args) %>% append(.,list(b_raw = b_raw, betam = betam, betai = betai))
     result_kernel <- do.call(kernel, args)
