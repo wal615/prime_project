@@ -104,15 +104,16 @@ simulation_var_est_fn <- function(kernel = GCTA_kernel,
     betai[sparse_index$index_inter] <- 0
     
     # rescale the magnitude of beta's: beta^T * Var(x) * beta = 10
-    # if(combine == FALSE){
-    #   betam <- as.numeric(sqrt(c_betam)/sqrt(t(betam)%*%sigma_main_emp%*%betam))*betam # as.numieric is to transform from array to vector
-    # } else {
-    #   betam <- as.numeric(sqrt(c_betam)/sqrt(t(betam)%*%sigma_main_emp%*%betam))*betam
-    #   betai <- as.numeric(sqrt(c_betai)/sqrt(t(betai)%*%sigma_inter_emp%*%betai))*betai
-    #   betat <- c(betam,betai)
-    #   betam <- betat[1:length(betam)]
-    #   betai <- betat[-(1:length(betam))]
-    # }
+    if(combine == FALSE){
+      betam <- as.numeric(sqrt(c_betam)/sqrt(t(betam)%*%sigma_main_emp%*%betam))*betam # as.numieric is to transform from array to vector
+    } else {
+      betam <- as.numeric(sqrt(c_betam)/sqrt(t(betam)%*%sigma_main_emp%*%betam))*betam
+      betai <- as.numeric(sqrt(c_betai)/sqrt(t(betai)%*%sigma_inter_emp%*%betai))*betai
+      betat <- c(betam,betai)
+      betam <- betat[1:length(betam)]
+      betai <- betat[-(1:length(betam))]
+    }
+
     # Generate the signals
     signalm <- b_gene_model$b_m%*%betam
     if(combine == TRUE) {
