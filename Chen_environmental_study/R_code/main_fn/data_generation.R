@@ -192,7 +192,7 @@ generate_chi <- function(n, p, rho = NULL, sig_coef = 1,
                           list(x_dist = "chi", 
                                str = structure,
                                corr = rho))
-  b
+  b %>% std_fn(.)
 }
 
 ##################################################################################
@@ -306,10 +306,10 @@ generate_sub <- function(data, pro, n, bs = c("leave-d","leave-1","bs")[1], iter
 
 gene_model_data <- function(b_raw, p, combine = FALSE){
   # Standardized main covariates
-  b_m <- b_raw
+  b_m <- b_raw 
   b_i <- matrix(0,nrow = nrow(b_raw))
   if(combine == TRUE){
-    b <- b_raw %>%  add_inter(.)
+    b <- b_raw %>% add_inter(.) 
     b_m <- b[,1:p, drop = FALSE]
     b_i <- b[,-(1:p), drop = FALSE]
   }
@@ -325,16 +325,12 @@ est_model_data <- function(b_raw, y, p,
                            dim_red_method, dim_red_args, 
                            uncorre = FALSE){
   # Standardized main covariates
-  b_m <- b_raw
+  b_m <- b_raw 
   
   if(combine == TRUE){
-    b <- b_raw %>% add_inter(.)
+    b <- b_raw %>% add_inter(.) 
     b_m <- b[,1:p, drop = FALSE]
     b_i <- b[,-(1:p), drop = FALSE]
-    # center the main/interaction terms
-    if(inter_std == TRUE){
-      b_i <- std_fn(b = b_i)
-    }
     b_final <- cbind(b_m, b_i)
   } else {
     b_final <- b_m

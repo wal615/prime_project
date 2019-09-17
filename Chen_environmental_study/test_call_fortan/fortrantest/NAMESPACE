@@ -1,0 +1,3 @@
+useDynLib(fortrantest,.registration = TRUE)
+export(pwlkh)
+exportPattern("^[[:alpha:]]+")

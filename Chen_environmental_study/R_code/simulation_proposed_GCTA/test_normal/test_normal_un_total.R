@@ -13,12 +13,12 @@ sourceDirectory("./R_code/main_fn/method/",modifiedOnly = FALSE, recursive = TRU
 source("./R_code/simulation_proposed_GCTA/local_helpers.R")
 # source("./reports/proposed_GCTA_paper/est_var_analysis/est_combined_data/covaraites_summary_2005_2014.R")
 source("./reports/proposed_GCTA_paper/est_var_analysis/est_combined_data/covaraites_summary_1999_2004.R")
-c_betam <- 000
-c_betai <- 000
+c_betam <- 8
+c_betai <- 2
 save_path <- "~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/var_est/combined_effects_PCBs_report_08_30_2019/"
 
 cores <- 30
-n_iter <- 30
+n_iter <- 100
 n_sub <- 1
 seed_loop <- 1234
 seed_coef <- 1014
@@ -41,8 +41,8 @@ structure <- "un"
 set.seed(123)
 index <- sample(1:nrow(PCB_1999_2004_common), 100, replace = F)
 # pre_cor <- cor(data.matrix(PCB_1999_2004_common[index, ..PCB_common]) %*% invsqrt(cov_1999_2004))
-pre_cor <- cor(data.matrix(PCB_1999_2004_common[index, ..PCB_common]))
-Var <- "cor"
+pre_cor <- cov(data.matrix(PCB_1999_2004_common[index, ..PCB_common]))
+Var <- "cov"
 p <- ncol(pre_cor)
 
 
@@ -50,11 +50,11 @@ combine <- TRUE
 est <- "total"
 
 # decorr
-decor_method <- "SVD"
-uncorr_method <- SVD_method
-uncorr_args <- NULL
-# uncorr_method <- true_value_method
-# uncorr_args <- list(emp = TRUE, combine = combine)
+decor_method <- "hist"
+# uncorr_method <- SVD_method
+# uncorr_args <- NULL
+uncorr_method <- true_value_method
+uncorr_args <- list(emp = TRUE, combine = combine)
 # uncorr_method <- dgpGLASSO_method
 # uncorr_args <- NULL
 # uncorr_method <- QUIC_method

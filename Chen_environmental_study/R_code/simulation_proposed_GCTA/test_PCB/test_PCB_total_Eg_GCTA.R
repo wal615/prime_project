@@ -13,11 +13,13 @@ sourceDirectory("./R_code/main_fn/method/",modifiedOnly = FALSE, recursive = TRU
 source("./R_code/simulation_proposed_GCTA/local_helpers.R")
 # source("./reports/proposed_GCTA_paper/est_var_analysis/est_combined_data/covaraites_summary_2005_2014.R")
 source("./reports/proposed_GCTA_paper/est_var_analysis/est_combined_data/covaraites_summary_1999_2004.R")
+c_betam <- 8
+c_betai <- 2
 year <- "1999"
 std <- "TRUE"
 save_path <- "~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/var_est/combined_effects_PCBs_report_08_30_2019/"
 data_path <- "~/dev/projects/Chen_environmental_study/R_code/data/real_data/NHANES/PCB_99_14/clean/individual/std_PCB_1999_2004_common.csv"
-cores <- 25
+cores <- 20
 n_iter <- 100
 n_sub <- 1
 seed_loop <- 1234
@@ -31,7 +33,7 @@ bs <- "full"
 # data generation
 emp_n <- nrow(PCB_1999_2004_common)
 # n <- c(100,150,231)
-n <- c(100,500,1000,2000)
+n <- c(100,150,231,500,1000)
 dist <- "PCB"
 generate_data <- generate_PCB
 structure <- "un"
@@ -61,16 +63,16 @@ if(decor == FALSE) {
 combine <- TRUE
 est <- "total"
 
-# kernel <- EigenPrism_kernel
-# kernel_args <- list(decor = decor)
-# kernel_name <- "EigenPrism_kernel"
-# kernel_result_col_names <- col_names_Eigen
+kernel <- EigenPrism_kernel
+kernel_args <- list(decor = decor)
+kernel_name <- "EigenPrism_kernel"
+kernel_result_col_names <- col_names_Eigen
 
 
-kernel_args <- list(interact = 0,decor = decor)
-kernel <- GCTA_kernel
-kernel_name <- "GCTA_kernel"
-kernel_result_col_names <- col_names_GCTA
+# kernel_args <- list(interact = 0,decor = decor)
+# kernel <- GCTA_kernel
+# kernel_name <- "GCTA_kernel"
+# kernel_result_col_names <- col_names_GCTA
 
 
 # kernel <- least_square_kernel
@@ -80,14 +82,14 @@ kernel_result_col_names <- col_names_GCTA
 
 
 # est2
-# kernel_args_2 <- list(interact = 0,decor = decor)
-# kernel_2 <- GCTA_kernel
-# kernel_name <- append(kernel_name,"GCTA_kernel") %>% paste(.,collapse = "_")
-# kernel_result_col_names_2 <- col_names_GCTA
-kernel_args_2 <- NULL
-kernel_2 <- NULL
-kernel_name <- NULL
-kernel_result_col_names_2 <- NULL
+kernel_args_2 <- list(interact = 0,decor = decor)
+kernel_2 <- GCTA_kernel
+kernel_name <- append(kernel_name,"GCTA_kernel") %>% paste(.,collapse = "_")
+kernel_result_col_names_2 <- col_names_GCTA
+# kernel_args_2 <- NULL
+# kernel_2 <- NULL
+# kernel_name <- NULL
+# kernel_result_col_names_2 <- NULL
 
 
 
@@ -122,7 +124,7 @@ result_name <- paste("decor_method",decor_method,"result_list_fixed_sub", dist, 
                      inter_fixed_var, "n", paste(n, collapse = "_"), "p", p, "rho_e", paste(rho_e,collapse = "_"), 
                      "dim_red_coeff", dim_red_args$reduce_coef,"decor",decor,
                      "subpro",paste(pro, collapse = "_"), "iter", n_iter, "nsub", n_sub,
-                     kernel_name, "est", est, "year", year,"std_PCB",std, sep = "_")
+                     kernel_name, "est", est, "year", year,"std_PCB",std, "c_betam", c_betam, "c_betai", c_betai, sep = "_")
 result_folder_path <- paste0(save_path, result_name, "/")
 dir.create(result_folder_path)
 

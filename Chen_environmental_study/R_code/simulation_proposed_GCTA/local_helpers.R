@@ -56,23 +56,23 @@ simulation_var_est_fn <- function(kernel = GCTA_kernel,
 
   # Calculate the empirical covariance
   gene_data_args_emp <- gene_data_args
-  gene_data_args_emp$n <- emp_n 
-  x_emp_raw <- do.call(generate_data, gene_data_args_emp) 
+  gene_data_args_emp$n <- emp_n
+  x_emp_raw <- do.call(generate_data, gene_data_args_emp)
   x_emp <- gene_model_data(x_emp_raw, p, combine = combine)
   sigma_main_emp <- var(x_emp$b_m)
   sigma_inter_emp <- var(x_emp$b_i)
   sigma_cov_emp <- cov(x_emp$b_m, x_emp$b_i)
   sigma_total_emp <- cbind(x_emp$b_m, x_emp$b_i) %>% var(.)
+  # gene_data_args_emp <- gene_data_args
+  # gene_data_args_emp$n <- emp_n
+  # x_emp_raw <- do.call(generate_data, gene_data_args_emp)
+  # x_emp <- gene_model_data(x_emp_raw, p, combine = combine)
+  # sigma_main_emp <- cor(x_emp$b_m)
+  # sigma_inter_emp <- cor(x_emp$b_i)
+  # sigma_cov_emp <- cov(x_emp$b_m, x_emp$b_i)
+  # sigma_total_emp <- cbind(x_emp$b_m, x_emp$b_i) %>% cor(.)
+  
 
-  # check the difference of empirical sigma and true sigma
-  # if (gene_data_args_emp$structure == "un"){
-  #   if (attributes(x_emp_raw)$x_dist == "chi")
-  #     sigma_main_approx <- mean(abs(sigma_main_emp - (gene_data_args_emp$pre_cor[[1]])^2))
-  #   else
-  #     sigma_main_approx <- mean(abs(sigma_main_emp - gene_data_args_emp$pre_cor[[1]]))
-  # } else if (gene_data_args_emp$structure == "I"){
-  #     sigma_main_approx <- mean(abs(sigma_main_emp - diag(p)))
-  # }
   # Calcualte the effects
   result_raw <- foreach(ibrep = 1:brep, .combine = rbind, .verbose = TRUE, .errorhandling = "remove", .options.RNG = seed_loop) %dorng%   {
     # Initial output 
@@ -143,6 +143,7 @@ simulation_var_est_fn <- function(kernel = GCTA_kernel,
     sigma_e <- sqrt(total_signal*((1-rho_e)/rho_e))
     # Generate y
     y <- signalm+signali+rnorm(length(signalm),sd=sigma_e)
+
     ## estimating model
     # generate data for esitmating
     if(!is.null(uncorr_args$emp)) {

@@ -16,9 +16,9 @@ source("./reports/proposed_GCTA_paper/est_var_analysis/est_combined_data/covarai
 c_betam <- 8
 c_betai <- 2
 year <- "1999"
-std <- "FALSE"
+std <- "TRUE"
 save_path <- "~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/var_est/combined_effects_PCBs_report_08_30_2019/"
-data_path <- "~/dev/projects/Chen_environmental_study/R_code/data/real_data/NHANES/PCB_99_14/clean/individual/PCB_1999_2004_common.csv"
+data_path <- "~/dev/projects/Chen_environmental_study/R_code/data/real_data/NHANES/PCB_99_14/clean/individual/std_PCB_1999_2004_common.csv"
 cores <- 20
 n_iter <- 100
 n_sub <- 1
@@ -33,7 +33,7 @@ bs <- "full"
 # data generation
 emp_n <- nrow(PCB_1999_2004_common)
 # n <- c(100,150,231)
-n <- c(100,500,1000,2000)
+n <- c(100,150,231,500,1000)
 dist <- "PCB"
 generate_data <- generate_PCB
 structure <- "un"
@@ -63,16 +63,16 @@ if(decor == FALSE) {
 combine <- FALSE
 est <- "main"
 
-# kernel <- EigenPrism_kernel
-# kernel_args <- list(decor = decor)
-# kernel_name <- "EigenPrism_kernel"
-# kernel_result_col_names <- col_names_Eigen
+kernel <- EigenPrism_kernel
+kernel_args <- list(decor = decor)
+kernel_name <- "EigenPrism_kernel"
+kernel_result_col_names <- col_names_Eigen
 
 
-kernel_args <- list(interact = 0,decor = decor)
-kernel <- GCTA_kernel
-kernel_name <- "GCTA_kernel"
-kernel_result_col_names <- col_names_GCTA
+# kernel_args <- list(interact = 0,decor = decor)
+# kernel <- GCTA_kernel
+# kernel_name <- "GCTA_kernel"
+# kernel_result_col_names <- col_names_GCTA
 
 
 # kernel <- least_square_kernel
@@ -82,14 +82,14 @@ kernel_result_col_names <- col_names_GCTA
 
 
 # est2
-# kernel_args_2 <- list(interact = 0,decor = decor)
-# kernel_2 <- GCTA_kernel
-# kernel_name <- append(kernel_name,"GCTA_kernel") %>% paste(.,collapse = "_")
-# kernel_result_col_names_2 <- col_names_GCTA
-kernel_args_2 <- NULL
-kernel_2 <- NULL
-kernel_name <- NULL
-kernel_result_col_names_2 <- NULL
+kernel_args_2 <- list(interact = 0,decor = decor)
+kernel_2 <- GCTA_kernel
+kernel_name <- append(kernel_name,"GCTA_kernel") %>% paste(.,collapse = "_")
+kernel_result_col_names_2 <- col_names_GCTA
+# kernel_args_2 <- NULL
+# kernel_2 <- NULL
+# kernel_name <- NULL
+# kernel_result_col_names_2 <- NULL
 
 
 
