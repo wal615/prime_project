@@ -143,3 +143,21 @@ msqrt <- function(Sigma) {
 mdist <- function(A,B){
   sum((A-B)^2) 
 }
+
+##################################################################################
+## square-root
+##################################################################################
+tran_add_noise <- function(x) {
+  p <- ncol(x)
+  n <- nrow(x)
+  x + matrix(rnorm(p*n, sd = sqrt(0.1)), ncol =p)
+}
+
+tran_com <- function(x) {
+  p <- ncol(x)
+  t <- 8
+  col_tran <- diag(t)
+  col_tran[upper.tri(col_tran)] <- 1
+  col_tran <- Matrix::bdiag(col_tran, diag(p-t)) %>% as.matrix(.)
+  x %*% col_tran
+}

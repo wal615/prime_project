@@ -4,8 +4,7 @@
 ##################################################################################
 generate_main <- function(p, additional_args) {
   beta <- rnorm(p, mean =0, additional_args$main_fixed_var %>% sqrt(.))
-  3*beta/norm(beta,"2")*sqrt((p-1)/2) # normalized and multiple with p to have equal magnitude 
-                           # interaction coefficients
+  beta
 }
 
 ##################################################################################
@@ -21,12 +20,7 @@ generate_main_random <- function(p, additional_args) {
 ##################################################################################
 generate_inter <- function(p, additional_args) {
   beta <- matrix(rnorm(p*p,m=0,sd=additional_args$inter_fixed_var %>% sqrt(.)),ncol=p) 
-  if(norm(beta[upper.tri(beta, diag = FALSE)],"2") >0) {
-    beta <- 5*beta[upper.tri(beta, diag = FALSE)]/norm(beta[upper.tri(beta, diag = FALSE)],"2") # modify the strength of beta
-    return(beta)
-  } else {
-    return(beta[upper.tri(beta, diag = FALSE)]) # return all 0 when all inter is 0
-  }
+  beta[upper.tri(beta, diag = FALSE)]
 }
 
 ##################################################################################
@@ -124,7 +118,7 @@ generate_normal <- function(n, p, rho = NULL, sig_coef = 1,
                             list(x_dist = "normal", 
                                  str = structure,
                                  corr = rho))
-    b
+    b %>% std_fn(.)
   }
 
 
@@ -168,24 +162,6 @@ generate_chi <- function(n, p, rho = NULL, sig_coef = 1,
   }
   
   b <- x^2
-  
-  # # combine different chi square to get different degree of freedom
-  # if(chi_coef == 1) {
-  #   len_index <- p # for later the while condition 
-  #   index_p <- 1:p
-  # }
-  # else len_index <- 0
-  # 
-  # while(len_index < p) {
-  #   index_p <- sample(1:p, p_normal, replace = TRUE)  
-  #   len_index <- unique(index_p) %>% length(.)
-  # } # make sure we sample all p different groups with replacement
-  # index_list <- split(1:p_normal, index_p)
-  # 
-  # # generate the chi-square with specificed df
-  # b <- lapply(X = index_list, 
-  #             FUN = function(data, index) {rowSums(data[,index, drop = FALSE])}, data = x) %>%
-  #      Reduce(cbind, x = .)
   colnames(b) <- paste0("X", 1:ncol(b))
   
   attributes(b) <- append(attributes(b), 
@@ -214,7 +190,7 @@ generate_PCB <- function(data_path, n, p = NULL, data_name = NULL, structure) {
   # add distribution attributes
   attributes(x) <- append(attributes(x), 
                           list(x_dist = data_name))
-  x
+  x %>% std_fn(.)
 }
 
 generate_real_test <- function(data_path, pro, data_name=NULL, resp_name = "y", tran_fn_y, tran_fn_x) {
@@ -256,53 +232,6 @@ generate_sub <- function(data, pro, n, bs = c("leave-d","leave-1","bs")[1], iter
   sub_data
 }
 
-# gene_model_data <- function(b_raw, p, combine = FALSE){
-#   # Standardized main covariates
-#   b_m <- b_raw %>% std_fn(.)
-#   b_i <- matrix(0,nrow = nrow(b_raw))
-#   if(combine == TRUE){
-#     b <- b_raw %>% std_fn(.) %>% add_inter(.)
-#     b_m <- b[,1:p, drop = FALSE]
-#     b_i <- b[,-(1:p), drop = FALSE]
-#   }
-#   list(b_m = b_m,
-#        b_i = b_i)
-# }
-# 
-# est_model_data <- function(b_raw, y, p, 
-#                            inter_std, 
-#                            combined, 
-#                            uncorr_method, uncorr_args,
-#                            dim_red_method, dim_red_args, 
-#                            uncorre = FALSE){
-#   # Standardized main covariates
-#   b_m <- b_raw %>% std_fn(.)
-#   
-#   if(combine == TRUE){
-#     b <- b_raw %>% std_fn(.) %>% add_inter(.)
-#     b_m <- b[,1:p, drop = FALSE]
-#     b_i <- b[,-(1:p), drop = FALSE]
-#     # center the main/interaction terms
-#     if(inter_std == TRUE){
-#       b_i <- std_fn(b = b_i)
-#     }
-#     b_final <- cbind(b_m, b_i)
-#   } else {
-#     b_final <- b_m
-#   }
-# 
-#   # Uncorrelated data
-#   if(uncorre == TRUE) {
-#     s_final <- uncorr_fn(b_final, uncorr_method, uncorr_args, dim_red_method, dim_red_args)
-#   } else {
-#     s_final <- NA
-#   }
-#   
-#   
-#   list(b_final = b_final,
-#        s_final = s_final,
-#        y = y)
-# }
 
 gene_model_data <- function(b_raw, p, combine = FALSE){
   # Standardized main covariates
@@ -319,13 +248,12 @@ gene_model_data <- function(b_raw, p, combine = FALSE){
 
 
 est_model_data <- function(b_raw, y, p, 
-                           inter_std, 
                            combined, 
                            uncorr_method, uncorr_args,
-                           dim_red_method, dim_red_args, 
+                           sparse_uncorr_method, sparse_uncorr_args, 
                            uncorre = FALSE){
   # Standardized main covariates
-  b_m <- b_raw 
+  b_m <- b_raw
   
   if(combine == TRUE){
     b <- b_raw %>% add_inter(.) 
@@ -338,7 +266,7 @@ est_model_data <- function(b_raw, y, p,
   
   # Uncorrelated data
   if(uncorre == TRUE) {
-    s_final <- uncorr_fn(b_final, uncorr_method, uncorr_args, dim_red_method, dim_red_args)
+    s_final <- uncorr_fn(b_final, uncorr_method, uncorr_args, sparse_uncorr_method, sparse_uncorr_args)
   } else {
     s_final <- NA
   }

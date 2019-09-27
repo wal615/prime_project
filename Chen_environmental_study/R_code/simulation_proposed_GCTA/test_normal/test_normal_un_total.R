@@ -15,9 +15,9 @@ source("./R_code/simulation_proposed_GCTA/local_helpers.R")
 source("./reports/proposed_GCTA_paper/est_var_analysis/est_combined_data/covaraites_summary_1999_2004.R")
 c_betam <- 8
 c_betai <- 2
-save_path <- "~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/var_est/combined_effects_PCBs_report_08_30_2019/"
+save_path <- "~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/var_est/combined_effects_PCBs_sparse_decor_report_09_18_2019/"
 
-cores <- 30
+cores <- 20
 n_iter <- 100
 n_sub <- 1
 seed_loop <- 1234
@@ -30,9 +30,11 @@ bs <- "full"
 
 # data generation
 emp_n <- 10^5
-n_total <- c(100,150,231,500,1000)
-dist <- "normal"
-generate_data <- generate_normal
+tran_fn <- null_tran
+tran_fn_name <- "null_tran"
+n_total <- c(100,200,500,1000)
+dist <- "chi"
+generate_data <- generate_chi
 structure <- "un"
 
 # low-covariance matrix from PCBs
@@ -41,10 +43,9 @@ structure <- "un"
 set.seed(123)
 index <- sample(1:nrow(PCB_1999_2004_common), 100, replace = F)
 # pre_cor <- cor(data.matrix(PCB_1999_2004_common[index, ..PCB_common]) %*% invsqrt(cov_1999_2004))
-pre_cor <- cov(data.matrix(PCB_1999_2004_common[index, ..PCB_common]))
-Var <- "cov"
+pre_cor <- cor(data.matrix(PCB_1999_2004_common[index, ..PCB_common]))
+Var <- "cor"
 p <- ncol(pre_cor)
-
 
 combine <- TRUE
 est <- "total"
@@ -62,13 +63,26 @@ uncorr_args <- list(emp = TRUE, combine = combine)
 # uncorr_method <- PCA_method
 # uncorr_args <- NULL
 
+# Sparse decor
+# sparse_decor_method <- "Glasso"
+# sparse_uncorr_method <- dgpGLASSO_method
+# sparse_uncorr_args <- NULL
+sparse_decor_method <- NULL
+sparse_uncorr_method <- NULL
+sparse_uncorr_args <- NULL
+
+
 # est
 decor <- TRUE
 if(decor == FALSE) {
   decor_method <- "None"
   uncorr_method <- NULL
   uncorr_args <- NULL
+  sparse_decor_method <- "None"
+  sparse_uncorr_method <- NULL
+  sparse_uncorr_args <- NULL
 }
+
 
 
 kernel <- EigenPrism_kernel
@@ -100,13 +114,6 @@ kernel_result_col_names_2 <- col_names_GCTA
 # kernel_result_col_names_2 <- NULL
 
 
-# dim_reduction
-# dim_red_method <- SVD_dim_reduction
-# dim_red_args <- list(reduce_coef=reduce_coef,last = last)
-dim_red_method <- NULL
-dim_red_args <- NULL
-
-
 # coef
 main_fixed_var <- 0.5
 main_random_var <- 0
@@ -127,11 +134,11 @@ pro_list <-  args_all[,6, drop = FALSE] %>% split(x = ., f = seq(nrow(.)))
 
 
 # setup folders for results
-result_name <- paste("decor_method",decor_method,"result_list_fixed_sub", dist, "structure", structure, "main", main_fixed_var, "inter",
+result_name <- paste("tran_fn", tran_fn_name, "decor_method",decor_method, "sparse_method", sparse_decor_method, 
+                     "result_list_fixed_sub", dist, "structure", structure, "main", main_fixed_var, "inter",
                      inter_fixed_var, "n", paste(n_total, collapse = "_"), "p", p, "rho_e", paste(rho_e,collapse = "_"), 
-                     "dim_red_coeff", dim_red_args$reduce_coef,"decor",decor,
-                     "subpro",paste(pro, collapse = "_"), "iter", n_iter, "nsub", n_sub,
-                     kernel_name, "est", est, "c_betam", c_betam, "c_betai", c_betai, Var, sep = "_")
+                     "decor",decor,"subpro",paste(pro, collapse = "_"), "iter", n_iter, "nsub", n_sub,
+                     kernel_name, "est", est, "c_betam", c_betam, "c_betai", c_betai, "Var", Var, sep = "_")
 result_folder_path <- paste0(save_path, result_name, "/")
 dir.create(result_folder_path)
 
@@ -151,12 +158,13 @@ result_list <- mapply(FUN = simulation_var_est_fn,
                                       c_betam = c_betam,
                                       c_betai = c_betai,
                                       emp_n = emp_n,
+                                      tran_fn = tran_fn,
                                       combine = combine,
                                       gene_coeff_args = gene_coeff_args,
                                       uncorr_method = uncorr_method,
                                       uncorr_args = uncorr_args,
-                                      dim_red_method = dim_red_method,
-                                      dim_red_args = dim_red_args,
+                                      sparse_uncorr_method = sparse_uncorr_method,
+                                      sparse_uncorr_args = sparse_uncorr_args,
                                       generate_data = generate_data,
                                       brep = n_iter,
                                       n_sub = n_sub,

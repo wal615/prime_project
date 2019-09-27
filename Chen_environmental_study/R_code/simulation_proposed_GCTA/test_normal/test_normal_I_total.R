@@ -17,8 +17,8 @@ c_betam <- 8
 c_betai <- .2
 save_path <- "~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/var_est/combined_effects_PCBs_report_08_30_2019/"
 
-cores <- 5
-n_iter <- 5
+cores <- 30
+n_iter <- 100
 n_sub <- 1
 seed_loop <- 1234
 seed_coef <- 1014
@@ -62,6 +62,10 @@ uncorr_args <- list(emp = TRUE, combine = combine)
 # uncorr_args <- NULL
 # uncorr_method <- PCA_method
 # uncorr_args <- NULL
+sparse_decor_method <- "Glasso"
+sparse_uncorr_method <- sparse_uncorr_method
+sparse_uncorr_args <- NULL
+
 
 # est
 decor <- TRUE
@@ -69,7 +73,11 @@ if(decor == FALSE) {
   decor_method <- "None"
   uncorr_method <- NULL
   uncorr_args <- NULL
+  sparse_decor_method <- "None"
+  sparse_uncorr_method <- NULL
+  sparse_uncorr_args <- NULL
 }
+
 
 
 # kernel <- EigenPrism_kernel
@@ -99,13 +107,6 @@ kernel_args_2 <- NULL
 kernel_2 <- NULL
 kernel_name <- NULL
 kernel_result_col_names_2 <- NULL
-
-
-# dim_reduction
-# dim_red_method <- SVD_dim_reduction
-# dim_red_args <- list(reduce_coef=reduce_coef,last = last)
-dim_red_method <- NULL
-dim_red_args <- NULL
 
 
 # coef
@@ -156,8 +157,8 @@ result_list <- mapply(FUN = simulation_var_est_fn,
                                       gene_coeff_args = gene_coeff_args,
                                       uncorr_method = uncorr_method,
                                       uncorr_args = uncorr_args,
-                                      dim_red_method = dim_red_method,
-                                      dim_red_args = dim_red_args,
+                                      sparse_uncorr_method = sparse_uncorr_method,
+                                      sparse_uncorr_args = sparse_uncorr_args,
                                       generate_data = generate_data,
                                       brep = n_iter,
                                       n_sub = n_sub,

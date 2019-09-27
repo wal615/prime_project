@@ -12,18 +12,17 @@ offdiag <- function(M) {
 uncorr_fn <- function(input_data, 
                       uncorr_method = SVD_method , 
                       uncorr_args = NULL,
-                      dim_red_method = NULL, 
-                      dim_red_args = NULL) {
+                      sparse_uncorr_method = NULL, 
+                      sparse_uncorr_args = NULL) {
   
-  # dimension reduction 
-  if(!is.null(dim_red_method)){
-    args <- append(list(x = input_data), dim_red_args)
-    input_data <- do.call(dim_red_method, args)
-  }
   # decorrelation
   args <- append(list(input_data = input_data), uncorr_args) # generate the args for the uncorrelation function
   res <- do.call(uncorr_method, args)
-  
+  # sparse decorrelation
+  if(!is.null(sparse_uncorr_method)){
+    args <- append(list(input_data = res$uncorr_data), sparse_uncorr_args)
+    res <- do.call(sparse_uncorr_method, args)
+  }
   res$uncorr_data
 }
 
@@ -74,7 +73,7 @@ GLASSO_method <- function(input_data, rho = 0.001){
 #   list(uncorr_data = uncorr_data)
 # }
 
-dgpGLASSO_method <- function(input_data, rho = 0.005){
+dgpGLASSO_method <- function(input_data, rho = 0.1){
   Sigma=cov(input_data, input_data)
   # Compute Sigma^{-1}
   Sigma_i <- dpglasso::dpglasso(Sigma = Sigma, rho = rho, outer.tol = 0.05)$X

@@ -11,64 +11,77 @@ setwd("~/dev/projects/Chen_environmental_study/")
 sourceDirectory("./R_code/main_fn/",modifiedOnly = FALSE, recursive = TRUE)
 sourceDirectory("./R_code/main_fn/method/",modifiedOnly = FALSE, recursive = TRUE)
 source("./R_code/simulation_proposed_GCTA/local_helpers.R")
-data_path <- "~/dev/projects/Chen_environmental_study/R_code/data/pcb_99_13_no_missing.csv"
-save_path <- "~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/var_est/decor/"
+# source("./reports/proposed_GCTA_paper/est_var_analysis/est_combined_data/covaraites_summary_2005_2014.R")
+source("./reports/proposed_GCTA_paper/est_var_analysis/est_combined_data/covaraites_summary_1999_2004.R")
+c_betam <- 8
+c_betai <- 2
+save_path <- "~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/var_est/combined_effects_jackknife_reports_09_25_2019/"
 
-cores <- 20
-n_iter <- 20
-n_sub <- 1
+cores <- 1
+n_iter <- 1
+n_sub <- 0
 seed_loop <- 1234
 seed_coef <- 1014
 # steup parameters
 
 # sub_sampling
-pro <- 0
-bs <- "full"
-# pro <- 101
-# bs <- "leave-1"
+pro <- 101
+bs <- "leave-1"
 
 # data generation
 emp_n <- 10^5
-n_total <- c(500)
-# n_total <- 5000
-dist <- "normal"
-generate_data <- generate_normal
+n_total <- c(100,200,500)
+dist <- "chi"
+generate_data <- generate_chi
 structure <- "un"
 
-pre_cor <- real_data_corr.mat(data_path)
+# low-covariance matrix from PCBs
+# pre_cor <- cor(data.matrix(Combined_PCB_1999_2004_common[SDDSRVYR == 1, ..Combined_PCB_common]))
+
+set.seed(123)
+index <- sample(1:nrow(PCB_1999_2004_common), 100, replace = F)
+# pre_cor <- cor(data.matrix(PCB_1999_2004_common[index, ..PCB_common]) %*% invsqrt(cov_1999_2004))
+pre_cor <- cor(data.matrix(PCB_1999_2004_common[index, ..PCB_common]))
+Var <- "cor"
 p <- ncol(pre_cor)
 
-# p <- 33
-# pre_cor <- unstr_corr.mat(p,k=5)
-
-# pre_cor <- real_data_corr.mat(data_path)
-# diag(pre_cor) <- 0
-# pre_cor[which(pre_cor1 >= 0.95, arr.ind = TRUE)] <- NA
-# pre_cor <- pre_cor[complete.cases(pre_cor1),complete.cases(pre_cor1)]
-# diag(pre_cor) <- 1
-# p <- ncol(pre_cor)
+combine <- TRUE
+est <- "total"
 
 # decorr
-decor_method <- "GLASSO"
+decor_method <- "hist"
 # uncorr_method <- SVD_method
 # uncorr_args <- NULL
-uncorr_method <- GLASSO_method
-uncorr_args <- NULL
+uncorr_method <- true_value_method
+uncorr_args <- list(emp = TRUE, combine = combine)
 # uncorr_method <- dgpGLASSO_method
 # uncorr_args <- NULL
 # uncorr_method <- QUIC_method
 # uncorr_args <- NULL
 # uncorr_method <- PCA_method
 # uncorr_args <- NULL
-# uncorr_method <- SVD_method
-# uncorr_args <- NULL
+
+# Sparse decor
+sparse_decor_method <- "Glasso"
+sparse_uncorr_method <- dgpGLASSO_method
+sparse_uncorr_args <- NULL
+# sparse_decor_method <- NULL
+# sparse_uncorr_method <- NULL
+# sparse_uncorr_args <- NULL
+
+
 # est
-decor <- T
+decor <- TRUE
 if(decor == FALSE) {
   decor_method <- "None"
+  uncorr_method <- NULL
+  uncorr_args <- NULL
+  sparse_decor_method <- "None"
+  sparse_uncorr_method <- NULL
+  sparse_uncorr_args <- NULL
 }
-combine <- TRUE
-est <- "total"
+
+
 
 kernel <- EigenPrism_kernel
 kernel_args <- list(decor = decor)
@@ -93,12 +106,10 @@ kernel_args_2 <- list(interact = 0,decor = decor)
 kernel_2 <- GCTA_kernel
 kernel_name <- append(kernel_name,"GCTA_kernel") %>% paste(.,collapse = "_")
 kernel_result_col_names_2 <- col_names_GCTA
-
-# dim_reduction
-# dim_red_method <- SVD_dim_reduction
-# dim_red_args <- list(reduce_coef=reduce_coef,last = last)
-dim_red_method <- NULL
-dim_red_args <- NULL
+# kernel_args_2 <- NULL
+# kernel_2 <- NULL
+# kernel_name <- NULL
+# kernel_result_col_names_2 <- NULL
 
 
 # coef
@@ -121,11 +132,11 @@ pro_list <-  args_all[,6, drop = FALSE] %>% split(x = ., f = seq(nrow(.)))
 
 
 # setup folders for results
-result_name <- paste("decor_method",decor_method,"result_list_fixed_sub", dist, "structure", structure, "main", main_fixed_var, "inter",
+result_name <- paste("decor_method",decor_method, "sparse_method", sparse_decor_method, 
+                     "result_list_fixed_sub", dist, "structure", structure, "main", main_fixed_var, "inter",
                      inter_fixed_var, "n", paste(n_total, collapse = "_"), "p", p, "rho_e", paste(rho_e,collapse = "_"), 
-                     "dim_red_coeff", dim_red_args$reduce_coef, "last", dim_red_args$last,"decor",decor,
-                     "subpro",paste(pro, collapse = "_"), "iter", n_iter, "nsub", n_sub,
-                     kernel_name, "est", est, sep = "_")
+                     "decor",decor,"subpro",paste(pro, collapse = "_"), "iter", n_iter, "nsub", n_sub,
+                     kernel_name, "est", est, "c_betam", c_betam, "c_betai", c_betai, "Var", Var, sep = "_")
 result_folder_path <- paste0(save_path, result_name, "/")
 dir.create(result_folder_path)
 
@@ -142,19 +153,21 @@ result_list <- mapply(FUN = simulation_var_est_fn,
                                       kernel_args_2 = kernel_args_2,
                                       kernel_result_col_names_2 = kernel_result_col_names_2,
                                       bs = bs,
+                                      c_betam = c_betam,
+                                      c_betai = c_betai,
                                       emp_n = emp_n,
                                       combine = combine,
                                       gene_coeff_args = gene_coeff_args,
                                       uncorr_method = uncorr_method,
                                       uncorr_args = uncorr_args,
-                                      dim_red_method = dim_red_method,
-                                      dim_red_args = dim_red_args,
+                                      sparse_uncorr_method = sparse_uncorr_method,
+                                      sparse_uncorr_args = sparse_uncorr_args,
                                       generate_data = generate_data,
                                       brep = n_iter,
                                       n_sub = n_sub,
                                       seed_loop = seed_loop,
                                       seed_coef = seed_coef,
                                       cores = cores,
-                                      inter_std = TRUE,
+                                      inter_std = FALSE,
                                       inter_result_path = result_folder_path),
                       SIMPLIFY = FALSE)
