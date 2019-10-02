@@ -1,0 +1,50 @@
+---
+title: "Jackknife variance estimation"
+author: "Xuelong Wang"
+date: "`r Sys.Date()`"
+output: 
+  pdf_document:
+    toc: true
+    number_sections: true
+    keep_tex: true
+    fig_width: 12
+    fig_height: 3
+header-includes:
+    - \usepackage{float,amsmath, bbm, siunitx, bm}
+    - \usepackage{pdfpages}
+    - \floatplacement{figure}{H}
+    - \newcommand{\indep}{\rotatebox[origin=c]{90}{$\models$}}
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, comment = "", message = FALSE, warning = FALSE, echo = FALSE, fig.height = 10)
+options(scipen=1, digits=2)
+
+library(MASS)
+library(tidyverse)
+library(data.table)
+library(ggforce)
+library(ggpubr)
+library(gridExtra)
+source("~/dev/projects/Chen_environmental_study/reports/proposed_GCTA_paper/est_var_analysis/est_combined_data/simulation_result_jackknife_total.R")
+```
+
+
+# Simulation
+- leva-one-out
+- iteration 100
+- nominal level 0.8
+
+## None 
+```{r}
+additional
+summary_final_none[,.(n, sub_est_mean, var_jack,sub_z_coverage, est_var, est_mean, method)]
+```
+
+## decorreation 
+```{r}
+additional
+summary_final_decorr[,.(n, sub_est_mean, var_jack,sub_z_coverage, est_var, est_mean, method)]
+```

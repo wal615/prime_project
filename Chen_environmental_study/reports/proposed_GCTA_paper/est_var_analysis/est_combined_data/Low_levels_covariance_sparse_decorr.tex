@@ -82,7 +82,7 @@
   \postauthor{\par}
       \predate{\centering\large\emph}
   \postdate{\par}
-    \date{2019-09-20}
+    \date{2019-09-27}
 
 \usepackage{float,amsmath, bbm, siunitx, bm}
 \usepackage{pdfpages}
@@ -195,7 +195,7 @@ Alternatives}}{Dpglasso: The Graphical Lasso: New Insights and Alternatives}}\la
 10: 1000 495     113       31        0       GCTA
 \end{verbatim}
 
-\subsubsection{None with hist}\label{none-with-hist}
+\subsubsection{Hist}\label{hist}
 
 \begin{verbatim}
    var_main_effect var_inter_effect cov_main_inter_effect var_total_effect
@@ -218,7 +218,7 @@ Alternatives}}{Dpglasso: The Graphical Lasso: New Insights and Alternatives}}\la
 10: 1000  44      39       13        1       GCTA
 \end{verbatim}
 
-\subsubsection{None with hist + sparse}\label{none-with-hist-sparse}
+\subsubsection{Hist + sparse}\label{hist-sparse}
 
 \begin{verbatim}
    var_main_effect var_inter_effect cov_main_inter_effect var_total_effect
@@ -264,7 +264,7 @@ Alternatives}}{Dpglasso: The Graphical Lasso: New Insights and Alternatives}}\la
 8: 1000 134      20       24        0       GCTA
 \end{verbatim}
 
-\subsubsection{hist}\label{hist}
+\subsubsection{hist}\label{hist-1}
 
 \begin{verbatim}
    var_main_effect var_inter_effect cov_main_inter_effect var_total_effect
@@ -285,7 +285,7 @@ Alternatives}}{Dpglasso: The Graphical Lasso: New Insights and Alternatives}}\la
 8: 1000  3.0     1.3       12        1       GCTA
 \end{verbatim}
 
-\subsubsection{hist + sparse}\label{hist-sparse}
+\subsubsection{hist + sparse}\label{hist-sparse-1}
 
 \begin{verbatim}
    var_main_effect var_inter_effect cov_main_inter_effect var_total_effect
@@ -304,6 +304,185 @@ Alternatives}}{Dpglasso: The Graphical Lasso: New Insights and Alternatives}}\la
 6:  500  4.5     2.5       12        0       GCTA
 7: 1000  NaN      NA      NaN      100 EigenPrism
 8: 1000  4.1     1.8       12        0       GCTA
+\end{verbatim}
+
+\section{Mimic the histrocial covariance
+situation}\label{mimic-the-histrocial-covariance-situation}
+
+Based on the previous simulation, we found that if the historical data
+is from extact the same distribution, then the sparse decorrelation may
+not be neccessary. That is after doing the second step of decorrelation
+the variance estimation does not get much improvement. So to mimic the
+situation situation we change the simulation so that there is historical
+covariance is not perfect.
+
+\subsection{Simulation setup}\label{simulation-setup}
+
+\begin{itemize}
+\tightlist
+\item
+  \(p = 21\)
+\item
+  \(X \sim \chi^2_1\)
+\item
+  \(Cor(X)\) is the sample covariance of subset of standardized PCB data
+  with \(n = 150\)\\
+\item
+  \(X_h = XB\), where
+  \(B = \begin{bmatrix} 1 & 1 & 1 & 1 &1\dots \\ 0 & 1& 1& 1& 1\dots\\ 0& & 1 & 1 & 1\dots\\ 0& & & 1& 1\dots\\ 0& & & & 1\dots \end{bmatrix}\).
+  So that the \(X_h\) is a column transfromation of \(X\), therefore the
+  its covariance is different from the true value.
+\end{itemize}
+
+\subsection{Decorrelation result}\label{decorrelation-result}
+
+\subsubsection{\texorpdfstring{\(X_h = X\)}{X\_h = X}}\label{x_h-x}
+
+\includegraphics{Low_levels_covariance_sparse_decorr_files/figure-latex/unnamed-chunk-2-1.pdf}
+
+\begin{verbatim}
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  -0.42    0.29    0.50    0.49    0.72    1.00 
+\end{verbatim}
+
+\begin{verbatim}
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  -0.96   -0.11    0.00    0.00    0.11    0.94 
+\end{verbatim}
+
+\begin{verbatim}
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  -0.37   -0.06    0.00    0.00    0.06    0.48 
+\end{verbatim}
+
+\begin{verbatim}
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  -0.33   -0.05    0.00    0.00    0.04    0.54 
+\end{verbatim}
+
+\includegraphics{Low_levels_covariance_sparse_decorr_files/figure-latex/unnamed-chunk-2-2.pdf}
+
+\begin{verbatim}
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  -0.37   -0.04    0.00    0.00    0.04    0.53 
+\end{verbatim}
+
+\subsubsection{\texorpdfstring{\(X_h = XB, t = 8\)}{X\_h = XB, t = 8}}\label{x_h-xb-t-8}
+
+\includegraphics{Low_levels_covariance_sparse_decorr_files/figure-latex/unnamed-chunk-3-1.pdf}
+
+\begin{verbatim}
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  -0.42    0.29    0.50    0.49    0.72    1.00 
+\end{verbatim}
+
+\begin{verbatim}
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  -0.93   -0.15    0.00    0.00    0.15    0.91 
+\end{verbatim}
+
+\begin{verbatim}
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  -0.65   -0.04    0.00    0.00    0.04    0.42 
+\end{verbatim}
+
+\begin{verbatim}
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  -0.64   -0.04    0.00    0.00    0.04    0.44 
+\end{verbatim}
+
+\includegraphics{Low_levels_covariance_sparse_decorr_files/figure-latex/unnamed-chunk-3-2.pdf}
+
+\begin{verbatim}
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  -0.64   -0.04    0.00    0.00    0.03    0.44 
+\end{verbatim}
+
+\subsection{Simulation result on the variance estimation
+process}\label{simulation-result-on-the-variance-estimation-process}
+
+\subsubsection{None}\label{none-2}
+
+\begin{verbatim}
+   var_main_effect var_inter_effect cov_main_inter_effect var_total_effect
+1:               8                2                   1.8               14
+   structure decor x_dist
+1:        un FALSE    chi
+\end{verbatim}
+
+\begin{verbatim}
+      n MSE est_var est_mean NA_total     method
+1:  100 108      67       20        3 EigenPrism
+2:  100  77      68       17        0       GCTA
+3:  200 213      90       25        7 EigenPrism
+4:  200 189     109       23        0       GCTA
+5:  500 NaN      NA      NaN      100 EigenPrism
+6:  500 131      31       24        0       GCTA
+7: 1000 NaN      NA      NaN      100 EigenPrism
+8: 1000 134      20       24        0       GCTA
+\end{verbatim}
+
+\subsubsection{Hist}\label{hist-2}
+
+\begin{verbatim}
+   var_main_effect var_inter_effect cov_main_inter_effect var_total_effect
+1:               8                2                   1.8               14
+   structure decor x_dist
+1:        un  TRUE    chi
+\end{verbatim}
+
+\begin{verbatim}
+      n MSE est_var est_mean NA_total     method
+1:  100  32    27.3       11        0 EigenPrism
+2:  100  25    18.1       11        0       GCTA
+3:  200  29    22.8       11        0 EigenPrism
+4:  200  19    13.4       11        0       GCTA
+5:  500 NaN      NA      NaN      100 EigenPrism
+6:  500  14     3.5       10        0       GCTA
+7: 1000 NaN      NA      NaN      100 EigenPrism
+8: 1000  15     2.9       10        0       GCTA
+\end{verbatim}
+
+\subsubsection{Hist + Sparse}\label{hist-sparse-2}
+
+\begin{verbatim}
+   var_main_effect var_inter_effect cov_main_inter_effect var_total_effect
+1:               8                2                   1.8               14
+   structure decor x_dist
+1:        un  TRUE    chi
+\end{verbatim}
+
+\begin{verbatim}
+      n  MSE est_var est_mean NA_total     method
+1:  100 19.8    20.0       14        0 EigenPrism
+2:  100 22.0    22.0       13        0       GCTA
+3:  200 13.6     8.5       11        0 EigenPrism
+4:  200  7.7     6.9       13        0       GCTA
+5:  500  NaN      NA      NaN      100 EigenPrism
+6:  500  6.0     1.5       12        0       GCTA
+7: 1000  NaN      NA      NaN      100 EigenPrism
+8: 1000 10.1     0.9       11        1       GCTA
+\end{verbatim}
+
+\subsubsection{Perfect Hist}\label{perfect-hist}
+
+\begin{verbatim}
+   var_main_effect var_inter_effect cov_main_inter_effect var_total_effect
+1:               8                2                   1.8               14
+   structure decor x_dist
+1:        un  TRUE    chi
+\end{verbatim}
+
+\begin{verbatim}
+      n  MSE est_var est_mean NA_total     method
+1:  100 23.4    21.5       12        0 EigenPrism
+2:  100 18.5    16.5       12        0       GCTA
+3:  200 15.5    12.9       12        0 EigenPrism
+4:  200  9.3     8.2       13        0       GCTA
+5:  500  NaN      NA      NaN      100 EigenPrism
+6:  500  4.1     2.8       13        0       GCTA
+7: 1000  NaN      NA      NaN      100 EigenPrism
+8: 1000  3.0     1.3       12        1       GCTA
 \end{verbatim}
 
 

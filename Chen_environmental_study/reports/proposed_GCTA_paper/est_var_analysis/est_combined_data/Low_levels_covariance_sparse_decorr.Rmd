@@ -136,7 +136,7 @@ cbind(summary_final)
 ```
 
 
-### None with hist
+### Hist
 ```{r, PCB hist}
 result_path <- "~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/var_est/combined_effects_PCBs_report_08_30_2019/decor_method_hist_sparse_method_None_result_list_fixed_sub_PCB_structure_un_main_0.5_inter_0.1_n_100_200_500_1000_p_21_rho_e_0.5_decor_TRUE_subpro_0_iter_100_nsub_1_EigenPrism_kernel_GCTA_kernel_est_total_year_1999_std_PCB_FALSE_c_betam_8_c_betai_2/"
 file_list_all <- list.files(result_path,full.names = T)
@@ -183,7 +183,7 @@ additional
 cbind(summary_final)
 ```
 
-### None with hist + sparse
+### Hist + sparse
 
 ```{r, PCB hist + sparse}
 result_path <- "~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/var_est/combined_effects_PCBs_sparse_decor_report_09_18_2019/decor_method_hist_sparse_method_dgpGLASSO_result_list_fixed_sub_PCB_structure_un_main_0.5_inter_0.1_n_100_200_500_1000_p_21_rho_e_0.5_decor_TRUE_subpro_0_iter_100_nsub_1_EigenPrism_kernel_GCTA_kernel_est_total_year_1999_std_PCB_FALSE_c_betam_8_c_betai_2/"
@@ -377,3 +377,364 @@ additional
 cbind(summary_final)
 ```
 
+# Mimic the histrocial covariance situation
+
+Based on the previous simulation, we found that if the historical data is from extact the same distribution, then the sparse decorrelation may not be neccessary. That is after doing the second step of decorrelation the variance estimation does not get much improvement. 
+So to mimic the situation situation we change the simulation so that there is historical covariance is not perfect. 
+
+## Simulation setup
+
+- $p = 21$
+- $X \sim \chi^2_1$
+- $Cor(X)$ is the sample covariance of subset of standardized PCB data with $n = 150$  
+- $X_h = XB$, where 
+$B = \begin{bmatrix}
+1 & 1 & 1 & 1 &1\dots \\ 
+0 &  1&  1&  1& 1\dots\\ 
+0&  & 1 & 1 & 1\dots\\ 
+0&  &  &  1& 1\dots\\ 
+0&  &  &  & 1\dots
+\end{bmatrix}$. 
+So that the $X_h$ is a column transfromation of $X$, therefore the its covariance is different from the true value. 
+
+## Decorrelation result
+
+### $X_h = X$
+```{r}
+## load the dateset 
+library(R.utils)
+library(MASS)
+library(tidyverse)
+library(foreach)
+library(doRNG)
+library(doParallel)
+library(gtools) # for rbind based on columns
+library(Matrix)
+options(warn = 1, error = bettertrace::stacktrace)
+setwd("~/dev/projects/Chen_environmental_study/")
+sourceDirectory("./R_code/main_fn/",modifiedOnly = FALSE, recursive = TRUE)
+sourceDirectory("./R_code/main_fn/method/",modifiedOnly = FALSE, recursive = TRUE)
+source("./R_code/simulation_proposed_GCTA/local_helpers.R")
+X_orignal <- read.csv("~/dev/projects/Chen_environmental_study/R_code/data/real_data/NHANES/PCB_99_14/clean/individual/PCB_1999_2004_common.csv", header = T, stringsAsFactors = F) 
+pre_cor <- cor(X_orignal)
+p <- ncol(pre_cor)
+set.seed(1234)
+cor_h <- generate_chi(n = 10^5, p = p, pre_cor = pre_cor, structure = "un") %>% 
+       add_inter(.) %>% cor(.)
+
+X_test <- generate_chi(n = 150, p = p, pre_cor = pre_cor, structure = "un") %>% add_inter(.)   
+cor(X_test) %>% offdiag(.) %>% hist(., main = "sample covariance n = 150")
+cor(X_test) %>% offdiag(.) %>% summary(.)
+
+par(mfrow=c(2,2))
+X_decor1 <- true_value_method(input_data = X_test, emp = TRUE, combine = TRUE, sigma_total_emp = cor_h)$uncorr_data
+cor_sample <- (X_decor1) %>% cor(.)
+cor_sample %>% offdiag(.) %>% hist(., nclass = 40, main = "historical decor")
+cor_sample %>% offdiag(.) %>% summary(.)
+
+X_decor2 <- dgpGLASSO_method(X_decor1, rho = 0.1)$uncorr_data
+cor_sample <- (X_decor2) %>% cor(.)
+cor_sample %>% offdiag(.) %>% hist(., nclass = 40, main = "sparse decor 0.1")
+cor_sample %>% offdiag(.) %>% summary(.)
+
+X_decor2 <- dgpGLASSO_method(X_decor1, rho = 0.01)$uncorr_data
+cor_sample <- (X_decor2) %>% cor(.)
+cor_sample %>% offdiag(.) %>% hist(., nclass = 40, main = "sparse decor 0.01")
+cor_sample %>% offdiag(.) %>% summary(.)
+
+X_decor2 <- dgpGLASSO_method(X_decor1, rho = 0.005)$uncorr_data
+cor_sample <- (X_decor2) %>% cor(.)
+cor_sample %>% offdiag(.) %>% hist(., nclass = 40, main = "sparse decor 0.005")
+cor_sample %>% offdiag(.) %>% summary(.)
+```
+
+### $X_h = XB, t = 8$
+```{r}
+## load the dateset 
+library(R.utils)
+library(MASS)
+library(tidyverse)
+library(foreach)
+library(doRNG)
+library(doParallel)
+library(gtools) # for rbind based on columns
+library(Matrix)
+options(warn = 1, error = bettertrace::stacktrace)
+setwd("~/dev/projects/Chen_environmental_study/")
+sourceDirectory("./R_code/main_fn/",modifiedOnly = FALSE, recursive = TRUE)
+sourceDirectory("./R_code/main_fn/method/",modifiedOnly = FALSE, recursive = TRUE)
+source("./R_code/simulation_proposed_GCTA/local_helpers.R")
+X_orignal <- read.csv("~/dev/projects/Chen_environmental_study/R_code/data/real_data/NHANES/PCB_99_14/clean/individual/PCB_1999_2004_common.csv", header = T, stringsAsFactors = F) 
+pre_cor <- cor(X_orignal)
+p <- ncol(pre_cor)
+set.seed(1234)
+cor_h <- generate_chi(n = 10^5, p = p, pre_cor = pre_cor, structure = "un") %>% tran_com(.) %>%
+  add_inter(.) %>% cor(.)
+
+X_test <- generate_chi(n = 150, p = p, pre_cor = pre_cor, structure = "un") %>% add_inter(.)   
+cor(X_test) %>% offdiag(.) %>% hist(., main = "sample covariance n = 150")
+cor(X_test) %>% offdiag(.) %>% summary(.)
+
+par(mfrow=c(2,2))
+X_decor1 <- true_value_method(input_data = X_test, emp = TRUE, combine = TRUE, sigma_total_emp = cor_h)$uncorr_data
+cor_sample <- (X_decor1) %>% cor(.)
+cor_sample %>% offdiag(.) %>% hist(., nclass = 40, main = "historical decor")
+cor_sample %>% offdiag(.) %>% summary(.)
+
+X_decor2 <- dgpGLASSO_method(X_decor1, rho = 0.1)$uncorr_data
+cor_sample <- (X_decor2) %>% cor(.)
+cor_sample %>% offdiag(.) %>% hist(., nclass = 40, main = "sparse decor 0.1")
+cor_sample %>% offdiag(.) %>% summary(.)
+
+X_decor2 <- dgpGLASSO_method(X_decor1, rho = 0.01)$uncorr_data
+cor_sample <- (X_decor2) %>% cor(.)
+cor_sample %>% offdiag(.) %>% hist(., nclass = 40, main = "sparse decor 0.01")
+cor_sample %>% offdiag(.) %>% summary(.)
+
+X_decor2 <- dgpGLASSO_method(X_decor1, rho = 0.005)$uncorr_data
+cor_sample <- (X_decor2) %>% cor(.)
+cor_sample %>% offdiag(.) %>% hist(., nclass = 40, main = "sparse decor 0.005")
+cor_sample %>% offdiag(.) %>% summary(.)
+```
+
+## Simulation result on the variance estimation process 
+
+### None
+```{r}
+result_path <- "~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/var_est/combined_effects_PCBs_report_08_30_2019/decor_method_None_sparse_method_None_result_list_fixed_sub_chi_structure_un_main_0.5_inter_0.1_n_100_200_500_1000_p_21_rho_e_0.5_decor_FALSE_subpro_0_iter_100_nsub_1_EigenPrism_kernel_GCTA_kernel_est_total_c_betam_8_c_betai_2_Var_cor"
+file_list_all <- list.files(result_path,full.names = T)
+file_list <- file_list_all
+sub_result <- lapply(file_list, function (x) {read.csv(x, header = TRUE, stringsAsFactors = FALSE)}) %>% rbindlist(., fill = TRUE)
+
+additional <- sub_result[1,.(var_main_effect,
+                             var_inter_effect,
+                             cov_main_inter_effect,
+                             var_total_effect,
+                             structure,
+                             decor,
+                             x_dist)]
+
+
+# replace the 999 as NA 
+sub_result[sub_EigenPrism_total == 999, c("sub_EigenPrism_total", "sub_EigenPrism_CI1", "sub_EigenPrism_CI2") := list(NA,NA,NA)]
+sub_result[EigenPrism_total == 999, c("EigenPrism_total", "EigenPrism_CI1", "EigenPrism_CI2") := list(NA,NA,NA)]
+
+
+# EigenPrism
+summary_result_Eg <- sub_result[, .(est_mean = mean(EigenPrism_total, na.rm = T),
+                                    NA_i = mean(is.na(EigenPrism_total)),
+                                    var_total_effect = var_total_effect[1]), by = .(i,n)][, .(MSE = mean((est_mean - mean(var_total_effect))^2, na.rm = T),
+                                                                                            est_var = var(est_mean, na.rm = T),
+                                                                                            est_mean = mean(est_mean, na.rm = T),
+                                                                                            NA_total = sum(NA_i)), by = n]
+
+summary_final_Eg <- cbind(summary_result_Eg)
+summary_final_Eg[,method := "EigenPrism"]
+
+# GCTA
+summary_result_GCTA <- sub_result[, .(est_mean = mean(GCTA_total, na.rm = T),
+                                      NA_i = mean(is.na(GCTA_total)),
+                                      var_total_effect = var_total_effect[1]), by = .(i,n)][, .(MSE = mean((est_mean - mean(var_total_effect))^2, na.rm = T),
+                                                                                              est_var = var(est_mean, na.rm = T),
+                                                                                              est_mean = mean(est_mean, na.rm = T),
+                                                                                              NA_total = sum(NA_i)), by = n]
+summary_final_GCTA <- cbind(summary_result_GCTA)
+summary_final_GCTA[,method:= "GCTA"]
+
+summary_final <- rbindlist(list(summary_final_Eg, summary_final_GCTA), fill = TRUE) %>% setorder(., n)
+additional
+cbind(summary_final)
+
+```
+### Hist
+```{r}
+result_path <- "~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/var_est/combined_effects_PCBs_sparse_decor_report_09_18_2019/tran_fn_tran_com_decor_method_hist_sparse_method__result_list_fixed_sub_chi_structure_un_main_0.5_inter_0.1_n_100_200_500_1000_p_21_rho_e_0.5_decor_TRUE_subpro_0_iter_100_nsub_1_EigenPrism_kernel_GCTA_kernel_est_total_c_betam_8_c_betai_2_Var_cor/"
+file_list_all <- list.files(result_path,full.names = T)
+file_list <- file_list_all
+sub_result <- lapply(file_list, function (x) {read.csv(x, header = TRUE, stringsAsFactors = FALSE)}) %>% rbindlist(., fill = TRUE)
+
+additional <- sub_result[1,.(var_main_effect,
+                             var_inter_effect,
+                             cov_main_inter_effect,
+                             var_total_effect,
+                             structure,
+                             decor,
+                             x_dist)]
+
+
+# replace the 999 as NA 
+sub_result[sub_EigenPrism_total == 999, c("sub_EigenPrism_total", "sub_EigenPrism_CI1", "sub_EigenPrism_CI2") := list(NA,NA,NA)]
+sub_result[EigenPrism_total == 999, c("EigenPrism_total", "EigenPrism_CI1", "EigenPrism_CI2") := list(NA,NA,NA)]
+
+
+# EigenPrism
+summary_result_Eg <- sub_result[, .(est_mean = mean(EigenPrism_total, na.rm = T),
+                                    NA_i = mean(is.na(EigenPrism_total)),
+                                    var_total_effect = var_total_effect[1]), by = .(i,n)][, .(MSE = mean((est_mean - mean(var_total_effect))^2, na.rm = T),
+                                                                                            est_var = var(est_mean, na.rm = T),
+                                                                                            est_mean = mean(est_mean, na.rm = T),
+                                                                                            NA_total = sum(NA_i)), by = n]
+
+summary_final_Eg <- cbind(summary_result_Eg)
+summary_final_Eg[,method := "EigenPrism"]
+
+# GCTA
+summary_result_GCTA <- sub_result[, .(est_mean = mean(GCTA_total, na.rm = T),
+                                      NA_i = mean(is.na(GCTA_total)),
+                                      var_total_effect = var_total_effect[1]), by = .(i,n)][, .(MSE = mean((est_mean - mean(var_total_effect))^2, na.rm = T),
+                                                                                              est_var = var(est_mean, na.rm = T),
+                                                                                              est_mean = mean(est_mean, na.rm = T),
+                                                                                              NA_total = sum(NA_i)), by = n]
+summary_final_GCTA <- cbind(summary_result_GCTA)
+summary_final_GCTA[,method:= "GCTA"]
+
+summary_final <- rbindlist(list(summary_final_Eg, summary_final_GCTA), fill = TRUE) %>% setorder(., n)
+additional
+cbind(summary_final)
+
+```
+
+### Hist + Sparse
+```{r}
+result_path <- "~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/var_est/combined_effects_PCBs_sparse_decor_report_09_18_2019/tran_fn_tran_com_decor_method_hist_sparse_method_Glasso_result_list_fixed_sub_chi_structure_un_main_0.5_inter_0.1_n_100_200_500_1000_p_21_rho_e_0.5_decor_TRUE_subpro_0_iter_100_nsub_1_EigenPrism_kernel_GCTA_kernel_est_total_c_betam_8_c_betai_2_Var_cor/"
+file_list_all <- list.files(result_path,full.names = T)
+file_list <- file_list_all
+sub_result <- lapply(file_list, function (x) {read.csv(x, header = TRUE, stringsAsFactors = FALSE)}) %>% rbindlist(., fill = TRUE)
+
+additional <- sub_result[1,.(var_main_effect,
+                             var_inter_effect,
+                             cov_main_inter_effect,
+                             var_total_effect,
+                             structure,
+                             decor,
+                             x_dist)]
+
+
+# replace the 999 as NA 
+sub_result[sub_EigenPrism_total == 999, c("sub_EigenPrism_total", "sub_EigenPrism_CI1", "sub_EigenPrism_CI2") := list(NA,NA,NA)]
+sub_result[EigenPrism_total == 999, c("EigenPrism_total", "EigenPrism_CI1", "EigenPrism_CI2") := list(NA,NA,NA)]
+
+
+# EigenPrism
+summary_result_Eg <- sub_result[, .(est_mean = mean(EigenPrism_total, na.rm = T),
+                                    NA_i = mean(is.na(EigenPrism_total)),
+                                    var_total_effect = var_total_effect[1]), by = .(i,n)][, .(MSE = mean((est_mean - mean(var_total_effect))^2, na.rm = T),
+                                                                                            est_var = var(est_mean, na.rm = T),
+                                                                                            est_mean = mean(est_mean, na.rm = T),
+                                                                                            NA_total = sum(NA_i)), by = n]
+
+summary_final_Eg <- cbind(summary_result_Eg)
+summary_final_Eg[,method := "EigenPrism"]
+
+# GCTA
+summary_result_GCTA <- sub_result[, .(est_mean = mean(GCTA_total, na.rm = T),
+                                      NA_i = mean(is.na(GCTA_total)),
+                                      var_total_effect = var_total_effect[1]), by = .(i,n)][, .(MSE = mean((est_mean - mean(var_total_effect))^2, na.rm = T),
+                                                                                              est_var = var(est_mean, na.rm = T),
+                                                                                              est_mean = mean(est_mean, na.rm = T),
+                                                                                              NA_total = sum(NA_i)), by = n]
+summary_final_GCTA <- cbind(summary_result_GCTA)
+summary_final_GCTA[,method:= "GCTA"]
+
+summary_final <- rbindlist(list(summary_final_Eg, summary_final_GCTA), fill = TRUE) %>% setorder(., n)
+additional
+cbind(summary_final)
+
+```
+
+
+### Hist + Sparse
+```{r}
+result_path <- "~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/var_est/combined_effects_PCBs_sparse_decor_report_09_18_2019/tran_fn_null_tran_decor_hist_sparse_Glasso_grho_0.01_chi_structure_un_main_0.5_inter_0.1_n_100_200_500_1000_p_21_rho_e_0.5_decor_TRUE_subpro_0_iter_100_nsub_1_EigenPrism_GCTA_est_total_c_betam_8_c_betai_2_Var_cor/"
+file_list_all <- list.files(result_path,full.names = T)
+file_list <- file_list_all
+sub_result <- lapply(file_list, function (x) {read.csv(x, header = TRUE, stringsAsFactors = FALSE)}) %>% rbindlist(., fill = TRUE)
+
+additional <- sub_result[1,.(var_main_effect,
+                             var_inter_effect,
+                             cov_main_inter_effect,
+                             var_total_effect,
+                             structure,
+                             decor,
+                             x_dist)]
+
+
+# replace the 999 as NA 
+sub_result[sub_EigenPrism_total == 999, c("sub_EigenPrism_total", "sub_EigenPrism_CI1", "sub_EigenPrism_CI2") := list(NA,NA,NA)]
+sub_result[EigenPrism_total == 999, c("EigenPrism_total", "EigenPrism_CI1", "EigenPrism_CI2") := list(NA,NA,NA)]
+
+
+# EigenPrism
+summary_result_Eg <- sub_result[, .(est_mean = mean(EigenPrism_total, na.rm = T),
+                                    NA_i = mean(is.na(EigenPrism_total)),
+                                    var_total_effect = var_total_effect[1]), by = .(i,n)][, .(MSE = mean((est_mean - mean(var_total_effect))^2, na.rm = T),
+                                                                                            est_var = var(est_mean, na.rm = T),
+                                                                                            est_mean = mean(est_mean, na.rm = T),
+                                                                                            NA_total = sum(NA_i)), by = n]
+
+summary_final_Eg <- cbind(summary_result_Eg)
+summary_final_Eg[,method := "EigenPrism"]
+
+# GCTA
+summary_result_GCTA <- sub_result[, .(est_mean = mean(GCTA_total, na.rm = T),
+                                      NA_i = mean(is.na(GCTA_total)),
+                                      var_total_effect = var_total_effect[1]), by = .(i,n)][, .(MSE = mean((est_mean - mean(var_total_effect))^2, na.rm = T),
+                                                                                              est_var = var(est_mean, na.rm = T),
+                                                                                              est_mean = mean(est_mean, na.rm = T),
+                                                                                              NA_total = sum(NA_i)), by = n]
+summary_final_GCTA <- cbind(summary_result_GCTA)
+summary_final_GCTA[,method:= "GCTA"]
+
+summary_final <- rbindlist(list(summary_final_Eg, summary_final_GCTA), fill = TRUE) %>% setorder(., n)
+additional
+cbind(summary_final)
+
+```
+
+
+### Perfect Hist
+```{r}
+result_path <- "~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/var_est/combined_effects_PCBs_sparse_decor_report_09_18_2019/tran_fn_null_tran_decor_method_hist_sparse_method__result_list_fixed_sub_chi_structure_un_main_0.5_inter_0.1_n_100_200_500_1000_p_21_rho_e_0.5_decor_TRUE_subpro_0_iter_100_nsub_1_EigenPrism_kernel_GCTA_kernel_est_total_c_betam_8_c_betai_2_Var_cor/"
+file_list_all <- list.files(result_path,full.names = T)
+file_list <- file_list_all
+sub_result <- lapply(file_list, function (x) {read.csv(x, header = TRUE, stringsAsFactors = FALSE)}) %>% rbindlist(., fill = TRUE)
+
+additional <- sub_result[1,.(var_main_effect,
+                             var_inter_effect,
+                             cov_main_inter_effect,
+                             var_total_effect,
+                             structure,
+                             decor,
+                             x_dist)]
+
+
+# replace the 999 as NA 
+sub_result[sub_EigenPrism_total == 999, c("sub_EigenPrism_total", "sub_EigenPrism_CI1", "sub_EigenPrism_CI2") := list(NA,NA,NA)]
+sub_result[EigenPrism_total == 999, c("EigenPrism_total", "EigenPrism_CI1", "EigenPrism_CI2") := list(NA,NA,NA)]
+
+
+# EigenPrism
+summary_result_Eg <- sub_result[, .(est_mean = mean(EigenPrism_total, na.rm = T),
+                                    NA_i = mean(is.na(EigenPrism_total)),
+                                    var_total_effect = var_total_effect[1]), by = .(i,n)][, .(MSE = mean((est_mean - mean(var_total_effect))^2, na.rm = T),
+                                                                                            est_var = var(est_mean, na.rm = T),
+                                                                                            est_mean = mean(est_mean, na.rm = T),
+                                                                                            NA_total = sum(NA_i)), by = n]
+
+summary_final_Eg <- cbind(summary_result_Eg)
+summary_final_Eg[,method := "EigenPrism"]
+
+# GCTA
+summary_result_GCTA <- sub_result[, .(est_mean = mean(GCTA_total, na.rm = T),
+                                      NA_i = mean(is.na(GCTA_total)),
+                                      var_total_effect = var_total_effect[1]), by = .(i,n)][, .(MSE = mean((est_mean - mean(var_total_effect))^2, na.rm = T),
+                                                                                              est_var = var(est_mean, na.rm = T),
+                                                                                              est_mean = mean(est_mean, na.rm = T),
+                                                                                              NA_total = sum(NA_i)), by = n]
+summary_final_GCTA <- cbind(summary_result_GCTA)
+summary_final_GCTA[,method:= "GCTA"]
+
+summary_final <- rbindlist(list(summary_final_Eg, summary_final_GCTA), fill = TRUE) %>% setorder(., n)
+additional
+cbind(summary_final)
+```

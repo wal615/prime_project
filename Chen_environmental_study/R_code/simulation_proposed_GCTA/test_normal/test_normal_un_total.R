@@ -64,12 +64,13 @@ uncorr_args <- list(emp = TRUE, combine = combine)
 # uncorr_args <- NULL
 
 # Sparse decor
-# sparse_decor_method <- "Glasso"
-# sparse_uncorr_method <- dgpGLASSO_method
+grho = 0.005
+sparse_decor_method <- "Glasso"
+sparse_uncorr_method <- dgpGLASSO_method
+sparse_uncorr_args <- list(rho = grho)
+# sparse_decor_method <- NULL
+# sparse_uncorr_method <- NULL
 # sparse_uncorr_args <- NULL
-sparse_decor_method <- NULL
-sparse_uncorr_method <- NULL
-sparse_uncorr_args <- NULL
 
 
 # est
@@ -87,7 +88,7 @@ if(decor == FALSE) {
 
 kernel <- EigenPrism_kernel
 kernel_args <- list(decor = decor)
-kernel_name <- "EigenPrism_kernel"
+kernel_name <- "EigenPrism"
 kernel_result_col_names <- col_names_Eigen
 
 
@@ -106,7 +107,7 @@ kernel_result_col_names <- col_names_Eigen
 # est2
 kernel_args_2 <- list(interact = 0,decor = decor)
 kernel_2 <- GCTA_kernel
-kernel_name <- append(kernel_name,"GCTA_kernel") %>% paste(.,collapse = "_")
+kernel_name <- append(kernel_name,"GCTA") %>% paste(.,collapse = "_")
 kernel_result_col_names_2 <- col_names_GCTA
 # kernel_args_2 <- NULL
 # kernel_2 <- NULL
@@ -134,8 +135,8 @@ pro_list <-  args_all[,6, drop = FALSE] %>% split(x = ., f = seq(nrow(.)))
 
 
 # setup folders for results
-result_name <- paste("tran_fn", tran_fn_name, "decor_method",decor_method, "sparse_method", sparse_decor_method, 
-                     "result_list_fixed_sub", dist, "structure", structure, "main", main_fixed_var, "inter",
+result_name <- paste("tran_fn", tran_fn_name, "decor",decor_method, "sparse", sparse_decor_method, "grho", grho,
+                     dist, "structure", structure, "main", main_fixed_var, "inter",
                      inter_fixed_var, "n", paste(n_total, collapse = "_"), "p", p, "rho_e", paste(rho_e,collapse = "_"), 
                      "decor",decor,"subpro",paste(pro, collapse = "_"), "iter", n_iter, "nsub", n_sub,
                      kernel_name, "est", est, "c_betam", c_betam, "c_betai", c_betai, "Var", Var, sep = "_")

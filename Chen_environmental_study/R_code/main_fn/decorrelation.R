@@ -73,7 +73,7 @@ GLASSO_method <- function(input_data, rho = 0.001){
 #   list(uncorr_data = uncorr_data)
 # }
 
-dgpGLASSO_method <- function(input_data, rho = 0.1){
+dgpGLASSO_method <- function(input_data, rho = 0.01){
   Sigma=cov(input_data, input_data)
   # Compute Sigma^{-1}
   Sigma_i <- dpglasso::dpglasso(Sigma = Sigma, rho = rho, outer.tol = 0.05)$X

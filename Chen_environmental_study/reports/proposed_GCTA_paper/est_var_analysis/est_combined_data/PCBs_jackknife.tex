@@ -1,0 +1,150 @@
+\documentclass[]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \ifxetex
+    \usepackage{mathspec}
+  \else
+    \usepackage{fontspec}
+  \fi
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+\hypersetup{unicode=true,
+            pdftitle={Jackknife variance estimation},
+            pdfauthor={Xuelong Wang},
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{5}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+%%% Use protect on footnotes to avoid problems with footnotes in titles
+\let\rmarkdownfootnote\footnote%
+\def\footnote{\protect\rmarkdownfootnote}
+
+%%% Change title format to be more compact
+\usepackage{titling}
+
+% Create subtitle command for use in maketitle
+\providecommand{\subtitle}[1]{
+  \posttitle{
+    \begin{center}\large#1\end{center}
+    }
+}
+
+\setlength{\droptitle}{-2em}
+
+  \title{Jackknife variance estimation}
+    \pretitle{\vspace{\droptitle}\centering\huge}
+  \posttitle{\par}
+    \author{Xuelong Wang}
+    \preauthor{\centering\large\emph}
+  \postauthor{\par}
+      \predate{\centering\large\emph}
+  \postdate{\par}
+    \date{2019-09-27}
+
+\usepackage{float,amsmath, bbm, siunitx, bm}
+\usepackage{pdfpages}
+\floatplacement{figure}{H}
+\newcommand{\indep}{\rotatebox[origin=c]{90}{$\models$}}
+
+\begin{document}
+\maketitle
+
+{
+\setcounter{tocdepth}{2}
+\tableofcontents
+}
+\section{Simulation}\label{simulation}
+
+\begin{itemize}
+\tightlist
+\item
+  leva-one-out
+\item
+  iteration 100
+\item
+  nominal level 0.8
+\end{itemize}
+
+\subsection{None}\label{none}
+
+\begin{verbatim}
+   var_main_effect var_inter_effect cov_main_inter_effect var_total_effect
+1:               8                2                  0.62               11
+   structure decor x_dist
+1:        un  TRUE   1999
+\end{verbatim}
+
+\begin{verbatim}
+     n sub_est_mean var_jack sub_z_coverage est_var est_mean     method
+1: 100           21      208           0.84     112       21 EigenPrism
+2: 150           25      212           0.72     112       25 EigenPrism
+3: 231           25      165           0.56      83       25 EigenPrism
+4: 100           18      236           0.86     108       18       GCTA
+5: 150           23      299           0.86     149       23       GCTA
+6: 231           23      178           0.77      86       23       GCTA
+\end{verbatim}
+
+\subsection{decorreation}\label{decorreation}
+
+\begin{verbatim}
+   var_main_effect var_inter_effect cov_main_inter_effect var_total_effect
+1:               8                2                  0.62               11
+   structure decor x_dist
+1:        un  TRUE   1999
+\end{verbatim}
+
+\begin{verbatim}
+     n sub_est_mean var_jack sub_z_coverage est_var est_mean     method
+1: 100         11.4       34           0.92    14.7     11.4 EigenPrism
+2: 150         10.4       22           0.95     7.9     10.4 EigenPrism
+3: 231          9.2       16           0.81     7.4      9.2 EigenPrism
+4: 100         11.2       38           0.91    14.1     11.2       GCTA
+5: 150         10.8       23           0.89     6.8     10.8       GCTA
+6: 231         10.3       15           0.90     4.4     10.3       GCTA
+\end{verbatim}
+
+
+\end{document}
