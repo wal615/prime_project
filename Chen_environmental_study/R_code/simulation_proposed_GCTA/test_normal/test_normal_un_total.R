@@ -64,14 +64,14 @@ uncorr_args <- list(emp = TRUE, combine = combine)
 # uncorr_args <- NULL
 
 # Sparse decor
-grho = 0.005
-sparse_decor_method <- "Glasso"
-sparse_uncorr_method <- dgpGLASSO_method
-sparse_uncorr_args <- list(rho = grho)
-# sparse_decor_method <- NULL
-# sparse_uncorr_method <- NULL
-# sparse_uncorr_args <- NULL
-
+# grho = 0.1
+# sparse_decor_method <- "Glasso"
+# sparse_uncorr_method <- dgpGLASSO_method
+# sparse_uncorr_args <- list(rho = grho)
+sparse_decor_method <- NULL
+sparse_uncorr_method <- NULL
+sparse_uncorr_args <- NULL
+grho <- NULL
 
 # est
 decor <- TRUE

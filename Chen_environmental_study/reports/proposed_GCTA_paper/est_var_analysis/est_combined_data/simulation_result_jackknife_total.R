@@ -189,3 +189,193 @@ summary_final_GCTA <- cbind(sub_summary_result_GCTA,summary_result_GCTA)
 summary_final_GCTA[,method:= "GCTA"]
 
 summary_final_decorr <- rbindlist(list(summary_final_Eg, summary_final_GCTA), fill = TRUE)
+
+
+
+
+
+
+
+
+
+#############################################################################################################################
+
+result_path <- "decor_None_sparse_None_grho_0.1_PCB_structure_un_main_0.5_inter_0.1_n_100_200_500_1000_p_21_rho_e_0.5_decor_FALSE_subpro_101_iter_50_nsub_50_h_EigenPrism_kernel_h_GCTA_kernel_est_total_year_1999_std_PCB_FALSE_c_betam_8_c_betai_2"
+file_list_all <- list.files(paste0("./", result_path, "/")) %>% paste0(paste0("./", result_path, "/"),.)
+file_list <- file_list_all
+sub_result <- lapply(file_list, function (x) {read.csv(x, header = TRUE, stringsAsFactors = FALSE)}) %>% rbindlist(., fill = TRUE)
+
+
+additional <- sub_result[1,.(var_main_effect,
+                             var_inter_effect,
+                             cov_main_inter_effect,
+                             rho_e,
+                             structure,
+                             decor,
+                             x_dist,
+                             rho_e)]
+
+
+# replace the 999 as NA 
+sub_result[sub_h_EigenPrism_total == 999, c("sub_h_EigenPrism_total", "sub_h_EigenPrism_CI1", "sub_h_EigenPrism_CI2") := list(NA,NA,NA)]
+sub_result[h_EigenPrism_total == 999, c("h_EigenPrism_total", "h_EigenPrism_CI1", "h_EigenPrism_CI2") := list(NA,NA,NA)]
+
+
+# h_EigenPrism
+summary_result_Eg <- sub_result[, .(est_mean = mean(h_EigenPrism_total, na.rm = T),
+                                    NA_i = mean(is.na(h_EigenPrism_total)),
+                                    rho_e = rho_e[1]), by = .(i,n)][, .(MSE = mean((est_mean - mean(rho_e))^2, na.rm = T),
+                                                                        est_var = var(est_mean, na.rm = T),
+                                                                        est_mean = mean(est_mean, na.rm = T),
+                                                                        NA_total = sum(NA_i)), by = n]
+
+
+sub_summary_result_Eg_i <- sub_result[, .(sub_est_mean = mean(sub_h_EigenPrism_total, na.rm = TRUE),
+                                          var_jack = jack_var(sub_h_EigenPrism_total, pro = pro),
+                                          sub_z_length = sub_CI_lenght(sub_h_EigenPrism_total, pro = pro,z_p = z_p),
+                                          sub_z_coverage = sub_coverage_rate_z(sub_h_EigenPrism_total, mean(rho_e), upper = upper, lower = lower, pro = pro)),
+                                      by = .(n,rho_e, p,i,pro)]
+sub_summary_result_Eg <- sub_summary_result_Eg_i[, lapply(.SD, mean), by = .(n,rho_e, p,pro)][,i:=NULL]
+summary_final_Eg <- cbind(sub_summary_result_Eg, summary_result_Eg)
+summary_final_Eg[,method := "h_EigenPrism"]
+
+# h_GCTA
+summary_result_h_GCTA <- sub_result[, .(est_mean = mean(h_GCTA_total, na.rm = T),
+                                        NA_i = mean(is.na(h_GCTA_total)),
+                                        rho_e = rho_e[1]), by = .(i,n)][, .(MSE = mean((est_mean - mean(rho_e))^2, na.rm = T),
+                                                                            est_var = var(est_mean, na.rm = T),
+                                                                            est_mean = mean(est_mean, na.rm = T),
+                                                                            NA_total = sum(NA_i)), by = n]
+
+sub_summary_result_h_GCTA_i <- sub_result[, .(sub_est_mean = mean(sub_h_GCTA_total, na.rm = TRUE),
+                                              var_jack = jack_var(sub_h_GCTA_total, pro = pro),
+                                              sub_z_length = sub_CI_lenght(sub_h_GCTA_total, pro = pro,z_p = z_p),
+                                              sub_z_coverage = sub_coverage_rate_z(sub_h_GCTA_total, mean(rho_e), upper = upper, lower = lower, pro = pro)),
+                                          by = .(n,rho_e, p,i,pro)] %>% setorder(., rho_e,n,p,i,pro)
+
+sub_summary_result_h_GCTA <- sub_summary_result_h_GCTA_i[, lapply(.SD, mean), by = .(n,rho_e, p,pro)][,i:=NULL]
+summary_final_h_GCTA <- cbind(sub_summary_result_h_GCTA,summary_result_h_GCTA)
+summary_final_h_GCTA[,method:= "h_GCTA"]
+
+summary_final_h_none <- rbindlist(list(summary_final_Eg, summary_final_h_GCTA), fill = TRUE)
+
+
+#############################################################################################################################
+
+result_path <- "decor_None_sparse_None_grho_0.1_PCB_structure_un_main_0.5_inter_0.1_n_100_200_500_1000_p_21_rho_e_0.5_decor_FALSE_subpro_0.5_iter_50_nsub_50_h_EigenPrism_kernel_h_GCTA_kernel_est_total_year_1999_std_PCB_FALSE_c_betam_8_c_betai_2"
+file_list_all <- list.files(paste0("./", result_path, "/")) %>% paste0(paste0("./", result_path, "/"),.)
+file_list <- file_list_all
+sub_result <- lapply(file_list, function (x) {read.csv(x, header = TRUE, stringsAsFactors = FALSE)}) %>% rbindlist(., fill = TRUE)
+
+
+additional <- sub_result[1,.(var_main_effect,
+                             var_inter_effect,
+                             cov_main_inter_effect,
+                             rho_e,
+                             structure,
+                             decor,
+                             x_dist,
+                             rho_e)]
+
+
+# replace the 999 as NA 
+sub_result[sub_h_EigenPrism_total == 999, c("sub_h_EigenPrism_total", "sub_h_EigenPrism_CI1", "sub_h_EigenPrism_CI2") := list(NA,NA,NA)]
+sub_result[h_EigenPrism_total == 999, c("h_EigenPrism_total", "h_EigenPrism_CI1", "h_EigenPrism_CI2") := list(NA,NA,NA)]
+
+
+# h_EigenPrism
+summary_result_Eg <- sub_result[, .(est_mean = mean(h_EigenPrism_total, na.rm = T),
+                                    NA_i = mean(is.na(h_EigenPrism_total)),
+                                    rho_e = rho_e[1]), by = .(i,n)][, .(MSE = mean((est_mean - mean(rho_e))^2, na.rm = T),
+                                                                        est_var = var(est_mean, na.rm = T),
+                                                                        est_mean = mean(est_mean, na.rm = T),
+                                                                        NA_total = sum(NA_i)), by = n]
+
+
+sub_summary_result_Eg_i <- sub_result[, .(sub_est_mean = mean(sub_h_EigenPrism_total, na.rm = TRUE),
+                                          var_jack = jack_var(sub_h_EigenPrism_total, pro = pro),
+                                          sub_z_length = sub_CI_lenght(sub_h_EigenPrism_total, pro = pro,z_p = z_p),
+                                          sub_z_coverage = sub_coverage_rate_z(sub_h_EigenPrism_total, mean(rho_e), upper = upper, lower = lower, pro = pro)),
+                                      by = .(n,rho_e, p,i,pro)]
+sub_summary_result_Eg <- sub_summary_result_Eg_i[, lapply(.SD, mean), by = .(n,rho_e, p,pro)][,i:=NULL]
+summary_final_Eg <- cbind(sub_summary_result_Eg, summary_result_Eg)
+summary_final_Eg[,method := "h_EigenPrism"]
+
+# h_GCTA
+summary_result_h_GCTA <- sub_result[, .(est_mean = mean(h_GCTA_total, na.rm = T),
+                                        NA_i = mean(is.na(h_GCTA_total)),
+                                        rho_e = rho_e[1]), by = .(i,n)][, .(MSE = mean((est_mean - mean(rho_e))^2, na.rm = T),
+                                                                            est_var = var(est_mean, na.rm = T),
+                                                                            est_mean = mean(est_mean, na.rm = T),
+                                                                            NA_total = sum(NA_i)), by = n]
+
+sub_summary_result_h_GCTA_i <- sub_result[, .(sub_est_mean = mean(sub_h_GCTA_total, na.rm = TRUE),
+                                              var_jack = jack_var(sub_h_GCTA_total, pro = pro),
+                                              sub_z_length = sub_CI_lenght(sub_h_GCTA_total, pro = pro,z_p = z_p),
+                                              sub_z_coverage = sub_coverage_rate_z(sub_h_GCTA_total, mean(rho_e), upper = upper, lower = lower, pro = pro)),
+                                          by = .(n,rho_e, p,i,pro)] %>% setorder(., rho_e,n,p,i,pro)
+
+sub_summary_result_h_GCTA <- sub_summary_result_h_GCTA_i[, lapply(.SD, mean), by = .(n,rho_e, p,pro)][,i:=NULL]
+summary_final_h_GCTA <- cbind(sub_summary_result_h_GCTA,summary_result_h_GCTA)
+summary_final_h_GCTA[,method:= "h_GCTA"]
+
+summary_final_h_none_d <- rbindlist(list(summary_final_Eg, summary_final_h_GCTA), fill = TRUE)
+
+#############################################################################################################################
+result_path <- "decor_hist_sparse_Glasso_grho_0.1_PCB_structure_un_main_0.5_inter_0.1_n_100_200_500_1000_p_21_rho_e_0.5_decor_TRUE_subpro_0.5_iter_50_nsub_50_h_EigenPrism_kernel_h_GCTA_kernel_est_total_year_1999_std_PCB_FALSE_c_betam_8_c_betai_2"
+file_list_all <- list.files(paste0("./", result_path, "/")) %>% paste0(paste0("./", result_path, "/"),.)
+file_list <- file_list_all
+sub_result <- lapply(file_list, function (x) {read.csv(x, header = TRUE, stringsAsFactors = FALSE)}) %>% rbindlist(., fill = TRUE)
+
+
+additional <- sub_result[1,.(var_main_effect,
+                             var_inter_effect,
+                             cov_main_inter_effect,
+                             rho_e,
+                             structure,
+                             decor,
+                             x_dist)]
+
+
+# replace the 999 as NA 
+sub_result[sub_h_EigenPrism_total == 999, c("sub_h_EigenPrism_total", "sub_h_EigenPrism_CI1", "sub_h_EigenPrism_CI2") := list(NA,NA,NA)]
+sub_result[h_EigenPrism_total == 999, c("h_EigenPrism_total", "h_EigenPrism_CI1", "h_EigenPrism_CI2") := list(NA,NA,NA)]
+
+
+# h_EigenPrism
+summary_result_Eg <- sub_result[, .(est_mean = mean(h_EigenPrism_total, na.rm = T),
+                                    NA_i = mean(is.na(h_EigenPrism_total)),
+                                    rho_e = rho_e[1]), by = .(i,n)][, .(MSE = mean((est_mean - mean(rho_e))^2, na.rm = T),
+                                                                        est_var = var(est_mean, na.rm = T),
+                                                                        est_mean = mean(est_mean, na.rm = T),
+                                                                        NA_total = sum(NA_i)), by = n]
+
+
+sub_summary_result_Eg_i <- sub_result[, .(sub_est_mean = mean(sub_h_EigenPrism_total, na.rm = TRUE),
+                                          var_jack = jack_var(sub_h_EigenPrism_total, pro = pro),
+                                          sub_z_length = sub_CI_lenght(sub_h_EigenPrism_total, pro = pro,z_p = z_p),
+                                          sub_z_coverage = sub_coverage_rate_z(sub_h_EigenPrism_total, mean(rho_e), upper = upper, lower = lower, pro = pro)),
+                                      by = .(n,rho_e, p,i,pro)]
+sub_summary_result_Eg <- sub_summary_result_Eg_i[, lapply(.SD, mean), by = .(n,rho_e, p,pro)][,i:=NULL]
+summary_final_Eg <- cbind(sub_summary_result_Eg, summary_result_Eg)
+summary_final_Eg[,method := "h_EigenPrism"]
+
+# h_GCTA
+summary_result_h_GCTA <- sub_result[, .(est_mean = mean(h_GCTA_total, na.rm = T),
+                                        NA_i = mean(is.na(h_GCTA_total)),
+                                        rho_e = rho_e[1]), by = .(i,n)][, .(MSE = mean((est_mean - mean(rho_e))^2, na.rm = T),
+                                                                            est_var = var(est_mean, na.rm = T),
+                                                                            est_mean = mean(est_mean, na.rm = T),
+                                                                            NA_total = sum(NA_i)), by = n]
+
+sub_summary_result_h_GCTA_i <- sub_result[, .(sub_est_mean = mean(sub_h_GCTA_total, na.rm = TRUE),
+                                              var_jack = jack_var(sub_h_GCTA_total, pro = pro),
+                                              sub_z_length = sub_CI_lenght(sub_h_GCTA_total, pro = pro,z_p = z_p),
+                                              sub_z_coverage = sub_coverage_rate_z(sub_h_GCTA_total, mean(rho_e), upper = upper, lower = lower, pro = pro)),
+                                          by = .(n,rho_e, p,i,pro)] %>% setorder(., rho_e,n,p,i,pro)
+
+sub_summary_result_h_GCTA <- sub_summary_result_h_GCTA_i[, lapply(.SD, mean), by = .(n,rho_e, p,pro)][,i:=NULL]
+summary_final_h_GCTA <- cbind(sub_summary_result_h_GCTA,summary_result_h_GCTA)
+summary_final_h_GCTA[,method:= "h_GCTA"]
+
+summary_final_decorr_d <- rbindlist(list(summary_final_Eg, summary_final_h_GCTA), fill = TRUE)

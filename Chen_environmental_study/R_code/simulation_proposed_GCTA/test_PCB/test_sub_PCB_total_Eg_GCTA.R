@@ -19,16 +19,16 @@ year <- "1999"
 save_path <- "~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/var_est/combined_effects_jackknife_reports_09_25_2019/"
 data_path <- "~/dev/projects/Chen_environmental_study/R_code/data/real_data/NHANES/PCB_99_14/clean/individual/PCB_1999_2004_common.csv"
 std <- "FALSE"
-cores <- 10
+cores <- 20
 n_iter <- 100
-n_sub <- 0
+n_sub <- 100
 seed_loop <- 1234
 seed_coef <- 1014
 # steup parameters
 
 # sub_sampling
-pro <- 101
-bs <- "leave-1"
+pro <- 102
+bs <- "bs"
 
 # data generation
 emp_n <- nrow(PCB_1999_2004_common)
@@ -52,14 +52,15 @@ uncorr_args <- list(emp = TRUE, combine = combine)
 # uncorr_method <- PCA_method
 # uncorr_args <- NULL
 
-# sparse decor
-sparse_decor_method <- "dgpGLASSO"
+# Sparse decor
+grho = 0.1
+sparse_decor_method <- "Glasso"
 sparse_uncorr_method <- dgpGLASSO_method
-sparse_uncorr_args <- NULL
-# sparse_decor_method <- "None"
-# sparse_uncorr_args <- NULL
+sparse_uncorr_args <- list(rho = grho)
+# sparse_decor_method <- NULL
 # sparse_uncorr_method <- NULL
-
+# sparse_uncorr_args <- NULL
+# grho <- NULL
 
 # est
 decor <- FALSE
@@ -71,6 +72,7 @@ if(decor == FALSE) {
   sparse_uncorr_method <- NULL
   sparse_uncorr_args <- NULL
 }
+
 
 combine <- TRUE
 est <- "total"
@@ -125,8 +127,8 @@ pro_list <-  args_all[,7, drop = FALSE] %>% split(x = ., f = seq(nrow(.)))
 
 
 # setup folders for results
-result_name <- paste("decor_method",decor_method, "sparse_method", sparse_decor_method, 
-                     "result_list_fixed_sub", dist, "structure", structure, "main", main_fixed_var, "inter",
+result_name <- paste("decor",decor_method, "sparse", sparse_decor_method, "grho", grho,
+                     dist, "structure", structure, "main", main_fixed_var, "inter",
                      inter_fixed_var, "n", paste(n_total, collapse = "_"), "p", p, "rho_e", paste(rho_e,collapse = "_"), 
                      "decor",decor,"subpro",paste(pro, collapse = "_"), "iter", n_iter, "nsub", n_sub,
                      kernel_name, "est", est, "year", year,"std_PCB",std, "c_betam", c_betam, "c_betai", c_betai, sep = "_")
@@ -149,6 +151,7 @@ result_list <- mapply(FUN = simulation_var_est_fn,
                                       c_betam = c_betam,
                                       c_betai = c_betai,
                                       emp_n = emp_n,
+                                      tran_fn = tran_fn,
                                       combine = combine,
                                       gene_coeff_args = gene_coeff_args,
                                       uncorr_method = uncorr_method,

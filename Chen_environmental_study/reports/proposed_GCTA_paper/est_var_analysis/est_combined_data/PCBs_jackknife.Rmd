@@ -20,7 +20,7 @@ editor_options:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, comment = "", message = FALSE, warning = FALSE, echo = FALSE, fig.height = 10)
-options(scipen=1, digits=2)
+options(scipen=1, digits=3)
 
 library(MASS)
 library(tidyverse)
@@ -28,11 +28,14 @@ library(data.table)
 library(ggforce)
 library(ggpubr)
 library(gridExtra)
+# source("~/dev/projects/Chen_environmental_study/reports/proposed_GCTA_paper/est_var_analysis/est_combined_data/simulation_result_jackknife_h_total.R")
 source("~/dev/projects/Chen_environmental_study/reports/proposed_GCTA_paper/est_var_analysis/est_combined_data/simulation_result_jackknife_total.R")
 ```
 
 
-# Simulation
+# Simulation 
+
+## Simulation setup $Var(X^T\beta)$
 - leva-one-out
 - iteration 100
 - nominal level 0.8
@@ -47,4 +50,28 @@ summary_final_none[,.(n, sub_est_mean, var_jack,sub_z_coverage, est_var, est_mea
 ```{r}
 additional
 summary_final_decorr[,.(n, sub_est_mean, var_jack,sub_z_coverage, est_var, est_mean, method)]
+```
+
+
+## Simulation setup $Var(X^T\beta)/Var(y)$
+- leave-d out $d/n = 0.5$
+- iteration 50
+- nominal level 0.8
+
+## None leave one
+```{r}
+additional
+summary_final_h_none[,.(n, sub_est_mean, var_jack,sub_z_coverage, est_var, est_mean, method)]
+```
+
+## None leave d
+```{r}
+additional
+summary_final_h_none_d[,.(n, sub_est_mean, var_jack,sub_z_coverage, est_var, est_mean, method)]
+```
+
+## decorreation 
+```{r}
+additional
+summary_final_decorr_d[,.(n, sub_est_mean, var_jack,sub_z_coverage, est_var, est_mean, method)]
 ```

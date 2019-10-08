@@ -26,6 +26,41 @@ EigenPrism_kernel <- function(...){
 }
 col_names_Eigen <- c("EigenPrism_main", "EigenPrism_CI1","EigenPrism_CI2")
 
+
+h_GCTA_kernel <- function(...) {
+  args <- list(...)
+  if(args$decor == TRUE){
+    fit <- Yang(y = args$y, 
+                x = args$s_final, 
+                interact = args$interact,
+                target = "heritability")  
+  } else {
+    fit <- Yang(y = args$y, 
+                x = args$b_final, 
+                interact = args$interact,
+                target = "heritability")
+  }
+  c(fit$G, fit$RACT)
+}
+col_names_h_GCTA <- c("h_GCTA_main", "h_GCTA_inter")
+
+h_EigenPrism_kernel <- function(...){
+  args <- list(...)
+  if(args$decor == TRUE){
+    fit <- EigenPrism(y = args$y, 
+                      X = args$s_final,
+                      target = "heritability")  
+  } else {
+    fit <- EigenPrism(y = args$y, 
+                      X = args$b_final,
+                      target = "heritability")  
+  }
+  fit[1:3]
+}
+col_names_h_Eigen <- c("h_EigenPrism_main", "h_EigenPrism_CI1","h_EigenPrism_CI2")
+
+
+
 least_square_kernel <- function(...){
   args <- list(...)
   if(args$decor == TRUE){
