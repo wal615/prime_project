@@ -43,6 +43,12 @@ simulation_var_est_fn <- function(kernel = GCTA_kernel,
   if(bs == "leave-1" & n_sub != gene_data_args$n){
     warning("n_sub has to be same as the number of observation")
     n_sub <- gene_data_args$n
+  } else if (bs == "leave-1-2"){
+    jack_index_1 <- cbind(matrix(1:gene_data_args$n, ncol = 1),0)
+    jack_index_2 <- t(combn(gene_data_args$n, 2))
+    jack_index <- rbind(jack_index_1, jack_index_2)
+    colnames(jack_index) <- c("i_1","i_2")
+    n_sub <- nrow(jack_index)
   }
   
   # generate coefficients
@@ -177,13 +183,17 @@ simulation_var_est_fn <- function(kernel = GCTA_kernel,
     for(i in 1:n_sub){
       if(bs == "full"){
         break
+      } else if(bs =="leave-1-2"){
+        index <- jack_index[i,]
+      } else {
+        index <- i
       }
-      
+  
       sub_data <- generate_sub(data = list(y = y,b_raw = b_raw), 
                                pro = pro,
                                bs = bs,
                                n = length(y),
-                               iteration = i)
+                               iteration = index)
       b_tmp <- est_model_data(sub_data$b_raw,
                               sub_data$y,
                               p, 
@@ -201,6 +211,11 @@ simulation_var_est_fn <- function(kernel = GCTA_kernel,
         args_2 <- append(b_tmp, kernel_args_2) %>% append(.,list(b_raw = sub_data$b_raw, betam = betam, betai = betai))
         result_tmp[i,(5+length(kernel_result_col_names)+length(kernel_result_col_names_2)/2):(4+length(kernel_result_col_names)+length(kernel_result_col_names_2))] <- do.call(kernel_2, args_2)
       }
+    }
+    browser()
+    
+    if(bs == "leave-1-2"){
+      result_tmp <- cbind(result_tmp, jack_index) 
     }
     
     # combined the all the attributes to b so we could plot them by the attributes
@@ -223,6 +238,7 @@ simulation_var_est_fn <- function(kernel = GCTA_kernel,
     additional$sigma_total_emp <- NULL
     additional$sigma_main_emp <- NULL
     additional$data_path <- NULL
+    
     
     # save the result
     if(!(is.null(inter_result_path))) data.frame(result_tmp, additional, i = ibrep, row.names = NULL, stringsAsFactors = FALSE) %>% write.csv(., 

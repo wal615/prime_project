@@ -45,13 +45,6 @@ jack_var <- function(x, pro = 0.5){
   var_2
 }
 
-jack_var_2 <- function(x, pro){
-  n_sub <- length(x) - is.na(x)
-  x_m <- mean(x, na.rm = T)
-  var_1 <- (x_m - x)^2 %>% sum(., na.rm = T)
-  var_2 <- (1+(n_sub-1)*0.5)/(n_sub*(n_sub - 1))*var_1
-  var_2
-}
 
 sub_CI_lenght <- function(x, pro = 0.5, z_p){
   sd <- sqrt(jack_var(x, pro))
