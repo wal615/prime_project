@@ -48,4 +48,37 @@ t_s[,weekend := is.weekend(as.Date(time_stamp))]
 
 # calculate the mean and median for each holiday to see if there is any difference
 select_col <- names(t_s)[1:10]
-res_1 <- t_s[, lapply(.SD, FUN = mean, na.rm = T),.SDcol = select_col, by = .(hours, weekend)] %>% copy(.)
+res_weekend_mean <- t_s[, lapply(.SD, FUN = median, na.rm = T),.SDcol = select_col, by = .(hours, weekend)] %>% copy(.) %>% 
+           gather(data = ., key = key, value = value, contains("S3"))
+ggplot(res_weekend_mean, aes(x = hours, y = value,
+                      group = interaction(weekend, key),
+                      colour = key, linetype = weekend)) +
+  geom_line() +
+  theme_bw()
+
+res_weekend_var <- t_s[, lapply(.SD, FUN = function(x) {var(x, na.rm = T)/length(x)}),.SDcol = select_col, by = .(hours, weekend)] %>% copy(.) %>% 
+  gather(data = ., key = key, value = value, contains("S3"))
+ggplot(res_weekend_var, aes(x = hours, y = value,
+                             group = interaction(weekend, key),
+                             colour = key, linetype = weekend)) +
+  geom_line() +
+  theme_bw()
+
+# calculate the mean and median for each holiday to see if there is any difference
+select_col <- names(t_s)[1:10]
+res_1 <- t_s[weekend == FALSE, lapply(.SD, FUN = mean, na.rm = T),.SDcol = select_col, by = .(hours, holiday)] %>% copy(.) %>% 
+  gather(data = ., key = key, value = value, contains("S3"))
+ggplot(res_1, aes(x = hours, y = value,
+                  group = interaction(holiday, key),
+                  colour = key, linetype = holiday)) +
+  geom_line() +
+  theme_bw()
+
+res_holiday_var <- t_s[weekend == FALSE, lapply(.SD, FUN = function(x) {var(x, na.rm = T)/length(x)}),.SDcol = select_col, by = .(hours, holiday)] %>% copy(.) %>% 
+  gather(data = ., key = key, value = value, contains("S3"))
+ggplot(res_holiday_var, aes(x = hours, y = value,
+                            group = interaction(holiday, key),
+                            colour = key, linetype = holiday)) +
+  geom_line() +
+  theme_bw()
+
