@@ -212,8 +212,7 @@ simulation_var_est_fn <- function(kernel = GCTA_kernel,
         result_tmp[i,(5+length(kernel_result_col_names)+length(kernel_result_col_names_2)/2):(4+length(kernel_result_col_names)+length(kernel_result_col_names_2))] <- do.call(kernel_2, args_2)
       }
     }
-    browser()
-    
+
     if(bs == "leave-1-2"){
       result_tmp <- cbind(result_tmp, jack_index) 
     }

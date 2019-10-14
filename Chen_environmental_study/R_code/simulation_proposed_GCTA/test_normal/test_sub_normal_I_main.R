@@ -17,8 +17,8 @@ c_betam <- 8
 c_betai <- 0
 save_path <- "~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/var_est/combined_effects_jackknife_reports_09_25_2019/"
 
-cores <- 1
-n_iter <- 1
+cores <- 20
+n_iter <- 50
 n_sub <- 0
 seed_loop <- 1234
 seed_coef <- 1014
@@ -30,7 +30,7 @@ bs <- "leave-1-2"
 
 # data generation
 emp_n <- 10^5
-n_total <- c(100,150)
+n_total <- c(100)
 dist <- "normal"
 generate_data <- generate_normal
 structure <- "I"
