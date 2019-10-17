@@ -149,7 +149,6 @@ simulation_var_est_fn <- function(kernel = GCTA_kernel,
     
     # Generate y
     y <- signalm+signali+rnorm(length(signalm),sd=sigma_e)
-
     ## estimating model
     # generate data for esitmating
     if(!is.null(uncorr_args$emp)) {
@@ -215,6 +214,11 @@ simulation_var_est_fn <- function(kernel = GCTA_kernel,
 
     if(bs == "leave-1-2"){
       result_tmp <- cbind(result_tmp, jack_index) 
+    }
+    
+    # summary the sub-sampling result
+    if(bs != "full"){
+      result_tmp <- subsample_summary(result_tmp, bs = bs, combine = combine, n = gene_data_args$n)
     }
     
     # combined the all the attributes to b so we could plot them by the attributes

@@ -22,9 +22,9 @@ EigenPrism_kernel <- function(...){
     fit <- EigenPrism(y = args$y, 
                       X = args$b_final)  
   }
-  fit[1:3]
+  c(fit[1], fit[2]-fit[1])
 }
-col_names_Eigen <- c("EigenPrism_main", "EigenPrism_CI1","EigenPrism_CI2")
+col_names_Eigen <- c("EigenPrism_main", "EigenPrism_CI")
 
 
 h_GCTA_kernel <- function(...) {

@@ -18,7 +18,7 @@ c_betai <- 2
 save_path <- "~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/var_est/combined_effects_jackknife_reports_09_25_2019/"
 
 cores <- 20
-n_iter <- 50
+n_iter <- 100
 n_sub <- 0
 seed_loop <- 1234
 seed_coef <- 1014
@@ -27,7 +27,10 @@ seed_coef <- 1014
 # sub_sampling
 pro <- 1012
 bs <- "leave-1-2"
-
+# pro <- 0
+# bs <- "full"
+# pro <- 101
+# bs <- "leave-1"
 # data generation
 emp_n <- 10^5
 # n_total <- c(100,253,500, 600,700)
@@ -44,6 +47,9 @@ structure <- "I"
 Var <- "null"
 # p <- length(PCB_common)
 p <- 21
+
+# combine <- TRUE
+# est <- "total"
 
 combine <- TRUE
 est <- "total"
@@ -125,10 +131,10 @@ gene_coeff_args <- list(main_fixed_var = main_fixed_var,
                         inter_random_var = inter_random_var)
 
 # generate args list
-args_all <- expand.grid(structure = structure, p = p, n = n_total, pre_cor = list(pre_cor),rho_e = rho_e, pro = pro)
-gene_data_args_list <- args_all[,1:4] %>% split(x = ., f = seq(nrow(.))) # generate a list from each row of a dataframe
-rho_e_list <- args_all[,5, drop = FALSE] %>% split(x = ., f = seq(nrow(.)))
-pro_list <-  args_all[,6, drop = FALSE] %>% split(x = ., f = seq(nrow(.)))
+args_all <- expand.grid(structure = structure, p = p, n = n_total,rho_e = rho_e, pro = pro)
+gene_data_args_list <- args_all[,1:3] %>% split(x = ., f = seq(nrow(.))) # generate a list from each row of a dataframe
+rho_e_list <- args_all[,4, drop = FALSE] %>% split(x = ., f = seq(nrow(.)))
+pro_list <-  args_all[,5, drop = FALSE] %>% split(x = ., f = seq(nrow(.)))
 
 
 # setup folders for results

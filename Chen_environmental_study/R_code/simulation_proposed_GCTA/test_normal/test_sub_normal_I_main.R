@@ -14,11 +14,11 @@ source("./R_code/simulation_proposed_GCTA/local_helpers.R")
 # source("./reports/proposed_GCTA_paper/est_var_analysis/est_combined_data/covaraites_summary_2005_2014.R")
 source("./reports/proposed_GCTA_paper/est_var_analysis/est_combined_data/covaraites_summary_1999_2004.R")
 c_betam <- 8
-c_betai <- 0
+c_betai <- 2
 save_path <- "~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/var_est/combined_effects_jackknife_reports_09_25_2019/"
 
 cores <- 20
-n_iter <- 50
+n_iter <- 100
 n_sub <- 0
 seed_loop <- 1234
 seed_coef <- 1014
@@ -27,10 +27,14 @@ seed_coef <- 1014
 # sub_sampling
 pro <- 1012
 bs <- "leave-1-2"
-
+# pro <- 0
+# bs <- "full"
+# pro <- 101
+# bs <- "leave-1"
 # data generation
 emp_n <- 10^5
-n_total <- c(100)
+# n_total <- c(100,253,500, 600,700)
+n_total <- c(100,231)
 dist <- "normal"
 generate_data <- generate_normal
 structure <- "I"
@@ -41,7 +45,11 @@ structure <- "I"
 # # pre_cor <- cor(data.matrix(PCB_1999_2004_common[index, ..PCB_common]) %*% invsqrt(cov_1999_2004))
 # pre_cor <- cor(data.matrix(PCB_1999_2004_common[index, ..PCB_common]))
 Var <- "null"
-p <- length(PCB_common)
+# p <- length(PCB_common)
+p <- 21
+
+# combine <- TRUE
+# est <- "total"
 
 combine <- FALSE
 est <- "main"
@@ -123,8 +131,7 @@ gene_coeff_args <- list(main_fixed_var = main_fixed_var,
                         inter_random_var = inter_random_var)
 
 # generate args list
-# args_all <- expand.grid(structure = structure, p = p, n = n_total, pre_cor = list(pre_cor),rho_e = rho_e, pro = pro)
-args_all <- expand.grid(structure = structure, p = p, n = n_total, rho_e = rho_e, pro = pro)
+args_all <- expand.grid(structure = structure, p = p, n = n_total,rho_e = rho_e, pro = pro)
 gene_data_args_list <- args_all[,1:3] %>% split(x = ., f = seq(nrow(.))) # generate a list from each row of a dataframe
 rho_e_list <- args_all[,4, drop = FALSE] %>% split(x = ., f = seq(nrow(.)))
 pro_list <-  args_all[,5, drop = FALSE] %>% split(x = ., f = seq(nrow(.)))
