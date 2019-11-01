@@ -13,6 +13,19 @@ GCTA_kernel <- function(...) {
 }
 col_names_GCTA <- c("GCTA_main", "GCTA_inter")
 
+GCTA_rr_kernel <- function(...){
+  args <- list(...)
+  if(args$decor == TRUE){
+    fit <- GCTA_rr(y = args$y,
+                   x = args$s_final) 
+  } else {
+    fit <- GCTA_rr(y = args$y,
+                   x = args$b_final)
+  }
+  fit
+}
+col_names_GCTA_rr <- c("GCTA_main")
+
 EigenPrism_kernel <- function(...){
   args <- list(...)
   if(args$decor == TRUE){
@@ -22,7 +35,7 @@ EigenPrism_kernel <- function(...){
     fit <- EigenPrism(y = args$y, 
                       X = args$b_final)  
   }
-  c(fit[1], fit[2]-fit[1])
+  c(fit[1], fit[3]-fit[2])
 }
 col_names_Eigen <- c("EigenPrism_main", "EigenPrism_CI")
 
@@ -88,17 +101,16 @@ least_square_kernel_e <- function(...){
 col_names_least_square_e <- c("least_square_e")
 
 
-
-signal_kernel <- function(...){
-  args <- list(...)
-  fit <- signal(args$b_raw, args$betam, args$betai)
-  fit[1:4]
-}
-col_names_signal <- c("main", "inter", "cov","total")
-
 single_var_kernel <- function(...){
   args <- list(...)
-  fit <- single_var(args$b_raw)
-  fit[1:3]
+  fit <- var(args$b_final)
+  fit
 }
-col_names_single_var <- c("singal_var1","singal_var2", "cov")
+col_names_single_var <- c("singal_var")
+
+single_mean_kernel <- function(...){
+  args <- list(...)
+  fit <- mean(args$b_final)
+  fit
+}
+col_names_single_var <- c("singal_mean")

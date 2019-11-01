@@ -18,22 +18,22 @@ c_betai <- 2
 year <- "1999"
 save_path <- "~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/var_est/combined_effects_jackknife_reports_09_25_2019/"
 data_path <- "~/dev/projects/Chen_environmental_study/R_code/data/real_data/NHANES/PCB_99_14/clean/individual/PCB_1999_2004_common.csv"
-std <- "FALSE"
-cores <- 20
-n_iter <- 100
-n_sub <- 100
+std <- "original"
+cores <- 1
+n_iter <- 1
+n_sub <- 0
 seed_loop <- 1234
 seed_coef <- 1014
 # steup parameters
 
 # sub_sampling
-pro <- 102
-bs <- "bs"
+pro <- 1012
+bs <- "leave-1-2"
 
 # data generation
 emp_n <- nrow(PCB_1999_2004_common)
 # n <- c(100,150,231)
-n <- c(100,150,231)
+n_total <- c(100)
 dist <- "PCB"
 generate_data <- generate_PCB
 structure <- "un"
@@ -63,7 +63,7 @@ sparse_uncorr_args <- list(rho = grho)
 # grho <- NULL
 
 # est
-decor <- FALSE
+decor <- TRUE
 if(decor == FALSE) {
   decor_method <- "None"
   uncorr_method <- NULL
@@ -96,10 +96,15 @@ kernel_result_col_names <- col_names_Eigen
 
 
 # est2
-kernel_args_2 <- list(interact = 0,decor = decor)
-kernel_2 <- GCTA_kernel
-kernel_name <- append(kernel_name,"GCTA_kernel") %>% paste(.,collapse = "_")
-kernel_result_col_names_2 <- col_names_GCTA
+kernel_args_2 <- list(decor = decor)
+kernel_2 <- GCTA_rr_kernel
+kernel_name <- append(kernel_name,"GCTA_rr_kernel") %>% paste(.,collapse = "_")
+kernel_result_col_names_2 <- col_names_GCTA_rr
+
+# kernel_args_2 <- list(interact = 0,decor = decor)
+# kernel_2 <- GCTA_kernel
+# kernel_name <- append(kernel_name,"GCTA_kernel") %>% paste(.,collapse = "_")
+# kernel_result_col_names_2 <- col_names_GCTA
 # kernel_args_2 <- NULL
 # kernel_2 <- NULL
 # kernel_name <- NULL
@@ -120,7 +125,7 @@ gene_coeff_args <- list(main_fixed_var = main_fixed_var,
                         inter_random_var = inter_random_var)
 
 # generate args list
-args_all <- expand.grid(structure = structure, p = p, n = n, data_path = data_path, data_name = year, rho_e = rho_e, pro = pro, stringsAsFactors = F)
+args_all <- expand.grid(structure = structure, p = p, n = n_total, data_path = data_path, data_name = year, rho_e = rho_e, pro = pro, stringsAsFactors = F)
 gene_data_args_list <- args_all[,1:5] %>% split(x = ., f = seq(nrow(.))) # generate a list from each row of a dataframe
 rho_e_list <- args_all[,6, drop = FALSE] %>% split(x = ., f = seq(nrow(.)))
 pro_list <-  args_all[,7, drop = FALSE] %>% split(x = ., f = seq(nrow(.)))
@@ -151,7 +156,6 @@ result_list <- mapply(FUN = simulation_var_est_fn,
                                       c_betam = c_betam,
                                       c_betai = c_betai,
                                       emp_n = emp_n,
-                                      tran_fn = tran_fn,
                                       combine = combine,
                                       gene_coeff_args = gene_coeff_args,
                                       uncorr_method = uncorr_method,

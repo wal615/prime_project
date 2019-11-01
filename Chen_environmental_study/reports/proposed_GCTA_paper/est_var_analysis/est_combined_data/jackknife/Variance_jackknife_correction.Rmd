@@ -1,0 +1,181 @@
+---
+title: "Jackknife variance estimation corrections"
+author: "Xuelong Wang"
+date: "`r Sys.Date()`"
+output: 
+  pdf_document:
+    toc: true
+    number_sections: true
+    keep_tex: true
+    fig_width: 12
+    fig_height: 3
+header-includes:
+    - \usepackage{float,amsmath, bbm, siunitx, bm}
+    - \usepackage{pdfpages}
+    - \floatplacement{figure}{H}
+    - \newcommand{\indep}{\rotatebox[origin=c]{90}{$\models$}}
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, comment = "", message = FALSE, warning = FALSE, echo = FALSE, fig.height = 10)
+options(scipen=1, digits=3)
+
+library(MASS)
+library(tidyverse)
+library(data.table)
+library(ggforce)
+library(ggpubr)
+library(gridExtra)
+source("~/dev/projects/Chen_environmental_study/reports/proposed_GCTA_paper/est_var_analysis/est_combined_data/jackknife/simulation_result_jackknife_total_variance_correction.R")
+```
+
+# Motivation
+
+Jackknife is one of sub-sampling technique to estimate the bias and variance of a statistics $S(X_1,\dots, X_n)$. Define $S_{(i)} = S(X_1,X_{(i-1)},X_{(i+1)} X_n)$, then the variance of $S$ estimated by jackknife is 
+\[
+Var(S) = \frac{n-1}{n}\sum_i(S_{(i)} - S_.)^2
+\]
+Where $S_. = \frac{1}{n}\sum_iS_{(i)}$.
+Note that $\tilde{Var}(S(X_1, \dots, S_{n-1})) = \sum_i(S_{(i)} - S_.)^2$ can be conisder as a estimation for $Var(S(X_1, \dots, S_{n-1}))$
+However, Eforn in 1981 shown that the jackknife variance esimtation is always overestimate the true variance. \[
+  E(\tilde{Var}(S(X_1, \dots, S_{n-1}))) \geq Var(S(X_1, \dots, S_{n-1}))
+\]
+
+# One solution 
+
+If we assume the $S$ is a smooth functions of emperical CDF, especially a quadratic functions, then it can be shown the leading terms of $E(\tilde{Var}(S(X_1, \dots, S_{n-1}))) \geq Var(S(X_1, \dots, S_{n-1}))$ is a quadratic term in expecation. Therefore we could try to estimate the quadratic term and correct the bias for the jackknife variance estimation.
+
+Define $Q_{ii'} \equiv nS - (n-1)(S_{i} - S_{i'}) + (n-2)S_{(ii')}$, then the correction will be 
+\[
+\hat{Var}^{corr}(S(X_1, \dots, X_n)) = \hat{Var}(S(X_1, \dots, X_n)) - \frac{1}{n(n-1)}\sum_{i < i'}(Q_{ii'}- \bar{Q})^2
+\]
+where $\bar{Q} = \sum_{i < i'}(Q_{ii'})/(n(n-1)/2)$
+
+# Simulation study 
+
+## without correction
+
+### setup 
+- Independent 
+- Normal
+- p = 21
+- with interaction terms
+
+### simulation_result
+
+```{r}
+summary_final_none_21[,.(method, n, est_mean, est_var, var_jack)]
+```
+
+### setup 
+- Independent 
+- Normal
+- p = 22
+- with interaction terms
+
+### simulation_result
+
+```{r}
+summary_final_none_22[,.(method, n, est_mean, est_var, var_jack)]
+```
+Note that based on the ideal situation the bias will reduced when sample size is large and distribution is normal.
+
+## correction
+
+### setup 
+- Independent 
+- Normal
+- p = 21
+- with interaction terms
+
+### simulation result 
+
+```{r}
+additional_normal_total
+summary_final_normal_total
+```
+
+### setup 
+- Independent 
+- Chi
+- p = 21
+- with interaction terms
+
+### simulation result 
+
+```{r}
+additional_chi_total
+summary_final_chi_total
+```
+
+### setup 
+- PCB
+- p = 21
+- with interaction terms
+- with decorrelation 
+
+### simulation result 
+
+```{r}
+additional_PCB_total
+summary_final_PCB_total
+```
+
+
+# Questions and other methods
+
+## Questions
+- Running time is large $n*(n-1)/2$
+- Assumptions: quadratic form of S, $Var^n = \frac{n-1}{n}Var^{n-1}$? 
+- The coefficient about the correction
+
+## Other methods
+
+# Some modification based on previous simulation
+
+## Main effect only or larger n for combined effect
+
+### Normal main n>p
+```{r,}
+additional_normal_main
+summary_final_normal_main
+```
+
+### chi n >p
+```{r,}
+additional_chi_main
+summary_final_chi_main
+```
+
+### Normal main n<p, p = 100
+```{r,}
+additional_normal_main_100
+summary_final_normal_main_100
+```
+
+### Chi combined effect n <p p = 25
+```{r,}
+additional_chi_total_25
+summary_final_chi_total_25
+```
+
+### PCB combined effec n<p p = 21
+```{r,}
+additional_PCB_total_corr
+summary_final_PCB_total_corr
+```
+
+### PCB combined effec n<p p = 21 with rank transformation
+```{r,}
+additional_PCB_rank_each_total
+summary_final_PCB_rank_each_total_corr
+```
+
+### PCB combined effec n<p p = 21 with rank transformation for all 
+```{r,}
+additional_PCB_rank_total
+summary_final_PCB_rank_total_corr
+```
+

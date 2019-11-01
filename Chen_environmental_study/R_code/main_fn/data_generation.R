@@ -187,10 +187,15 @@ generate_PCB <- function(data_path, n, p = NULL, data_name = NULL, structure) {
   # covaraites
   x <- data %>% data.matrix(.)
   
+  # standardization
+  # x <- apply(x, 2, rank)
+  x %>% std_fn(.)
+  
   # add distribution attributes
   attributes(x) <- append(attributes(x), 
                           list(x_dist = data_name))
-  x %>% std_fn(.)
+  x
+
 }
 
 generate_real_test <- function(data_path, pro, data_name=NULL, resp_name = "y", tran_fn_y, tran_fn_x) {

@@ -17,7 +17,7 @@ c_betam <- 8
 c_betai <- 2
 save_path <- "~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/var_est/combined_effects_jackknife_reports_09_25_2019/"
 
-cores <- 20
+cores <- 5
 n_iter <- 100
 n_sub <- 0
 seed_loop <- 1234
@@ -25,6 +25,8 @@ seed_coef <- 1014
 # steup parameters
 
 # sub_sampling
+# pro <- 102
+# bs <- "bs"
 pro <- 1012
 bs <- "leave-1-2"
 # pro <- 0
@@ -34,7 +36,7 @@ bs <- "leave-1-2"
 # data generation
 emp_n <- 10^5
 # n_total <- c(100,253,500, 600,700)
-n_total <- c(100,231)
+n_total <- c(50,100,200)
 dist <- "normal"
 generate_data <- generate_normal
 structure <- "I"
@@ -46,7 +48,7 @@ structure <- "I"
 # pre_cor <- cor(data.matrix(PCB_1999_2004_common[index, ..PCB_common]))
 Var <- "null"
 # p <- length(PCB_common)
-p <- 21
+p <- 100
 
 # combine <- TRUE
 # est <- "total"

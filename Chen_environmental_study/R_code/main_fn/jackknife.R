@@ -100,10 +100,49 @@ subsample_summary <- function (result_tmp, bs, combine, n){
       GCTA_jack <- data.table(GCTA_mean_jack = S_jack, GCTA_var_jack = v_jack[1], GCTA_var_jack_corr = v_jack[2])
     }
   }
-  if(combine == TRUE){
-    cbind(result_tmp[1,1:4], EigenPrism_total = result_tmp[1,EigenPrism_total], Eg_jack, GCTA_total = result_tmp[1,GCTA_total], GCTA_jack)  
-  } else{
-    cbind(result_tmp[1,1:4], EigenPrism_main = result_tmp[1,EigenPrism_main], Eg_jack, GCTA_main = result_tmp[1,GCTA_main], GCTA_jack)
+
+  
+  # for bootstrap 
+  if(bs == "bs"){
+    if (combine == TRUE){
+      # Eg
+      S_Eg <- result_tmp[1, EigenPrism_total]
+      s_B <- result_tmp[,mean(sub_EigenPrism_total, na.rm = T)] 
+      v_B <- result_tmp[,var(sub_EigenPrism_total, na.rm = T)] 
+      Eg_B <- data.table(Eg_mean_B = s_B, Eg_var_B = v_B)
+      
+      # GCTA
+      S_GCTA <- result_tmp[1, GCTA_total]
+      s_B <- result_tmp[,mean(sub_GCTA_total, na.rm = T)] 
+      v_B <- result_tmp[,var(sub_GCTA_total, na.rm = T)] 
+      GCTA_B <- data.table(GCTA_mean_B = s_B, GCTA_var_B = v_B)
+    } else {
+      # Eg
+      S_Eg <- result_tmp[1, EigenPrism_main]
+      s_B <- result_tmp[,mean(sub_EigenPrism_main, na.rm = T)] 
+      v_B <- result_tmp[,var(sub_EigenPrism_main, na.rm = T)] 
+      Eg_B <- data.table(Eg_mean_B = s_B, Eg_var_B = v_B)
+      
+      # GCTA
+      S_GCTA <- result_tmp[1, GCTA_main]
+      s_B <- result_tmp[,mean(sub_GCTA_main, na.rm = T)] 
+      v_B <- result_tmp[,var(sub_GCTA_main, na.rm = T)] 
+      GCTA_B <- data.table(GCTA_mean_B = s_B, GCTA_var_B = v_B)
+    }
+  }
+  
+  if(bs == "bs"){
+    if(combine == TRUE){
+      cbind(result_tmp[1,1:4], EigenPrism_total = result_tmp[1,EigenPrism_total], EigenPrism_CI = result_tmp[1,EigenPrism_CI], Eg_B, GCTA_total = result_tmp[1,GCTA_total], GCTA_B)  
+    } else{
+      cbind(result_tmp[1,1:4], EigenPrism_main = result_tmp[1,EigenPrism_main], EigenPrism_CI = result_tmp[1,EigenPrism_CI], Eg_B, GCTA_main = result_tmp[1,GCTA_main], GCTA_B)
+    }
+  } else if (bs == "leave-1"|bs == "leave-1-2" ){
+    if(combine == TRUE){
+      cbind(result_tmp[1,1:4], EigenPrism_total = result_tmp[1,EigenPrism_total], EigenPrism_CI = result_tmp[1,EigenPrism_CI], Eg_jack, GCTA_total = result_tmp[1,GCTA_total], GCTA_jack)  
+    } else{
+      cbind(result_tmp[1,1:4], EigenPrism_main = result_tmp[1,EigenPrism_main], EigenPrism_CI = result_tmp[1,EigenPrism_CI], Eg_jack, GCTA_main = result_tmp[1,GCTA_main], GCTA_jack)
+    }
   }
   
 }

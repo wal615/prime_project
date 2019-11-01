@@ -17,16 +17,18 @@ c_betam <- 8
 c_betai <- 2
 save_path <- "~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/var_est/combined_effects_jackknife_reports_09_25_2019/"
 
-cores <- 20
+cores <- 10
 n_iter <- 100
-n_sub <- 0
+n_sub <- 100
 seed_loop <- 1234
 seed_coef <- 1014
 # steup parameters
 
 # sub_sampling
-pro <- 1012
-bs <- "leave-1-2"
+pro <- 102
+bs <- "bs"
+# pro <- 1012
+# bs <- "leave-1-2"
 # pro <- 0
 # bs <- "full"
 # pro <- 101

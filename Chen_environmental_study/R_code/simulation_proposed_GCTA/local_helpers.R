@@ -97,7 +97,6 @@ simulation_var_est_fn <- function(kernel = GCTA_kernel,
     } else {
       col_names <- c(col_names, kernel_result_col_names,kernel_result_col_names_2)
     }
-
     result_tmp <- matrix(0, nrow = n_sub, ncol = length(col_names))
     colnames(result_tmp) <- col_names
     # Generate covariates  
@@ -169,7 +168,7 @@ simulation_var_est_fn <- function(kernel = GCTA_kernel,
     args <- append(b_est_model, kernel_args) %>% append(.,list(b_raw = b_raw, betam = betam, betai = betai))
     result_kernel <- do.call(kernel, args)
     result_tmp[,(5:(4+length(kernel_result_col_names)/2))] <- do.call("rbind", replicate(n_sub, result_kernel, simplify = FALSE))
-    
+
     if(!is.null(kernel_2)){
       args_2 <- append(b_est_model, kernel_args_2) %>% append(.,list(b_raw = b_raw, betam = betam, betai = betai))
       result_kernel <- do.call(kernel_2, args_2)
@@ -215,7 +214,6 @@ simulation_var_est_fn <- function(kernel = GCTA_kernel,
     if(bs == "leave-1-2"){
       result_tmp <- cbind(result_tmp, jack_index) 
     }
-    
     # summary the sub-sampling result
     if(bs != "full"){
       result_tmp <- subsample_summary(result_tmp, bs = bs, combine = combine, n = gene_data_args$n)
@@ -241,7 +239,6 @@ simulation_var_est_fn <- function(kernel = GCTA_kernel,
     additional$sigma_total_emp <- NULL
     additional$sigma_main_emp <- NULL
     additional$data_path <- NULL
-    
     
     # save the result
     if(!(is.null(inter_result_path))) data.frame(result_tmp, additional, i = ibrep, row.names = NULL, stringsAsFactors = FALSE) %>% write.csv(., 
