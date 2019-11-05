@@ -189,7 +189,7 @@ generate_PCB <- function(data_path, n, p = NULL, data_name = NULL, structure) {
   
   # standardization
   # x <- apply(x, 2, rank)
-  x %>% std_fn(.)
+  x <- x %>% std_fn(.)
   
   # add distribution attributes
   attributes(x) <- append(attributes(x), 

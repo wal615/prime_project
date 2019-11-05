@@ -404,6 +404,54 @@ summary_final_normal_main <- rbindlist(list(summary_final_Eg, summary_final_GCTA
 
 ######################################################
 
+result_path <- "decor_method_None_sparse_method_None_result_list_fixed_sub_normal_structure_I_main_0.5_inter_0_n_50_100_231_p_21_rho_e_0.5_decor_FALSE_subpro_1012_iter_100_nsub_0_EigenPrism_kernel_GCTA_rr_kernel_est_main_c_betam_8_c_betai_2_Var_null"
+file_list_all <- list.files(paste0("./", result_path, "/")) %>% paste0(paste0("./", result_path, "/"),.)
+file_list <- file_list_all
+sub_result <- lapply(file_list, function (x) {read.csv(x, header = TRUE, stringsAsFactors = FALSE)}) %>% rbindlist(., fill = TRUE)
+
+additional_normal_main_rr <- sub_result[1,.(var_main_effect,
+                                         var_inter_effect,
+                                         cov_main_inter_effect,
+                                         var_total_effect,
+                                         structure,
+                                         decor,
+                                         x_dist)]
+
+
+# replace the 999 as NA 
+sub_result[EigenPrism_main == 999, c("EigenPrism_main", "EigenPrism_CI") := list(NA,NA)]
+
+
+# EigenPrism
+summary_result_Eg <- sub_result[, .(MSE = mean((EigenPrism_main - mean(var_main_effect))^2, na.rm = T),
+                                    est = mean(EigenPrism_main, na.rm = T),
+                                    est_jack = mean(Eg_mean_jack),
+                                    var = var(EigenPrism_main, na.rm = T),
+                                    v_jack = mean(Eg_var_jack),
+                                    v_jack_c = mean(Eg_var_jack_corr),
+                                    v_Eg = mean((EigenPrism_CI/(2*z_0.8))^2)),
+                                by = n]
+summary_result_Eg[,v_jack_diff := (v_jack_c + v_jack)/2]
+
+summary_final_Eg <- cbind(summary_result_Eg)
+summary_final_Eg[,method := "EigenPrism"]
+
+# GCTA
+summary_result_GCTA <- sub_result[, .(MSE = mean((GCTA_main - mean(var_main_effect))^2, na.rm = T),
+                                      est = mean(GCTA_main, na.rm = T),
+                                      est_jack = mean(GCTA_mean_jack),
+                                      var = var(GCTA_main, na.rm = T),
+                                      v_jack = mean(GCTA_var_jack),
+                                      v_jack_c = mean(GCTA_var_jack_corr)),
+                                  by = n]
+summary_result_GCTA[,v_jack_diff := (v_jack_c + v_jack)/2]
+
+summary_final_GCTA <- cbind(summary_result_GCTA)
+summary_final_GCTA[,method := "GCTA"]
+summary_final_normal_main_rr <- rbindlist(list(summary_final_Eg, summary_final_GCTA), fill = TRUE)
+
+######################################################
+
 result_path <- "decor_method_None_sparse_method_None_result_list_fixed_sub_normal_structure_I_main_0.5_inter_0_n_50_100_200_p_100_rho_e_0.5_decor_FALSE_subpro_1012_iter_100_nsub_0_EigenPrism_kernel_GCTA_kernel_est_main_c_betam_8_c_betai_2_Var_null"
 file_list_all <- list.files(paste0("./", result_path, "/")) %>% paste0(paste0("./", result_path, "/"),.)
 file_list <- file_list_all
@@ -449,6 +497,56 @@ summary_result_GCTA[,v_jack_diff := (v_jack_c + v_jack)/2]
 summary_final_GCTA <- cbind(summary_result_GCTA)
 summary_final_GCTA[,method := "GCTA"]
 summary_final_normal_main_100 <- rbindlist(list(summary_final_Eg, summary_final_GCTA), fill = TRUE) %>% setorder(., n)
+
+
+######################################################
+
+result_path <- "decor_method_None_sparse_method_None_result_list_fixed_sub_normal_structure_I_main_0.5_inter_0_n_50_100_200_p_100_rho_e_0.5_decor_FALSE_subpro_1012_iter_100_nsub_0_EigenPrism_kernel_GCTA_rr_kernel_est_main_c_betam_8_c_betai_2_Var_null"
+file_list_all <- list.files(paste0("./", result_path, "/")) %>% paste0(paste0("./", result_path, "/"),.)
+file_list <- file_list_all
+sub_result <- lapply(file_list, function (x) {read.csv(x, header = TRUE, stringsAsFactors = FALSE)}) %>% rbindlist(., fill = TRUE)
+
+additional_normal_main_100_rr <- sub_result[1,.(var_main_effect,
+                                             var_inter_effect,
+                                             cov_main_inter_effect,
+                                             var_total_effect,
+                                             structure,
+                                             decor,
+                                             x_dist)]
+
+
+# replace the 999 as NA 
+sub_result[EigenPrism_main == 999, c("EigenPrism_main", "EigenPrism_CI") := list(NA,NA)]
+
+
+# EigenPrism
+summary_result_Eg <- sub_result[, .(MSE = mean((EigenPrism_main - mean(var_main_effect))^2, na.rm = T),
+                                    est = mean(EigenPrism_main, na.rm = T),
+                                    est_jack = mean(Eg_mean_jack),
+                                    var = var(EigenPrism_main, na.rm = T),
+                                    v_jack = mean(Eg_var_jack),
+                                    v_jack_c = mean(Eg_var_jack_corr),
+                                    v_Eg = mean((EigenPrism_CI/(2*z_0.8))^2, na.rm = T)),
+                                by = n]
+summary_result_Eg[,v_jack_diff := (v_jack_c + v_jack)/2]
+
+summary_final_Eg <- cbind(summary_result_Eg)
+summary_final_Eg[,method := "EigenPrism"]
+
+# GCTA
+summary_result_GCTA <- sub_result[, .(MSE = mean((GCTA_main - mean(var_main_effect))^2, na.rm = T),
+                                      est = mean(GCTA_main, na.rm = T),
+                                      est_jack = mean(GCTA_mean_jack),
+                                      var = var(GCTA_main, na.rm = T),
+                                      v_jack = mean(GCTA_var_jack),
+                                      v_jack_c = mean(GCTA_var_jack_corr)),
+                                  by = n]
+summary_result_GCTA[,v_jack_diff := (v_jack_c + v_jack)/2]
+
+summary_final_GCTA <- cbind(summary_result_GCTA)
+summary_final_GCTA[,method := "GCTA"]
+summary_final_normal_main_100_rr <- rbindlist(list(summary_final_Eg, summary_final_GCTA), fill = TRUE) %>% setorder(., n)
+
 
 
 
@@ -596,6 +694,55 @@ summary_result_GCTA[,v_jack_diff := (v_jack_c + v_jack)/2]
 summary_final_GCTA <- cbind(summary_result_GCTA)
 summary_final_GCTA[,method := "GCTA"]
 summary_final_PCB_total_corr <- rbindlist(list(summary_final_Eg, summary_final_GCTA), fill = TRUE)
+
+###############################################################
+result_path <- "decor_hist_sparse_Glasso_grho_0.1_PCB_structure_un_main_0.5_inter_0.1_n_100_p_21_rho_e_0.5_decor_TRUE_subpro_1012_iter_10_nsub_0_EigenPrism_kernel_GCTA_rr_kernel_est_total_year_1999_std_PCB_original_c_betam_8_c_betai_2"
+file_list_all <- list.files(paste0("./", result_path, "/")) %>% paste0(paste0("./", result_path, "/"),.)
+file_list <- file_list_all
+sub_result <- lapply(file_list, function (x) {read.csv(x, header = TRUE, stringsAsFactors = FALSE)}) %>% rbindlist(., fill = TRUE)
+
+
+additional_PCB_total_corr_rr <- sub_result[1,.(var_main_effect,
+                                            var_inter_effect,
+                                            cov_main_inter_effect,
+                                            var_total_effect,
+                                            structure,
+                                            decor,
+                                            x_dist)]
+
+
+# replace the 999 as NA 
+sub_result[EigenPrism_total == 999, c("EigenPrism_total", "EigenPrism_CI") := list(NA,NA)]
+
+
+# EigenPrism
+summary_result_Eg <- sub_result[, .(MSE = mean((EigenPrism_total - mean(var_total_effect))^2, na.rm = T),
+                                    est = mean(EigenPrism_total, na.rm = T),
+                                    est_jack = mean(Eg_mean_jack),
+                                    var = var(EigenPrism_total, na.rm = T),
+                                    v_jack = mean(Eg_var_jack),
+                                    v_jack_c = mean(Eg_var_jack_corr,na.rm = T),
+                                    v_Eg = mean((EigenPrism_CI/(2*z_0.8))^2)),
+                                by = n]
+summary_result_Eg[,v_jack_diff := (v_jack_c + v_jack)/2]
+
+summary_final_Eg <- cbind(summary_result_Eg)
+summary_final_Eg[,method := "EigenPrism"]
+
+# GCTA
+summary_result_GCTA <- sub_result[, .(MSE = mean((GCTA_total - mean(var_total_effect))^2, na.rm = T),
+                                      est = mean(GCTA_total, na.rm = T),
+                                      est_jack = mean(GCTA_mean_jack),
+                                      var = var(GCTA_total, na.rm = T),
+                                      v_jack = mean(GCTA_var_jack),
+                                      v_jack_c = mean(GCTA_var_jack_corr)),
+                                  by = n]
+summary_result_GCTA[,v_jack_diff := (v_jack_c + v_jack)/2]
+
+summary_final_GCTA <- cbind(summary_result_GCTA)
+summary_final_GCTA[,method := "GCTA"]
+summary_final_PCB_total_corr_rr <- rbindlist(list(summary_final_Eg, summary_final_GCTA), fill = TRUE)
+
 
 
 ###############################################################

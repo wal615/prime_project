@@ -15,10 +15,10 @@ source("./R_code/simulation_proposed_GCTA/local_helpers.R")
 source("./reports/proposed_GCTA_paper/est_var_analysis/est_combined_data/covaraites_summary_1999_2004.R")
 c_betam <- 8
 c_betai <- 2
-save_path <- "~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/var_est/combined_effects_GCTA_rr/"
+save_path <- "~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/var_est/combined_effects_PCBs_sparse_decor_report_09_18_2019/"
 
 cores <- 10
-n_iter <- 10
+n_iter <- 100
 n_sub <- 1
 seed_loop <- 1234
 seed_coef <- 1014
@@ -36,15 +36,15 @@ bs <- "full"
 # data generation
 emp_n <- 10^5
 # n_total <- c(100,253,500, 600,700)
-n_total <- c(100,231)
+n_total <- c(100,200,500,1000)
 dist <- "chi"
 generate_data <- generate_chi
 structure <- "un"
 
 
-# set.seed(123)
+set.seed(123)
 index <- sample(1:nrow(PCB_1999_2004_common), 100, replace = F)
-# # pre_cor <- cor(data.matrix(PCB_1999_2004_common[index, ..PCB_common]) %*% invsqrt(cov_1999_2004))
+# pre_cor <- cor(data.matrix(PCB_1999_2004_common[index, ..PCB_common]) %*% invsqrt(cov_1999_2004))
 pre_cor <- cor(data.matrix(PCB_1999_2004_common[index, ..PCB_common]))
 Var <- "null"
 p <- length(PCB_common)
@@ -52,8 +52,8 @@ p <- length(PCB_common)
 
 # combine <- TRUE
 # est <- "total"
-combine <- FALSE
-est <- "main"
+combine <- TRUE
+est <- "total"
 
 # decorr
 decor_method <- "hist"
@@ -69,9 +69,10 @@ uncorr_args <- list(emp = TRUE, combine = combine)
 # uncorr_args <- NULL
 
 # Sparse decor
+# grho = 0.1
 # sparse_decor_method <- "Glasso"
 # sparse_uncorr_method <- dgpGLASSO_method
-# sparse_uncorr_args <- NULL
+# sparse_uncorr_args <- list(rho = grho)
 sparse_decor_method <- NULL
 sparse_uncorr_method <- NULL
 sparse_uncorr_args <- NULL
@@ -122,7 +123,7 @@ kernel_result_col_names_2 <- col_names_GCTA_rr
 # coef
 main_fixed_var <- 0.5
 main_random_var <- 0
-inter_fixed_var <- 0
+inter_fixed_var <- 0.1
 inter_random_var <- 0
 # rho_e <- c(0.2, 0.5, 0.7)
 rho_e <- 0.5

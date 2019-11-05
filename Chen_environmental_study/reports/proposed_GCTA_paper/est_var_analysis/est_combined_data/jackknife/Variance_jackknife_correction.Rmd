@@ -141,6 +141,8 @@ summary_final_PCB_total
 ```{r,}
 additional_normal_main
 summary_final_normal_main
+additional_normal_main_rr
+summary_final_normal_main_rr
 ```
 
 ### chi n >p
@@ -153,6 +155,8 @@ summary_final_chi_main
 ```{r,}
 additional_normal_main_100
 summary_final_normal_main_100
+additional_normal_main_100_rr
+summary_final_normal_main_100_rr
 ```
 
 ### Chi combined effect n <p p = 25

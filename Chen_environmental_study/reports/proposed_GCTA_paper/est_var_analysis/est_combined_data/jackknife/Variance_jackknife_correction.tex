@@ -82,7 +82,7 @@
   \postauthor{\par}
       \predate{\centering\large\emph}
   \postdate{\par}
-    \date{2019-10-25}
+    \date{2019-11-01}
 
 \usepackage{float,amsmath, bbm, siunitx, bm}
 \usepackage{pdfpages}
@@ -333,6 +333,23 @@ effect}\label{main-effect-only-or-larger-n-for-combined-effect}
 4: 231 1.11 7.89     7.91 1.10   1.55   -0.906   NA        0.32       GCTA
 \end{verbatim}
 
+\begin{verbatim}
+   var_main_effect var_inter_effect cov_main_inter_effect var_total_effect
+1:               8                0                     0                0
+   structure decor x_dist
+1:         I FALSE normal
+\end{verbatim}
+
+\begin{verbatim}
+     n  MSE  est est_jack  var v_jack v_jack_c v_Eg v_jack_diff     method
+1: 100  NaN  NaN       NA   NA     NA       NA   NA          NA EigenPrism
+2: 231  NaN  NaN       NA   NA     NA       NA   NA          NA EigenPrism
+3:  50  NaN  NaN       NA   NA     NA       NA   NA          NA EigenPrism
+4: 100 3.78 7.66     7.66 3.70   4.88     3.18   NA        4.03       GCTA
+5: 231 1.11 7.88     7.88 1.10   1.54     1.33   NA        1.43       GCTA
+6:  50 9.22 7.55     7.42 9.11  16.10    -4.51   NA        5.80       GCTA
+\end{verbatim}
+
 \subsubsection{chi n \textgreater{}p}\label{chi-n-p}
 
 \begin{verbatim}
@@ -368,6 +385,30 @@ effect}\label{main-effect-only-or-larger-n-for-combined-effect}
 4: 100  6.25 7.83     7.45  6.29  13.74   -0.966   NA        6.38
 5: 200   NaN  NaN       NA    NA     NA       NA  NaN          NA
 6: 200  2.45 7.88     7.59  2.46   4.64 -214.514   NA     -104.94
+       method
+1: EigenPrism
+2:       GCTA
+3: EigenPrism
+4:       GCTA
+5: EigenPrism
+6:       GCTA
+\end{verbatim}
+
+\begin{verbatim}
+   var_main_effect var_inter_effect cov_main_inter_effect var_total_effect
+1:               8                0                     0                0
+   structure decor x_dist
+1:         I FALSE normal
+\end{verbatim}
+
+\begin{verbatim}
+     n   MSE  est est_jack   var v_jack v_jack_c v_Eg v_jack_diff
+1:  50 21.65 8.37     7.63 21.73  48.10   12.675 33.5       30.39
+2:  50 25.58 8.02     8.49 25.84  73.09 -168.830   NA      -47.87
+3: 100  7.12 7.96     7.06  7.19  15.11    1.977 11.7        8.54
+4: 100  6.25 7.83     7.46  6.29  13.68   -0.742   NA        6.47
+5: 200   NaN  NaN       NA    NA     NA       NA  NaN          NA
+6: 200  2.48 7.89     7.95  2.49   3.92    1.373   NA        2.65
        method
 1: EigenPrism
 2:       GCTA
