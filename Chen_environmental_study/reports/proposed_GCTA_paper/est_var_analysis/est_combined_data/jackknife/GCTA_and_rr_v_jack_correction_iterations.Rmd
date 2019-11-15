@@ -1,0 +1,88 @@
+---
+title: "Jackknife variance estimation corrections"
+author: "Xuelong Wang"
+date: "`r Sys.Date()`"
+output: 
+  pdf_document:
+    toc: true
+    number_sections: true
+    keep_tex: true
+    fig_width: 12
+    fig_height: 3
+header-includes:
+    - \usepackage{float,amsmath, bbm, siunitx, bm}
+    - \usepackage{pdfpages}
+    - \floatplacement{figure}{H}
+    - \newcommand{\indep}{\rotatebox[origin=c]{90}{$\models$}}
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, comment = "", message = FALSE, warning = FALSE, echo = FALSE, fig.height = 10)
+options(scipen=1, digits=2)
+
+library(MASS)
+library(tidyverse)
+library(data.table)
+library(ggforce)
+library(ggpubr)
+library(gridExtra)
+```
+
+# Jackknife variance correction 
+
+If we assume the $S$ is a smooth functions of emperical CDF, especially a quadratic functions, then it can be shown the leading terms of $E(\tilde{Var}(S(X_1, \dots, S_{n-1}))) \geq Var(S(X_1, \dots, S_{n-1}))$ is a quadratic term in expecation. Therefore we could try to estimate the quadratic term and correct the bias for the jackknife variance estimation.
+
+Define $Q_{ii'} \equiv nS - (n-1)(S_{i} + S_{i'}) + (n-2)S_{(ii')}$, then the correction will be 
+\[
+\hat{Var}^{corr}(S(X_1, \dots, X_n)) = \hat{Var}(S(X_1, \dots, X_n)) - \frac{1}{n(n-1)}\sum_{i < i'}(Q_{ii'}- \bar{Q})^2
+\]
+where $\bar{Q} = \sum_{i < i'}(Q_{ii'})/(n(n-1)/2)$
+
+# Simulation study compare two GCTA and GCTA_rr
+GCTA_rr is the `mixed.solve` function from `rrBLUP` r package.  
+Based on the following simulation results, 
+
+1. when $n<p$ case, those two methods' results are very closed to each other. 
+1. when $n>p$ case, in terms of effect estimation and jackknife variance estimation those two methods's reuslts are similar to each other. But for the variance corrections are quite different. That is the statistics $Q$ of our method has a very large variance which leads to negative correction result.  
+
+### setup 
+- Independent 
+- Normal
+- $p = 100$
+- $n = \{50, 75,100, 150, 200\}$
+- with interaction terms
+- main effect: $Var(X^T\beta) = \{0,8,100\}$ 
+\newpage
+
+```{r, include=F}
+source("~/dev/projects/Chen_environmental_study/reports/proposed_GCTA_paper/est_var_analysis/est_combined_data/jackknife/GCTA_and_rr_v_jack_multiple_iteration.R")
+```
+
+### Simulation result 
+### $Var(X^T\beta) = \{0\}$ 
+```{r, }
+summary_final_GCTA_0
+summary_final_GCTA_rr_0
+```
+
+### $Var(X^T\beta) = \{100\}$ 
+```{r, }
+summary_final_GCTA_100
+summary_final_GCTA_rr_100
+```
+
+### $Var(X^T\beta) = \{8\}$ 
+```{r, }
+summary_final_GCTA_8
+summary_result_GCTA_500
+summary_final_GCTA_rr_8
+summary_result_GCTA_rr_500
+
+```
+
+### correlation test $ 
+```{r, }
+summary_final_cor_500
+```

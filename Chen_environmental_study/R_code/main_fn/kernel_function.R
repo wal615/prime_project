@@ -24,7 +24,7 @@ GCTA_rr_kernel <- function(...){
   }
   fit
 }
-col_names_GCTA_rr <- c("GCTA_main")
+col_names_GCTA_rr <- c("GCTA_rr_main")
 
 EigenPrism_kernel <- function(...){
   args <- list(...)
@@ -101,16 +101,9 @@ least_square_kernel_e <- function(...){
 col_names_least_square_e <- c("least_square_e")
 
 
-single_var_kernel <- function(...){
+single_cor_kernel <- function(...){
   args <- list(...)
-  fit <- var(args$b_final)
+  fit <- cor(args$b_final[,1], args$b_final[,2])
   fit
 }
-col_names_single_var <- c("singal_var")
-
-single_mean_kernel <- function(...){
-  args <- list(...)
-  fit <- mean(args$b_final)
-  fit
-}
-col_names_single_var <- c("singal_mean")
+col_names_single_cor <- c("cor_main")

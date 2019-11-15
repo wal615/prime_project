@@ -37,6 +37,7 @@ hlist <- c("USChristmasDay","USGoodFriday","USIndependenceDay","USLaborDay",
 myholidays  <- dates(as.character(c(holiday(2017,hlist),holiday(2018,hlist))),format="Y-M-D")
 t_s[,holiday := is.holiday(as.Date(time_stamp),myholidays)]
 t_s[,weekend := is.weekend(as.Date(time_stamp))]
+saveRDS(t_s, file = "data/clean_data")
 # is.holiday(as.Date("2017-11-23"),myholidays)
 # is.weekend(.)
 
@@ -81,20 +82,3 @@ t_s[,weekend := is.weekend(as.Date(time_stamp))]
 #                             colour = key, linetype = holiday)) +
 #   geom_line() +
 #   theme_bw()
-
-## MetaLonDA
-library(MetaLonDA)
-
-# modify the data set
-test <- copy(t_s)
-test[, group := ifelse(weekend, "weekend", "weekday")]
-test[,time_seq_min := difftime(as.POSIXct(hours, format="%H:%M:%S"), as.POSIXct("00:00:00", format="%H:%M:%S"), units = "mins") %>% as.numeric(.)]
-test[,id := as.numeric(date)]
-one_month_data <- copy(test[id <= 17197,])
-
-# fit the model 
-output.S312425 = metalonda(Count = one_month_data$S312425, Time = one_month_data$time_seq_min, Group = one_month_data$group,
-                                ID = one_month_data$id, n.perm = 40, fit.method = "nbinomial", points = one_month_data$time_seq_min,
-                                text = "S312425", parall = TRUE, pvalue.threshold = 0.05,
-                                adjust.method = "BH", time.unit = "mins", ylabel = "Normalized Count",
-                                col = c("black", "green"), prefix = "S312425_one_month")

@@ -1,0 +1,2 @@
+"var_main_effect","var_inter_effect","cov_main_inter_effect","var_total_effect","cor_main","i_1","i_2","S1_jack.cor_main","S1_v_jack_1","S1_v_jack_2","S1_v_jack_corr","x_dist","structure","p","n","main_fixed_var","main_random_var","inter_fixed_var","inter_random_var","decor","combine","pro","bs","n_sub","rho_e","emp_n","i"
+8,0,0,0,0.641250901946416,1,0,0.643839604996423,0.00405268293287553,0.00405581632666677,0.00388023333778154,"normal","un",2,75,0.5,0,0,0,FALSE,FALSE,1012,"leave-1-2",2850,0.5,1e+05,128

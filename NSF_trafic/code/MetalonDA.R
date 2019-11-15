@@ -1,12 +1,17 @@
-# # implement of ‘MetaLonDA’
+# implement of ‘MetaLonDA’
+# install from CRAN 
 # if (!requireNamespace("BiocManager", quietly = TRUE))
 #   install.packages("BiocManager")
 # BiocManager::install("metagenomeSeq")
 # BiocManager::install("DESeq2")
 # BiocManager::install("edgeR")
 # install.packages("MetaLonDA")
-library(devtools)
-install_github("aametwally/MetaLonDA", ref = "master")
+# library(devtools) ?
+# install_github("aametwally/MetaLonDA", ref = "master") ??
+
+# install the local modified package
+install.packages("~/dev/projects/NSF_trafic/code/MetaLonDA 2/", repos = NULL, type="source")
+install.packages("MetaLonDA")
 
 
 library(MetaLonDA)

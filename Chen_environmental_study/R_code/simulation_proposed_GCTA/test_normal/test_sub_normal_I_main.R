@@ -13,11 +13,11 @@ sourceDirectory("./R_code/main_fn/method/",modifiedOnly = FALSE, recursive = TRU
 source("./R_code/simulation_proposed_GCTA/local_helpers.R")
 # source("./reports/proposed_GCTA_paper/est_var_analysis/est_combined_data/covaraites_summary_2005_2014.R")
 source("./reports/proposed_GCTA_paper/est_var_analysis/est_combined_data/covaraites_summary_1999_2004.R")
-c_betam <- 8
+c_betam <- 100
 c_betai <- 2
-save_path <- "~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/var_est/combined_effects_jackknife_reports_09_25_2019/"
+save_path <- "~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/var_est/combined_effects_GCTA_rr/"
 
-cores <- 5
+cores <- 40
 n_iter <- 100
 n_sub <- 0
 seed_loop <- 1234
@@ -36,7 +36,7 @@ bs <- "leave-1-2"
 # data generation
 emp_n <- 10^5
 # n_total <- c(100,253,500, 600,700)
-n_total <- c(50,100,200)
+n_total <- c(50,75,100,150,200)
 dist <- "normal"
 generate_data <- generate_normal
 structure <- "I"
@@ -91,16 +91,16 @@ if(decor == FALSE) {
 
 
 
-kernel <- EigenPrism_kernel
-kernel_args <- list(decor = decor)
-kernel_name <- "EigenPrism_kernel"
-kernel_result_col_names <- col_names_Eigen
+# kernel <- EigenPrism_kernel
+# kernel_args <- list(decor = decor)
+# kernel_name <- "EigenPrism_kernel"
+# kernel_result_col_names <- col_names_Eigen
 
 
-# kernel_args <- list(interact = 0,decor = decor)
-# kernel <- GCTA_kernel
-# kernel_name <- "GCTA_kernel"
-# kernel_result_col_names <- col_names_GCTA
+kernel_args <- list(interact = 0,decor = decor)
+kernel <- GCTA_kernel
+kernel_name <- "GCTA_kernel"
+kernel_result_col_names <- col_names_GCTA
 
 
 # kernel <- least_square_kernel
@@ -110,10 +110,14 @@ kernel_result_col_names <- col_names_Eigen
 
 
 # est2
-kernel_args_2 <- list(interact = 0,decor = decor)
-kernel_2 <- GCTA_kernel
-kernel_name <- append(kernel_name,"GCTA_kernel") %>% paste(.,collapse = "_")
-kernel_result_col_names_2 <- col_names_GCTA
+kernel_args_2 <- list(decor = decor)
+kernel_2 <- GCTA_rr_kernel
+kernel_name <- append(kernel_name,"GCTA_rr_kernel") %>% paste(.,collapse = "_")
+kernel_result_col_names_2 <- col_names_GCTA_rr
+# kernel_args_2 <- list(interact = 0,decor = decor)
+# kernel_2 <- GCTA_kernel
+# kernel_name <- append(kernel_name,"GCTA_kernel") %>% paste(.,collapse = "_")
+# kernel_result_col_names_2 <- col_names_GCTA
 # kernel_args_2 <- NULL
 # kernel_2 <- NULL
 # kernel_name <- NULL
@@ -140,8 +144,8 @@ pro_list <-  args_all[,5, drop = FALSE] %>% split(x = ., f = seq(nrow(.)))
 
 
 # setup folders for results
-result_name <- paste("decor_method",decor_method, "sparse_method", sparse_decor_method, 
-                     "result_list_fixed_sub", dist, "structure", structure, "main", main_fixed_var, "inter",
+result_name <- paste("decor",decor_method, "sparse", sparse_decor_method, 
+                     dist, "structure", structure, "main", main_fixed_var, "inter",
                      inter_fixed_var, "n", paste(n_total, collapse = "_"), "p", p, "rho_e", paste(rho_e,collapse = "_"), 
                      "decor",decor,"subpro",paste(pro, collapse = "_"), "iter", n_iter, "nsub", n_sub,
                      kernel_name, "est", est, "c_betam", c_betam, "c_betai", c_betai, "Var", Var, sep = "_")
@@ -161,6 +165,7 @@ result_list <- mapply(FUN = simulation_var_est_fn,
                                       kernel_args_2 = kernel_args_2,
                                       kernel_result_col_names_2 = kernel_result_col_names_2,
                                       bs = bs,
+                                      bs_summary = TRUE,
                                       c_betam = c_betam,
                                       c_betai = c_betai,
                                       emp_n = emp_n,
@@ -176,6 +181,5 @@ result_list <- mapply(FUN = simulation_var_est_fn,
                                       seed_loop = seed_loop,
                                       seed_coef = seed_coef,
                                       cores = cores,
-                                      inter_std = FALSE,
                                       inter_result_path = result_folder_path),
                       SIMPLIFY = FALSE)

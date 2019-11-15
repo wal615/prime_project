@@ -44,7 +44,7 @@ for(j in 1:nrow(index)){
 S_1 <- S_j[1:n]
 S_2 <- S_j[-(1:n)]
 
-v_jack <- jack_var(S_1, pro = 101)
+v_jack <- jack_var(S_1, pro = 101, d = 1, n = n)
 v_jack_corr <- v_jact_correct(S = S, n = n, i_1 = index[,1], i_2 = index[,2], S_i = S_j)
 bias_jack <- (n-1)*(mean(S_1) - S)
 e_jack_corr <- S - bias_jack

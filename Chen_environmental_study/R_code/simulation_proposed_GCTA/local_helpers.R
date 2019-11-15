@@ -22,6 +22,7 @@ simulation_var_est_fn <- function(kernel = GCTA_kernel,
                                   n_sub,
                                   pro,
                                   bs,
+                                  bs_summary = TRUE,
                                   rho_e,
                                   emp_n = 10^5,
                                   tran_fn = null_tran,
@@ -30,7 +31,6 @@ simulation_var_est_fn <- function(kernel = GCTA_kernel,
                                   uncorr_args = NULL,
                                   sparse_uncorr_method = NULL,
                                   sparse_uncorr_args = NULL,
-                                  inter_std = FALSE,
                                   seed_loop = 0,
                                   seed_coeff = 0, 
                                   cores = 1,
@@ -146,8 +146,14 @@ simulation_var_est_fn <- function(kernel = GCTA_kernel,
     rho_e <- as.numeric(rho_e)
     sigma_e <- sqrt(total_signal*((1-rho_e)/rho_e))
     
+    
     # Generate y
     y <- signalm+signali+rnorm(length(signalm),sd=sigma_e)
+    
+    ## if in the null case, generate y from normal error
+    if(gene_coeff_args$main_fixed_var == 0 & gene_coeff_args$inter_fixed_var == 0){
+      y <- rnorm(length(signalm),sd=sqrt(8)) %>% matrix(., ncol = 1) # set to 8 is to be compare with main effect 8 and rho_e = 0.5 situation
+    }
     ## estimating model
     # generate data for esitmating
     if(!is.null(uncorr_args$emp)) {
@@ -214,9 +220,10 @@ simulation_var_est_fn <- function(kernel = GCTA_kernel,
     if(bs == "leave-1-2"){
       result_tmp <- cbind(result_tmp, jack_index) 
     }
+    
     # summary the sub-sampling result
-    if(bs != "full"){
-      result_tmp <- subsample_summary(result_tmp, bs = bs, combine = combine, n = gene_data_args$n)
+    if((bs != "full") & (bs_summary == TRUE)){
+      result_tmp <- subsample_summary(result_tmp, bs = bs, combine = combine, n_obs = gene_data_args$n)
     }
     
     # combined the all the attributes to b so we could plot them by the attributes
@@ -232,8 +239,7 @@ simulation_var_est_fn <- function(kernel = GCTA_kernel,
                                             bs = bs,
                                             n_sub = n_sub,
                                             rho_e = rho_e,
-                                            emp_n = emp_n,
-                                            inter_std = inter_std)))
+                                            emp_n = emp_n)))
     additional <- additional[unique(names(additional))] # remove duplicated attrs
     additional$pre_cor <- NULL # pre_cor is a covariance matrix so don't need to carry it to the output
     additional$sigma_total_emp <- NULL

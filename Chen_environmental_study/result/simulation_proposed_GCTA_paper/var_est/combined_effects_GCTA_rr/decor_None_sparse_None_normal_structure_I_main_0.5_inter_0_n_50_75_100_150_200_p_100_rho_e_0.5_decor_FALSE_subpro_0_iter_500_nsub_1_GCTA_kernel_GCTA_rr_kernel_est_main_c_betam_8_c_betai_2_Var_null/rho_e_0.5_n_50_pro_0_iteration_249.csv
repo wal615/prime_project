@@ -1,0 +1,2 @@
+"var_main_effect","var_inter_effect","cov_main_inter_effect","var_total_effect","GCTA_main","GCTA_inter","sub_GCTA_main","sub_GCTA_inter","GCTA_rr_main","sub_GCTA_rr_main","x_dist","structure","p","n","main_fixed_var","main_random_var","inter_fixed_var","inter_random_var","interact","decor","combine","pro","bs","n_sub","rho_e","emp_n","i"
+8,0,0,0,8.08498046684825,0,0,0,8.0849804382756,0,"normal","I",100,50,0.5,0,0,0,0,FALSE,FALSE,0,"full",1,0.5,1e+05,249
