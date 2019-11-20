@@ -55,7 +55,7 @@ v_jact_correct <- function(S, n, i_1, i_2, S_i, Q = FALSE) {
 }
 
 
-subsample_summary <- function (result_tmp, bs, combine, n_obs){
+subsample_summary <- function (result_tmp, bs, combine, n_obs, d){
   result_tmp <- data.table(result_tmp)
   # select the name of the col
   if (combine == TRUE){
@@ -68,23 +68,23 @@ subsample_summary <- function (result_tmp, bs, combine, n_obs){
   
   
   # get the jackknife bias corrected estimation and variance estimation
-  if(bs == "leave-1"){ #leave - 1 means no variance bias correction#
+  if(bs %in% c("leave-1","leave-d")){ #leave - 1 means no variance bias correction#
     
     # col1
     col1 <- col_name[1]
     sub_col1 <- sub_col_name[1]
     S1 <- data.matrix(result_tmp[1, ..col1])
     S_jack <- bias_jack_corr(S1, data.matrix(result_tmp[, ..sub_col1]))
-    v_jack <- jack_var(x = data.matrix(result_tmp[, ..sub_col1]), pro = 101, d = 1, n = n_obs)
+    v_jack <- jack_var(x = data.matrix(result_tmp[, ..sub_col1]), pro = 101, d = d, n = n_obs)
     S1_jack <- data.table(S1_jack = S_jack, S1_v_jack_1 = v_jack)
     
     # col2
-    if(length(col_name) ==2 ) {
+    if(length(col_name) == 2 ) {
       col2 <- col_name[2]
       sub_col2 <- sub_col_name[2]
       S2 <- data.matrix(result_tmp[1, ..col2])
       S_jack <- bias_jack_corr(S2, data.matrix(result_tmp[, ..sub_col2]))
-      v_jack <- jack_var(x = data.matrix(result_tmp[, ..sub_col2]), pro = 101, d = 1, n = n_obs)
+      v_jack <- jack_var(x = data.matrix(result_tmp[, ..sub_col2]), pro = 101, d = d, n = n_obs)
       S2_jack <- data.table(S2_jack = S_jack, S2_v_jack_1 = v_jack)
     }
     

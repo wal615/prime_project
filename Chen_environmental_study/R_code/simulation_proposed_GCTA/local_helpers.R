@@ -20,7 +20,7 @@ simulation_var_est_fn <- function(kernel = GCTA_kernel,
                                   gene_data_args,
                                   brep, 
                                   n_sub,
-                                  pro,
+                                  d,
                                   bs,
                                   bs_summary = TRUE,
                                   rho_e,
@@ -82,7 +82,6 @@ simulation_var_est_fn <- function(kernel = GCTA_kernel,
     sigma_total_emp_h <- sigma_total_emp
   }
     
-  
 
   # Calcualte the effects
   result_raw <- foreach(ibrep = 1:brep, .combine = rbind, .verbose = TRUE, .errorhandling = "remove", .options.RNG = seed_loop) %dorng%   {
@@ -192,9 +191,9 @@ simulation_var_est_fn <- function(kernel = GCTA_kernel,
       } else {
         index <- i
       }
-  
+      
       sub_data <- generate_sub(data = list(y = y,b_raw = b_raw), 
-                               pro = pro,
+                               d = d,
                                bs = bs,
                                n = length(y),
                                iteration = index)
@@ -220,10 +219,10 @@ simulation_var_est_fn <- function(kernel = GCTA_kernel,
     if(bs == "leave-1-2"){
       result_tmp <- cbind(result_tmp, jack_index) 
     }
-    
+
     # summary the sub-sampling result
     if((bs != "full") & (bs_summary == TRUE)){
-      result_tmp <- subsample_summary(result_tmp, bs = bs, combine = combine, n_obs = gene_data_args$n)
+      result_tmp <- subsample_summary(result_tmp, bs = bs, combine = combine, n_obs = gene_data_args$n, d = d)
     }
     
     # combined the all the attributes to b so we could plot them by the attributes
@@ -235,7 +234,7 @@ simulation_var_est_fn <- function(kernel = GCTA_kernel,
                                        kernel_args_2,
                                        list(combine = combine, 
                                             n = nrow(b_raw),
-                                            pro = pro,
+                                            d = d,
                                             bs = bs,
                                             n_sub = n_sub,
                                             rho_e = rho_e,
@@ -248,7 +247,7 @@ simulation_var_est_fn <- function(kernel = GCTA_kernel,
     
     # save the result
     if(!(is.null(inter_result_path))) data.frame(result_tmp, additional, i = ibrep, row.names = NULL, stringsAsFactors = FALSE) %>% write.csv(., 
-                                                                                                  file = paste0(inter_result_path, "rho_e_", rho_e, "_n_", nrow(b_raw), "_pro_", pro,"_iteration_",ibrep,".csv"), 
+                                                                                                  file = paste0(inter_result_path, "rho_e_", rho_e, "_n_", nrow(b_raw), "_d_", d,"_iteration_",ibrep,".csv"), 
                                                                                                   row.names = FALSE)
     paste0(ibrep, " is done at ", timestamp())
   }

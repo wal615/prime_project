@@ -13,33 +13,43 @@ sourceDirectory("./R_code/main_fn/method/",modifiedOnly = FALSE, recursive = TRU
 source("./R_code/simulation_proposed_GCTA/local_helpers.R")
 # source("./reports/proposed_GCTA_paper/est_var_analysis/est_combined_data/covaraites_summary_2005_2014.R")
 source("./reports/proposed_GCTA_paper/est_var_analysis/est_combined_data/covaraites_summary_1999_2004.R")
+
 c_betam <- 8
 c_betai <- 2
 save_path <- "~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/var_est/combined_effects_GCTA_rr/"
 
-cores <- 40
-n_iter <- 500
-n_sub <- 0
+cores <- 20
+n_iter <- 100
+n_sub <- 10^3
+# n_sub <- 0
 seed_loop <- 1234
 seed_coef <- 1014
 # steup parameters
 
-# sub_sampling
-# pro <- 102
-# bs <- "bs"
-pro <- 1012
-bs <- "leave-1-2"
-# pro <- 0
-# bs <- "full"
-# pro <- 101
-# bs <- "leave-1"
 # data generation
 emp_n <- 10^5
-# n_total <- c(100,253,500, 600,700)
+# n_total <- 50
 n_total <- c(50,75,100,150,200)
 dist <- "normal"
 generate_data <- generate_normal
 structure <- "un"
+
+# sub_sampling
+# d <- 102
+# bs <- "bs"
+# d <- 1012
+# bs <- "leave-1-2"
+# d <- 0
+# bs <- "full"
+
+# bs <- "leave-1"
+# d_fn <- function(n) {1}
+
+bs <- "leave-d"
+d_fn <- function(n) {round(0.5*n,0)}
+
+
+
 
 
 # set.seed(123)
@@ -137,17 +147,18 @@ gene_coeff_args <- list(main_fixed_var = main_fixed_var,
                         inter_random_var = inter_random_var)
 
 # generate args list
-args_all <- expand.grid(structure = structure, p = p, n = n_total, pre_cor = list(pre_cor), rho_e = rho_e, pro = pro)
+args_all <- expand.grid(structure = structure, p = p, n = n_total, pre_cor = list(pre_cor), rho_e = rho_e)
+args_all$d <- d_fn(args_all$n)
 gene_data_args_list <- args_all[,1:4] %>% split(x = ., f = seq(nrow(.))) # generate a list from each row of a dataframe
 rho_e_list <- args_all[,5, drop = FALSE] %>% split(x = ., f = seq(nrow(.)))
-pro_list <-  args_all[,6, drop = FALSE] %>% split(x = ., f = seq(nrow(.)))
+d_list <-  args_all[,6, drop = FALSE] %>% data.matrix(.) %>% split(x = ., f = seq(nrow(.)))
 
 
 # setup folders for results
 result_name <- paste("decor",decor_method, "sparse", sparse_decor_method, 
                      dist, "structure", structure, "main", main_fixed_var, "inter",
                      inter_fixed_var, "n", paste(n_total, collapse = "_"), "p", p, "rho_e", paste(rho_e,collapse = "_"), 
-                     "decor",decor,"subpro",paste(pro, collapse = "_"), "iter", n_iter, "nsub", n_sub,
+                     "decor",decor,"subd",paste(unique(unlist(d_list)), collapse = "_"), "iter", n_iter, "nsub", n_sub,
                      kernel_name, "est", est, "c_betam", c_betam, "c_betai", c_betai, "Var", Var, sep = "_")
 result_folder_path <- paste0(save_path, result_name, "/")
 dir.create(result_folder_path)
@@ -156,7 +167,7 @@ dir.create(result_folder_path)
 result_list <- mapply(FUN = simulation_var_est_fn,
                       gene_data_args = gene_data_args_list,
                       rho_e = rho_e_list,
-                      pro = pro_list,
+                      d = d_list,
                       MoreArgs = list(p = p,
                                       kernel = kernel,
                                       kernel_args = kernel_args,
