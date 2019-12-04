@@ -172,6 +172,31 @@ generate_chi <- function(n, p, rho = NULL, sig_coef = 1,
 }
 
 ##################################################################################
+## generate chi-square for median
+##################################################################################
+generate_chi_median <- function(n, p, rho = NULL, sig_coef = 1, 
+                         structure = c("cs","un","ar", "I")[1], 
+                         pre_cor = NULL) {
+  # generate individual chi_square
+  p_normal <- p
+
+  if(structure == "I"){
+    x <- mvrnorm(n = n,
+                 mu = rep(0,p_normal),
+                 Sigma = diag(p_normal))
+  }
+  
+  b <- x^2
+  colnames(b) <- paste0("X", 1:ncol(b))
+  
+  attributes(b) <- append(attributes(b), 
+                          list(x_dist = "chi", 
+                               str = structure,
+                               corr = rho))
+  b
+}
+
+##################################################################################
 ## subset PCB data
 ##################################################################################
 

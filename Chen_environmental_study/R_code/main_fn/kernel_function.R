@@ -107,3 +107,10 @@ single_cor_kernel <- function(...){
   fit
 }
 col_names_single_cor <- c("cor_main")
+
+single_median_kernel <- function(...){
+  args <- list(...)
+  fit <- median(args$b_final[,1])
+  fit
+}
+col_names_single_median <- c("median_main")

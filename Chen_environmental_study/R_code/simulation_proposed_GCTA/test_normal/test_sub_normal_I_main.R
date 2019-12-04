@@ -16,10 +16,10 @@ source("./R_code/simulation_proposed_GCTA/local_helpers.R")
 source("./reports/proposed_GCTA_paper/est_var_analysis/est_combined_data/covaraites_summary_1999_2004.R")
 c_betam <- 8
 c_betai <- 2
-save_path <- "~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/var_est/combined_effects_GCTA_rr/"
+save_path <- "~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/var_est/combined_effects_GCTA_rr/intermediate_result/"
 
-cores <- 20
-n_iter <- 100
+cores <- 1
+n_iter <- 1
 n_sub <- 10^3
 # n_sub <- 0
 seed_loop <- 1234
@@ -29,8 +29,8 @@ seed_coef <- 1014
 # data generation
 emp_n <- 10^5
 # n_total <- 50
-# n_total <- c(50,75,100,150,200)
-n_total <- c(500,750,1000,1500,2000)
+n_total <- c(50,75,100,150,200)
+# n_total <- c(1500,2000)
 dist <- "normal"
 generate_data <- generate_normal
 structure <- "I"
@@ -57,7 +57,7 @@ d_fn <- function(n) {round(0.5*n,0)}
 # pre_cor <- cor(data.matrix(PCB_1999_2004_common[index, ..PCB_common]))
 Var <- "null"
 # p <- length(PCB_common)
-p <- 1000
+p <- 100
 
 # combine <- TRUE
 # est <- "total"
@@ -175,7 +175,7 @@ result_list <- mapply(FUN = simulation_var_est_fn,
                                       kernel_args_2 = kernel_args_2,
                                       kernel_result_col_names_2 = kernel_result_col_names_2,
                                       bs = bs,
-                                      bs_summary = TRUE,
+                                      bs_summary = FALSE,
                                       c_betam = c_betam,
                                       c_betai = c_betai,
                                       emp_n = emp_n,

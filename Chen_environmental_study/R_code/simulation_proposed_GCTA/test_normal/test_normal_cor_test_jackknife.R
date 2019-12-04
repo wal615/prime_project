@@ -18,10 +18,10 @@ c_betam <- 8
 c_betai <- 2
 save_path <- "~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/var_est/combined_effects_GCTA_rr/"
 
-cores <- 20
-n_iter <- 100
-n_sub <- 10^3
-# n_sub <- 0
+cores <- 1
+n_iter <- 1
+# n_sub <- 10^3
+n_sub <- 0
 seed_loop <- 1234
 seed_coef <- 1014
 # steup parameters
@@ -42,11 +42,11 @@ structure <- "un"
 # d <- 0
 # bs <- "full"
 
-# bs <- "leave-1"
-# d_fn <- function(n) {1}
+bs <- "leave-1"
+d_fn <- function(n) {1}
 
-bs <- "leave-d"
-d_fn <- function(n) {round(0.5*n,0)}
+# bs <- "leave-d"
+# d_fn <- function(n) {round(0.5*n,0)}
 
 
 
@@ -113,11 +113,14 @@ if(decor == FALSE) {
 # kernel_result_col_names <- col_names_GCTA
 
 
-kernel <- single_cor_kernel
+# kernel <- single_cor_kernel
+# kernel_args <- list(decor = decor)
+# kernel_name <- "correlation"
+# kernel_result_col_names <- col_names_single_cor
+kernel <- single_median_kernel
 kernel_args <- list(decor = decor)
-kernel_name <- "correlation"
-kernel_result_col_names <- col_names_single_cor
-
+kernel_name <- "median"
+kernel_result_col_names <- col_names_single_median
 
 # est2
 # kernel_args_2 <- list(decor = decor)

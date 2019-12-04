@@ -28,6 +28,8 @@ library(data.table)
 library(ggforce)
 library(ggpubr)
 library(gridExtra)
+library(kableExtra)
+library(knitr)
 ```
 
 # Jackknife variance correction 
@@ -85,4 +87,64 @@ summary_result_GCTA_rr_500
 ### correlation test $ 
 ```{r, }
 summary_final_cor_500
+```
+
+## compare the performance of delete 1 and delete d in variance estimation 
+The delete-d jackknife varinace estimator is 
+\[
+\mathcal{v}_{J(d)} = \frac{n-d}{d} \cdot \frac{1}{S}\sum_{S}(\hat{\theta}_s - \hat{\theta}_{s.} )
+\],
+where $S =\binom{n}{d}$. 
+Note that S could a very large value, so in the following simulation, only$S = 1000$ is used. 
+
+### setup 
+- Independent 
+- Normal
+- $p = \{100, 1000\}$
+- $n = \{50, 75,100, 150, 200, 500, 750,1000, 1500, 2000\}$
+- $d = 0.5 \times n$
+- $n_{repeat} = 1000$ for delete d jackknife 
+- main effect: $Var(X^T\beta) = 8$ 
+
+
+\newpage
+
+```{r, include = F}
+source("~/dev/projects/Chen_environmental_study/reports/proposed_GCTA_paper/est_var_analysis/est_combined_data/jackknife/delete_d_GCTA_and_rr_v_jack_multiple_iteration.R")
+```
+
+### GCTA with p = 100 
+```{r, echo = F}
+rbind(summary_final_GCTA_8_d_1, summary_final_GCTA_8_d_d) %>% 
+  kable(., "latex", longtable = T, booktabs = T) %>%
+  kable_styling(latex_options = c("repeat_header"), font_size = 7)
+```
+
+### GCTA with p = 1000 
+```{r, echo = F}
+rbind(summary_final_GCTA_8_d_1_1000, summary_final_GCTA_8_d_d_1000) %>% 
+  kable(., "latex", longtable = T, booktabs = T) %>%
+  kable_styling(latex_options = c("repeat_header"), font_size = 7)
+```
+
+### GCTA_rr_rr with p = 100 
+```{r, echo = F}
+rbind(summary_final_GCTA_rr_8_d_1, summary_final_GCTA_rr_8_d_d) %>% 
+  kable(., "latex", longtable = T, booktabs = T) %>%
+  kable_styling(latex_options = c("repeat_header"), font_size = 7)
+```
+
+### GCTA_rr with p = 1000 
+```{r, echo = F}
+rbind(summary_final_GCTA_rr_8_d_1_1000, summary_final_GCTA_rr_8_d_d_1000) %>% 
+  kable(., "latex", longtable = T, booktabs = T) %>%
+  kable_styling(latex_options = c("repeat_header"), font_size = 7)
+```
+
+### cor with n = 100
+```{r, echo = F}
+options(scipen=1, digits=5)
+rbind(summary_final_cor_8_d_1_100, summary_final_cor_8_d_d_100) %>% 
+  kable(., "latex", longtable = T, booktabs = T) %>%
+  kable_styling(latex_options = c("repeat_header"), font_size = 7)
 ```
