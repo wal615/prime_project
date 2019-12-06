@@ -19,9 +19,9 @@ c_betai <- 2
 save_path <- "~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/var_est/combined_effects_GCTA_rr/"
 
 cores <- 20
-n_iter <- 1000
-# n_sub <- 5e+3
-n_sub <- 0
+# n_iter <- 1000
+n_sub <- 5e+3
+# n_sub <- 0
 seed_loop <- 1234
 seed_coef <- 1014
 # steup parameters

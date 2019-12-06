@@ -10,7 +10,7 @@ output:
     fig_width: 12
     fig_height: 3
 header-includes:
-    - \usepackage{float,amsmath, bbm, siunitx, bm}
+    - \usepackage{float,amsmath, bbm, amssymb, siunitx, bm}
     - \usepackage{pdfpages}
     - \floatplacement{figure}{H}
     - \newcommand{\indep}{\rotatebox[origin=c]{90}{$\models$}}
@@ -95,7 +95,7 @@ The delete-d jackknife varinace estimator is
 \mathcal{v}_{J(d)} = \frac{n-d}{d} \cdot \frac{1}{S}\sum_{S}(\hat{\theta}_s - \hat{\theta}_{s.} )
 \],
 where $S =\binom{n}{d}$. 
-Note that S could a very large value, so in the following simulation, only$S = 1000$ is used. 
+Note that S could a very large value, so in the following simulation, only $S = 1000$ is used. In Jun Shao's another paper, he proposed an approximation of the deletel-d variance estimation. That is just select m from $S =\binom{n}{d}$ sub-samples and in that paper it recommended $m = n^{1.5}$.
 
 ### setup 
 - Independent 
@@ -115,7 +115,7 @@ source("~/dev/projects/Chen_environmental_study/reports/proposed_GCTA_paper/est_
 
 ### GCTA with p = 100 
 ```{r, echo = F}
-rbind(summary_final_GCTA_8_d_1, summary_final_GCTA_8_d_d) %>% 
+rbind(summary_final_GCTA_8_d_1, summary_final_GCTA_8_d_d, summary_final_GCTA_8_d_d_m, fill = TRUE) %>% 
   kable(., "latex", longtable = T, booktabs = T) %>%
   kable_styling(latex_options = c("repeat_header"), font_size = 7)
 ```
@@ -129,7 +129,7 @@ rbind(summary_final_GCTA_8_d_1_1000, summary_final_GCTA_8_d_d_1000) %>%
 
 ### GCTA_rr_rr with p = 100 
 ```{r, echo = F}
-rbind(summary_final_GCTA_rr_8_d_1, summary_final_GCTA_rr_8_d_d) %>% 
+rbind(summary_final_GCTA_rr_8_d_1, summary_final_GCTA_rr_8_d_d, summary_final_GCTA_rr_8_d_d_m, fill = TRUE) %>% 
   kable(., "latex", longtable = T, booktabs = T) %>%
   kable_styling(latex_options = c("repeat_header"), font_size = 7)
 ```
@@ -141,10 +141,18 @@ rbind(summary_final_GCTA_rr_8_d_1_1000, summary_final_GCTA_rr_8_d_d_1000) %>%
   kable_styling(latex_options = c("repeat_header"), font_size = 7)
 ```
 
-### cor with n = 100
+### cor with n = 200
 ```{r, echo = F}
 options(scipen=1, digits=5)
 rbind(summary_final_cor_8_d_1_100, summary_final_cor_8_d_d_100) %>% 
+  kable(., "latex", longtable = T, booktabs = T) %>%
+  kable_styling(latex_options = c("repeat_header"), font_size = 7)
+```
+
+### median with n = 200
+```{r, echo = F}
+options(scipen=1, digits=5)
+rbind(summary_final_median_8_d_1_1000, summary_final_median_8_d_d_1000) %>% 
   kable(., "latex", longtable = T, booktabs = T) %>%
   kable_styling(latex_options = c("repeat_header"), font_size = 7)
 ```

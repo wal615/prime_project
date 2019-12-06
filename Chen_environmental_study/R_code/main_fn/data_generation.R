@@ -131,32 +131,6 @@ generate_normal <- function(n, p, rho = NULL, sig_coef = 1,
 generate_normal_median <- function(n, p, rho = NULL, sig_coef = 1, 
                             structure = c("cs","un","ar", "I")[1], 
                             pre_cor = NULL){
-  if(structure == "cs"){
-    cor_str <- matrix(rep(rho,p^2), ncol = p)
-    diag(cor_str) <- 1
-    cor_str <- cor_str * sig_coef
-    
-    x <- mvrnorm(n = n,
-                 mu = rep(0,p),
-                 Sigma = cor_str^2)
-  }
-  
-  if(structure == "un"){
-    if(class(pre_cor) == "list") {pre_cor <- pre_cor[[1]]}
-    cor_str <- pre_cor * sig_coef # to keep the covariance matrix same for each simulation iterations
-    x <- mvrnorm(n = n,
-                 mu = rep(0,p),
-                 Sigma = cor_str^2)
-  }
-  
-  if(structure == "ar"){
-    cor_str <- autocorr.mat(p, rho)
-    cor_str <- cor_str * sig_coef
-    
-    x <- mvrnorm(n = n,
-                 mu = rep(0,p),
-                 Sigma = cor_str^2)
-  }
   
   if(structure == "I"){
     
