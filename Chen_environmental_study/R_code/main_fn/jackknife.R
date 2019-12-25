@@ -13,12 +13,14 @@ bias_jack_corr <- function(S, S_i) {
 
 # jackknife variance estimation
 jack_var <- function(x, pro = 0.5, d = 1, n){
-  if (mean(is.na(x)) > 0.05) warning("too many NA in jackknife subsample result")
+  if (mean(is.na(x)) > 0.05) {
+    warning(paste0("too many NA in jackknife subsample result: ",mean(is.na(x))))
+  }
   x <- x[!is.na(x)]
   x_m <- mean(x, na.rm = T)
   var_1 <- (x_m - x)^2 %>% sum(., na.rm = T)
   if(pro == 101){
-    var_2 <-  (n -d) / (d * length(x)) * var_1 # lenght(x) = cbn (n,d) if no NAs
+    var_2 <-  (n - d) / (d * length(x)) * var_1 # lenght(x) = cbn (n,d) if no NAs
   } else if (pro ==102){
     var_2 <- 1/n * var_1
   } else{
@@ -63,6 +65,7 @@ subsample_summary <- function (result_tmp, bs, combine, n_obs, d){
   } else {
     name_pattern <- "sub.*main|main.*sub"
   }
+  
   sub_col_name <- names(result_tmp)[grepl(names(result_tmp), pattern = name_pattern)]
   col_name <- substr(sub_col_name, 5, stop = 100) # whole sample result
   
@@ -79,7 +82,7 @@ subsample_summary <- function (result_tmp, bs, combine, n_obs, d){
     S1_jack <- data.table(S1_jack = S_jack, S1_v_jack_1 = v_jack)
     
     # col2
-    if(length(col_name) == 2 ) {
+    if(length(col_name) == 2) {
       col2 <- col_name[2]
       sub_col2 <- sub_col_name[2]
       S2 <- data.matrix(result_tmp[1, ..col2])
@@ -87,7 +90,6 @@ subsample_summary <- function (result_tmp, bs, combine, n_obs, d){
       v_jack <- jack_var(x = data.matrix(result_tmp[, ..sub_col2]), pro = 101, d = d, n = n_obs)
       S2_jack <- data.table(S2_jack = S_jack, S2_v_jack_1 = v_jack)
     }
-    
     
   } else if(bs == "leave-1-2"){ #leave-1-2 means add variance bias correction for quadratic #
     
@@ -122,3 +124,4 @@ subsample_summary <- function (result_tmp, bs, combine, n_obs, d){
     cbind(result_tmp[1,!sub_col_name, with = FALSE], S1_jack)
   }
 }
+

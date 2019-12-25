@@ -36,7 +36,11 @@ generate_inter_random <- function(p, additional_args) {
 ##################################################################################
 sparsify_coeff <- function(main_coeff, inter_coeff, sparse_ratio = 0.5){
   p <- length(main_coeff)
-  index_main <- ((1/sparse_ratio)*1:floor(p*sparse_ratio)) %>% round(.,0)
+  if(sparse_ratio == 0) {
+    index_main <- integer(0)
+  } else {
+    index_main <- ((1/sparse_ratio)*1:floor(p*sparse_ratio)) %>% round(.,0)  
+  }
   index_inter <- grep(paste("^",main_coeff[index_main], ":", collapse="|", sep = ""), 
                       inter_coeff, value = FALSE) # based on the variable names 
   list(index_main = index_main,

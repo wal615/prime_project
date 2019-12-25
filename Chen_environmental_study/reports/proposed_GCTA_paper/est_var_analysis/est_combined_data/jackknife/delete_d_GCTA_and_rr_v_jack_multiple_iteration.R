@@ -191,6 +191,9 @@ summary_result_GCTA_rr_jack <- sub_result[, .(GCTA_rr_main_jack = mean(S2_jack.G
 summary_final_GCTA_rr_8_d_1_1000 <- merge(summary_result_GCTA_rr,summary_result_GCTA_rr_jack, by = "n")
 summary_final_GCTA_rr_8_d_1_1000[, d := d]
 
+
+
+
 # delete d = half 100
 #############################################################################################################################
 
@@ -480,3 +483,157 @@ summary_result_median_jack <- sub_result[, .(median_main_jack = mean(S1_jack.med
 
 summary_final_median_8_d_d_1000 <- merge(summary_result_median,summary_result_median_jack, by = "n")
 summary_final_median_8_d_d_1000[, d := 0.5]
+
+# delete d = 1 50 - 2000 
+#############################################################################################################################
+setwd("~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/var_est/combined_effects_GCTA_rr_Eg_jack_1_d/")
+result_path <- "decor_None_sparse_None_normal_structure_I_main_0.5_inter_0_n_50_75_100_150_200_500_1000_1500_2000_p_100_rho_e_0.5_decor_FALSE_subd_1_iter_100_nsub_0_EigenPrism_kernel_GCTA_rr_kernel_est_main_c_betam_8_c_betai_2_Var_null"
+file_list_all <- list.files(paste0("./", result_path, "/")) %>% paste0(paste0("./", result_path, "/"),.)
+file_list <- file_list_all
+sub_result <- lapply(file_list, function (x) {read.csv(x, header = TRUE, stringsAsFactors = FALSE)}) %>% rbindlist(., fill = TRUE)
+
+additional <- sub_result[1,.(var_main_effect,
+                             var_inter_effect,
+                             cov_main_inter_effect,
+                             var_total_effect,
+                             structure,
+                             decor,
+                             x_dist)]
+d <- sub_result[,unique(d)]
+
+
+# EigenPrism
+summary_result_EigenPrism <- sub_result[, .(est_mean = mean(EigenPrism_main, na.rm = T),
+                                            NA_i = mean(is.na(EigenPrism_main)),
+                                            var_main_effect = var_main_effect[1]), by = .(i,n)][, .(MSE = mean((est_mean - mean(var_main_effect))^2, na.rm = T),
+                                                                                                    est_var = var(est_mean, na.rm = T),
+                                                                                                    est_mean = mean(est_mean, na.rm = T),
+                                                                                                    NA_main = sum(NA_i)), by = n] %>% 
+  setorder(., by = n)
+summary_result_EigenPrism_jack <- sub_result[, .(EigenPrism_main_jack = mean(S1_jack.EigenPrism_main, na.rm = T),
+                                                 EigenPrism_v_jack = mean(S1_v_jack_1, na.rm = T),
+                                                 EigenPrism_v_jack_var = var(S1_v_jack_1, na.rm = T)),by = .(n)] %>%
+  setorder(., by = n)
+
+summary_final_EigenPrism_8_d_1_50_2000 <- merge(summary_result_EigenPrism,summary_result_EigenPrism_jack, by = "n")
+summary_final_EigenPrism_8_d_1_50_2000[, d := d]
+
+# GCTA_rr
+summary_result_GCTA_rr <- sub_result[, .(est_mean = mean(GCTA_rr_main, na.rm = T),
+                                         NA_i = mean(is.na(GCTA_rr_main)),
+                                         var_main_effect = var_main_effect[1]), by = .(i,n)][, .(MSE = mean((est_mean - mean(var_main_effect))^2, na.rm = T),
+                                                                                                 est_var = var(est_mean, na.rm = T),
+                                                                                                 est_mean = mean(est_mean, na.rm = T),
+                                                                                                 NA_main = sum(NA_i)), by = n] %>% 
+  setorder(., by = n)
+summary_result_GCTA_rr_jack <- sub_result[, .(GCTA_rr_main_jack = mean(S2_jack.GCTA_rr_main, na.rm = T),
+                                              GCTA_rr_v_jack = mean(S2_v_jack_1, na.rm = T),
+                                              GCTA_rr_v_jack_var = var(S2_v_jack_1, na.rm = T)),by = .(n)] %>%
+  setorder(., by = n)
+
+summary_final_GCTA_rr_8_d_1_50_2000 <- merge(summary_result_GCTA_rr,summary_result_GCTA_rr_jack, by = "n")
+summary_final_GCTA_rr_8_d_1_50_2000[, d := d]
+
+
+# delete d = d 50 - 2000 
+#############################################################################################################################
+setwd("~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/var_est/combined_effects_GCTA_rr_Eg_jack_1_d/")
+result_path <- "decor_None_sparse_None_normal_structure_I_main_0.5_inter_0_n_50_75_100_150_200_500_1000_1500_2000_p_100_rho_e_0.5_decor_FALSE_subd_25_38_50_75_100_250_500_750_1000_iter_100_nsub_89443_EigenPrism_kernel_GCTA_rr_kernel_est_main_c_betam_8_c_betai_2_Var_null/"
+file_list_all <- list.files(paste0("./", result_path, "/")) %>% paste0(paste0("./", result_path, "/"),.)
+file_list <- file_list_all
+sub_result <- lapply(file_list, function (x) {read.csv(x, header = TRUE, stringsAsFactors = FALSE)}) %>% rbindlist(., fill = TRUE)
+
+additional <- sub_result[1,.(var_main_effect,
+                             var_inter_effect,
+                             cov_main_inter_effect,
+                             var_total_effect,
+                             structure,
+                             decor,
+                             x_dist)]
+d <- sub_result[,unique(d)]
+
+
+# EigenPrism
+summary_result_EigenPrism <- sub_result[, .(est_mean = mean(EigenPrism_main, na.rm = T),
+                                            NA_i = mean(is.na(EigenPrism_main)),
+                                            var_main_effect = var_main_effect[1]), by = .(i,n)][, .(MSE = mean((est_mean - mean(var_main_effect))^2, na.rm = T),
+                                                                                                    est_var = var(est_mean, na.rm = T),
+                                                                                                    est_mean = mean(est_mean, na.rm = T),
+                                                                                                    NA_main = sum(NA_i)), by = n] %>% 
+  setorder(., by = n)
+summary_result_EigenPrism_jack <- sub_result[, .(EigenPrism_main_jack = mean(S1_jack.EigenPrism_main, na.rm = T),
+                                                 EigenPrism_v_jack = mean(S1_v_jack_1, na.rm = T),
+                                                 EigenPrism_v_jack_var = var(S1_v_jack_1, na.rm = T)),by = .(n)] %>%
+  setorder(., by = n)
+
+summary_final_EigenPrism_8_d_d_50_2000 <- merge(summary_result_EigenPrism,summary_result_EigenPrism_jack, by = "n")
+summary_final_EigenPrism_8_d_d_50_2000[, d := d]
+
+# GCTA_rr
+summary_result_GCTA_rr <- sub_result[, .(est_mean = mean(GCTA_rr_main, na.rm = T),
+                                         NA_i = mean(is.na(GCTA_rr_main)),
+                                         var_main_effect = var_main_effect[1]), by = .(i,n)][, .(MSE = mean((est_mean - mean(var_main_effect))^2, na.rm = T),
+                                                                                                 est_var = var(est_mean, na.rm = T),
+                                                                                                 est_mean = mean(est_mean, na.rm = T),
+                                                                                                 NA_main = sum(NA_i)), by = n] %>% 
+  setorder(., by = n)
+summary_result_GCTA_rr_jack <- sub_result[, .(GCTA_rr_main_jack = mean(S2_jack.GCTA_rr_main, na.rm = T),
+                                              GCTA_rr_v_jack = mean(S2_v_jack_1, na.rm = T),
+                                              GCTA_rr_v_jack_var = var(S2_v_jack_1, na.rm = T)),by = .(n)] %>%
+  setorder(., by = n)
+
+summary_final_GCTA_rr_8_d_d_50_2000 <- merge(summary_result_GCTA_rr,summary_result_GCTA_rr_jack, by = "n")
+summary_final_GCTA_rr_8_d_d_50_2000[, d := d]
+
+
+# delete d = 1 no sparse
+#############################################################################################################################
+setwd("~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/var_est/combined_effects_GCTA_rr_Eg_jack_1_d/")
+result_path <- "decor_None_sparse_None_normal_structure_I_main_0.5_inter_0_n_50_75_100_150_200_p_100_rho_e_0.5_decor_FALSE_subd_1_iter_100_nsub_0_EigenPrism_kernel_GCTA_rr_kernel_est_main_c_betam_8_c_betai_2_sparse_0"
+file_list_all <- list.files(paste0("./", result_path, "/")) %>% paste0(paste0("./", result_path, "/"),.)
+file_list <- file_list_all
+sub_result <- lapply(file_list, function (x) {read.csv(x, header = TRUE, stringsAsFactors = FALSE)}) %>% rbindlist(., fill = TRUE)
+
+additional <- sub_result[1,.(var_main_effect,
+                             var_inter_effect,
+                             cov_main_inter_effect,
+                             var_total_effect,
+                             structure,
+                             decor,
+                             x_dist)]
+d <- sub_result[,unique(d)]
+
+
+# EigenPrism
+summary_result_EigenPrism <- sub_result[, .(est_mean = mean(EigenPrism_main, na.rm = T),
+                                            NA_i = mean(is.na(EigenPrism_main)),
+                                            var_main_effect = var_main_effect[1]), by = .(i,n)][, .(MSE = mean((est_mean - mean(var_main_effect))^2, na.rm = T),
+                                                                                                    est_var = var(est_mean, na.rm = T),
+                                                                                                    est_mean = mean(est_mean, na.rm = T),
+                                                                                                    NA_main = sum(NA_i)), by = n] %>% 
+  setorder(., by = n)
+summary_result_EigenPrism_jack <- sub_result[, .(EigenPrism_main_jack = mean(S1_jack.EigenPrism_main, na.rm = T),
+                                                 EigenPrism_v_jack = mean(S1_v_jack_1, na.rm = T),
+                                                 EigenPrism_v_jack_var = var(S1_v_jack_1, na.rm = T)),by = .(n)] %>%
+  setorder(., by = n)
+
+summary_final_EigenPrism_8_d_1_no_sparse <- merge(summary_result_EigenPrism,summary_result_EigenPrism_jack, by = "n")
+summary_final_EigenPrism_8_d_1_no_sparse[, d := d]
+
+# GCTA_rr
+summary_result_GCTA_rr <- sub_result[, .(est_mean = mean(GCTA_rr_main, na.rm = T),
+                                         NA_i = mean(is.na(GCTA_rr_main)),
+                                         var_main_effect = var_main_effect[1]), by = .(i,n)][, .(MSE = mean((est_mean - mean(var_main_effect))^2, na.rm = T),
+                                                                                                 est_var = var(est_mean, na.rm = T),
+                                                                                                 est_mean = mean(est_mean, na.rm = T),
+                                                                                                 NA_main = sum(NA_i)), by = n] %>% 
+  setorder(., by = n)
+summary_result_GCTA_rr_jack <- sub_result[, .(GCTA_rr_main_jack = mean(S2_jack.GCTA_rr_main, na.rm = T),
+                                              GCTA_rr_v_jack = mean(S2_v_jack_1, na.rm = T),
+                                              GCTA_rr_v_jack_var = var(S2_v_jack_1, na.rm = T)),by = .(n)] %>%
+  setorder(., by = n)
+
+summary_final_GCTA_rr_8_d_1_no_sparse <- merge(summary_result_GCTA_rr,summary_result_GCTA_rr_jack, by = "n")
+summary_final_GCTA_rr_8_d_1_no_sparse[, d := d]
+
+

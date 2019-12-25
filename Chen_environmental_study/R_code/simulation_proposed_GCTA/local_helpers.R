@@ -16,6 +16,7 @@ simulation_var_est_fn <- function(kernel = GCTA_kernel,
                                   c_betam = 8,
                                   combine = FALSE,
                                   gene_coeff_args = NULL,
+                                  sparse_ratio = 0.5,
                                   generate_data,
                                   gene_data_args,
                                   brep, 
@@ -108,7 +109,7 @@ simulation_var_est_fn <- function(kernel = GCTA_kernel,
     betai <- betai_fixed + generate_inter_random(p, gene_coeff_args)
     
     # Sparsity defualt is 50%
-    sparse_index <- sparsify_coeff(colnames(b_gene_model$b_m), colnames(b_gene_model$b_i))  
+    sparse_index <- sparsify_coeff(colnames(b_gene_model$b_m), colnames(b_gene_model$b_i), sparse_ratio = sparse_ratio)  
     betam[sparse_index$index_main] <- 0
     betai[sparse_index$index_inter] <- 0
     
@@ -144,7 +145,6 @@ simulation_var_est_fn <- function(kernel = GCTA_kernel,
     # Set the heritability ratio
     rho_e <- as.numeric(rho_e)
     sigma_e <- sqrt(total_signal*((1-rho_e)/rho_e))
-    
     
     # Generate y
     y <- signalm+signali+rnorm(length(signalm),sd=sigma_e)

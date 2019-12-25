@@ -1,0 +1,268 @@
+# GCTA method 
+
+\subsection{GCTA approach}
+The GCTA approach estimates variances of weak effects...
+
+\subsubsection{Model assumption}
+GCTA approach is built on a linear model:
+\begin{equation}
+    \*y_i = \mu_i + \sum_{j = 1}^p\*x_{ij}\beta_j+ \*\epsilon_i. \label{eq:GCTA}
+\end{equation}
+where $\*y_i$ denotes a outcome (quantitative measurement) and $\*x_{ij}~, j = 1, \dots, p$ are the standardized covariates measurements for subject $i$. Besides we also assume the independence between the covaraites and error terms, $\*\epsilon_i \indep \*x_{jk}$.The equation \ref{eq:GCTA} may be re-expressed as
+\begin{equation}
+    \*Y = \mu + \*X\beta + \*\epsilon \label{eq:GCTA_Mat}.
+\end{equation}
+where $\*X$ is a $n \times p$ matrix with element as $x_{ij}$,  $\*Y = (\*y_1, \dots, \*y_n)^T$, $\mu = (\mu_1, \dots, \mu_n)^T$, $\beta = (\beta_1, \dots, \beta_p)^T$,and $\*\epsilon = (\*\epsilon_1, \dots, \*\epsilon_n)^T$. 
+
+The goal here is to estimate how much variation of the outcome is accounted for by the covariates. Based on the assumptions of model \ref{eq:GCTA}, the variance of y could be composed into two parts,
+\[
+    Var(\*y_i) = Var(\*X_i^T\beta) + Var(\*\epsilon) = \sigma^2_{\beta} + \sigma^2_{\epsilon}.
+\]
+The $\sigma^2_{\beta}$ is the response's variability counted by covariates. Since $\*x_i's$ are independent, we have $\sigma^2_{\beta} = \sum_{i=1}^p \beta_i$. To estimate the variance, one intuitively approach is to estimate the $\sigma^2_{\epsilon}$ by a regression model. But it may not feasible when the number of covaraites is large. The GCTA approach uses a working random effects model to estimate $\sigma^2_{\beta}$ without knowing the error terms variance.
+
+\subsubsection{Advantages of the GCTA apporach}
+For the environmental study mentioned before, the GCTA method demonstrates some advantages than other variance estimation approaches.
+\begin{itemize}
+    \item a working random effects model to estimate $Var(\*X\beta)$
+    \item Don't need to select the casual covariates, so that could work with weak signal problem
+    \item relatively little bias compared to other methods
+\end{itemize}
+
+\subsubsection{Two more Obstacles}
+Although we discussed the GCTA approach could be a good tool for the environmental health analysis, there are still issues we need to tackle. 
+\begin{itemize}
+    \item Theoretical analysis of The GCTA approach suggests the Independence of causal covariates, but most of the environmental data are high correlated.
+    \item In SNP studies, the number of covariates is large and the number of interactive terms is also going to be very large, which makes the interactive effect even harder to be estimated. Therefore, interaction effect usually is not considered in SNPs studies. Although in environmental studies the number of predictors is not large (within 40), directly applying the GCTA method to estimate the interactive effect still hardly guarantee good performance.      
+\end{itemize}
+
+\subsection{The proposed method}
+
+With those two problems in mind, we develop a new method by modifying the GCTA method for correlated covariates. The main idea is to transform the correlated covariates into uncorrelated ones. The transformation process is also called decorrelation. We consider a linear transformation so that the transformation does not change the variance structure.  
+
+\subsubsection{Transformation for correlated covariates}
+The linear transformation is 
+\[
+    \*Z = A^{-1}\*X,
+\]
+where $\*X$ are the covariates vector,$A$ is a linear transformation operator which is a full rank square matrix.
+After transformation, the covariance of the new covariates $\*Z$ will be 
+\[
+    Var(\*Z) = I_p.
+\]
+Moreover, based on the model assumed by GCTA (model \ref{eq:GCTA_Mat}), we have 
+\[
+   \*Y = \mu + \*X^T\beta + \*\epsilon = \*Z^TA^T\beta + \*\epsilon = \*Z^T\alpha + \*\epsilon,
+\]
+where $\alpha = A^T\beta$.
+Let's look the total effect of \*X and \*Z:
+\[
+    Var(\*X^T\beta) = Var(\*Z^TA^T\beta) = Var(\*Z^T\alpha).
+\]
+
+Therefore, the $\*Z$ will be the uncorrelated predictors and $\*Z^T\alpha$ should keep the same total cumulative effect as $\*X^T\beta$. If $\*X$ follows a normal distribution, i.e. $\*X \sim N(0, \Sigma)$, then the $\*Z \sim N(0, I_p)$. Therefore, $\*Z$'s elements are independent to each other, which is the exact condition we want for the GCTA appraoch. Although for non-normal covariates the decorrelation procedure only reduces linear association with no guarantee of independence, it still can improve the performance of GCTA method.   
+
+\subsubsection{Decorrelation procedure}
+There are many methods and algorithms for data decorrelation. One of commonly used methods is to apply the eigenvalue decomposition to the covariance matrix. 
+Let $\Sigma_X$ be the covariance matrix of $\*X$, so $\Sigma_X$ is a symmetric and positive-definite. Then eigenvalue decomposition of $\Sigma_X$ will be
+\[
+  Var(\*X) = \Sigma_X = U\Lambda U^T,
+\]
+where $X$ is the random vector with dim as $p \times 1$, $\Sigma_X$ is $p \times p$ symmetry and p.d. matrix, $\Lambda$ is a diagonal matrix with each diagonal element as the eigenvalue. If the $\Sigma_X$ is full rank, then we could just take the reciprocal of each square root of eigenvalue as following. 
+\[
+  \Sigma^{-\frac{1}{2}}_X = U\Lambda^{-\frac{1}{2}}U^T, \text{ and } 
+  \Lambda^{-\frac{1}{2}} = \begin{bmatrix}
+                        \lambda_1^{-\frac{1}{2}} & \dots & 0 \\
+                        \vdots & \ddots & \vdots \\
+                        0 &  \dots  & \lambda_p^{-\frac{1}{2}}
+                        \end{bmatrix}.
+\]
+So that after transformation, the $\Sigma^{-\frac{1}{2}}_X \*X$ will have an identity covariance matrix as following:
+\[
+  Var(\Sigma^{-\frac{1}{2}}_X \*X) = \Sigma^{-\frac{1}{2}}_X \Sigma_X\Sigma^{-\frac{1}{2}}_X = U\Lambda^{-\frac{1}{2}}U^T U\Lambda^{-1}U^T U\Lambda^{-\frac{1}{2}}U^T = I_p.
+\] 
+If the $\Sigma_X$ is not full rank, then we can still use the eigenvalue decomposition. But the procedure cannot guarantee the identity covariance matrix anymore. The reason is that some eigenvalues will be zero, so we can not take the reciprocal. One straightforward solution is just leave them there:
+\[
+  Var(X) = \Sigma_X = U\Lambda U^T =
+                        \begin{bmatrix}
+                         U_1 & U_2\\
+                        \end{bmatrix}
+                        \begin{bmatrix}
+                        \Lambda_1 & 0\\
+                        0 & 0
+                        \end{bmatrix}
+                        \begin{bmatrix}
+                        U_1^T \\
+                        U_2^T
+                        \end{bmatrix} = U_1\Lambda_1U_1^T,
+\]
+where $U_1$ is a $p \times r$ matrix with $r < p$ and in most of case r = n the sample size. Then after applying the same procedure we get following, 
+\[
+  \tilde{\Sigma}^{-\frac{1}{2}}_X = U_1\Lambda_1^{-\frac{1}{2}}U_1^T,
+\]
+Where $\tilde{\Sigma}^{-1}_X$ is the Moore Penrose inverse. After transformation the X we have, 
+\[
+  Var(\tilde{\Sigma}^{-\frac{1}{2}}_X X) = \tilde{\Sigma}^{-\frac{1}{2}}_X \Sigma_X\Sigma^{-\frac{1}{2}}_X =  U_1\Lambda^{-\frac{1}{2}}_1U^T_1 = U_1U_1^T,  
+\]
+Where $U_1U_1^T + U_2U_2^T = I_p$ and $(U_1U_1^T)^T U_1U_1^T = U_1U_1^T$. Besides, $U_1U_1^T$ and $U_2U_2^T$ are indempotent and $rank(U_2U_2^T) + rank(U_1U_1^T) = p$.
+
+
+\subsection{Interactive effect}
+For analysing the interactive effect, we need to consider interactive terms in our model. Let's just consider a 2-way interaction model
+\begin{equation}
+  \*y_i = \mu_i + \sum_{j = 1}^p \*x_{ij}\beta_j + \sum_{l \neq k} \gamma_{lk}\*x_{il}\*x_{ik} + \*\epsilon_i, \label{eq:GCTA_inter}
+\end{equation}
+where $\gamma_{jk}$ denotes interactive coefficients. Anything else will be same as GCTA model \ref{eq:GCTA_Mat}. This model also can be expressed in the matrix form
+\begin{equation}
+  \*Y = \mu + \*X\beta + \*X\Gamma \*X^T + \*\epsilon. \label{eq:GCTA_inter_Mat}
+\end{equation}
+Where $\Gamma$ is a $p \times p$ matrix with element as $\gamma_{jk}$. Let's also assume that $\*X_i \indep \*\epsilon_i$, then the variance of $\*y_i$ can be decompose as following
+\begin{equation}
+    Var(\*y_i) = Var(\*X_i^T\beta) + Var(\*X_i^T\Gamma \*X_i) + 2Cov(\*X_i^T\beta, \*X_i^T\Gamma \*X_i) + Var(\*\epsilon_i).
+\end{equation}
+After adding the interactive terms, the situation becomes complicated. 
+\begin{enumerate} 
+\item Besides the interactive effect there is an additional covariance term of $\*X_i^T\beta, \*X_i^T\Gamma \*X_i$ to deal with. \item The main and interactive terms are bonded to be dependent, even thought all elements $X$ are independent. Same situation for the 2-way interactive terms, they are also dependent. 
+\end{enumerate} 
+As we mentioned before, independence of covariates is suggested for GCTA approach to work well, so we cannot guarantee the performance of GCTA approach.    
+
+To handle the covariance terms, we now focus on the situations where $Cov(\*X_i^T\beta, \*X_i^T\Gamma \*X_i) = 0$, so that we don't have to worry about it. For the cases where we cannot ignore the covariance term, it's hard to estimate both of the effects well. The reason is that the covariance term will be somehow mixed into both main and interactive effect estimations, so it is not easy to separate covariance part from the effects' estimation. We will discuss it latter in this paper. Let's just assume that covariates are independent and centered to each other and there is no square terms in the model \ref{eq:GCTA_inter}, e.i. $\gamma_{jj} = 0$, 
+\begin{align*}
+Cov(X^T\beta, X^T\Gamma X) &= E[(X^T\beta - E(X^T\beta))(X^T\Gamma X - E(X^T\Gamma X))]\\
+    &= E[X^T\beta(X^T\Gamma X - E(X^T\Gamma X)) \\
+    &= E[X^T\beta \cdot X^T\Gamma X] \\
+    &= E[(\sum_h^p(x_{h}\beta_h))(\sum_j^p\sum_k^p\gamma_{jk}x_{j} x_{k}) ] \\
+    & = 0 
+\end{align*}
+
+For the second issues, we extend our proposed approach to handle the interactive terms. Although it's impossible to make the interactive terms independent with themselves or the main terms, we still can transform them into uncorrelated. Therefore, we could combine the main and interactive term together as a larger covariate matrix 
+\[
+           \*X_{i,t} = \begin{bmatrix}   
+                  \*X_{i} \\        
+                  \*X_{i,inter}   
+              \end{bmatrix},    
+\]
+where $\*X_{i,inter} = (\*x_{i1}\*x_{i2}, \dots, \*x_{i(p-1)}\*x_{ip})^T$.
+Then apply the decorrelation process on the combined matrix $X_t = (X_{1t}, \dots, X_{nt})^T$.
+Given the independence of the covariates, simulation studies have shown that the proposed method could estimate both of the cumulative and interactive effect with little bias. This also suggests that the uncorrelation of covariates may be good enough to let the GCTA works appropriately. Therefore, we may release the condition from independent to uncorrelated covariates. 
+
+
+
+
+
+
+## available software 
+
+## Simulation study compare two GCTA and GCTA_rr
+GCTA_rr is the `mixed.solve` function from `rrBLUP` r package.  
+Based on the following simulation results, 
+
+1. when $n<p$ case, those two methods' results are very closed to each other. 
+1. when $n>p$ case, in terms of effect estimation and jackknife variance estimation those two methods's reuslts are similar to each other. But for the variance corrections are quite different. That is the statistics $Q$ of our method has a very large variance which leads to negative correction result.  
+
+### setup 
+- Independent 
+- Normal
+- $p = 100$
+- $n = \{50, 75,100, 150, 200\}$
+- with interaction terms
+- main effect: $Var(X^T\beta) = \{0,8,100\}$ 
+\newpage
+
+```{r, include=F, cache=TRUE}
+source("~/dev/projects/Chen_environmental_study/reports/proposed_GCTA_paper/est_var_analysis/est_combined_data/jackknife/GCTA_and_rr_v_jack_multiple_iteration.R")
+```
+
+### Simulation result 
+### $Var(X^T\beta) = \{0\}$ 
+```{r, }
+summary_final_GCTA_0
+summary_final_GCTA_rr_0
+```
+
+### $Var(X^T\beta) = \{100\}$ 
+```{r, }
+summary_final_GCTA_100
+summary_final_GCTA_rr_100
+```
+
+### $Var(X^T\beta) = \{8\}$ 
+```{r, }
+summary_final_GCTA_8
+summary_result_GCTA_500
+summary_final_GCTA_rr_8
+summary_result_GCTA_rr_500
+
+```
+
+### correlation test $ 
+```{r, }
+summary_final_cor_500
+```
+
+## compare the performance of delete 1 and delete d in variance estimation 
+The delete-d jackknife varinace estimator is 
+\[
+\mathcal{v}_{J(d)} = \frac{n-d}{d} \cdot \frac{1}{S}\sum_{S}(\hat{\theta}_s - \hat{\theta}_{s.} )
+\],
+where $S =\binom{n}{d}$. 
+Note that S could a very large value, so in the following simulation, only $S = 1000$ is used. In Jun Shao's another paper, he proposed an approximation of the deletel-d variance estimation. That is just select m from $S =\binom{n}{d}$ sub-samples and in that paper it recommended $m = n^{1.5}$.
+
+### setup 
+- Independent 
+- Normal
+- $p = \{100, 1000\}$
+- $n = \{50, 75,100, 150, 200, 500, 750,1000, 1500, 2000\}$
+- $d = 0.5 \times n$
+- $n_{repeat} = 1000$ for delete d jackknife 
+- main effect: $Var(X^T\beta) = 8$ 
+
+
+\newpage
+
+```{r, include = F, cache=TRUE}
+source("~/dev/projects/Chen_environmental_study/reports/proposed_GCTA_paper/est_var_analysis/est_combined_data/jackknife/delete_d_GCTA_and_rr_v_jack_multiple_iteration.R")
+```
+
+### GCTA with p = 100 
+```{r, echo = F}
+rbind(summary_final_GCTA_8_d_1, summary_final_GCTA_8_d_d, summary_final_GCTA_8_d_d_m, fill = TRUE) %>% 
+  kable(., "latex", longtable = T, booktabs = T) %>%
+  kable_styling(latex_options = c("repeat_header"), font_size = 7)
+```
+
+### GCTA with p = 1000 
+```{r, echo = F}
+rbind(summary_final_GCTA_8_d_1_1000, summary_final_GCTA_8_d_d_1000) %>% 
+  kable(., "latex", longtable = T, booktabs = T) %>%
+  kable_styling(latex_options = c("repeat_header"), font_size = 7)
+```
+
+### GCTA_rr_rr with p = 100 
+```{r, echo = F}
+rbind(summary_final_GCTA_rr_8_d_1, summary_final_GCTA_rr_8_d_d, summary_final_GCTA_rr_8_d_d_m, fill = TRUE) %>% 
+  kable(., "latex", longtable = T, booktabs = T) %>%
+  kable_styling(latex_options = c("repeat_header"), font_size = 7)
+```
+
+### GCTA_rr with p = 1000 
+```{r, echo = F}
+rbind(summary_final_GCTA_rr_8_d_1_1000, summary_final_GCTA_rr_8_d_d_1000) %>% 
+  kable(., "latex", longtable = T, booktabs = T) %>%
+  kable_styling(latex_options = c("repeat_header"), font_size = 7)
+```
+
+### cor with n = 200
+```{r, echo = F}
+options(scipen=1, digits=5)
+rbind(summary_final_cor_8_d_1_100, summary_final_cor_8_d_d_100) %>% 
+  kable(., "latex", longtable = T, booktabs = T) %>%
+  kable_styling(latex_options = c("repeat_header"), font_size = 7)
+```
+
+### median with n = 200
+```{r, echo = F}
+options(scipen=1, digits=5)
+rbind(summary_final_median_8_d_1_1000, summary_final_median_8_d_d_1000) %>% 
+  kable(., "latex", longtable = T, booktabs = T) %>%
+  kable_styling(latex_options = c("repeat_header"), font_size = 7)
+```

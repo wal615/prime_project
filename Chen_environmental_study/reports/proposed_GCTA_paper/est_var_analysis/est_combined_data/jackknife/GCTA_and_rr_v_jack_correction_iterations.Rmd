@@ -156,3 +156,59 @@ rbind(summary_final_median_8_d_1_1000, summary_final_median_8_d_d_1000) %>%
   kable(., "latex", longtable = T, booktabs = T) %>%
   kable_styling(latex_options = c("repeat_header"), font_size = 7)
 ```
+
+## Jackknife variance estimation's bias and sample size n 
+
+### setup 
+- Independent 
+- Normal
+- $p = 100$
+- $n = \{50, 75,100, 150, 200, 500, 750,1000, 1500, 2000\}$
+- $d = 0.5 \times n$
+- $n_{repeat} = n^{1.5}$ for delete d jackknife 
+- main effect: $Var(X^T\beta) = 8$ 
+
+
+Based on the previous simulation results, we find there is a bias among all the jackknife variance estimation. Based on the Efron's result, the overestimation is because the statistics $S$ is not a smooth function of the distribution function, so that the correct coefficient actually inflate the variance estimation. 
+
+The following reuslt is trying to see the relation between the bias and the sample size n 
+
+```{r, include = F}
+source("~/dev/projects/Chen_environmental_study/reports/proposed_GCTA_paper/est_var_analysis/est_combined_data/jackknife/delete_d_1_EG_GCTA_rr_for_v_jack_plot.R")
+```
+
+### GCTA with p = 100 
+```{r, echo = F}
+data <- rbind(summary_final_GCTA_rr_8_d_1_50_2000,
+              summary_final_GCTA_rr_8_d_d_50_2000,
+              fill = TRUE) %>% setorder(., by = n)
+
+kable(data, "latex", longtable = T, booktabs = T) %>%
+kable_styling(latex_options = c("repeat_header"), font_size = 5)
+data[, d:= ifelse(d == 1, "1", "d")]
+ggplot(data = data, 
+       aes(x=n, y=relative_ratio, group=d)) +
+  geom_line(aes(color=d)) +
+  geom_point(aes(color=d)) +
+  ylim(c(0,2)) +
+  theme_bw()
+```
+
+### Eg with p = 100 
+```{r, echo = F}
+data <- rbind(summary_final_EigenPrism_8_d_1_50_2000,
+              summary_final_EigenPrism_8_d_d_50_2000,
+              fill = TRUE) %>% setorder(., by = n)
+
+kable(data, "latex", longtable = T, booktabs = T) %>%
+kable_styling(latex_options = c("repeat_header"), font_size = 5)
+data[, d:= ifelse(d == 1, "1", "d")]
+ggplot(data = data, 
+       aes(x=n, y=relative_ratio, group=d)) +
+  geom_line(aes(color=d)) +
+  geom_point(aes(color=d)) +
+  ylim(c(0,2)) +
+  theme_bw()
+```
+
+

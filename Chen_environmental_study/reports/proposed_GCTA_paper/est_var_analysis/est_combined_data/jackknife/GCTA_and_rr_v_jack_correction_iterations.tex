@@ -82,7 +82,7 @@
   \postauthor{\par}
       \predate{\centering\large\emph}
   \postdate{\par}
-    \date{2019-12-06}
+    \date{2019-12-12}
 
 \usepackage{booktabs}
 \usepackage{longtable}
@@ -539,6 +539,126 @@ n & MSE & est\_var & est\_mean & NA\_main & median\_main\_jack & median\_v\_jack
 \end{longtable}
 
 \endgroup{}
+
+\subsection{Jackknife variance estimation's bias and sample size
+n}\label{jackknife-variance-estimations-bias-and-sample-size-n}
+
+\subsubsection{setup}\label{setup-2}
+
+\begin{itemize}
+\tightlist
+\item
+  Independent
+\item
+  Normal
+\item
+  \(p = 100\)
+\item
+  \(n = \{50, 75,100, 150, 200, 500, 750,1000, 1500, 2000\}\)
+\item
+  \(d = 0.5 \times n\)
+\item
+  \(n_{repeat} = n^{1.5}\) for delete d jackknife
+\item
+  main effect: \(Var(X^T\beta) = 8\)
+\end{itemize}
+
+Based on the previous simulation results, we find there is a bias among
+all the jackknife variance estimation. Based on the Efron's result, the
+overestimation is because the statistics \(S\) is not a smooth function
+of the distribution function, so that the correct coefficient actually
+inflate the variance estimation.
+
+The following reuslt is trying to see the relation between the bias and
+the sample size n
+
+\subsubsection{GCTA with p = 100}\label{gcta-with-p-100-1}
+
+\begingroup\fontsize{5}{7}\selectfont
+
+\begin{longtable}{rrrrrrrrrr}
+\toprule
+n & MSE & est\_var & est\_mean & NA\_main & GCTA\_rr\_main\_jack & GCTA\_rr\_v\_jack & GCTA\_rr\_v\_jack\_var & d & relative\_ratio\\
+\midrule
+\endfirsthead
+\multicolumn{10}{@{}l}{\textit{(continued)}}\\
+\toprule
+n & MSE & est\_var & est\_mean & NA\_main & GCTA\_rr\_main\_jack & GCTA\_rr\_v\_jack & GCTA\_rr\_v\_jack\_var & d & relative\_ratio\\
+\midrule
+\endhead
+\
+\endfoot
+\bottomrule
+\endlastfoot
+50 & 25.57707 & 25.83503 & 8.0196 & 0 & 8.4975 & 74.09557 & 8378.63491 & 1 & 1.86803\\
+50 & 25.57707 & 25.83503 & 8.0196 & 0 & 35.1628 & 40.54145 & 363.39717 & 25 & 0.56924\\
+75 & 13.17873 & 13.09873 & 7.5407 & 0 & 7.5224 & 32.11198 & 685.27217 & 1 & 1.45153\\
+75 & 13.17873 & 13.09873 & 7.5407 & 0 & -120.5219 & 26.56808 & 100.83487 & 38 & 1.02829\\
+100 & 6.25254 & 6.28648 & 7.8299 & 0 & 7.4523 & 13.73592 & 102.19922 & 1 & 1.18499\\
+\addlinespace
+100 & 6.25254 & 6.28648 & 7.8299 & 0 & -257.5807 & 18.09388 & 38.62832 & 50 & 1.87822\\
+150 & 4.06803 & 4.09156 & 8.1319 & 0 & 8.1135 & 6.92455 & 8.46409 & 1 & 0.69240\\
+150 & 4.06803 & 4.09156 & 8.1319 & 0 & -16.9623 & 9.31223 & 7.10912 & 75 & 1.27596\\
+200 & 2.47559 & 2.48901 & 7.8929 & 0 & 7.9447 & 3.93194 & 1.32257 & 1 & 0.57972\\
+200 & 2.47559 & 2.48901 & 7.8929 & 0 & 76.1900 & 5.07627 & 1.31029 & 100 & 1.03948\\
+\addlinespace
+500 & 0.82596 & 0.82766 & 8.0811 & 0 & 8.0819 & 0.89206 & 0.02461 & 1 & 0.07782\\
+500 & 0.82596 & 0.82766 & 8.0811 & 0 & 4.8643 & 1.06427 & 0.02959 & 250 & 0.28589\\
+1000 & 0.33152 & 0.32460 & 8.1008 & 0 & 8.1036 & 0.35088 & 0.00145 & 1 & 0.08097\\
+1000 & 0.33152 & 0.32460 & 8.1008 & 0 & 95.6021 & 0.39383 & 0.00168 & 500 & 0.21327\\
+1500 & 0.21016 & 0.20455 & 8.0876 & 0 & 8.0888 & 0.21620 & 0.00050 & 1 & 0.05694\\
+\addlinespace
+1500 & 0.19380 & 0.19373 & 8.0537 & 0 & -100.0448 & 0.23232 & 0.00051 & 750 & 0.19923\\
+2000 & 0.13784 & 0.13756 & 8.0407 & 0 & 8.0458 & 0.15273 & 0.00013 & 1 & 0.11029\\*
+\end{longtable}
+
+\endgroup{}
+
+\includegraphics{GCTA_and_rr_v_jack_correction_iterations_files/figure-latex/unnamed-chunk-14-1.pdf}
+
+\subsubsection{Eg with p = 100}\label{eg-with-p-100}
+
+\begingroup\fontsize{5}{7}\selectfont
+
+\begin{longtable}{rrrrrrrrrr}
+\toprule
+n & MSE & est\_var & est\_mean & NA\_main & EigenPrism\_main\_jack & EigenPrism\_v\_jack & EigenPrism\_v\_jack\_var & d & relative\_ratio\\
+\midrule
+\endfirsthead
+\multicolumn{10}{@{}l}{\textit{(continued)}}\\
+\toprule
+n & MSE & est\_var & est\_mean & NA\_main & EigenPrism\_main\_jack & EigenPrism\_v\_jack & EigenPrism\_v\_jack\_var & d & relative\_ratio\\
+\midrule
+\endhead
+\
+\endfoot
+\bottomrule
+\endlastfoot
+50 & 21.6516 & 21.7303 & 8.3722 & 0 & 7.6266 & 48.0986 & 454.15195 & 1 & 1.21343\\
+50 & 21.6516 & 21.7303 & 8.3722 & 0 & -366.8806 & 48.3710 & 463.03961 & 25 & 1.22597\\
+75 & 12.1880 & 12.2997 & 7.8937 & 0 & 7.3525 & 24.4991 & 94.99580 & 1 & 0.99184\\
+75 & 12.1880 & 12.2997 & 7.8937 & 0 & -463.3255 & 25.6137 & 77.40674 & 38 & 1.08246\\
+100 & 7.1233 & 7.1933 & 7.9561 & 0 & 7.0599 & 15.1132 & 40.83974 & 1 & 1.10102\\
+\addlinespace
+100 & 7.1233 & 7.1933 & 7.9561 & 0 & -710.8797 & 16.1844 & 33.40698 & 50 & 1.24993\\
+150 & NaN & NA & NaN & 100 & NaN & NaN & NA & 1 & NaN\\
+150 & NaN & NA & NaN & 100 & NaN & 8.4296 & 4.89393 & 75 & NA\\
+200 & NaN & NA & NaN & 100 & NaN & NaN & NA & 1 & NaN\\
+200 & NaN & NA & NaN & 100 & NaN & 5.0164 & 0.94967 & 100 & NA\\
+\addlinespace
+500 & NaN & NA & NaN & 100 & NaN & NaN & NA & 1 & NaN\\
+500 & NaN & NA & NaN & 100 & NaN & NaN & NA & 250 & NaN\\
+1000 & NaN & NA & NaN & 100 & NaN & NaN & NA & 1 & NaN\\
+1000 & NaN & NA & NaN & 100 & NaN & NaN & NA & 500 & NaN\\
+1500 & NaN & NA & NaN & 99 & NaN & NaN & NA & 1 & NaN\\
+\addlinespace
+1500 & NaN & NA & NaN & 69 & NaN & NaN & NA & 750 & NaN\\
+2000 & NaN & NA & NaN & 100 & NaN & NaN & NA & 1 & NaN\\*
+\end{longtable}
+
+\endgroup{}
+
+\includegraphics{GCTA_and_rr_v_jack_correction_iterations_files/figure-latex/unnamed-chunk-15-1.pdf}
 
 
 \end{document}

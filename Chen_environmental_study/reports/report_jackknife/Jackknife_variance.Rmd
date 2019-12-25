@@ -1,0 +1,119 @@
+## Jackknife Vairance 
+$S(X_1, \dots, X_n)$ is a statistic of interest, define 
+\[
+S_{(i)} = S(X_1, X_{i-1}, X_{i+1}\dots, X_n)
+\]
+as the delete-1 result of $S$.
+If we delete each observation, then we will get n $S_{(i)}$. We could use those n subsample to estimate the variance of $S$ on original n dataset as following, 
+\[
+\widehat{VAR}~S(X_1, \dots, X_n) = \frac{n-1}{n}\sum_{i}^n(S_{(i)} -S_{(.)} )^2
+\],
+where $S_{(.)} = \frac{\sum_{i}^nS_{(i)}}{n}$.
+The variance estimation actually can be considered into a two-step process
+
+1. Estimate the variance of $S$ with n-1 sample:
+\[
+\widehat{VAR}~S(X_1, X_{i-1}, X_{i+1}\dots, X_n) := \widetilde{VAR}~S(X_1, X_{i-1}, X_{i+1}\dots, X_n) = \sum_i^{n}(S_{(i)} -S_{(.)} )^2,
+\]
+which could be considered as an modification of the variance estimation corresponding to the dependency of the n delete-1 subsamples. That is originally we need a coefficient $\frac{1}{n-1}$ for sample variance if the samples are indepedent. But the delete-1 subsamples are high dependent to each other, so intuitively the sample variance will underestimate the variance. In order to alleviate the underestimation, it seems that we multiply  $n-1$. 
+\[
+n-1 \cdot \frac{1}{n-1} \cdot \sum_i^{n}(S_{(i)} -S_{(.)} )^2 = \sum_i^{n}(S_{(i)} -S_{(.)} )^2.
+\]
+However, by doing this, the result become overestimated and that will be discussed in the following sections.
+
+1. Modification the variance of $n-1$ samples to $n$ samples by:
+\[
+\widehat{VAR}~S(X_1, \dots, X_n) = \frac{n-1}{n} \widetilde{VAR}~S(X_1, X_{i-1}, X_{i+1}\dots, X_n).
+\]
+
+## Bias of Variance estimation 
+
+In the Efron 1981's paper, it shows that 
+\[
+E\left[\widetilde{VAR}~S(X_1, X_{i-1}, X_{i+1}\dots, X_n)\right] \geq VAR~S(X_1, X_{i-1}, X_{i+1}\dots, X_n).
+\]
+
+He also he mentioned that the bias of the variance will be reduced by increasing of n. 
+\[
+E\hat{Var} = Var^{(n)} + \{\frac{n-1}{n}Var^{(n-1)} - Var^{(n)})\} + O(1/n^3)
+\]
+
+For example, if $S_n = F^{-1}_n(1/2)$, which is the sample median estimation, then ...
+
+### Functionals of emprical distribution function
+
+<!-- ## Simulation results to verity above situation -->
+<!-- ### $\frac{n-1}{n}Var^{(n-1)} - Var^{(n)})$ -->
+<!-- In the paper, it can be shown that for some non-linear functional $S$, the order of this therm is round $O(1/n^3)$. However, based on our simulation result it may not be the case.  -->
+
+<!-- ### Simulation setup  -->
+<!-- - Independent  -->
+<!-- - Normal -->
+<!-- - $p = 100$ -->
+<!-- - $n_1 = \{50, 75,100, 150, 200, 500, 750,1000, 1500, 2000\}$ -->
+<!-- - $n_2 = n_2 -1$ -->
+<!-- - main effect: $Var(X^T\beta) = 8$  -->
+
+<!-- ### Simulation result  -->
+<!-- ```{r, echo = F} -->
+<!-- source("~/dev/projects/Chen_environmental_study/reports/proposed_GCTA_paper/est_var_analysis/est_combined_data/jackknife/v_jack_diff_n.R") -->
+<!-- ``` -->
+
+<!-- ### GCTA p = 100 n = 50 - 2000 -->
+<!-- ```{r, echo = F} -->
+<!-- kable(GCTA_p_100_n_50_2000, "latex", longtable = T, booktabs = T) %>% -->
+<!-- kable_styling(latex_options = c("repeat_header"), font_size = 5) -->
+<!-- ggplot(data = GCTA_p_100_n_50_2000,  -->
+<!--        aes(x=match_n, y=var_diff)) + -->
+<!--   geom_line() + -->
+<!--   geom_point() + -->
+<!--   ggtitle("p = 100") +  -->
+<!--   theme_bw() -->
+<!-- ``` -->
+
+<!-- ### EG p = 100 n = 50 - 2000 -->
+<!-- ```{r, echo = F} -->
+<!-- kable(Eg_p_100_n_50_2000, "latex", longtable = T, booktabs = T) %>% -->
+<!-- kable_styling(latex_options = c("repeat_header"), font_size = 5) -->
+<!-- ggplot(data = Eg_p_100_n_50_2000,  -->
+<!--        aes(x=match_n, y=var_diff)) + -->
+<!--   geom_line() + -->
+<!--   geom_point() + -->
+<!--   ggtitle("p = 100") +  -->
+<!--   theme_bw() -->
+<!-- ``` -->
+
+
+## Bias correction 
+
+### Using delete-1-2 method 
+If we assume the $S$ is a smooth functions of emperical CDF, especially a quadratic functions, then it can be shown the leading terms of $E(\tilde{Var}(S(X_1, \dots, S_{n-1}))) \geq Var(S(X_1, \dots, S_{n-1}))$ is a quadratic term in expecation. Therefore we could try to estimate the quadratic term and correct the bias for the jackknife variance estimation.
+
+Define $Q_{ii'} \equiv nS - (n-1)(S_{i} + S_{i'}) + (n-2)S_{(ii')}$, then the correction will be 
+\[
+\hat{Var}^{corr}(S(X_1, \dots, X_n)) = \hat{Var}(S(X_1, \dots, X_n)) - \frac{1}{n(n-1)}\sum_{i < i'}(Q_{ii'}- \bar{Q})^2
+\]
+where $\bar{Q} = \sum_{i < i'}(Q_{ii'})/(n(n-1)/2)$
+
+
+### Delete-d method
+The delete-d jackknife varinace estimator is 
+\[
+\mathcal{V}_{J(d)} = \frac{n-d}{d} \cdot \frac{1}{N}\sum_{S}(\hat{\theta}_S - \hat{\theta}_{S.} )
+\],
+where $N =\binom{n}{d}$ and $S$ is subset of $x_1, \dots, x_n$ with size $n - d$.
+Note that delete-1 jackknife will be a special case of delete-d case variance estimation:
+\[
+\mathcal{V}_{J(1)} = \frac{n-1}{1} \cdot \frac{1}{N}\sum_{S}(\hat{\theta}_S - \hat{\theta}_{S.} )
+\]
+where $N =\binom{n}{1} = n$. But how could we explain the 2-steps estimation in Eforn's 1989 paper?
+
+Note that S could a very large value, so in the following simulation, only $S = 1000$ is used. In Jun Shao's another paper, he proposed an approximation of the deletel-d variance estimation. That is just select m from $S =\binom{n}{d}$ sub-samples and in that paper it recommended $m = n^{1.5}$.
+
+#### An example of delete-d and delete-1: median
+$S_n = F^{-1}_n(1/2)$
+The simulation setup is following
+
+
+
+

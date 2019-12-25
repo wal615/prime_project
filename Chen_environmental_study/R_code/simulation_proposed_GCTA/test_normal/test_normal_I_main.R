@@ -7,6 +7,7 @@ library(doRNG)
 library(doParallel)
 library(gtools) # for rbind based on columns
 options(warn = 1, error = bettertrace::stacktrace)
+# options(warn = 1, error = recover)
 setwd("~/dev/projects/Chen_environmental_study/")
 sourceDirectory("./R_code/main_fn/",modifiedOnly = FALSE, recursive = TRUE)
 sourceDirectory("./R_code/main_fn/method/",modifiedOnly = FALSE, recursive = TRUE)
@@ -15,31 +16,39 @@ source("./R_code/simulation_proposed_GCTA/local_helpers.R")
 source("./reports/proposed_GCTA_paper/est_var_analysis/est_combined_data/covaraites_summary_1999_2004.R")
 c_betam <- 8
 c_betai <- 2
-save_path <- "~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/var_est/combined_effects_GCTA_rr/"
+save_path <- "~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/var_est/combined_effects_GCTA_rr_Eg_jack_1_d/"
 
-cores <- 40
-n_iter <- 500
-n_sub <- 1
+cores <- 10
+n_iter <- 1000
+delete_d <- FALSE
+
 seed_loop <- 1234
 seed_coef <- 1014
 # steup parameters
 
-# sub_sampling
-# pro <- 102
-# bs <- "bs"
-# pro <- 1012
-# bs <- "leave-1-2"
-pro <- 0
-bs <- "full"
-# pro <- 101
-# bs <- "leave-1"
 # data generation
 emp_n <- 10^5
-# n_total <- c(100,253,500, 600,700)
-n_total <- c(50,75,100,150,200)
+n_total <- c(50,75,100,150,200, 500, 1000, 1500,2000)
+
 dist <- "normal"
 generate_data <- generate_normal
 structure <- "I"
+
+# sub_sampling
+# d <- 102
+# bs <- "bs"
+# d <- 1012
+# bs <- "leave-1-2"
+
+bs <- "full"
+d_fn <- function(n) {0}
+
+# bs <- "leave-1"
+# d_fn <- function(n) {1}
+# 
+# bs <- "leave-d"
+# d_fn <- function(n) {round(0.5*n,0)}
+
 
 
 # set.seed(123)
@@ -91,16 +100,16 @@ if(decor == FALSE) {
 
 
 
-# kernel <- EigenPrism_kernel
-# kernel_args <- list(decor = decor)
-# kernel_name <- "EigenPrism_kernel"
-# kernel_result_col_names <- col_names_Eigen
+kernel <- EigenPrism_kernel
+kernel_args <- list(decor = decor)
+kernel_name <- "EigenPrism_kernel"
+kernel_result_col_names <- col_names_Eigen
 
 
-kernel_args <- list(interact = 0,decor = decor)
-kernel <- GCTA_kernel
-kernel_name <- "GCTA_kernel"
-kernel_result_col_names <- col_names_GCTA
+# kernel_args <- list(interact = 0,decor = decor)
+# kernel <- GCTA_kernel
+# kernel_name <- "GCTA_kernel"
+# kernel_result_col_names <- col_names_GCTA
 
 
 # kernel <- least_square_kernel
@@ -137,17 +146,25 @@ gene_coeff_args <- list(main_fixed_var = main_fixed_var,
                         inter_random_var = inter_random_var)
 
 # generate args list
-args_all <- expand.grid(structure = structure, p = p, n = n_total,rho_e = rho_e, pro = pro)
+args_all <- expand.grid(structure = structure, p = p, n = n_total,rho_e = rho_e)
+args_all$d <- d_fn(args_all$n)
 gene_data_args_list <- args_all[,1:3] %>% split(x = ., f = seq(nrow(.))) # generate a list from each row of a dataframe
 rho_e_list <- args_all[,4, drop = FALSE] %>% split(x = ., f = seq(nrow(.)))
-pro_list <-  args_all[,5, drop = FALSE] %>% split(x = ., f = seq(nrow(.)))
-
+d_list <-  args_all[,5, drop = FALSE] %>% data.matrix(.) %>% split(x = ., f = seq(nrow(.)))
+if(delete_d == TRUE){
+  n_sub_list <- (args_all$n)^1.5 %>% round(.)
+} else {
+  n_sub_list <- rep(0, length(args_all$n))
+}
+if(bs == "full"){
+  n_sub_list <- rep(1, length(args_all$n))
+}
 
 # setup folders for results
 result_name <- paste("decor",decor_method, "sparse", sparse_decor_method, 
                      dist, "structure", structure, "main", main_fixed_var, "inter",
                      inter_fixed_var, "n", paste(n_total, collapse = "_"), "p", p, "rho_e", paste(rho_e,collapse = "_"), 
-                     "decor",decor,"subpro",paste(pro, collapse = "_"), "iter", n_iter, "nsub", n_sub,
+                     "decor",decor,"subd",paste(unique(unlist(d_list)), collapse = "_"), "iter", n_iter, "nsub", max(unlist(n_sub_list)),
                      kernel_name, "est", est, "c_betam", c_betam, "c_betai", c_betai, "Var", Var, sep = "_")
 result_folder_path <- paste0(save_path, result_name, "/")
 dir.create(result_folder_path)
@@ -156,7 +173,8 @@ dir.create(result_folder_path)
 result_list <- mapply(FUN = simulation_var_est_fn,
                       gene_data_args = gene_data_args_list,
                       rho_e = rho_e_list,
-                      pro = pro_list,
+                      d = d_list,
+                      n_sub = n_sub_list,
                       MoreArgs = list(p = p,
                                       kernel = kernel,
                                       kernel_args = kernel_args,
@@ -177,7 +195,6 @@ result_list <- mapply(FUN = simulation_var_est_fn,
                                       sparse_uncorr_args = sparse_uncorr_args,
                                       generate_data = generate_data,
                                       brep = n_iter,
-                                      n_sub = n_sub,
                                       seed_loop = seed_loop,
                                       seed_coef = seed_coef,
                                       cores = cores,

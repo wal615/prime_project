@@ -6,8 +6,8 @@ library(foreach)
 library(doRNG)
 library(doParallel)
 library(gtools) # for rbind based on columns
-# options(warn = 1, error = bettertrace::stacktrace)
-options(warn = 1, error = recover)
+options(warn = 1, error = bettertrace::stacktrace)
+# options(warn = 1, error = recover)
 setwd("~/dev/projects/Chen_environmental_study/")
 sourceDirectory("./R_code/main_fn/",modifiedOnly = FALSE, recursive = TRUE)
 sourceDirectory("./R_code/main_fn/method/",modifiedOnly = FALSE, recursive = TRUE)
@@ -16,7 +16,7 @@ source("./R_code/simulation_proposed_GCTA/local_helpers.R")
 source("./reports/proposed_GCTA_paper/est_var_analysis/est_combined_data/covaraites_summary_1999_2004.R")
 c_betam <- 8
 c_betai <- 2
-save_path <- "~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/var_est/combined_effects_GCTA_rr/"
+save_path <- "~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/var_est/combined_effects_GCTA_rr_Eg_jack_1_d/"
 
 cores <- 20
 n_iter <- 100
@@ -28,9 +28,7 @@ seed_coef <- 1014
 
 # data generation
 emp_n <- 10^5
-# n_total <- 50
-n_total <- c(50,75,100,150,200)
-# n_total <- c(1500,2000)
+n_total <- c(50,75,100,150,200, 500, 1000, 1500)
 dist <- "normal"
 generate_data <- generate_normal
 structure <- "I"
@@ -45,9 +43,9 @@ structure <- "I"
 
 # bs <- "leave-1"
 # d_fn <- function(n) {1}
-
+# 
 bs <- "leave-d"
-d_fn <- function(n) {round(0.5*n,0)}
+d_fn <- function(n) {round(0.75*n,0)}
 
 
 
@@ -57,7 +55,7 @@ d_fn <- function(n) {round(0.5*n,0)}
 # pre_cor <- cor(data.matrix(PCB_1999_2004_common[index, ..PCB_common]))
 Var <- "null"
 # p <- length(PCB_common)
-p <- 100
+p <- 1000
 
 # combine <- TRUE
 # est <- "total"
@@ -100,16 +98,16 @@ if(decor == FALSE) {
 
 
 
-# kernel <- EigenPrism_kernel
-# kernel_args <- list(decor = decor)
-# kernel_name <- "EigenPrism_kernel"
-# kernel_result_col_names <- col_names_Eigen
+kernel <- EigenPrism_kernel
+kernel_args <- list(decor = decor)
+kernel_name <- "EigenPrism_kernel"
+kernel_result_col_names <- col_names_Eigen
 
 
-kernel_args <- list(interact = 0,decor = decor)
-kernel <- GCTA_kernel
-kernel_name <- "GCTA_kernel"
-kernel_result_col_names <- col_names_GCTA
+# kernel_args <- list(interact = 0,decor = decor)
+# kernel <- GCTA_kernel
+# kernel_name <- "GCTA_kernel"
+# kernel_result_col_names <- col_names_GCTA
 
 
 # kernel <- least_square_kernel
