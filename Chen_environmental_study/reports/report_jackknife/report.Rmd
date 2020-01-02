@@ -7,6 +7,7 @@ output:
     toc: true
     number_sections: true
     keep_tex: FALSE
+bibliography: bibliography.bib
 header-includes:
     - \usepackage{float,amsmath, bbm, amssymb, siunitx, bm}
     - \usepackage{pdfpages}
@@ -42,19 +43,15 @@ library(knitr)
 
 # Subsampling method: Jackknife
 
-```{r child = "Jackknife_variance.Rmd"}
+```{r child = "Jackknife_variance.Rmd", cache=TRUE}
 ```
 
 ## functional of distribution functions 
 
-## variance estimation for high dimensional data 
-
 ## Jackknife variance estimation on high dimension signal estimation
 
-```{r child = "variance_inflation_n_p.Rmd"}
+```{r child = "variance_inflation_n_p.Rmd", cache=FALSE}
 ```
-
-### After bias correction
 
 # Subsampling method: bootstrap 
 

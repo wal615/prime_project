@@ -18,7 +18,7 @@ c_betam <- 8
 c_betai <- 2
 save_path <- "~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/var_est/combined_effects_GCTA_rr_Eg_jack_1_d/"
 
-cores <- 20
+cores <- 30
 n_iter <- 100
 delete_d <- TRUE
 
@@ -45,7 +45,8 @@ structure <- "I"
 # d_fn <- function(n) {1}
 # 
 bs <- "leave-d"
-d_fn <- function(n) {round(0.75*n,0)}
+# d_fn <- function(n) {round(0.75*n,0)}
+d_fn <- function(n) {round(25,0)}
 
 
 

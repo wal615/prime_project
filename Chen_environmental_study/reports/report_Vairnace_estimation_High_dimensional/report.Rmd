@@ -47,4 +47,5 @@ library(knitr)
 
 # EigmPrism method
 
-# Dicker's method 
+```{r, child='Dicker_2013.Rmd'}
+```

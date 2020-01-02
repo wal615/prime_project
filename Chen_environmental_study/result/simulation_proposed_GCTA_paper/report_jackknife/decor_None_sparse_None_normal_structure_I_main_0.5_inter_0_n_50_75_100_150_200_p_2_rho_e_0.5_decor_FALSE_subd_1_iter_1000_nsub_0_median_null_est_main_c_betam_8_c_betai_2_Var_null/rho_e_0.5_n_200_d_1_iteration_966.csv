@@ -1,0 +1,2 @@
+"var_main_effect","var_inter_effect","cov_main_inter_effect","var_total_effect","median_main","S1_jack.median_main","S1_v_jack_1","x_dist","structure","p","n","main_fixed_var","main_random_var","inter_fixed_var","inter_random_var","decor","combine","d","bs","n_sub","rho_e","emp_n","i"
+8,0,0,0,-0.119783323946896,-0.119783323946894,2.66698766203335e-06,"normal","I",2,200,0.5,0,0,0,FALSE,FALSE,1,"leave-1",200,0.5,1e+05,966

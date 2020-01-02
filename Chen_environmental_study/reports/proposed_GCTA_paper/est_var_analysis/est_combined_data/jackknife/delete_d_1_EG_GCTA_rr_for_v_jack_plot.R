@@ -171,11 +171,12 @@ summary_result_EigenPrism <- sub_result[, .(est_mean = mean(EigenPrism_main, na.
                                                                                                     est_mean = mean(est_mean, na.rm = T),
                                                                                                     NA_main = sum(NA_i)), by = n] %>% 
   setorder(., by = n)
+
 summary_result_EigenPrism_jack <- sub_result[, .(EigenPrism_main_jack = mean(S1_jack.EigenPrism_main, na.rm = T),
-                                                 EigenPrism_v_jack = mean(S2_v_jack_1, na.rm = T),
-                                                 EigenPrism_v_jack_var = var(S2_v_jack_1, na.rm = T),
-                                                 relative_ratio = mean((S2_v_jack_1 - var(EigenPrism_main, na.rm = T)))/var(EigenPrism_main, na.rm = T),
-                                                 relative_ratio_var = var((S2_v_jack_1 - var(EigenPrism_main, na.rm = T)))/var(EigenPrism_main, na.rm = T),
+                                                 EigenPrism_v_jack = mean(S1_v_jack_1, na.rm = T),
+                                                 EigenPrism_v_jack_var = var(S1_v_jack_1, na.rm = T),
+                                                 relative_ratio = mean((S1_v_jack_1 - var(EigenPrism_main, na.rm = T)))/var(EigenPrism_main, na.rm = T),
+                                                 relative_ratio_var = var((S1_v_jack_1 - var(EigenPrism_main, na.rm = T)))/var(EigenPrism_main, na.rm = T),
                                                  .N),by = .(n)] %>%
   setorder(., by = n)
 
@@ -230,10 +231,10 @@ summary_result_EigenPrism <- sub_result[, .(est_mean = mean(EigenPrism_main, na.
                                                                                                     NA_main = sum(NA_i)), by = n] %>% 
   setorder(., by = n)
 summary_result_EigenPrism_jack <- sub_result[, .(EigenPrism_main_jack = mean(S1_jack.EigenPrism_main, na.rm = T),
-                                                 EigenPrism_v_jack = mean(S2_v_jack_1, na.rm = T),
-                                                 EigenPrism_v_jack_var = var(S2_v_jack_1, na.rm = T),
-                                                 relative_ratio = mean((S2_v_jack_1 - var(EigenPrism_main, na.rm = T)))/var(EigenPrism_main, na.rm = T),
-                                                 relative_ratio_var = var((S2_v_jack_1 - var(EigenPrism_main, na.rm = T)))/var(EigenPrism_main, na.rm = T),
+                                                 EigenPrism_v_jack = mean(S1_v_jack_1, na.rm = T),
+                                                 EigenPrism_v_jack_var = var(S1_v_jack_1, na.rm = T),
+                                                 relative_ratio = mean((S1_v_jack_1 - var(EigenPrism_main, na.rm = T)))/var(EigenPrism_main, na.rm = T),
+                                                 relative_ratio_var = var((S1_v_jack_1 - var(EigenPrism_main, na.rm = T)))/var(EigenPrism_main, na.rm = T),
                                                  .N),by = .(n)] %>%
   setorder(., by = n)
 
@@ -286,10 +287,10 @@ summary_result_EigenPrism <- sub_result[, .(est_mean = mean(EigenPrism_main, na.
                                                                                                     NA_main = sum(NA_i)), by = n] %>% 
   setorder(., by = n)
 summary_result_EigenPrism_jack <- sub_result[, .(EigenPrism_main_jack = mean(S1_jack.EigenPrism_main, na.rm = T),
-                                                 EigenPrism_v_jack = mean(S2_v_jack_1, na.rm = T),
-                                                 EigenPrism_v_jack_var = var(S2_v_jack_1, na.rm = T),
-                                                 relative_ratio = mean((S2_v_jack_1 - var(EigenPrism_main, na.rm = T)))/var(EigenPrism_main, na.rm = T),
-                                                 relative_ratio_var = var((S2_v_jack_1 - var(EigenPrism_main, na.rm = T)))/var(EigenPrism_main, na.rm = T),
+                                                 EigenPrism_v_jack = mean(S1_v_jack_1, na.rm = T),
+                                                 EigenPrism_v_jack_var = var(S1_v_jack_1, na.rm = T),
+                                                 relative_ratio = mean((S1_v_jack_1 - var(EigenPrism_main, na.rm = T)))/var(EigenPrism_main, na.rm = T),
+                                                 relative_ratio_var = var((S1_v_jack_1 - var(EigenPrism_main, na.rm = T)))/var(EigenPrism_main, na.rm = T),
                                                  .N),by = .(n)] %>%
   setorder(., by = n)
 

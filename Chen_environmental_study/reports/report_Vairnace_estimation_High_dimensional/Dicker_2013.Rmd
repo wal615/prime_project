@@ -1,0 +1,24 @@
+# Variance estimation in hihg-dimensional linear models
+
+## Model assumption 
+
+## Signal Esitmation for $\Sigma = I$
+
+\[
+E\left(\frac{1}{n}\|y\|^{2}\right)=\tau^{2}+\sigma^{2}, \quad E\left(\frac{1}{n^{2}}\left\|X^{\mathrm{T}} y\right\|^{2}\right)=\frac{d+n+1}{n} \tau^{2}+\frac{d}{n} \sigma^{2}
+\]
+
+After some linear algebra, we have the corresponding estimator is 
+\[
+\hat{\sigma}^{2}=\frac{d+n+1}{n(n+1)}\|y\|^{2}-\frac{1}{n(n+1)}\left\|X^{\mathrm{T}} y\right\|^{2}, \quad \hat{\tau}^{2}=-\frac{d}{n(n+1)}\|y\|^{2}+\frac{1}{n(n+1)}\left\|X^{\mathrm{T}} y\right\|^{2}
+\]
+
+Under some standard condition the estimators have asymptotic normality. 
+\[
+\begin{aligned} \psi_{1}^{2} &=2\left\{\frac{d}{n}\left(\sigma^{2}+\tau^{2}\right)^{2}+\sigma^{4}+\tau^{4}\right\} \\ \psi_{2}^{2} &=2\left\{\left(1+\frac{d}{n}\right)\left(\sigma^{2}+\tau^{2}\right)^{2}-\sigma^{4}+3 \tau^{4}\right\} \\ \psi_{0}^{2} &=\frac{2}{\left(\sigma^{2}+\tau^{2}\right)^{2}}\left\{\left(1+\frac{d}{n}\right)\left(\sigma^{2}+\tau^{2}\right)^{2}-\sigma^{4}\right\} \end{aligned}
+\]
+
+\[
+\begin{array}{l}{\text { If } d / n \rightarrow \rho \in[0, \infty), \text { then }} \\ {\qquad n^{1 / 2}\left(\frac{\hat{\sigma}^{2}-\sigma^{2}}{\psi_{1}}\right), n^{1 / 2}\left(\frac{\hat{\tau}^{2}-\tau^{2}}{\psi_{2}}\right), n^{1 / 2}\left(\frac{\hat{r}^{2}-r^{2}}{\psi_{0}}\right) \rightarrow N(0,1)} \\ {\text { in distribution. }}\end{array}
+\]
+
