@@ -22,9 +22,25 @@ GCTA_rr_kernel <- function(...){
     fit <- GCTA_rr(y = args$y,
                    x = args$b_final)
   }
-  fit
+  fit[1]
 }
 col_names_GCTA_rr <- c("GCTA_rr_main")
+
+h_GCTA_rr_kernel <- function(...){
+  args <- list(...)
+  if(args$decor == TRUE){
+    fit <- GCTA_rr(y = args$y,
+                   x = args$s_final,
+                   arget = "h2") 
+  } else {
+    fit <- GCTA_rr(y = args$y,
+                   x = args$b_final,
+                   arget = "h2")
+  }
+  fit[1]
+}
+col_names_GCTA_rr <- c("h_GCTA_rr_main")
+
 
 EigenPrism_kernel <- function(...){
   args <- list(...)
@@ -40,18 +56,33 @@ EigenPrism_kernel <- function(...){
 col_names_Eigen <- c("EigenPrism_main", "EigenPrism_CI")
 
 
+Dicker_2013_kernel <- function(...){
+  args <- list(...)
+  if(args$decor == TRUE){
+    fit <- Dicker_2013(y = args$y, 
+                      x = args$s_final)  
+  } else {
+    fit <- Dicker_2013(y = args$y, 
+                      x = args$b_final)  
+  }
+  c(fit[2], fit[4])
+}
+
+col_names_Dicker <- c("Dicker_main", "Dicker_var")
+
+
 h_GCTA_kernel <- function(...) {
   args <- list(...)
   if(args$decor == TRUE){
     fit <- Yang(y = args$y, 
                 x = args$s_final, 
                 interact = args$interact,
-                target = "heritability")  
+                target = "h2")  
   } else {
     fit <- Yang(y = args$y, 
                 x = args$b_final, 
                 interact = args$interact,
-                target = "heritability")
+                target = "h2")
   }
   c(fit$G, fit$RACT)
 }

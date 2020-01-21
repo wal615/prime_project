@@ -13,10 +13,10 @@ sourceDirectory("./R_code/main_fn/",modifiedOnly = FALSE, recursive = TRUE)
 sourceDirectory("./R_code/main_fn/method/",modifiedOnly = FALSE, recursive = TRUE)
 source("./R_code/simulation_proposed_GCTA/local_helpers.R")
 # source("./reports/proposed_GCTA_paper/est_var_analysis/est_combined_data/covaraites_summary_2005_2014.R")
-source("./reports/proposed_GCTA_paper/est_var_analysis/est_combined_data/covaraites_summary_1999_2004.R")
-c_betam <- 8
+# source("./reports/proposed_GCTA_paper/est_var_analysis/est_combined_data/covaraites_summary_1999_2004.R")
+c_betam <- 1
 c_betai <- 2
-save_path <- "~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/var_est/combined_effects_GCTA_rr_Eg_jack_1_d/"
+save_path <- "~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/Dicker_2013/"
 
 cores <- 10
 n_iter <- 1000
@@ -28,7 +28,7 @@ seed_coef <- 1014
 
 # data generation
 emp_n <- 10^5
-n_total <- c(50,75,100,150,200, 500, 1000, 1500,2000)
+n_total <- c(250, 500)
 
 dist <- "normal"
 generate_data <- generate_normal
@@ -57,7 +57,7 @@ d_fn <- function(n) {0}
 # pre_cor <- cor(data.matrix(PCB_1999_2004_common[index, ..PCB_common]))
 Var <- "null"
 # p <- length(PCB_common)
-p <- 100
+p <- 500
 
 # combine <- TRUE
 # est <- "total"
@@ -100,10 +100,10 @@ if(decor == FALSE) {
 
 
 
-kernel <- EigenPrism_kernel
+kernel <- Dicker_2013_kernel
 kernel_args <- list(decor = decor)
-kernel_name <- "EigenPrism_kernel"
-kernel_result_col_names <- col_names_Eigen
+kernel_name <- "Dicker_2013_kernel"
+kernel_result_col_names <- col_names_Dicker
 
 
 # kernel_args <- list(interact = 0,decor = decor)
@@ -119,18 +119,17 @@ kernel_result_col_names <- col_names_Eigen
 
 
 # est2
-kernel_args_2 <- list(decor = decor)
-kernel_2 <- GCTA_rr_kernel
-kernel_name <- append(kernel_name,"GCTA_rr_kernel") %>% paste(.,collapse = "_")
-kernel_result_col_names_2 <- col_names_GCTA_rr
+# kernel_args_2 <- list(decor = decor)
+# kernel_2 <- GCTA_rr_kernel
+# kernel_name <- append(kernel_name,"GCTA_rr_kernel") %>% paste(.,collapse = "_")
+# kernel_result_col_names_2 <- col_names_GCTA_rr
 # kernel_args_2 <- list(interact = 0,decor = decor)
 # kernel_2 <- GCTA_kernel
 # kernel_name <- append(kernel_name,"GCTA_kernel") %>% paste(.,collapse = "_")
 # kernel_result_col_names_2 <- col_names_GCTA
-# kernel_args_2 <- NULL
-# kernel_2 <- NULL
-# kernel_name <- NULL
-# kernel_result_col_names_2 <- NULL
+kernel_args_2 <- NULL
+kernel_2 <- NULL
+kernel_result_col_names_2 <- NULL
 
 
 # coef
@@ -183,7 +182,7 @@ result_list <- mapply(FUN = simulation_var_est_fn,
                                       kernel_args_2 = kernel_args_2,
                                       kernel_result_col_names_2 = kernel_result_col_names_2,
                                       bs = bs,
-                                      bs_summary = TRUE,
+                                      bs_summary = FALSE,
                                       c_betam = c_betam,
                                       c_betai = c_betai,
                                       emp_n = emp_n,

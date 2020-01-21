@@ -48,15 +48,16 @@ library(knitr)
 
 ## functional of distribution functions 
 
-## Jackknife variance estimation on high dimension signal estimation
-
-```{r child = "variance_inflation_n_p.Rmd", cache=FALSE}
+```{r child = "variance_inflation_n_p.Rmd", cache=TRUE}
 ```
 
 # Subsampling method: bootstrap 
 
 ## non-parameteric bootstrap 
 
-## parametric bootstrap
+```{r child = "parametric_bootstrap.Rmd"}
+```
+
+# Delta method
 
 

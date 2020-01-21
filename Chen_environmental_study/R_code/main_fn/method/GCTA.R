@@ -9,8 +9,9 @@ library(doParallel)
 ## YANG's REML function
 ##################################################################################
 # interact parameter indicates if the model includes interaction terms (interact == 0) 
-Yang=function(y,x,interact=0, target = "beta2"){ 
+Yang=function(y,x,interact=0, target = c("beta2","h2")[1]){ 
   x <- std_fn(x)
+  y <- matrix(y, ncol = 1)
   ## data y[1:nr], x[1:nr,1:nc]
   nr=dim(x)[1]
   nc=dim(x)[2]
@@ -82,9 +83,9 @@ Yang=function(y,x,interact=0, target = "beta2"){
     RACT=delta[3]
   }  
   
-  if(target == 'heritability'){
-    sigmaG <- sigmaG/var(y)
-    RACT <- RACT/var(y)
+  if(target == 'h2'){
+    sigmaG <- sigmaG/(sigmaE + sigmaG)
+    RACT <- RACT/(sigmaE + sigmaG)
   }
   return(list(G=sigmaG,E=sigmaE,RACT=RACT))
 }

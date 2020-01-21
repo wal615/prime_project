@@ -4,21 +4,90 @@
 The GCTA approach estimates variances of weak effects...
 
 \subsubsection{Model assumption}
-GCTA approach is built on a linear model:
+GCTA approach is built on a linear mix model(LMM):
 \begin{equation}
-    \*y_i = \mu_i + \sum_{j = 1}^p\*x_{ij}\beta_j+ \*\epsilon_i. \label{eq:GCTA}
+    Y_i = \mu_i + \sum_{j = 1}^p\*X_{ij}\beta_j+ \*\epsilon_i. \label{eq:GCTA}
 \end{equation}
-where $\*y_i$ denotes a outcome (quantitative measurement) and $\*x_{ij}~, j = 1, \dots, p$ are the standardized covariates measurements for subject $i$. Besides we also assume the independence between the covaraites and error terms, $\*\epsilon_i \indep \*x_{jk}$.The equation \ref{eq:GCTA} may be re-expressed as
+where $Y_i$ denotes a outcome (quantitative measurement) and $\*x_{ij}~, j = 1, \dots, p$ are the standardized covariates measurements for subject $i$. Besides we also assume the independence between the covaraites and error terms, $\*\epsilon_i \indep \*x_{jk}$.The equation \ref{eq:GCTA} may be re-expressed as
 \begin{equation}
-    \*Y = \mu + \*X\beta + \*\epsilon \label{eq:GCTA_Mat}.
+    Y_i = \mu + \*X^T_i\beta + \*\epsilon_i \label{eq:GCTA_Mat}.
 \end{equation}
-where $\*X$ is a $n \times p$ matrix with element as $x_{ij}$,  $\*Y = (\*y_1, \dots, \*y_n)^T$, $\mu = (\mu_1, \dots, \mu_n)^T$, $\beta = (\beta_1, \dots, \beta_p)^T$,and $\*\epsilon = (\*\epsilon_1, \dots, \*\epsilon_n)^T$. 
+where $\*X_i$ is a $p \times 1$ vector,  $\*Y = (y_1, \dots, y_n)^T$, $\mu = (\mu_1, \dots, \mu_n)^T$, $\beta = (\beta_1, \dots, \beta_p)^T$,and $\*\epsilon = (\epsilon_1, \dots, \epsilon_n)^T$. 
 
-The goal here is to estimate how much variation of the outcome is accounted for by the covariates. Based on the assumptions of model \ref{eq:GCTA}, the variance of y could be composed into two parts,
+The goal here is to estimate how much variation of the outcome is related to the covariates when $n << p$. Based on the assumptions of model \ref{eq:GCTA}, the variance of y could be composed into two parts,
 \[
-    Var(\*y_i) = Var(\*X_i^T\beta) + Var(\*\epsilon) = \sigma^2_{\beta} + \sigma^2_{\epsilon}.
+    Var(Y_i) = Var(\*X_i^T\beta) + Var(\*\epsilon).
 \]
-The $\sigma^2_{\beta}$ is the response's variability counted by covariates. Since $\*x_i's$ are independent, we have $\sigma^2_{\beta} = \sum_{i=1}^p \beta_i$. To estimate the variance, one intuitively approach is to estimate the $\sigma^2_{\epsilon}$ by a regression model. But it may not feasible when the number of covaraites is large. The GCTA approach uses a working random effects model to estimate $\sigma^2_{\beta}$ without knowing the error terms variance.
+
+Based on the different assumptions of the randomness of $\*X_i$ and $\beta$, we will have different format for the $Var(\*X_i^T\beta)$. But no matter in what situation, we will have
+
+\begin{align*}
+Var(\*X_i^T\beta) 
+&= E(\*X_i^T\beta(\*X_i^T\beta)^T) - E(\*X_i^T\beta)E(\*X_i^T\beta)^T \\
+&= E(\*X_i^T\beta(\*X_i^T\beta)^T) - E(\*X_i^T\beta)E(\*X_i^T\beta)^T \text{ b/c} \*X \indep \beta \\
+&= E(\*X_i^T\beta(\*X_i^T\beta)^T) - E(\*X_i^T)E(\beta)(E(\*X_i^T)E(\beta))^T \\
+&= E(\*X_i^T\beta(\*X_i^T\beta)^T) - 0  \text{ b/c } E(\*X) = 0 \text{ or } E(\beta) = 0\\
+&= E(\*X_i^T\beta(\*X_i^T\beta)^T)
+\end{align*}
+
+One particual situation we are interested in is that $\*X$ is random with $E(\*X_i) = 0$, $Var(\*X_i) = \Sigma$ and $\beta$ could fixed effect or random effects. For example, if $\beta$ is fixed then 
+\[
+Var(\*X_i^T\beta) = E(\*X_i^T\beta(\*X_i^T\beta)^T) = E(trace(\*X_i^T\beta(\*X_i^T\beta)^T)) = \beta^T\Sigma\beta,
+\]
+If we further assume that $\Sigma = I_p$, then 
+\[
+\sigma^2_g*=\beta^T\Sigma\beta = \sum_i^p\beta^2_i.
+\]
+Then if we also assume $X_i's$ are uncorrelated random vectros, then we will have 
+\[
+Var(\*X\beta) = E(\*X\beta\beta^T\*X^T),
+\]
+\[
+Var(\*X\beta)_{ii} = E(\*X^T_iB\*X_i) = trac(BI_p) = \sum_i^p\beta^2_i ~~ Var(\*X\beta)_{ij} = 0
+\]
+So we have 
+\[
+Var(\*X\beta) = \sum_i^p\beta^2_iI_n.
+\]
+
+The next question is how to estimate $\sum_i^p\beta^2_i$. In original paper of GCTA, it assumes that X's are fixed and $\beta \sim N(\*0_p, \sigma^2_g/pI_P)$, and we have 
+\[
+Y = \*\mu + \*X\beta + \*\epsilon.
+\]
+Then the 
+\[
+Var(Y) = Var(\*X\beta) + \sigma^2_{\epsilon}I_n = \*X\*X^T/p \sigma^2_g I_p + \sigma^2_{\epsilon}I_n = K\sigma_g^2 + \sigma^2_{\epsilon}I_n
+\], 
+where $\*K = \*X\*X^T/p$.
+Let the narrow-sense of the heritability ration as 
+\[
+h^2 = \frac{\sigma^2_g}{\sigma^2_g + \sigma^2_{\epsilon}}.
+\]
+
+Besides, [@jiang2016high] provided more rigorous decription and proof of the LMM and MLMM. In the paper, it assume that $\*X$ is also a random matrix and it is independnt with $\*\beta$ and $\epsilon$. It also mentioned that LMM is a condtional model, on $\mu$ and $\*X$, so no matter $\*X$ is nonradom.
+
+A restricted maximum likelihood method (REML) method is used to estimate the $\hat{\sigma}^2_g$ and $\hat{\sigma}^2_{\epsilon}$.
+It turns out to be that GCTA method can also estimate the $Var(\*X_i\beta)$. But GCTA will still assume the $\*K\sigma^2_g$ and try to estimate $\sigma^2_g$ under our setting up, and we have 
+\[
+\*K = 1/p(\*X\*X^T), ~~ K_{ii} = \frac{\sum_k^p X^2_{ik}}{p} \to 1 and K_{ij} = \frac{\sum_j^p X_{iK}X_{jK}}{p} \to 0 p \to \infty ??
+\]
+
+So we could use the $\hat{\sigma}^2_g$ to estimate $\sum_j^p\widehat{\beta}^2_j$??
+
+
+<!-- We also could assume that $\beta$ is a random vector, i.e. $\beta \sim N(0, \sigma^2_{\beta}I_p)$ and X is fixed.Then the variance will be  -->
+<!-- \[ -->
+<!-- Var(\*X_i^T\beta) = \*x_i^T(\sigma^2_{\beta}I_p)\*x_i = \sigma^2_{\beta}\*x_i^T\*x_i -->
+<!-- \] -->
+<!-- If we assume that both $\beta$ and $\*X$ are random, have mean 0 and independent, the we have  -->
+<!-- \[ -->
+<!-- Var(\*X_i^T\beta) = E(trace(\*X_i^T\beta(\*X_i^T\beta)^T)) = trace(E(\beta\beta^T\*X_i\*X_i^T)) = trace(Var(\beta)Var(\*X))  -->
+<!-- \] -->
+<!-- If we further assume that $Var(\*X) = I_p$ and $Var(\beta) = \sigma^2_{\beta}I_p$, then we have  -->
+<!-- \[ -->
+<!-- trace(Var(\beta)Var(\*X)) = p \sigma^2_{\beta} -->
+<!-- \] -->
+<!-- To estimate the variance, one intuitively approach is to estimate the $\sigma^2_{\epsilon}$ by a regression model. But it may not feasible when the number of covaraites is large. The GCTA approach uses a working random effects model to estimate $\sigma^2_{\beta}$ without knowing the error terms variance. -->
 
 \subsubsection{Advantages of the GCTA apporach}
 For the environmental study mentioned before, the GCTA method demonstrates some advantages than other variance estimation approaches.
@@ -109,15 +178,15 @@ Where $U_1U_1^T + U_2U_2^T = I_p$ and $(U_1U_1^T)^T U_1U_1^T = U_1U_1^T$. Beside
 \subsection{Interactive effect}
 For analysing the interactive effect, we need to consider interactive terms in our model. Let's just consider a 2-way interaction model
 \begin{equation}
-  \*y_i = \mu_i + \sum_{j = 1}^p \*x_{ij}\beta_j + \sum_{l \neq k} \gamma_{lk}\*x_{il}\*x_{ik} + \*\epsilon_i, \label{eq:GCTA_inter}
+  Y_i = \mu_i + \sum_{j = 1}^p \*x_{ij}\beta_j + \sum_{l \neq k} \gamma_{lk}\*x_{il}\*x_{ik} + \*\epsilon_i, \label{eq:GCTA_inter}
 \end{equation}
 where $\gamma_{jk}$ denotes interactive coefficients. Anything else will be same as GCTA model \ref{eq:GCTA_Mat}. This model also can be expressed in the matrix form
 \begin{equation}
   \*Y = \mu + \*X\beta + \*X\Gamma \*X^T + \*\epsilon. \label{eq:GCTA_inter_Mat}
 \end{equation}
-Where $\Gamma$ is a $p \times p$ matrix with element as $\gamma_{jk}$. Let's also assume that $\*X_i \indep \*\epsilon_i$, then the variance of $\*y_i$ can be decompose as following
+Where $\Gamma$ is a $p \times p$ matrix with element as $\gamma_{jk}$. Let's also assume that $\*X_i \indep \*\epsilon_i$, then the variance of $Y_i$ can be decompose as following
 \begin{equation}
-    Var(\*y_i) = Var(\*X_i^T\beta) + Var(\*X_i^T\Gamma \*X_i) + 2Cov(\*X_i^T\beta, \*X_i^T\Gamma \*X_i) + Var(\*\epsilon_i).
+    Var(Y_i) = Var(\*X_i^T\beta) + Var(\*X_i^T\Gamma \*X_i) + 2Cov(\*X_i^T\beta, \*X_i^T\Gamma \*X_i) + Var(\*\epsilon_i).
 \end{equation}
 After adding the interactive terms, the situation becomes complicated. 
 \begin{enumerate} 
@@ -152,117 +221,117 @@ Given the independence of the covariates, simulation studies have shown that the
 
 ## available software 
 
-## Simulation study compare two GCTA and GCTA_rr
-GCTA_rr is the `mixed.solve` function from `rrBLUP` r package.  
-Based on the following simulation results, 
+<!-- ## Simulation study compare two GCTA and GCTA_rr -->
+<!-- GCTA_rr is the `mixed.solve` function from `rrBLUP` r package.   -->
+<!-- Based on the following simulation results,  -->
 
-1. when $n<p$ case, those two methods' results are very closed to each other. 
-1. when $n>p$ case, in terms of effect estimation and jackknife variance estimation those two methods's reuslts are similar to each other. But for the variance corrections are quite different. That is the statistics $Q$ of our method has a very large variance which leads to negative correction result.  
+<!-- 1. when $n<p$ case, those two methods' results are very closed to each other.  -->
+<!-- 1. when $n>p$ case, in terms of effect estimation and jackknife variance estimation those two methods's reuslts are similar to each other. But for the variance corrections are quite different. That is the statistics $Q$ of our method has a very large variance which leads to negative correction result.   -->
 
-### setup 
-- Independent 
-- Normal
-- $p = 100$
-- $n = \{50, 75,100, 150, 200\}$
-- with interaction terms
-- main effect: $Var(X^T\beta) = \{0,8,100\}$ 
-\newpage
+<!-- ### setup  -->
+<!-- - Independent  -->
+<!-- - Normal -->
+<!-- - $p = 100$ -->
+<!-- - $n = \{50, 75,100, 150, 200\}$ -->
+<!-- - with interaction terms -->
+<!-- - main effect: $Var(X^T\beta) = \{0,8,100\}$  -->
+<!-- \newpage -->
 
-```{r, include=F, cache=TRUE}
-source("~/dev/projects/Chen_environmental_study/reports/proposed_GCTA_paper/est_var_analysis/est_combined_data/jackknife/GCTA_and_rr_v_jack_multiple_iteration.R")
-```
+<!-- ```{r, include=F, cache=TRUE} -->
+<!-- source("~/dev/projects/Chen_environmental_study/reports/proposed_GCTA_paper/est_var_analysis/est_combined_data/jackknife/GCTA_and_rr_v_jack_multiple_iteration.R") -->
+<!-- ``` -->
 
-### Simulation result 
-### $Var(X^T\beta) = \{0\}$ 
-```{r, }
-summary_final_GCTA_0
-summary_final_GCTA_rr_0
-```
+<!-- ### Simulation result  -->
+<!-- ### $Var(X^T\beta) = \{0\}$  -->
+<!-- ```{r, } -->
+<!-- summary_final_GCTA_0 -->
+<!-- summary_final_GCTA_rr_0 -->
+<!-- ``` -->
 
-### $Var(X^T\beta) = \{100\}$ 
-```{r, }
-summary_final_GCTA_100
-summary_final_GCTA_rr_100
-```
+<!-- ### $Var(X^T\beta) = \{100\}$  -->
+<!-- ```{r, } -->
+<!-- summary_final_GCTA_100 -->
+<!-- summary_final_GCTA_rr_100 -->
+<!-- ``` -->
 
-### $Var(X^T\beta) = \{8\}$ 
-```{r, }
-summary_final_GCTA_8
-summary_result_GCTA_500
-summary_final_GCTA_rr_8
-summary_result_GCTA_rr_500
+<!-- ### $Var(X^T\beta) = \{8\}$  -->
+<!-- ```{r, } -->
+<!-- summary_final_GCTA_8 -->
+<!-- summary_result_GCTA_500 -->
+<!-- summary_final_GCTA_rr_8 -->
+<!-- summary_result_GCTA_rr_500 -->
 
-```
+<!-- ``` -->
 
-### correlation test $ 
-```{r, }
-summary_final_cor_500
-```
+<!-- ### correlation test $  -->
+<!-- ```{r, } -->
+<!-- summary_final_cor_500 -->
+<!-- ``` -->
 
-## compare the performance of delete 1 and delete d in variance estimation 
-The delete-d jackknife varinace estimator is 
-\[
-\mathcal{v}_{J(d)} = \frac{n-d}{d} \cdot \frac{1}{S}\sum_{S}(\hat{\theta}_s - \hat{\theta}_{s.} )
-\],
-where $S =\binom{n}{d}$. 
-Note that S could a very large value, so in the following simulation, only $S = 1000$ is used. In Jun Shao's another paper, he proposed an approximation of the deletel-d variance estimation. That is just select m from $S =\binom{n}{d}$ sub-samples and in that paper it recommended $m = n^{1.5}$.
+<!-- ## compare the performance of delete 1 and delete d in variance estimation  -->
+<!-- The delete-d jackknife varinace estimator is  -->
+<!-- \[ -->
+<!-- \mathcal{v}_{J(d)} = \frac{n-d}{d} \cdot \frac{1}{S}\sum_{S}(\hat{\theta}_s - \hat{\theta}_{s.} ) -->
+<!-- \], -->
+<!-- where $S =\binom{n}{d}$.  -->
+<!-- Note that S could a very large value, so in the following simulation, only $S = 1000$ is used. In Jun Shao's another paper, he proposed an approximation of the deletel-d variance estimation. That is just select m from $S =\binom{n}{d}$ sub-samples and in that paper it recommended $m = n^{1.5}$. -->
 
-### setup 
-- Independent 
-- Normal
-- $p = \{100, 1000\}$
-- $n = \{50, 75,100, 150, 200, 500, 750,1000, 1500, 2000\}$
-- $d = 0.5 \times n$
-- $n_{repeat} = 1000$ for delete d jackknife 
-- main effect: $Var(X^T\beta) = 8$ 
+<!-- ### setup  -->
+<!-- - Independent  -->
+<!-- - Normal -->
+<!-- - $p = \{100, 1000\}$ -->
+<!-- - $n = \{50, 75,100, 150, 200, 500, 750,1000, 1500, 2000\}$ -->
+<!-- - $d = 0.5 \times n$ -->
+<!-- - $n_{repeat} = 1000$ for delete d jackknife  -->
+<!-- - main effect: $Var(X^T\beta) = 8$  -->
 
 
-\newpage
+<!-- \newpage -->
 
-```{r, include = F, cache=TRUE}
-source("~/dev/projects/Chen_environmental_study/reports/proposed_GCTA_paper/est_var_analysis/est_combined_data/jackknife/delete_d_GCTA_and_rr_v_jack_multiple_iteration.R")
-```
+<!-- ```{r, include = F, cache=TRUE} -->
+<!-- source("~/dev/projects/Chen_environmental_study/reports/proposed_GCTA_paper/est_var_analysis/est_combined_data/jackknife/delete_d_GCTA_and_rr_v_jack_multiple_iteration.R") -->
+<!-- ``` -->
 
-### GCTA with p = 100 
-```{r, echo = F}
-rbind(summary_final_GCTA_8_d_1, summary_final_GCTA_8_d_d, summary_final_GCTA_8_d_d_m, fill = TRUE) %>% 
-  kable(., "latex", longtable = T, booktabs = T) %>%
-  kable_styling(latex_options = c("repeat_header"), font_size = 7)
-```
+<!-- ### GCTA with p = 100  -->
+<!-- ```{r, echo = F} -->
+<!-- rbind(summary_final_GCTA_8_d_1, summary_final_GCTA_8_d_d, summary_final_GCTA_8_d_d_m, fill = TRUE) %>%  -->
+<!--   kable(., "latex", longtable = T, booktabs = T) %>% -->
+<!--   kable_styling(latex_options = c("repeat_header"), font_size = 7) -->
+<!-- ``` -->
 
-### GCTA with p = 1000 
-```{r, echo = F}
-rbind(summary_final_GCTA_8_d_1_1000, summary_final_GCTA_8_d_d_1000) %>% 
-  kable(., "latex", longtable = T, booktabs = T) %>%
-  kable_styling(latex_options = c("repeat_header"), font_size = 7)
-```
+<!-- ### GCTA with p = 1000  -->
+<!-- ```{r, echo = F} -->
+<!-- rbind(summary_final_GCTA_8_d_1_1000, summary_final_GCTA_8_d_d_1000) %>%  -->
+<!--   kable(., "latex", longtable = T, booktabs = T) %>% -->
+<!--   kable_styling(latex_options = c("repeat_header"), font_size = 7) -->
+<!-- ``` -->
 
-### GCTA_rr_rr with p = 100 
-```{r, echo = F}
-rbind(summary_final_GCTA_rr_8_d_1, summary_final_GCTA_rr_8_d_d, summary_final_GCTA_rr_8_d_d_m, fill = TRUE) %>% 
-  kable(., "latex", longtable = T, booktabs = T) %>%
-  kable_styling(latex_options = c("repeat_header"), font_size = 7)
-```
+<!-- ### GCTA_rr_rr with p = 100  -->
+<!-- ```{r, echo = F} -->
+<!-- rbind(summary_final_GCTA_rr_8_d_1, summary_final_GCTA_rr_8_d_d, summary_final_GCTA_rr_8_d_d_m, fill = TRUE) %>%  -->
+<!--   kable(., "latex", longtable = T, booktabs = T) %>% -->
+<!--   kable_styling(latex_options = c("repeat_header"), font_size = 7) -->
+<!-- ``` -->
 
-### GCTA_rr with p = 1000 
-```{r, echo = F}
-rbind(summary_final_GCTA_rr_8_d_1_1000, summary_final_GCTA_rr_8_d_d_1000) %>% 
-  kable(., "latex", longtable = T, booktabs = T) %>%
-  kable_styling(latex_options = c("repeat_header"), font_size = 7)
-```
+<!-- ### GCTA_rr with p = 1000  -->
+<!-- ```{r, echo = F} -->
+<!-- rbind(summary_final_GCTA_rr_8_d_1_1000, summary_final_GCTA_rr_8_d_d_1000) %>%  -->
+<!--   kable(., "latex", longtable = T, booktabs = T) %>% -->
+<!--   kable_styling(latex_options = c("repeat_header"), font_size = 7) -->
+<!-- ``` -->
 
-### cor with n = 200
-```{r, echo = F}
-options(scipen=1, digits=5)
-rbind(summary_final_cor_8_d_1_100, summary_final_cor_8_d_d_100) %>% 
-  kable(., "latex", longtable = T, booktabs = T) %>%
-  kable_styling(latex_options = c("repeat_header"), font_size = 7)
-```
+<!-- ### cor with n = 200 -->
+<!-- ```{r, echo = F} -->
+<!-- options(scipen=1, digits=5) -->
+<!-- rbind(summary_final_cor_8_d_1_100, summary_final_cor_8_d_d_100) %>%  -->
+<!--   kable(., "latex", longtable = T, booktabs = T) %>% -->
+<!--   kable_styling(latex_options = c("repeat_header"), font_size = 7) -->
+<!-- ``` -->
 
-### median with n = 200
-```{r, echo = F}
-options(scipen=1, digits=5)
-rbind(summary_final_median_8_d_1_1000, summary_final_median_8_d_d_1000) %>% 
-  kable(., "latex", longtable = T, booktabs = T) %>%
-  kable_styling(latex_options = c("repeat_header"), font_size = 7)
-```
+<!-- ### median with n = 200 -->
+<!-- ```{r, echo = F} -->
+<!-- options(scipen=1, digits=5) -->
+<!-- rbind(summary_final_median_8_d_1_1000, summary_final_median_8_d_d_1000) %>%  -->
+<!--   kable(., "latex", longtable = T, booktabs = T) %>% -->
+<!--   kable_styling(latex_options = c("repeat_header"), font_size = 7) -->
+<!-- ``` -->

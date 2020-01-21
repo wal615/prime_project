@@ -1,0 +1,79 @@
+## Parametric bootstrap
+
+As the previous section mentioned, the non-parametric bootstrap may not work well for the total signal estimation.  A parametric bootstrap method was proposed for CI estimation of the Heritability. Detials at [@schweiger2016fast].
+The main idea of the parametric is following:
+If we assume the mixed effect model, then we have 
+\[
+\mathbf{y}=\mathbf{X} \boldsymbol{\beta}+\mathbf{Z} \mathbf{s}+\mathbf{e}
+\]
+where $\*X$ is the fixed covaraite and coefficient, and $\*Z$ and $s$ are for the random effect, $\mathbf{s} \sim {N}\left(\mathbf{0}_{m}, \sigma_{g}^{2} \mathbf{I}_{m} / m\right) \text { and } \mathbf{e} \sim {N}\left(\mathbf{0}_{n}, \sigma_{e}^{2} \mathbf{I}_{n}\right)$.
+Note in here we assume that $Z$ is fixed with columns' mean 0 and varinace 1.
+\[
+\mathbf{y} \sim {N}\left(\mathbf{X} \boldsymbol{\beta}, \sigma_{g}^{2} \mathbf{K}+\sigma_{e}^{2} \mathbf{I}_{n}\right),
+\]
+where $\mathbf{K}=\mathbf{Z} \mathbf{Z}^{\mathbf{T}} / m$.
+Let $h^2$ as the narrow-sense of heritability 
+\[
+h^{2}=\frac{\sigma_{g}^{2}}{\sigma_{g}^{2}+\sigma_{e}^{2}},
+\]
+then we will have 
+\[
+\mathbf{y} \sim {N}\left(\mathbf{X} \boldsymbol{\beta}, \sigma_{p}^{2}\left(h^{2} \mathbf{K}+\left(1-h^{2}\right) \mathbf{I}_{n}\right)\right).
+\]
+In the paper, the author showed that the distribution $\hat{h}^2$ only depends on $h^2$, i.e. $h^2 = H^2$. Therefore, we could just fix $\sigma_p^2 =1$ and $\beta = \*0_p$. So we have the distribution of y as \[
+{N}\left(\mathbf{0}_{n}, h^{2} \mathbf{K}+\left(1-h^{2}\right) \mathbf{I}_{n}\right)
+\].
+So the direct parametric bootstrap will be  
+
+1. Random sampling: draw \(N(\text { e.g. }, 10,000)\) phenotype vectors \(\mathbf{y}_{1}^{*}, \ldots, \mathbf{y}_{N}^{*}\)
+from the multivariate normal distribution \({N}\left(\mathbf{0}_{n}, h^{2} \mathbf{K}+\left(1-h^{2}\right) \mathbf{I}_{n}\right)\)  
+1. REML estimation: calculate the REML estimates \(\widehat{h}^{2}\left(\mathbf{y}_{1}^{*}\right), \ldots, \widehat{h}^{2}\left(\mathbf{y}_{N}^{*}\right)\)
+for each of these phenotype vectors by using a software package such
+as GCTA (Genome-wide Complex Trait Analysis)  
+1. Density estimation: for each one of the bins above, count the
+proportion of estimates \(\widehat{h}^{2}\left(\mathrm{y}_{i}^{*}\right)\) that fall in that bin; similarly, compute
+the fraction of estimates equal to a boundary estimate \(\hat{h}^{2}\left(\mathrm{y}_{i}^{*}\right)=0\) or \(1 .\)
+Use these fractions as an estimate of the density of \(\widehat{h}^{2}\) for this value of
+\(h^{2}\).
+
+Based on our context, we have $Y = \*X\beta + \epsilon$ and under certain conditions , $Var(\*X\beta) = \sum\beta_i^2$we have 
+\[
+Y \sim N(0, \sum\beta_i^2 + \sigma^2_{\epsilon})
+\]
+so the extend the parametric bootstrap in our simulation setup, we may need try 
+\[
+Y^* \sim N(0, \hat{var}(\*X\beta) + \hat{\sigma}^2_{\epsilon})
+\]
+
+For GCTA, we could use the Delta thoery to find the estimator's variance of its asymptotic distribution. However, simulation results suggest that in most of the case the $\hat{h^2}$ will have a skew distribution with many values around $0,1$. Therefore, the Delta method may not give us an accurate variance esitmation of the estimatiors. 
+
+### simulation result
+```{r,include=FALSE}
+source("./parametric_bootstrap.R")
+```
+
+#### p = 100
+
+```{r, echo=FALSE}
+hist_plot_p_100_niter_1000
+data <- summary_result_GCTA_parametric_bs_p_100_niter_1000
+kable(data, "latex",  booktabs = T, linesep = "") %>%
+kable_styling(latex_options = c("repeat_header", "scale_down")) 
+```
+
+#### p = 1000
+
+```{r, echo=FALSE}
+hist_plot_p_1000_niter_1000
+data <- summary_result_GCTA_parametric_bs_p_1000_niter_100
+kable(data, "latex",  booktabs = T, linesep = "") %>%
+kable_styling(latex_options = c("repeat_header", "scale_down")) 
+```
+
+#### un, p = 21
+```{r, echo=FALSE}
+hist_plot_p_21_un_niter_1000
+data <- summary_result_GCTA_parametric_bs_p_21_un_niter_1000
+kable(data, "latex",  booktabs = T, linesep = "") %>%
+kable_styling(latex_options = c("repeat_header", "scale_down")) 
+```

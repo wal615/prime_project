@@ -18,7 +18,17 @@ Under some standard condition the estimators have asymptotic normality.
 \begin{aligned} \psi_{1}^{2} &=2\left\{\frac{d}{n}\left(\sigma^{2}+\tau^{2}\right)^{2}+\sigma^{4}+\tau^{4}\right\} \\ \psi_{2}^{2} &=2\left\{\left(1+\frac{d}{n}\right)\left(\sigma^{2}+\tau^{2}\right)^{2}-\sigma^{4}+3 \tau^{4}\right\} \\ \psi_{0}^{2} &=\frac{2}{\left(\sigma^{2}+\tau^{2}\right)^{2}}\left\{\left(1+\frac{d}{n}\right)\left(\sigma^{2}+\tau^{2}\right)^{2}-\sigma^{4}\right\} \end{aligned}
 \]
 
+If  $d / n \rightarrow \rho \in[0, \infty)$, then 
 \[
-\begin{array}{l}{\text { If } d / n \rightarrow \rho \in[0, \infty), \text { then }} \\ {\qquad n^{1 / 2}\left(\frac{\hat{\sigma}^{2}-\sigma^{2}}{\psi_{1}}\right), n^{1 / 2}\left(\frac{\hat{\tau}^{2}-\tau^{2}}{\psi_{2}}\right), n^{1 / 2}\left(\frac{\hat{r}^{2}-r^{2}}{\psi_{0}}\right) \rightarrow N(0,1)} \\ {\text { in distribution. }}\end{array}
+ {n^{1 / 2}\left(\frac{\hat{\sigma}^{2}-\sigma^{2}}{\psi_{1}}\right), n^{1 / 2}\left(\frac{\hat{\tau}^{2}-\tau^{2}}{\psi_{2}}\right), n^{1 / 2}\left(\frac{\hat{r}^{2}-r^{2}}{\psi_{0}}\right) \rightarrow N(0,1)} \\ {\text { in distribution. }}
 \]
+
+## Simulation results
+```{r, echo = F}
+source("~/dev/projects/Chen_environmental_study/reports/report_Vairnace_estimation_High_dimensional/Dicker_2013.R")
+data <- summary_result_dicker_I_normal
+kable(data, "latex",  booktabs = T, linesep = "") %>%
+kable_styling(latex_options = c("repeat_header", "scale_down")) 
+```
+
 

@@ -7,6 +7,7 @@ output:
     toc: true
     number_sections: true
     keep_tex: FALSE
+bibliography: bibliography.bib
 header-includes:
     - \usepackage{float,amsmath, bbm, amssymb, siunitx, bm}
     - \usepackage{pdfpages}
@@ -42,10 +43,13 @@ library(knitr)
 
 # Linear regression
 
-```{r, child='GCTA.Rmd'}
+```{r, child='GCTA.Rmd', cache=TRUE}
 ```
 
 # EigmPrism method
 
 ```{r, child='Dicker_2013.Rmd'}
 ```
+
+# References
+

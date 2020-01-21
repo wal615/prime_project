@@ -37,7 +37,7 @@ v_jact_correct <- function(S, n, i_1, i_2, S_i, Q = FALSE) {
   i_10 <- i_1[1:n]
   S_2 <- S_i[-(1:n)]
   i_12 <- cbind(i_1[-(1:n)], i_2[-(1:n)])
-
+  
   # Q is for correct the sencond order bias of jackknife variance by Eforn 1981
   Q_jj <- numeric(nrow(i_12))
   for(j in 1:nrow(i_12)){
@@ -67,7 +67,7 @@ subsample_summary <- function (result_tmp, bs, combine, n_obs, d){
   }
   
   sub_col_name <- names(result_tmp)[grepl(names(result_tmp), pattern = name_pattern)]
-  col_name <- substr(sub_col_name, 5, stop = 100) # whole sample result
+  col_name <- substr(sub_col_name, 5, stop = 100) # hard code to get the colname of sub sampling method
   
   
   # get the jackknife bias corrected estimation and variance estimation
@@ -107,15 +107,28 @@ subsample_summary <- function (result_tmp, bs, combine, n_obs, d){
     
     # col2
     if(length(col_name) == 2) {
-    col2 <- col_name[2]
-    sub_col2 <- sub_col_name[2]
-    S2 <- data.matrix(result_tmp[1, ..col2])
-    S_jack <- bias_jack_corr(S2, data.matrix(result_tmp[1:n_obs, ..sub_col2]))
-    v_jack_leave_1 <- jack_var(x = data.matrix(result_tmp[1:n_obs, ..sub_col2]), pro = 101, d = 1, n = n_obs)
-    v_jack_leave_2 <- jack_var(x = data.matrix(result_tmp[-(1:n_obs), ..sub_col2]), pro = 101, d = 2, n = n_obs)
-    v_jack_corr <- v_jact_correct(S = S2, n = n_obs, S_i = data.matrix(result_tmp[, ..sub_col2]), 
-                                  i_1 = result_tmp$i_1, i_2 = result_tmp$i_2)
-    S2_jack <- data.table(S2_jack = S_jack, S2_v_jack_1 = v_jack_leave_1, S2_v_jack_2 = v_jack_leave_2, S2_v_jack_corr = v_jack_corr[2])
+      col2 <- col_name[2]
+      sub_col2 <- sub_col_name[2]
+      S2 <- data.matrix(result_tmp[1, ..col2])
+      S_jack <- bias_jack_corr(S2, data.matrix(result_tmp[1:n_obs, ..sub_col2]))
+      v_jack_leave_1 <- jack_var(x = data.matrix(result_tmp[1:n_obs, ..sub_col2]), pro = 101, d = 1, n = n_obs)
+      v_jack_leave_2 <- jack_var(x = data.matrix(result_tmp[-(1:n_obs), ..sub_col2]), pro = 101, d = 2, n = n_obs)
+      v_jack_corr <- v_jact_correct(S = S2, n = n_obs, S_i = data.matrix(result_tmp[, ..sub_col2]), 
+                                    i_1 = result_tmp$i_1, i_2 = result_tmp$i_2)
+      S2_jack <- data.table(S2_jack = S_jack, S2_v_jack_1 = v_jack_leave_1, S2_v_jack_2 = v_jack_leave_2, S2_v_jack_corr = v_jack_corr[2])
+    } 
+  } else if(bs == "para-bs"){
+    col1 <- col_name[1]
+    sub_col1 <- sub_col_name[1]
+    S_bs <- mean(data.matrix(result_tmp[1:n_obs, ..sub_col1]), na.rm = T)
+    v_bs <- var(data.matrix(result_tmp[1:n_obs, ..sub_col1]), na.rm = T)
+    S1_jack <- data.table(S1_bs = S_bs, S1_v_bs = v_bs)
+    if(length(col_name) == 2){
+      col2 <- col_name[2]
+      sub_col2 <- sub_col_name[2]
+      S_bs <- mean(data.matrix(result_tmp[1:n_obs, ..sub_col2]), na.rm = T)
+      v_bs <- var(data.matrix(result_tmp[1:n_obs, ..sub_col2]), na.rm = T)
+      S2_jack <- data.table(S2_bs = S_bs, S2_v_bs = v_bs)
     }
   }
   if(length(col_name) == 2) {

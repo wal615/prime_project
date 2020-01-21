@@ -13,14 +13,14 @@ sourceDirectory("./R_code/main_fn/",modifiedOnly = FALSE, recursive = TRUE)
 sourceDirectory("./R_code/main_fn/method/",modifiedOnly = FALSE, recursive = TRUE)
 source("./R_code/simulation_proposed_GCTA/local_helpers.R")
 # source("./reports/proposed_GCTA_paper/est_var_analysis/est_combined_data/covaraites_summary_2005_2014.R")
-source("./reports/proposed_GCTA_paper/est_var_analysis/est_combined_data/covaraites_summary_1999_2004.R")
+# source("./reports/proposed_GCTA_paper/est_var_analysis/est_combined_data/covaraites_summary_1999_2004.R")
 c_betam <- 8
 c_betai <- 2
-save_path <- "~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/var_est/combined_effects_GCTA_rr_Eg_jack_1_d/"
+save_path <- "~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/report_jackknife/"
 
-cores <- 30
-n_iter <- 100
-delete_d <- TRUE
+cores <- 1
+n_iter <- 65
+delete_d <- FALSE
 
 seed_loop <- 1234
 seed_coef <- 1014
@@ -28,25 +28,27 @@ seed_coef <- 1014
 
 # data generation
 emp_n <- 10^5
-n_total <- c(50,75,100,150,200, 500, 1000, 1500)
+n_total <- c(50)
 dist <- "normal"
 generate_data <- generate_normal
 structure <- "I"
 
 # sub_sampling
 # d <- 102
-# bs <- "bs"
+# bs <- "para-bs"
+# n_sub_list <- 100
+
 # d <- 1012
 # bs <- "leave-1-2"
 # d <- 0
 # bs <- "full"
 
-# bs <- "leave-1"
-# d_fn <- function(n) {1}
-# 
-bs <- "leave-d"
-# d_fn <- function(n) {round(0.75*n,0)}
-d_fn <- function(n) {round(25,0)}
+bs <- "leave-1"
+d_fn <- function(n) {1}
+
+# bs <- "leave-d"
+# # d_fn <- function(n) {round(0.75*n,0)}
+# d_fn <- function(n) {round(25,0)}
 
 
 
@@ -56,7 +58,7 @@ d_fn <- function(n) {round(25,0)}
 # pre_cor <- cor(data.matrix(PCB_1999_2004_common[index, ..PCB_common]))
 Var <- "null"
 # p <- length(PCB_common)
-p <- 1000
+p <- 100
 
 # combine <- TRUE
 # est <- "total"
@@ -99,6 +101,11 @@ if(decor == FALSE) {
 
 
 
+# kernel <- Dicker_2013_kernel
+# kernel_args <- list(decor = decor)
+# kernel_name <- "Dicker_2013_kernel"
+# kernel_result_col_names <- col_names_Dicker
+
 kernel <- EigenPrism_kernel
 kernel_args <- list(decor = decor)
 kernel_name <- "EigenPrism_kernel"
@@ -126,10 +133,10 @@ kernel_result_col_names_2 <- col_names_GCTA_rr
 # kernel_2 <- GCTA_kernel
 # kernel_name <- append(kernel_name,"GCTA_kernel") %>% paste(.,collapse = "_")
 # kernel_result_col_names_2 <- col_names_GCTA
+
 # kernel_args_2 <- NULL
 # kernel_2 <- NULL
-# kernel_name <- NULL
-# kernel_result_col_names_2 <- NULL
+
 
 
 # coef
@@ -157,11 +164,16 @@ if(delete_d == TRUE){
 }
 
 # setup folders for results
-result_name <- paste("decor",decor_method, "sparse", sparse_decor_method, 
+result_name <- paste("decor",decor_method, "sparse", sparse_decor_method,
                      dist, "structure", structure, "main", main_fixed_var, "inter",
-                     inter_fixed_var, "n", paste(n_total, collapse = "_"), "p", p, "rho_e", paste(rho_e,collapse = "_"), 
+                     inter_fixed_var, "n", paste(n_total, collapse = "_"), "p", p, "rho_e", paste(rho_e,collapse = "_"),
                      "decor",decor,"subd",paste(unique(unlist(d_list)), collapse = "_"), "iter", n_iter, "nsub", max(unlist(n_sub_list)),
                      kernel_name, "est", est, "c_betam", c_betam, "c_betai", c_betai, "Var", Var, sep = "_")
+# result_name <- paste("decor",decor_method, "sparse", sparse_decor_method, 
+#                      dist, "structure", structure, "main", main_fixed_var, "inter",
+#                      inter_fixed_var, "n", paste(n_total, collapse = "_"), "p", p, "rho_e", paste(rho_e,collapse = "_"), 
+#                      "decor",decor, "iter", n_iter,"bs",bs, "nsub", max(unlist(n_sub_list)),
+#                      kernel_name, "est", est, "c_betam", c_betam, "c_betai", c_betai, "Var", Var, sep = "_")
 result_folder_path <- paste0(save_path, result_name, "/")
 dir.create(result_folder_path)
 
@@ -179,7 +191,7 @@ result_list <- mapply(FUN = simulation_var_est_fn,
                                       kernel_args_2 = kernel_args_2,
                                       kernel_result_col_names_2 = kernel_result_col_names_2,
                                       bs = bs,
-                                      bs_summary = TRUE,
+                                      bs_summary = FALSE,
                                       c_betam = c_betam,
                                       c_betai = c_betai,
                                       emp_n = emp_n,

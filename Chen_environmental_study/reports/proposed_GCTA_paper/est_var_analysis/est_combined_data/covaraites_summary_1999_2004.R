@@ -10,7 +10,7 @@ sourceDirectory("./R_code/main_fn/method/",modifiedOnly = FALSE, recursive = TRU
 source("./R_code/simulation_proposed_GCTA/local_helpers.R")
 
 name_list <- list.files(path = "~/dev/projects/Chen_environmental_study/R_code/data/real_data/NHANES/PCB_99_14/clean/individual",
-                        pattern = "PCB",full.names = T)
+                        pattern = "clean",full.names = T )
 PCB_1999_2004_raw <- lapply(name_list, FUN = fread) %>% rbindlist(., fill = TRUE)
 
 ### summary the data 

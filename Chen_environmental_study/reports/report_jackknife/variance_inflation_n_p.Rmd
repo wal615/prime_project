@@ -1,5 +1,6 @@
-# Jackknife variance estimation on high dimension signal estimation
+## Jackknife variance estimation on high dimension signal estimation
 Different methods have their own 
+
 ### Jackknife variance estimation's bias and sample size n 
 
 #### setup 
@@ -46,6 +47,7 @@ ggplot(data = data,
 data <- rbind(summary_final_GCTA_rr_8_d_1_p_1000_n_50_1500,
               summary_final_GCTA_rr_8_d_d_p_1000_n_50_1500,
               summary_final_GCTA_rr_8_d_.75_p_1000_n_50_1500,
+              summary_final_GCTA_rr_8_d_25_p_1000_n_50_1500,
               fill = TRUE) %>% setorder(., by = d)
 
 kable(data, "latex",  booktabs = T, linesep = "") %>%
@@ -65,11 +67,13 @@ ggplot(data = data,
 ```{r, echo = F}
 data <- rbind(summary_final_EigenPrism_8_d_1_p_100_n_50_1500,
               summary_final_EigenPrism_8_d_d_p_100_n_50_1500,
+              summary_final_EigenPrism_8_d_.75_p_100_n_50_1500,
+              summary_final_EigenPrism_8_d_25_p_100_n_50_1500,
               fill = TRUE) %>% setorder(., by = d)
 
 kable(data, "latex",  booktabs = T, linesep = "") %>%
 kable_styling(latex_options = c("repeat_header", "scale_down")) 
-data[, d:= ifelse(d == 1, "1", "d")]
+data[,d := as.character(d)]
 ggplot(data = data, 
        aes(x=n, y=relative_ratio, group=d)) +
   geom_line(aes(color=d)) +
@@ -83,10 +87,29 @@ ggplot(data = data,
 ```{r, echo = F}
 data <- rbind(summary_final_EigenPrism_8_d_1_p_1000_n_50_1500,
               summary_final_EigenPrism_8_d_d_p_1000_n_50_1500,
+              summary_final_EigenPrism_8_d_.75_p_1000_n_50_1500,
+              summary_final_EigenPrism_8_d_25_p_1000_n_50_1500,
+              fill = TRUE) %>% setorder(., by = d)
+
+kable(data, "latex",  booktabs = T, linesep = "") %>%
+kable_styling(latex_options = c("repeat_header", "scale_down")) 
+data[,d := as.character(d)]
+ggplot(data = data, 
+       aes(x=n, y=relative_ratio, group=d)) +
+  geom_line(aes(color=d)) +
+  geom_point(aes(color=d)) +
+  ylim(c(0,3)) +
+  ggtitle("p = 1000") + 
+  theme_bw()
+```
+
+#### Dicker 2013 with p = 1000 
+```{r, echo = F}
+data <- rbind(summary_result_Dicker_jack_8_d_25_p_1000_n_50_1500,
               fill = TRUE) %>% setorder(., by = d)
 kable(data, "latex",  booktabs = T, linesep = "") %>%
 kable_styling(latex_options = c("repeat_header", "scale_down")) 
-data[, d:= ifelse(d == 1, "1", "d")]
+data[,d := as.character(d)]
 ggplot(data = data, 
        aes(x=n, y=relative_ratio, group=d)) +
   geom_line(aes(color=d)) +
