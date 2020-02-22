@@ -65,7 +65,6 @@ EigenPrism <- function(y,X,invsqrtSig=NULL,alpha=0.2,target='beta2',zero.ind=c()
   
   # Compute confidence interval
   CI = est + yvar*sqrt(v)*qnorm(1-alpha/2)*c(-1,1)
-
   if(target=='heritability'){
     est = est/yvar
     CI = CI/yvar

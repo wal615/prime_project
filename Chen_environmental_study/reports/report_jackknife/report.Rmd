@@ -55,7 +55,7 @@ library(knitr)
 
 ## non-parameteric bootstrap 
 
-```{r child = "parametric_bootstrap.Rmd"}
+```{r child = "parametric_bootstrap.Rmd", cache=FALSE}
 ```
 
 # Delta method

@@ -282,7 +282,7 @@ simulation_var_est_bootstrap_fn <- function(kernel = GCTA_kernel,
                                   rho_e,
                                   emp_n = 10^5,
                                   tran_fn = null_tran,
-                                  historical_minic = TRUE,
+                                  historical_minic = FALSE,
                                   uncorr_method = NULL,
                                   uncorr_args = NULL,
                                   sparse_uncorr_method = NULL,
@@ -437,32 +437,29 @@ simulation_var_est_bootstrap_fn <- function(kernel = GCTA_kernel,
     
     # generate sub_sampling for variance estimation
     # sub-sampling procedure includes: data standardization, decorrelation, dimension reduction
-
+    b_tmp <- b_est_model
     for(i in 1:n_sub){
       h2 <- result_tmp[1,5] # the estimated h2 location
-      X <- std_fn(b_raw)
-      K <- X %*% t(X) * 1/p
+      if(kernel_args$decor == FALSE){
+        X <- b_tmp$b_final
+      } else {
+        X <- b_tmp$s_final
+      }
+      X <- std_fn(X)
+      K <- X %*% t(X) * 1/ncol(X)
       In <- diag(nrow(X))
       Vh <- h2*K + (1-h2)*In
       Y_bs <- MASS::mvrnorm(n = 1, mu = numeric(nrow(X)), Sigma = Vh)
-      b_tmp <- est_model_data(b_raw,
-                              Y_bs,
-                              p, 
-                              combined, 
-                              uncorr_method, 
-                              uncorr_args, 
-                              sparse_uncorr_method,
-                              sparse_uncorr_args,
-                              uncorre = kernel_args$decor)
+      # update the new response
+      b_tmp$y <- Y_bs
       args <- append(b_tmp, kernel_args) %>% append(.,list(b_raw = b_raw, betam = betam, betai = betai))
       result_tmp[i,(5+length(kernel_result_col_names)/2):(4+length(kernel_result_col_names))] <- do.call(kernel, args)
-      
+
       if(!is.null(kernel_2)){
         args_2 <- append(b_tmp, kernel_args_2) %>% append(.,list(b_raw = sub_data$b_raw, betam = betam, betai = betai))
         result_tmp[i,(5+length(kernel_result_col_names)+length(kernel_result_col_names_2)/2):(4+length(kernel_result_col_names)+length(kernel_result_col_names_2))] <- do.call(kernel_2, args_2)
       }
     }
-    
     
     # summary the sub-sampling result
     if((bs != "full") & (bs_summary == TRUE)){
@@ -488,7 +485,7 @@ simulation_var_est_bootstrap_fn <- function(kernel = GCTA_kernel,
     additional$sigma_total_emp <- NULL
     additional$sigma_main_emp <- NULL
     additional$data_path <- NULL
-    
+
     # save the result
     if(!(is.null(inter_result_path))) data.frame(result_tmp, additional, i = ibrep, row.names = NULL, stringsAsFactors = FALSE) %>% write.csv(., 
                                                                                                                                               file = paste0(inter_result_path, "rho_e_", rho_e, "_n_", nrow(b_raw), "_d_", d,"_iteration_",ibrep,".csv"), 

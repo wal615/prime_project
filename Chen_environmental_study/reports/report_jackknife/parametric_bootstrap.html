@@ -213,26 +213,54 @@ Y \sim N(0, \sum\beta_i^2 + \sigma^2_{\epsilon})
 Y^* \sim N(0, \hat{var}(\*X\beta) + \hat{\sigma}^2_{\epsilon})
 \]</span></p>
 <p>For GCTA, we could use the Delta thoery to find the estimator’s variance of its asymptotic distribution. However, simulation results suggest that in most of the case the <span class="math inline">\(\hat{h^2}\)</span> will have a skew distribution with many values around <span class="math inline">\(0,1\)</span>. Therefore, the Delta method may not give us an accurate variance esitmation of the estimatiors.</p>
-<div id="simulation-result" class="section level3">
-<h3>simulation result</h3>
-<div id="emperical-distribution-of-the-gcta-h2" class="section level4">
-<h4>emperical distribution of the GCTA <span class="math inline">\(h^2\)</span></h4>
-</div>
-<div id="p-100" class="section level4">
-<h4>p = 100</h4>
-</div>
-<div id="p-1000" class="section level4">
-<h4>p = 1000</h4>
-</div>
-<div id="emperical-distribution-of-the-gcta-h2-1" class="section level4">
-<h4>emperical distribution of the GCTA <span class="math inline">\(h^2\)</span></h4>
-</div>
-<div id="p-100-1" class="section level4">
-<h4>p = 100</h4>
-</div>
-<div id="p-1000-1" class="section level4">
-<h4>p = 1000</h4>
-</div>
+<!-- ### simulation result -->
+<!-- ```{r,include=FALSE} -->
+<!-- source("./parametric_bootstrap.R") -->
+<!-- ``` -->
+<!-- Note that we adopt $\rho$ from [@janson2017eigenprism], which in our case $\rho = h^2$. -->
+<!-- For $h^2 = 0.5$ and $\*X \sim N(\*0_p I_p)$, the parameteric bootstrap seems to work well when $p = 100$. However, when $p = 1000$, the relative ratio is large. The possible reason is that the sample size is too small consider the n.  -->
+<!-- #### p = 100 rho = 0.5 -->
+<!-- ```{r, echo=FALSE} -->
+<!-- hist_plot_p_100_niter_1000 -->
+<!-- data <- summary_result_GCTA_parametric_bs_p_100_niter_1000 -->
+<!-- kable(data, "latex",  booktabs = T, linesep = "") %>% -->
+<!-- kable_styling(latex_options = c("repeat_header", "scale_down"))  -->
+<!-- ``` -->
+<!-- #### p = 1000 rho = 0.5 -->
+<!-- ```{r, echo=FALSE} -->
+<!-- hist_plot_p_1000_niter_1000 -->
+<!-- data <- summary_result_GCTA_parametric_bs_p_1000_niter_100 -->
+<!-- kable(data, "latex",  booktabs = T, linesep = "") %>% -->
+<!-- kable_styling(latex_options = c("repeat_header", "scale_down"))  -->
+<!-- ``` -->
+<!-- \newpage -->
+<!-- Following are simulation results for $h^2 = \{0.1,0.3,0.5,0.7,0.9\}$. It seems that when $h^2$ is closed 0 or 1, the parametric method will have some issue for variance estimation. -->
+<!-- #### p = 100 rho = 0.1-0.9 -->
+<!-- ```{r, echo=FALSE} -->
+<!-- hist_plot_p_100_niter_1000_rho_e_0.1_0.9 -->
+<!-- data <- summary_result_GCTA_parametric_bs_p_100_niter_1000_rho_e_0.1_0.9 -->
+<!-- kable(data, "latex",  booktabs = T, linesep = "") %>% -->
+<!-- kable_styling(latex_options = c("repeat_header", "scale_down"))  -->
+<!-- ``` -->
+<!-- #### p = 500 rho = 0.1-0.9 -->
+<!-- ```{r, echo=FALSE} -->
+<!-- # hist_plot_p_1000_niter_1000 -->
+<!-- data <- summary_result_GCTA_parametric_bs_p_500_niter_1000_rho_e_0.1_0.9 -->
+<!-- kable(data, "latex",  booktabs = T, linesep = "") %>% -->
+<!-- kable_styling(latex_options = c("repeat_header", "scale_down"))  -->
+<!-- ``` -->
+<div id="simulation-results-for-compare-with-differnt-method" class="section level3">
+<h3>Simulation results for compare with differnt method</h3>
+<p>In this section, we want to compare the inference accuracy of the parametric bootstrap with EigePrism and Dickers’ method. Based on the environmental data, we set</p>
+<ul>
+<li><span class="math inline">\(n = 250 , 500\)</span> and <span class="math inline">\(p = 500\)</span>, and <span class="math inline">\(h^2 = \{0.1, 0.3, \dots , 0.9\}\)</span><br />
+</li>
+<li><p><span class="math inline">\(\*X \sim N(\*0_p, I_p)\)</span>.<br />
+The inference accuracy is defined as</p></li>
+<li>CI’s length<br />
+</li>
+<li><p>CI’s coverage rate</p></li>
+</ul>
 </div>
 </div>
 

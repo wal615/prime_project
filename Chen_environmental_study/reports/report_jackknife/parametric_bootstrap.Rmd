@@ -49,31 +49,133 @@ For GCTA, we could use the Delta thoery to find the estimator's variance of its 
 
 ### simulation result
 ```{r,include=FALSE}
-source("./parametric_bootstrap.R")
+source("~/dev/projects/Chen_environmental_study/reports/report_jackknife/parametric_bootstrap.R")
 ```
 
-#### p = 100
+Note that we adopt $\rho$ from [@janson2017eigenprism], which in our case $\rho = h^2$.
+For $h^2 = 0.5$ and $\*X \sim N(\*0_p I_p)$, the parameteric bootstrap seems to work well when $p = 100$. However, when $p = 1000$, the relative ratio is large. The possible reason is that the sample size is too small consider the n.
+
+#### p = 100 rho = 0.5
 
 ```{r, echo=FALSE}
 hist_plot_p_100_niter_1000
 data <- summary_result_GCTA_parametric_bs_p_100_niter_1000
 kable(data, "latex",  booktabs = T, linesep = "") %>%
-kable_styling(latex_options = c("repeat_header", "scale_down")) 
+kable_styling(latex_options = c("repeat_header", "scale_down"))
 ```
 
-#### p = 1000
+#### p = 1000 rho = 0.5
 
 ```{r, echo=FALSE}
 hist_plot_p_1000_niter_1000
-data <- summary_result_GCTA_parametric_bs_p_1000_niter_100
+data <- summary_result_GCTA_parametric_bs_p_1000_niter_1000
 kable(data, "latex",  booktabs = T, linesep = "") %>%
-kable_styling(latex_options = c("repeat_header", "scale_down")) 
+kable_styling(latex_options = c("repeat_header", "scale_down"))
 ```
 
-#### un, p = 21
+\newpage
+
+
+<!-- ### Simulation results for compare bootstrap with other inference methods -->
+<!-- In this section, we want to compare the inference accuracy of the parametric bootstrap with EigePrism and Dickers' method. Based on the environmental data, we set   -->
+
+<!-- - $n = 250 , 500$ and $p = 500$, and $h^2 = \{0.1, 0.3, \dots , 0.9\}$   -->
+<!-- - $\*X \sim N(\*0_p, I_p)$.  -->
+<!-- - $\beta$ if fixed and we set $\$ -->
+<!-- - sparcity ration is $0.5$ -->
+<!-- The inference accuracy is defined as   -->
+
+<!-- - CI's length    -->
+<!-- - CI's coverage rate    -->
+
+<!-- #### Simulation result GCTA  -->
+<!-- Since GCTA does not have a inference structure, we just compare the emperical CI and parametric bootstrap CI. -->
+
+<!-- ```{r, echo=FALSE} -->
+<!-- # hist_plot_p_1000_niter_1000 -->
+<!-- data <- summary_result_GCTA_parametric_bs_p_500_niter_1000_rho_e_0.1_0.9 -->
+<!-- kable(data, "latex",  booktabs = T, linesep = "") %>% -->
+<!-- kable_styling(latex_options = c("repeat_header", "scale_down")) -->
+<!-- GCTA_CI_covarage -->
+<!-- GCTA_CI_length -->
+<!-- ``` -->
+<!-- #### Simulation result Dicker -->
+
+
+<!-- ```{r, echo=FALSE} -->
+<!-- # hist_plot_p_1000_niter_1000 -->
+<!-- data <- summary_result_Dicker_parametric_bs_p_500_niter_1000_rho_e_0.1_0.9 -->
+<!-- kable(data, "latex",  booktabs = T, linesep = "") %>% -->
+<!-- kable_styling(latex_options = c("repeat_header", "scale_down")) -->
+<!-- Dicker_CI_covarage -->
+<!-- Dicker_CI_length -->
+<!-- ``` -->
+
+<!-- #### Simulation result EigenPrism  -->
+
+<!-- ```{r, echo=FALSE} -->
+<!-- data <- summary_result_EigenPrism_parametric_bs_p_500_niter_500_rho_e_0.1_0.9 -->
+<!-- kable(data, "latex",  booktabs = T, linesep = "") %>% -->
+<!-- kable_styling(latex_options = c("repeat_header", "scale_down")) -->
+<!-- EigenPrism_CI_covarage -->
+<!-- EigenPrism_CI_length -->
+<!-- ``` -->
+
+
+
+### Simulation results for compare bootstrap with other inference methods
+Based on the simulation result from last section, we found that the exisiting inference methods are similar with each other. So in this section, we consider GCTA with parametric method as one method and compare its inference ability with dickers and EigenPrism. 
+
+- $n = 250 , 500$ and $p = 500$, and $h^2 = \{0.1, 0.3, \dots , 0.9\}$  
+- $\*X \sim N(\*0_p, I_p)$. 
+- $\beta$'s sparsity rate is 0.5
+The inference accuracy is defined as  
+- CI's length  
+- CI's coverage rate   
+
+#### CI coverage rate and lenght
 ```{r, echo=FALSE}
-hist_plot_p_21_un_niter_1000
-data <- summary_result_GCTA_parametric_bs_p_21_un_niter_1000
+data <- CI_table
 kable(data, "latex",  booktabs = T, linesep = "") %>%
-kable_styling(latex_options = c("repeat_header", "scale_down")) 
+kable_styling(latex_options = c("repeat_header", "scale_down"))
+CI_covarage
+CI_length
+```
+
+### Simulation results for GCTA with para-bs under total normal
+In this section, we test the para-bs under the interaction effect.
+
+- $n = 250 , 500$ and $p = 31$, and $h^2 = \{0.1, 0.3, \dots , 0.9\}$  
+- $\*X \sim N(\*0_p, I_p)$. 
+- $\beta$'s sparsity rate is 0.5
+The inference accuracy is defined as  
+- CI's length  
+- CI's coverage rate   
+
+#### CI coverage rate and lenght
+```{r, echo=FALSE}
+data <- summary_result_total_GCTA_parametric_bs_p_500_niter_1000_rho_e_0.1_0.9
+kable(data, "latex",  booktabs = T, linesep = "") %>%
+kable_styling(latex_options = c("repeat_header", "scale_down"))
+GCTA_CI_covarage_normal_total
+GCTA_CI_length_normal_total
+```
+
+### Simulation results for GCTA with para-bs under PCN
+In this section, we test the para-bs under the interaction effect.
+
+- $n = 100, 150,231$ and $p = 21$, and $h^2 = \{0.1, 0.3, \dots , 0.9\}$  
+- $\*X$ PCB from 1999-2004 years. 
+- $\beta$'s sparsity rate is 0.5
+The inference accuracy is defined as  
+- CI's length  
+- CI's coverage rate   
+
+#### CI coverage rate and lenght
+```{r, echo=FALSE}
+data <- summary_result_PCB_total_GCTA_parametric_bs_p_500_niter_1000_rho_e_0.1_0.9
+kable(data, "latex",  booktabs = T, linesep = "") %>%
+kable_styling(latex_options = c("repeat_header", "scale_down"))
+GCTA_CI_covarage_PCB_total
+GCTA_CI_length_PCB_total
 ```

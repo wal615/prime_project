@@ -46,9 +46,10 @@ library(knitr)
 ```{r, child='GCTA.Rmd', cache=TRUE}
 ```
 
-# EigmPrism method
+```{r, child="EigenPrism.Rmd", cache=FALSE}
+```
 
-```{r, child='Dicker_2013.Rmd'}
+```{r, child='Dicker_2013.Rmd', cache=FALSE}
 ```
 
 # References

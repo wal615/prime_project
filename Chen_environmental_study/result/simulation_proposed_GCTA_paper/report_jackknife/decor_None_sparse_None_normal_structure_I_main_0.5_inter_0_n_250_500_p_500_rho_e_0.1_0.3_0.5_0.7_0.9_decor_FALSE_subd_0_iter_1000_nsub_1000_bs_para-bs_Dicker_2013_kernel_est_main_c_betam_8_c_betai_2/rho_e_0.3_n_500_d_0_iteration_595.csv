@@ -1,0 +1,2 @@
+"var_main_effect","var_inter_effect","cov_main_inter_effect","var_total_effect","h_Dicker_main","h_Dicker_var","sub_h_Dicker_var","S1_bs","S1_v_bs.sub_h_Dicker_main","x_dist","structure","p","n","main_fixed_var","main_random_var","inter_fixed_var","inter_random_var","decor","combine","d","bs","n_sub","rho_e","emp_n","i"
+7.99999999999999,0,0,0,0.336196503128667,0.00623745967016556,0.00703431480086444,0.331086854158113,0.00618908491412747,"normal","I",500,500,0.5,0,0,0,FALSE,FALSE,0,"para-bs",1000,0.3,1e+05,595

@@ -1,0 +1,21 @@
+# EigenPrism
+
+## Model assumption 
+
+
+## Simulation results
+
+<!-- ### p = 100, $\sum\beta^2 = 8$ and rho = 0.1-0.9 -->
+<!-- ```{r, echo = F} -->
+<!-- source("~/dev/projects/Chen_environmental_study/reports/report_Vairnace_estimation_High_dimensional/EigenPrism.R") -->
+<!-- data <- summary_result_h_Eg_I_normal_p_100_n_150_rho_e -->
+<!-- kable(data, "latex",  booktabs = T, linesep = "") %>% -->
+<!-- kable_styling(latex_options = c("repeat_header", "scale_down"))  -->
+<!-- ``` -->
+
+<!-- ### p = 500, $\sum\beta^2 = 8$ and rho = 0.1-0.9 -->
+<!-- ```{r, echo = F} -->
+<!-- data <- summary_result_h_Eg_I_normal_p_500_n_500_rho_e -->
+<!-- kable(data, "latex",  booktabs = T, linesep = "") %>% -->
+<!-- kable_styling(latex_options = c("repeat_header", "scale_down"))  -->
+<!-- ``` -->

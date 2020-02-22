@@ -18,8 +18,8 @@ c_betam <- 8
 c_betai <- 2
 save_path <- "~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/report_jackknife/"
 
-cores <- 1
-n_iter <- 65
+cores <- 2
+n_iter <- 2
 delete_d <- FALSE
 
 seed_loop <- 1234
@@ -28,7 +28,7 @@ seed_coef <- 1014
 
 # data generation
 emp_n <- 10^5
-n_total <- c(50)
+n_total <- c(50, 75, 100, 150)
 dist <- "normal"
 generate_data <- generate_normal
 structure <- "I"
@@ -40,11 +40,12 @@ structure <- "I"
 
 # d <- 1012
 # bs <- "leave-1-2"
-# d <- 0
-# bs <- "full"
 
-bs <- "leave-1"
-d_fn <- function(n) {1}
+d_fn <- function(n) {0}
+bs <- "full"
+# 
+# bs <- "leave-1"
+# d_fn <- function(n) {1}
 
 # bs <- "leave-d"
 # # d_fn <- function(n) {round(0.75*n,0)}
@@ -106,10 +107,10 @@ if(decor == FALSE) {
 # kernel_name <- "Dicker_2013_kernel"
 # kernel_result_col_names <- col_names_Dicker
 
-kernel <- EigenPrism_kernel
+kernel <- h_GCTA_kernel
 kernel_args <- list(decor = decor)
 kernel_name <- "EigenPrism_kernel"
-kernel_result_col_names <- col_names_Eigen
+kernel_result_col_names <- h_col_names_Eigen
 
 
 # kernel_args <- list(interact = 0,decor = decor)
@@ -144,8 +145,8 @@ main_fixed_var <- 0.5
 main_random_var <- 0
 inter_fixed_var <- 0
 inter_random_var <- 0
-# rho_e <- c(0.2, 0.5, 0.7)
-rho_e <- 0.5
+rho_e <- c(0.1, 0.3, 0.5, 0.7, 0.9)
+# rho_e <- 0.5
 gene_coeff_args <- list(main_fixed_var = main_fixed_var,
                         main_random_var = main_random_var,
                         inter_fixed_var = inter_fixed_var,
@@ -167,7 +168,7 @@ if(delete_d == TRUE){
 result_name <- paste("decor",decor_method, "sparse", sparse_decor_method,
                      dist, "structure", structure, "main", main_fixed_var, "inter",
                      inter_fixed_var, "n", paste(n_total, collapse = "_"), "p", p, "rho_e", paste(rho_e,collapse = "_"),
-                     "decor",decor,"subd",paste(unique(unlist(d_list)), collapse = "_"), "iter", n_iter, "nsub", max(unlist(n_sub_list)),
+                     "decor",decor,"subd",paste(unique(unlist(d_list)), collapse = "_"), "iter", n_iter, "nsub", max(unlist(n_sub_list)), "bs", bs,
                      kernel_name, "est", est, "c_betam", c_betam, "c_betai", c_betai, "Var", Var, sep = "_")
 # result_name <- paste("decor",decor_method, "sparse", sparse_decor_method, 
 #                      dist, "structure", structure, "main", main_fixed_var, "inter",

@@ -46,10 +46,12 @@ EigenPrism_kernel <- function(...){
   args <- list(...)
   if(args$decor == TRUE){
     fit <- EigenPrism(y = args$y, 
-                      X = args$s_final)  
+                      X = args$s_final,
+                      alpha = args$alpha)  
   } else {
     fit <- EigenPrism(y = args$y, 
-                      X = args$b_final)  
+                      X = args$b_final,
+                      alpha = args$alpha)  
   }
   c(fit[1], fit[3]-fit[2])
 }
@@ -93,16 +95,33 @@ h_EigenPrism_kernel <- function(...){
   if(args$decor == TRUE){
     fit <- EigenPrism(y = args$y, 
                       X = args$s_final,
-                      target = "heritability")  
+                      target = "heritability",
+                      alpha = args$alpha)  
   } else {
     fit <- EigenPrism(y = args$y, 
                       X = args$b_final,
-                      target = "heritability")  
+                      target = "heritability",
+                      alpha = args$alpha)  
   }
   fit[1:3]
 }
 col_names_h_Eigen <- c("h_EigenPrism_main", "h_EigenPrism_CI1","h_EigenPrism_CI2")
 
+h_Dicker_2013_kernel <- function(...){
+  args <- list(...)
+  if(args$decor == TRUE){
+    fit <- Dicker_2013(y = args$y, 
+                       x = args$s_final,
+                       target = "h2")  
+  } else {
+    fit <- Dicker_2013(y = args$y, 
+                       x = args$b_final,
+                       target = "h2")  
+  }
+  c(fit[1], fit[2])
+}
+
+col_names_h_Dicker <- c("h_Dicker_main", "h_Dicker_var")
 
 
 least_square_kernel <- function(...){

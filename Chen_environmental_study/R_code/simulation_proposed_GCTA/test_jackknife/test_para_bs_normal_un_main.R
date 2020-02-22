@@ -18,8 +18,8 @@ c_betam <- 8
 c_betai <- 2
 save_path <- "~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/report_jackknife/"
 
-cores <- 20
-n_iter <- 1000
+cores <- 15
+n_iter <- 10
 delete_d <- FALSE
 
 seed_loop <- 1234
@@ -29,7 +29,7 @@ seed_coef <- 1014
 # data generation
 emp_n <- 10^5
 # n_total <- c(50, 75, 100, 150, 200, 500, 750, 1000, 1500)
-n_total <- c(50, 75, 100, 150)
+n_total <- c(100,150,231)
 dist <- "normal"
 generate_data <- generate_normal
 structure <- "un"
@@ -81,16 +81,16 @@ uncorr_args <- list(emp = TRUE, combine = combine)
 # uncorr_args <- NULL
 
 # Sparse decor
-sparse_decor_method <- "Glasso"
-sparse_uncorr_method <- dgpGLASSO_method
-sparse_uncorr_args <- NULL
-# sparse_decor_method <- NULL
-# sparse_uncorr_method <- NULL
+# sparse_decor_method <- "Glasso"
+# sparse_uncorr_method <- dgpGLASSO_method
 # sparse_uncorr_args <- NULL
+sparse_decor_method <- "None"
+sparse_uncorr_method <- NULL
+sparse_uncorr_args <- NULL
 
 
 # est
-decor <- FALSE
+decor <- TRUE
 if(decor == FALSE) {
   decor_method <- "None"
   uncorr_method <- NULL
@@ -112,11 +112,6 @@ if(decor == FALSE) {
 # kernel_name <- "EigenPrism_kernel"
 # kernel_result_col_names <- col_names_Eigen
 
-
-kernel_args <- list(interact = 0,decor = decor)
-kernel <- GCTA_kernel
-kernel_name <- "GCTA_kernel"
-kernel_result_col_names <- col_names_GCTA
 
 kernel_args <- list(interact = 0,decor = decor)
 kernel <- h_GCTA_kernel
@@ -202,7 +197,7 @@ result_list <- mapply(FUN = simulation_var_est_bootstrap_fn,
                                       kernel_args_2 = kernel_args_2,
                                       kernel_result_col_names_2 = kernel_result_col_names_2,
                                       bs = bs,
-                                      bs_summary = TRUE,
+                                      bs_summary = FALSE,
                                       c_betam = c_betam,
                                       c_betai = c_betai,
                                       emp_n = emp_n,

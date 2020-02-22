@@ -18,18 +18,20 @@ c_betam <- 8
 c_betai <- 2
 save_path <- "~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/report_jackknife/"
 
-cores <- 20
+cores <- 10
 n_iter <- 1000
 delete_d <- FALSE
 
-seed_loop <- 1234
-seed_coef <- 1014
+# seed_loop <- 1234
+# seed_coef <- 1014
+seed_loop <- 1215
+seed_coef <- 0615
 # steup parameters
 
 # data generation
 emp_n <- 10^5
 # n_total <- c(50, 75, 100, 150, 200, 500, 750, 1000, 1500)
-n_total <- c(50, 75, 100, 150)
+n_total <- c(250, 500)
 dist <- "normal"
 generate_data <- generate_normal
 structure <- "I"
@@ -59,7 +61,7 @@ d_fn <- function(n) {0}
 # pre_cor <- cor(data.matrix(PCB_1999_2004_common[index, ..PCB_common]))
 Var <- "null"
 # p <- length(PCB_common)
-p <- 1000
+p <- 500 # total will be 496
 
 # combine <- TRUE
 # est <- "total"
@@ -101,6 +103,15 @@ if(decor == FALSE) {
 }
 
 
+# kernel <- h_Dicker_2013_kernel
+# kernel_args <- list(decor = decor)
+# kernel_name <- "Dicker_2013_kernel"
+# kernel_result_col_names <- col_names_h_Dicker
+
+# kernel <- h_EigenPrism_kernel
+# kernel_args <- list(decor = decor, alpha = 0.05)
+# kernel_name <- "h_EigenPrism_kernel"
+# kernel_result_col_names <- col_names_h_Eigen
 
 # kernel <- Dicker_2013_kernel
 # kernel_args <- list(decor = decor)
@@ -113,10 +124,10 @@ if(decor == FALSE) {
 # kernel_result_col_names <- col_names_Eigen
 
 
-kernel_args <- list(interact = 0,decor = decor)
-kernel <- GCTA_kernel
-kernel_name <- "GCTA_kernel"
-kernel_result_col_names <- col_names_GCTA
+# kernel_args <- list(interact = 0,decor = decor)
+# kernel <- GCTA_kernel
+# kernel_name <- "GCTA_kernel"
+# kernel_result_col_names <- col_names_GCTA
 
 kernel_args <- list(interact = 0,decor = decor)
 kernel <- h_GCTA_kernel
@@ -152,7 +163,8 @@ main_random_var <- 0
 inter_fixed_var <- 0
 inter_random_var <- 0
 # rho_e <- c(0.2, 0.5, 0.7)
-rho_e <- 0.5
+# rho_e <- c(0.1, 0.3, 0.5, 0.7, 0.9)
+rho_e <- c(0.3, 0.5, 0.7, 0.9)
 gene_coeff_args <- list(main_fixed_var = main_fixed_var,
                         main_random_var = main_random_var,
                         inter_fixed_var = inter_fixed_var,
@@ -166,7 +178,7 @@ rho_e_list <- args_all[,4, drop = FALSE] %>% split(x = ., f = seq(nrow(.)))
 d_list <-  args_all[,5, drop = FALSE] %>% data.matrix(.) %>% split(x = ., f = seq(nrow(.)))
 if(delete_d == TRUE){
   n_sub_list <- (args_all$n)^1.5 %>% round(.)
-} else if( bs != "para-bs") {
+} else if( bs == "leave-1") {
   n_sub_list <- rep(0, length(args_all$n))
 } else {
   n_sub_list <- n_sub

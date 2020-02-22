@@ -14,12 +14,12 @@ sourceDirectory("./R_code/main_fn/method/",modifiedOnly = FALSE, recursive = TRU
 source("./R_code/simulation_proposed_GCTA/local_helpers.R")
 # source("./reports/proposed_GCTA_paper/est_var_analysis/est_combined_data/covaraites_summary_2005_2014.R")
 # source("./reports/proposed_GCTA_paper/est_var_analysis/est_combined_data/covaraites_summary_1999_2004.R")
-c_betam <- 1
+c_betam <- 8
 c_betai <- 2
-save_path <- "~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/Dicker_2013/"
+save_path <- "~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/test_EigenPrism/"
 
-cores <- 10
-n_iter <- 1000
+cores <- 1
+n_iter <- 10
 delete_d <- FALSE
 
 seed_loop <- 1234
@@ -28,26 +28,27 @@ seed_coef <- 1014
 
 # data generation
 emp_n <- 10^5
+# n_total <- c(50, 75, 100, 150, 250, 500)
 n_total <- c(250, 500)
-
 dist <- "normal"
 generate_data <- generate_normal
 structure <- "I"
 
-# sub_sampling
-# d <- 102
-# bs <- "bs"
+
 # d <- 1012
 # bs <- "leave-1-2"
 
-bs <- "full"
 d_fn <- function(n) {0}
+bs <- "full"
+n_sub <- 1
 
+# 
 # bs <- "leave-1"
 # d_fn <- function(n) {1}
-# 
+
 # bs <- "leave-d"
-# d_fn <- function(n) {round(0.5*n,0)}
+# # d_fn <- function(n) {round(0.75*n,0)}
+# d_fn <- function(n) {round(25,0)}
 
 
 
@@ -100,11 +101,20 @@ if(decor == FALSE) {
 
 
 
-kernel <- Dicker_2013_kernel
-kernel_args <- list(decor = decor)
-kernel_name <- "Dicker_2013_kernel"
-kernel_result_col_names <- col_names_Dicker
+# kernel <- Dicker_2013_kernel
+# kernel_args <- list(decor = decor)
+# kernel_name <- "Dicker_2013_kernel"
+# kernel_result_col_names <- col_names_Dicker
 
+# kernel <- h_Dicker_2013_kernel
+# kernel_args <- list(decor = decor)
+# kernel_name <- "Dicker_2013_kernel"
+# kernel_result_col_names <- col_names_h_Dicker
+
+kernel <- h_EigenPrism_kernel
+kernel_args <- list(decor = decor, alpha = 0.05)
+kernel_name <- "h_EigenPrism_kernel"
+kernel_result_col_names <- col_names_h_Eigen
 
 # kernel_args <- list(interact = 0,decor = decor)
 # kernel <- GCTA_kernel
@@ -127,9 +137,10 @@ kernel_result_col_names <- col_names_Dicker
 # kernel_2 <- GCTA_kernel
 # kernel_name <- append(kernel_name,"GCTA_kernel") %>% paste(.,collapse = "_")
 # kernel_result_col_names_2 <- col_names_GCTA
+
 kernel_args_2 <- NULL
 kernel_2 <- NULL
-kernel_result_col_names_2 <- NULL
+
 
 
 # coef
@@ -137,8 +148,8 @@ main_fixed_var <- 0.5
 main_random_var <- 0
 inter_fixed_var <- 0
 inter_random_var <- 0
-# rho_e <- c(0.2, 0.5, 0.7)
-rho_e <- 0.5
+rho_e <- c(0.1, 0.3, 0.5, 0.7, 0.9)
+# rho_e <- 0.5
 gene_coeff_args <- list(main_fixed_var = main_fixed_var,
                         main_random_var = main_random_var,
                         inter_fixed_var = inter_fixed_var,
@@ -152,19 +163,23 @@ rho_e_list <- args_all[,4, drop = FALSE] %>% split(x = ., f = seq(nrow(.)))
 d_list <-  args_all[,5, drop = FALSE] %>% data.matrix(.) %>% split(x = ., f = seq(nrow(.)))
 if(delete_d == TRUE){
   n_sub_list <- (args_all$n)^1.5 %>% round(.)
-} else {
+} else if( bs == "leave-1") {
   n_sub_list <- rep(0, length(args_all$n))
-}
-if(bs == "full"){
-  n_sub_list <- rep(1, length(args_all$n))
+} else {
+  n_sub_list <- n_sub
 }
 
 # setup folders for results
-result_name <- paste("decor",decor_method, "sparse", sparse_decor_method, 
+result_name <- paste("decor",decor_method, "sparse", sparse_decor_method,
                      dist, "structure", structure, "main", main_fixed_var, "inter",
-                     inter_fixed_var, "n", paste(n_total, collapse = "_"), "p", p, "rho_e", paste(rho_e,collapse = "_"), 
-                     "decor",decor,"subd",paste(unique(unlist(d_list)), collapse = "_"), "iter", n_iter, "nsub", max(unlist(n_sub_list)),
+                     inter_fixed_var, "n", paste(n_total, collapse = "_"), "p", p, "rho_e", paste(rho_e,collapse = "_"),
+                     "decor",decor,"subd",paste(unique(unlist(d_list)), collapse = "_"), "iter", n_iter, "nsub", max(unlist(n_sub_list)), "bs", bs,
                      kernel_name, "est", est, "c_betam", c_betam, "c_betai", c_betai, "Var", Var, sep = "_")
+# result_name <- paste("decor",decor_method, "sparse", sparse_decor_method, 
+#                      dist, "structure", structure, "main", main_fixed_var, "inter",
+#                      inter_fixed_var, "n", paste(n_total, collapse = "_"), "p", p, "rho_e", paste(rho_e,collapse = "_"), 
+#                      "decor",decor, "iter", n_iter,"bs",bs, "nsub", max(unlist(n_sub_list)),
+#                      kernel_name, "est", est, "c_betam", c_betam, "c_betai", c_betai, "Var", Var, sep = "_")
 result_folder_path <- paste0(save_path, result_name, "/")
 dir.create(result_folder_path)
 
