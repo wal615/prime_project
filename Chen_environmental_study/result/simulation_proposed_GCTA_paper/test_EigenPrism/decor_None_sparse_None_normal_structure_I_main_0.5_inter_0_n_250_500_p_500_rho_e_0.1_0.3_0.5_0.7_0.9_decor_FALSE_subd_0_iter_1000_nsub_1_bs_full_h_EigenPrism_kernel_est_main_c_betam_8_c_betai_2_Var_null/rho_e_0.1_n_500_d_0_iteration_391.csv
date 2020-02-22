@@ -1,2 +1,0 @@
-"var_main_effect","var_inter_effect","cov_main_inter_effect","var_total_effect","h_EigenPrism_main","h_EigenPrism_CI1","h_EigenPrism_CI2","sub_h_EigenPrism_main","sub_h_EigenPrism_CI1","sub_h_EigenPrism_CI2","x_dist","structure","p","n","main_fixed_var","main_random_var","inter_fixed_var","inter_random_var","decor","alpha","combine","d","bs","n_sub","rho_e","emp_n","i"
-7.99999999999999,0,0,0,0.0815164422885635,-0.104979186723402,0.268012071300529,0,0,0,"normal","I",500,500,0.5,0,0,0,FALSE,0.05,FALSE,0,"full",1,0.1,1e+05,391

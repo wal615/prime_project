@@ -1,2 +1,0 @@
-"var_main_effect","var_inter_effect","cov_main_inter_effect","var_total_effect","EigenPrism_main","EigenPrism_CI","Eg_mean_jack","Eg_var_jack","Eg_var_jack_corr","GCTA_main","GCTA_mean_jack","GCTA_var_jack","GCTA_var_jack_corr","x_dist","structure","p","n","main_fixed_var","main_random_var","inter_fixed_var","inter_random_var","decor","combine","pro","bs","n_sub","rho_e","emp_n","inter_std","i"
-8,0,0,0,NA,NA,NA,NA,NA,5.99536162417277,6.22665494463581,1.35660626217227,1.12359023488851,"normal","I",21,231,0.5,0,0,0,FALSE,FALSE,1012,"leave-1-2",26796,0.5,1e+05,FALSE,4

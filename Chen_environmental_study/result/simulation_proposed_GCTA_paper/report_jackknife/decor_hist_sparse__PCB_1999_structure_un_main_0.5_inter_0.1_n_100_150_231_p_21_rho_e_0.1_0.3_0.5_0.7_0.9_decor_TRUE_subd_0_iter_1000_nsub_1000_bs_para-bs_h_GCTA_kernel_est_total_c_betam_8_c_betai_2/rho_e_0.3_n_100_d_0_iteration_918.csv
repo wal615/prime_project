@@ -1,2 +1,0 @@
-"var_main_effect","var_inter_effect","cov_main_inter_effect","var_total_effect","h_GCTA_total","h_GCTA_inter","sub_h_GCTA_inter","S1_bs","S1_v_bs.sub_h_GCTA_total","x_dist","structure","p","n","data_name","emp","combine","main_fixed_var","main_random_var","inter_fixed_var","inter_random_var","interact","decor","d","bs","n_sub","rho_e","emp_n","i"
-8,2,0.621633104446795,11.2432662088936,0.167198583747739,0,0,0.349235149176253,0.0185658816789722,"PCB_1999","un",21,100,"PCB_1999",TRUE,TRUE,0.5,0,0.1,0,0,TRUE,0,"para-bs",1000,0.3,4873,918

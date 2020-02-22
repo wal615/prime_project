@@ -1,2 +1,0 @@
-"var_main_effect","var_inter_effect","cov_main_inter_effect","var_total_effect","GCTA_main","GCTA_inter","sub_GCTA_inter","GCTA_rr_main","S1_jack.GCTA_main","S1_v_jack_1","S2_jack.GCTA_rr_main","S2_v_jack_1","x_dist","structure","p","n","main_fixed_var","main_random_var","inter_fixed_var","inter_random_var","interact","decor","combine","d","bs","n_sub","rho_e","emp_n","i"
-8,0,0,0,8.71261956630265,0,0,8.7126196194189,7.15064177731472,51.664238695652,7.15064375544029,51.6642290492226,"normal","I",100,50,0.5,0,0,0,0,FALSE,FALSE,1,"leave-1",50,0.5,1e+05,4

@@ -1,2 +1,0 @@
-"var_main_effect","var_inter_effect","cov_main_inter_effect","var_total_effect","Dicker_main","Dicker_var","sub_Dicker_var","S1_jack.Dicker_main","S1_v_jack_1","x_dist","structure","p","n","main_fixed_var","main_random_var","inter_fixed_var","inter_random_var","decor","combine","d","bs","n_sub","rho_e","emp_n","i"
-8.00000000000001,0,0,0,16.5038392024985,49.6328750440716,44.3387435353957,17.7137099945999,61.3081530887048,"normal","I",1000,150,0.5,0,0,0,FALSE,FALSE,1,"leave-1",150,0.5,1e+05,77
