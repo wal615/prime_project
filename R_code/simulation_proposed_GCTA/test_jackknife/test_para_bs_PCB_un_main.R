@@ -8,7 +8,7 @@ library(doParallel)
 library(gtools) # for rbind based on columns
 options(warn = 1, error = bettertrace::stacktrace)
 # options(warn = 1, error = recover)
-setwd("~/dev/projects/Chen_environmental_study/")
+setwd("~/dev/prime_project/")
 sourceDirectory("./R_code/main_fn/",modifiedOnly = FALSE, recursive = TRUE)
 sourceDirectory("./R_code/main_fn/method/",modifiedOnly = FALSE, recursive = TRUE)
 source("./R_code/simulation_proposed_GCTA/local_helpers.R")
@@ -18,11 +18,11 @@ year <- "1999"
 
 c_betam <- 8
 c_betai <- 2
-save_path <- "~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/report_jackknife/"
-data_path <- "~/dev/projects/Chen_environmental_study/R_code/data/real_data/NHANES/PCB_99_14/clean/individual/PCB_1999_2004_common.csv"
+data_path <- "~/dev/prime_project/R_code/data/pcb_99_13_no_missing.csv"
+save_path <- "~/dev/result/prime_project/simulation_proposed_GCTA_paper/report_jackknife/"
 
-cores <- 1
-n_iter <- 1
+cores <- 10
+n_iter <- 10
 delete_d <- FALSE
 
 seed_loop <- 1234
@@ -41,7 +41,7 @@ p <- length(PCB_common_1999)
 
 # sub_sampling
 bs <- "para-bs"
-n_sub <- 1000
+n_sub <- 10
 d_fn <- function(n) {0}
 
 # d <- 1012
@@ -95,7 +95,7 @@ sparse_uncorr_args <- NULL
 
 
 # est
-decor <- TRUE
+decor <- FALSE
 if(decor == FALSE) {
   decor_method <- "None"
   uncorr_method <- NULL
@@ -234,3 +234,6 @@ result_list <- mapply(FUN = simulation_var_est_bootstrap_fn,
                                       cores = cores,
                                       inter_result_path = result_folder_path),
                       SIMPLIFY = FALSE)
+
+# combine the result ####
+combine_csv_fn(dir = save_path, folder = result_name, rm_original = TRUE)
