@@ -19,7 +19,7 @@ year <- "1999"
 c_betam <- 8
 c_betai <- 2
 data_path <- "~/dev/prime_project/R_code/data/pcb_99_13_no_missing.csv"
-save_path <- "~/dev/result/prime_project/simulation_proposed_GCTA_paper/report_jackknife/"
+save_path <- "~/dev/result/prime_project/"
 
 cores <- 10
 n_iter <- 10
