@@ -2,12 +2,12 @@ library(tidyverse)
 library(data.table)
 library(mice)
 library(VIM)
-setwd("~/dev/projects/Chen_environmental_study/R_code/data/")
+setwd("~/dev/prime_project/R_code/data/")
 
-# PCB_and_LC <- read.csv("~/dev/projects/Chen_environmental_study/R_code/data/real_data/NHANES/hemoglobin/nhance_hemoglobin_PCB_LC.csv", header = TRUE, stringsAsFactors = FALSE) %>%
-#   data.table(.)
-# # remove the LC part
-# PCB <- PCB_and_LC[,(PCB_LC):=NULL]
+PCB_and_LC <- read.csv("~/dev/prime_project/R_code/data/real_data/NHANES/hemoglobin/nhance_hemoglobin_PCB_LC.csv", header = TRUE, stringsAsFactors = FALSE) %>%
+  data.table(.)
+# remove the LC part
+PCB <- PCB_and_LC[,(PCB_LC):=NULL]
 
 # using mice pattern function to investiage the pattern of missing data
 

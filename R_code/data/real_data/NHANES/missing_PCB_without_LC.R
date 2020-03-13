@@ -7,7 +7,7 @@ library(data.table)
 # nhance_data_table <- data.table(nhance_data)
 
 # got all the exposures'names 
-expousres_type <- read.csv("./real_data/NHANES/exposure_type.csv", header = TRUE, stringsAsFactors = FALSE) %>% data.table(.)
+expousres_type <- read.csv("./real_data/NHANES/variable_names/exposure_type.csv", header = TRUE, stringsAsFactors = FALSE) %>% data.table(.)
 PCB_all<- expousres_type[grepl("^PCB", x = type), exposure]
 PCB_LA <- PCB_all[grep(PCB_all, pattern = ".*LA$", perl = TRUE)]
 PCB_LC <- PCB_all[grep(PCB_all, pattern = ".*LC$", perl = TRUE)]

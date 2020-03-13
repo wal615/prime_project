@@ -21,8 +21,8 @@ c_betai <- 2
 data_path <- "~/dev/prime_project/R_code/data/pcb_99_13_no_missing.csv"
 save_path <- "~/dev/result/prime_project/"
 
-cores <- 10
-n_iter <- 10
+cores <- 24
+n_iter <- 1000
 delete_d <- FALSE
 
 seed_loop <- 1234
@@ -31,7 +31,7 @@ seed_coef <- 1014
 
 # data generation
 emp_n <- nrow(PCB_1999_2004_common)
-n_total <- c(100,150,231)
+n_total <- c(100,150,231, 500)
 dist <- "PCB"
 data_name <- paste(dist, year, sep = "_")
 generate_data <- generate_PCB
@@ -41,7 +41,7 @@ p <- length(PCB_common_1999)
 
 # sub_sampling
 bs <- "para-bs"
-n_sub <- 10
+n_sub <- 1000
 d_fn <- function(n) {0}
 
 # d <- 1012
@@ -86,12 +86,12 @@ uncorr_args <- list(emp = TRUE, combine = combine)
 # uncorr_args <- NULL
 
 # Sparse decor
-sparse_decor_method <- "Glasso"
-sparse_uncorr_method <- dgpGLASSO_method
-sparse_uncorr_args <- NULL
-# sparse_decor_method <- "None"
-# sparse_uncorr_method <- NULL
+# sparse_decor_method <- "Glasso"
+# sparse_uncorr_method <- dgpGLASSO_method
 # sparse_uncorr_args <- NULL
+sparse_decor_method <- "None"
+sparse_uncorr_method <- NULL
+sparse_uncorr_args <- NULL
 
 
 # est
@@ -163,10 +163,10 @@ kernel_result_col_names_2 <- NULL
 # coef
 main_fixed_var <- 0.5
 main_random_var <- 0
-inter_fixed_var <- 0
+inter_fixed_var <- 0.1
 inter_random_var <- 0
-rho_e <- c(0.5)
-# rho_e <- c(0.1, 0.3, 0.5, 0.7, 0.9)
+# rho_e <- c(0.5)
+rho_e <- c(0.1, 0.3, 0.5, 0.7, 0.9)
 # rho_e <- c(0.1, 0.3, 0.5, 0.7, 0.9)
 gene_coeff_args <- list(main_fixed_var = main_fixed_var,
                         main_random_var = main_random_var,

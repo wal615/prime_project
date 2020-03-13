@@ -21,8 +21,8 @@ c_betai <- 2
 save_path <- "~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/report_jackknife/"
 data_path <- "~/dev/projects/Chen_environmental_study/R_code/data/real_data/NHANES/PCB_99_14/clean/individual/PCB_1999_2004_common.csv"
 
-cores <- 20
-n_iter <- 100
+cores <- 10
+n_iter <- 10
 delete_d <- FALSE
 
 seed_loop <- 1234

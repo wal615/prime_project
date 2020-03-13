@@ -24,7 +24,7 @@ z <- qnorm(1 - 0.05/2)
 
 # p = 100 niter = 1000
 #############################################################################################################################
-setwd("~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/report_jackknife/")
+setwd("~/dev/result/prime_project/simulation_proposed_GCTA_paper/report_jackknife/")
 result_path <- "decor_None_sparse_None_normal_structure_I_main_0.5_inter_0_n_50_75_100_150_p_100_rho_e_0.5_decor_FALSE_subd_0_iter_1000_nsub_1000_bs_para-bs_h_GCTA_kernel_est_main_c_betam_8_c_betai_2/"
 file_list <- list.files(path = result_path, full.names = TRUE)
 sub_result <- lapply(file_list, function (x) {read.csv(x, header = TRUE, stringsAsFactors = FALSE)}) %>% rbindlist(., fill = TRUE)
@@ -63,7 +63,7 @@ hist_plot_p_100_niter_1000 <- ggplot(sub_result, aes(x=h_GCTA_main, fill = as.ch
 
 # p = 100 niter = 1000 rho_e = (0.1 - 0.9) 
 #############################################################################################################################
-setwd("~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/report_jackknife/")
+setwd("~/dev/result/prime_project/simulation_proposed_GCTA_paper/report_jackknife/")
 result_path <- "./decor_None_sparse_None_normal_structure_I_main_0.5_inter_0_n_50_75_100_150_p_100_rho_e_0.1_0.3_0.5_0.7_0.9_decor_FALSE_subd_0_iter_1000_nsub_1000_bs_para-bs_h_GCTA_kernel_est_main_c_betam_8_c_betai_2/"
 file_list <- list.files(path = result_path, full.names = TRUE)
 sub_result <- lapply(file_list, function (x) {read.csv(x, header = TRUE, stringsAsFactors = FALSE)}) %>% rbindlist(., fill = TRUE)
@@ -101,7 +101,7 @@ hist_plot_p_100_niter_1000_rho_e_0.1_0.9 <- ggplot(sub_result[n == 150, ], aes(x
 
 # p = 1000 iter = 1000
 #############################################################################################################################
-setwd("~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/report_jackknife/")
+setwd("~/dev/result/prime_project/simulation_proposed_GCTA_paper/report_jackknife/")
 result_path <- "decor_None_sparse_None_normal_structure_I_main_0.5_inter_0_n_50_75_100_150_p_1000_rho_e_0.5_decor_FALSE_subd_0_iter_1000_nsub_1000_bs_para-bs_h_GCTA_kernel_est_main_c_betam_8_c_betai_2"
 file_list <- list.files(path = result_path, full.names = TRUE)
 sub_result <- lapply(file_list, function (x) {read.csv(x, header = TRUE, stringsAsFactors = FALSE)}) %>% rbindlist(., fill = TRUE)
@@ -143,7 +143,7 @@ hist_plot_p_1000_niter_1000 <- ggplot(sub_result, aes(x=h_GCTA_main, fill = as.c
 # p = 500 niter = 1000 rho_e = (0.1 - 0.9) GCTA
 #############################################################################################################################
 
-setwd("~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/report_jackknife/")
+setwd("~/dev/result/prime_project/simulation_proposed_GCTA_paper/report_jackknife/")
 result_path <- "decor_None_sparse_None_normal_structure_I_main_0.5_inter_0_n_50_75_100_150_250_500_p_500_rho_e_0.1_0.3_0.5_0.7_0.9_decor_FALSE_subd_0_iter_1000_nsub_1000_bs_para-bs_h_GCTA_kernel_est_main_c_betam_8_c_betai_2/"
 file_list <- list.files(path = result_path, full.names = TRUE)
 sub_result <- lapply(file_list, function (x) {read.csv(x, header = TRUE, stringsAsFactors = FALSE)}) %>% rbindlist(., fill = TRUE)
@@ -198,7 +198,7 @@ GCTA_CI_length <- summary_result_GCTA_parametric_bs_p_500_niter_1000_rho_e_0.1_0
 # p = 500 niter = 1000 rho_e = (0.1 - 0.9) Dicker
 #############################################################################################################################
 
-setwd("~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/report_jackknife/")
+setwd("~/dev/result/prime_project/simulation_proposed_GCTA_paper/report_jackknife/")
 result_path <- "decor_None_sparse_None_normal_structure_I_main_0.5_inter_0_n_250_500_p_500_rho_e_0.1_0.3_0.5_0.7_0.9_decor_FALSE_subd_0_iter_1000_nsub_1000_bs_para-bs_Dicker_2013_kernel_est_main_c_betam_8_c_betai_2/"
 file_list <- list.files(path = result_path, full.names = TRUE)
 sub_result <- lapply(file_list, function (x) {read.csv(x, header = TRUE, stringsAsFactors = FALSE)}) %>% rbindlist(., fill = TRUE)
@@ -264,7 +264,7 @@ Dicker_CI_length <- summary_result_Dicker_parametric_bs_p_500_niter_1000_rho_e_0
 # p = 500 niter = 1000 rho_e = (0.1 - 0.9) EigenPrism
 #############################################################################################################################
 
-setwd("~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/test_EigenPrism/")
+setwd("~/dev/result/prime_project/simulation_proposed_GCTA_paper/test_EigenPrism/")
 result_path <- "decor_None_sparse_None_normal_structure_I_main_0.5_inter_0_n_250_500_p_500_rho_e_0.1_0.3_0.5_0.7_0.9_decor_FALSE_subd_0_iter_1000_nsub_1_bs_full_h_EigenPrism_kernel_est_main_c_betam_8_c_betai_2_Var_null/"
 file_list <- list.files(path = result_path, full.names = TRUE)
 sub_result <- lapply(file_list, function (x) {read.csv(x, header = TRUE, stringsAsFactors = FALSE)}) %>% rbindlist(., fill = TRUE)
@@ -355,7 +355,7 @@ CI_length <- CI_table %>%
 
 # p = 500 niter = 1000 rho_e = (0.1 - 0.9) GCTA total
 #############################################################################################################################
-setwd("~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/report_jackknife/")
+setwd("~/dev/result/prime_project/simulation_proposed_GCTA_paper/report_jackknife/")
 result_path <- "decor_hist_sparse__normal_structure_I_main_0.5_inter_0.1_n_250_500_p_31_rho_e_0.1_0.3_0.5_0.7_0.9_decor_TRUE_subd_0_iter_1000_nsub_1000_bs_para-bs_h_GCTA_kernel_est_total_c_betam_8_c_betai_2"
 file_list <- list.files(path = result_path, full.names = TRUE)
 sub_result <- lapply(file_list, function (x) {read.csv(x, header = TRUE, stringsAsFactors = FALSE)}) %>% rbindlist(., fill = TRUE)
@@ -410,7 +410,7 @@ GCTA_CI_length_normal_total <- summary_result_total_GCTA_parametric_bs_p_500_nit
 
 # PCB p = 500 niter = 1000 rho_e = (0.1 - 0.9) GCTA total with decorr ####
 #############################################################################################################################
-setwd("~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/report_jackknife/")
+setwd("~/dev/result/prime_project/simulation_proposed_GCTA_paper/report_jackknife/")
 result_path <- "decor_hist_sparse__PCB_1999_structure_un_main_0.5_inter_0.1_n_100_150_231_p_21_rho_e_0.1_0.3_0.5_0.7_0.9_decor_TRUE_subd_0_iter_1000_nsub_1000_bs_para-bs_h_GCTA_kernel_est_total_c_betam_8_c_betai_2/"
 file_list <- list.files(path = result_path, full.names = TRUE)
 sub_result <- lapply(file_list, function (x) {read.csv(x, header = TRUE, stringsAsFactors = FALSE)}) %>% rbindlist(., fill = TRUE)
@@ -468,7 +468,7 @@ GCTA_CI_length_PCB_total <- summary_result_PCB_total_GCTA_parametric_bs_p_500_ni
 
 # PCB p = 21 niter = 1000 rho_e = (0.1, 0.5, 0.9) GCTA total with decorr ####
 #############################################################################################################################
-setwd("~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/report_jackknife/")
+setwd("~/dev/result/prime_project/simulation_proposed_GCTA_paper/report_jackknife/")
 result_path <- "decor_hist_sparse_Glasso_PCB_1999_structure_un_main_0.5_inter_0.1_n_250_500_p_21_rho_e_0.5_0.1_0.9_decor_TRUE_subd_0_iter_1000_nsub_1000_bs_para-bs_h_GCTA_kernel_est_total_c_betam_8_c_betai_2/"
 file_list <- list.files(path = result_path, full.names = TRUE)
 sub_result <- lapply(file_list, function (x) {read.csv(x, header = TRUE, stringsAsFactors = FALSE)}) %>% rbindlist(., fill = TRUE)
@@ -526,27 +526,26 @@ GCTA_CI_length_PCB_total <- summary_result_PCB_total_GCTA_parametric_bs_p_500_ni
 
 
 #############################################################################
-setwd("~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/report_jackknife/")
+setwd("~/dev/result/prime_project/simulation_proposed_GCTA_paper/report_jackknife/")
 result_path <- "decor_hist_sparse__PCB_1999_structure_un_main_0.5_inter_0.1_n_100_150_231_p_21_rho_e_0.1_0.3_0.5_0.7_0.9_decor_TRUE_subd_0_iter_10_nsub_1000_bs_para-bs_h_GCTA_kernel_est_total_c_betam_8_c_betai_2/"
 file_list <- list.files(path = result_path, full.names = TRUE)
 sub_result_PCB <- lapply(file_list, function (x) {read.csv(x, header = TRUE, stringsAsFactors = FALSE)}) %>% rbindlist(., fill = TRUE)
-sub_result_PCB[i == 1 & n == 150 & rho_e == 0.5, hist(sub_h_GCTA_total)]
-sub_result_PCB[i == 1 & n == 150 & rho_e == 0.5, h_GCTA_total]
+hist(sub_result_PCB[i == 4 & n == 150 & rho_e == 0.7, sub_h_GCTA_total], nclass = 40)
 
-setwd("~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/report_jackknife/")
+setwd("~/dev/result/prime_project/simulation_proposed_GCTA_paper/report_jackknife/")
 result_path <- "decor_hist_sparse__normal_structure_I_main_0.5_inter_0.1_n_250_500_p_31_rho_e_0.1_0.3_0.5_0.7_0.9_decor_TRUE_subd_0_iter_10_nsub_1000_bs_para-bs_h_GCTA_kernel_est_total_c_betam_8_c_betai_2/"
 file_list <- list.files(path = result_path, full.names = TRUE)
 sub_result_normal <- lapply(file_list, function (x) {read.csv(x, header = TRUE, stringsAsFactors = FALSE)}) %>% rbindlist(., fill = TRUE)
 sub_result_normal[i == 3 & n == 250 & rho_e == 0.5, hist(sub_h_GCTA_total)]
 sub_result_normal[i == 3 & n == 250 & rho_e == 0.5, (h_GCTA_total)]
 
-setwd("~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/report_jackknife/")
+setwd("~/dev/result/prime_project/simulation_proposed_GCTA_paper/report_jackknife/")
 result_path <- "decor_hist_sparse_None_normal_structure_un_main_0.5_inter_0.1_n_250_500_p_21_rho_e_0.5_decor_TRUE_subd_0_iter_10_nsub_1000_bs_para-bs_h_GCTA_kernel_est_total_c_betam_8_c_betai_2/"
 file_list <- list.files(path = result_path, full.names = TRUE)
 sub_result_normal_un_total <- lapply(file_list, function (x) {read.csv(x, header = TRUE, stringsAsFactors = FALSE)}) %>% rbindlist(., fill = TRUE)
 sub_result_normal_un_total[, h_GCTA_total - S1_bs]
 
-setwd("~/dev/projects/Chen_environmental_study/result/simulation_proposed_GCTA_paper/report_jackknife/")
+setwd("~/dev/result/prime_project/simulation_proposed_GCTA_paper/report_jackknife/")
 result_path <- "decor_hist_sparse_None_normal_structure_un_main_0.5_inter_0_n_50_75_100_150_p_21_rho_e_0.5_decor_TRUE_subd_0_iter_10_nsub_1000_bs_para-bs_h_GCTA_kernel_est_main_c_betam_8_c_betai_2"
 file_list <- list.files(path = result_path, full.names = TRUE)
 sub_result_normal_un_main <- lapply(file_list, function (x) {read.csv(x, header = TRUE, stringsAsFactors = FALSE)}) %>% rbindlist(., fill = TRUE)
