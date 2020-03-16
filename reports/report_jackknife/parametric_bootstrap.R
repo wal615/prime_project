@@ -530,7 +530,7 @@ setwd("~/dev/result/prime_project/simulation_proposed_GCTA_paper/report_jackknif
 result_path <- "decor_hist_sparse__PCB_1999_structure_un_main_0.5_inter_0.1_n_100_150_231_p_21_rho_e_0.1_0.3_0.5_0.7_0.9_decor_TRUE_subd_0_iter_10_nsub_1000_bs_para-bs_h_GCTA_kernel_est_total_c_betam_8_c_betai_2/"
 file_list <- list.files(path = result_path, full.names = TRUE)
 sub_result_PCB <- lapply(file_list, function (x) {read.csv(x, header = TRUE, stringsAsFactors = FALSE)}) %>% rbindlist(., fill = TRUE)
-hist(sub_result_PCB[i == 4 & n == 150 & rho_e == 0.7, sub_h_GCTA_total], nclass = 40)
+hist(sub_result_PCB[i == 1 & n == 231 & rho_e == 0.7, sub_h_GCTA_total], nclass = 40)
 
 setwd("~/dev/result/prime_project/simulation_proposed_GCTA_paper/report_jackknife/")
 result_path <- "decor_hist_sparse__normal_structure_I_main_0.5_inter_0.1_n_250_500_p_31_rho_e_0.1_0.3_0.5_0.7_0.9_decor_TRUE_subd_0_iter_10_nsub_1000_bs_para-bs_h_GCTA_kernel_est_total_c_betam_8_c_betai_2/"
