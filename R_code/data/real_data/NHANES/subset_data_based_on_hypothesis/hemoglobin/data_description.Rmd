@@ -1,0 +1,21 @@
+---
+title: "NHANCE subset based on hemoglobin hypothesis"
+output:
+  github_document:
+    toc: true
+    toc_depth: 2
+    pandoc_args: --webtex
+---
+
+# Hemoglobin hypothesis
+
+The Hemoglobin hypothesis is __Are POPs associated with hemoglobin A1c in non-diabetics__. More details could be found in the Grant folder in BOX drive. 
+
+## Dataset 
+
+1. [nhance_hemoglobin.sas7bdat](./nhance_hemoglobin.sas7bdat) is the original subset based Hemoglobin hypothesis.
+1. [nhance_hemoglobin_PCB.csv](./nhance_hemoglobin_PCB.csv) is a column subset based on the original data. The columns selected are PCBs and LBXGH (the response). 
+1. [nhance_hemoglobin_PCB_LC_comp.csv](./nhance_hemoglobin_PCB_LC_comp.csv) is a cleaned dataset based on the original subset. The specific procedure are following:
+    - Remove all observations if the response is missing
+    - Remove all observations if all the PCBs and PCB_LC (below limit of detection (LOD)) are missing 
+    - Replace all the $\sqrt{\text{LOD}}$ with LOD (for data imputation)

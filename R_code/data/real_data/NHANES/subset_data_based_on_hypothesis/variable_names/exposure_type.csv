@@ -1,0 +1,229 @@
+exposure,type
+LBD199,PCB199 (ng/g)
+LBD028LC,PCB28 comment code
+LBD044LC,PCB44 Comment Code
+LBD049LC,PCB49 Comment Code
+LBD052LC,PCB52 comment code
+LBD066LC,PCB66 comment code
+LBD074LC,PCB74 comment code
+LBD087LC,PCB87 comment code
+LBD099LC,PCB99 comment code
+LBD101LC,PCB101 comment code
+LBD105LC,PCB105 comment code
+LBD110LC,PCB110 comment code
+LBD118LC,PCB118 comment code
+LBD128LC,PCB128 comment code
+LBD138LC,PCB138 comment code
+LBD146LC,PCB146 comment code
+LBD149LC,PCB149 comment code
+LBD151LC,PCB151 comment code
+LBD153LC,PCB153 comment code
+LBD156LC,PCB156 comment code
+LBD157LC,PCB157 comment code
+LBD167LC,PCB167 comment code
+LBD170LC,PCB170 comment code
+LBD172LC,PCB172 comment code
+LBD177LC,PCB177 comment code
+LBD178LC,PCB178 comment code
+LBD180LC,PCB180 comment code
+LBD183LC,PCB183 comment code
+LBD187LC,PCB187 comment code
+LBD189LC,PCB189 comment code
+LBD194LC,PCB194 comment code
+LBD195LC,PCB195 comment code
+LBD196LC,PCB196 comment code
+LBD199LA,PCB199 Lipid Adj (ng/g)
+LBD199LC,PCB199 comment code
+LBD206LC,PCB206 comment code
+LBD209LC,PCB209 Comment Code
+LBDALDLC,Aldrin comment code
+LBDBHC,Beta-hexachlorocyclohexane (ng/g)
+LBDBHCLC,Beta-hexachlorocyclohexane comment code
+LBDD01LC,"1,2,3,7,8-pncdd comment code"
+LBDD02LC,"1,2,3,4,7,8-hxcdd comment code"
+LBDD03LC,"1,2,3,6,7,8-hxcdd comment code"
+LBDD04LC,"1,2,3,7,8,9-hxcdd comment code"
+LBDD05LC,"1,2,3,4,6,7,8-hpcdd comment code"
+LBDD07LC,"1,2,3,4,6,7,8,9-ocdd comment code"
+LBDDIELC,Dieldrin comment code
+LBDENDLC,Endrin comment code
+LBDF01LC,"2,3,7,8-tcdf comment code"
+LBDF02LC,"1,2,3,7,8-pncdf comment code"
+LBDF03LC,"2,3,4,7,8-pncdf comment code"
+LBDF04LC,"1,2,3,4,7,8-hcxdf comment code"
+LBDF05LC,"1,2,3,6,7,8-hxcdf comment code"
+LBDF06LC,"1,2,3,7,8,9-hxcdf comment code"
+LBDF07LC,"2,3,4,6,7,8-hxcdf comment code"
+LBDF08LC,"1,2,3,4,6,7,8-hpcdf comment code"
+LBDF09LC,"1,2,3,4,7,8,9-hpcdf comment code"
+LBDF10LC,"1,2,3,4,6,7,8,9-ocdf comment code"
+LBDGHCLC,Gamma-hexachlorocyclohexane comment code
+LBDHCBLC,Hexachlorobenzene comment code
+LBDHPELC,Heptachlor Epoxide comment code
+LBDHXCLC,"3,3',4,4',5,5'-hxcb comment code"
+LBDMIRLC,Mirex comment code
+LBDODTLC,"o,p'-DDT comment code"
+LBDOXYLC,Oxychlordane comment code
+LBDPCBLC,"3,3',4,4',5-pncb comment code"
+LBDPDELC,"p,p'-DDE comment code"
+LBDPDTLC,"p,p'-DDT comment code"
+LBDTC2LC,"3,4,4',5-tcb comment code"
+LBDTCDLC,"2,3,7,8-tcdd comment code"
+LBDTNALC,Trans-nonachlor comment code
+LBX028,PCB28 (ng/g)
+LBX044,PCB44 (ng/g)
+LBX049,PCB49 (ng/g)
+LBX052,PCB52 (ng/g)
+LBX066,PCB66 (ng/g)
+LBX074,PCB74 (ng/g)
+LBX081,PCB 81 (ng/g)
+LBX087,PCB87 (ng/g)
+LBX099,PCB99 (ng/g)
+LBX101,PCB101 (ng/g)
+LBX105,PCB105 (ng/g)
+LBX110,PCB110 (ng/g)
+LBX118,PCB118 (ng/g)
+LBX126,PCB 126
+LBX128,PCB128 (ng/g)
+LBX138,PCB138 (ng/g)
+LBX146,PCB146 (ng/g)
+LBX149,PCB149 (ng/g)
+LBX151,PCB151 (ng/g)
+LBX153,PCB153 (ng/g)
+LBX156,PCB156 (ng/g)
+LBX157,PCB157 (ng/g)
+LBX167,PCB167 (ng/g)
+LBX169,PCB 169
+LBX170,PCB170 (ng/g)
+LBX172,PCB172 (ng/g)
+LBX177,PCB177 (ng/g)
+LBX178,PCB178 (ng/g)
+LBX180,PCB180 (ng/g)
+LBX183,PCB183 (ng/g)
+LBX187,PCB187 (ng/g)
+LBX189,PCB189 (ng/g)
+LBX194,PCB194 (ng/g)
+LBX195,PCB195 (ng/g)
+LBX196,PCB196 (ng/g)
+LBX206,PCB206 (ng/g)
+LBX209,PCB209 (ng/g)
+LBX028LA,PCB28 Lipid Adj (ng/g)
+LBX044LA,PCB44 Lipid Adj (ng/g)
+LBX049LA,PCB49 Lipid Adj (ng/g)
+LBX052LA,PCB52 Lipid Adj (ng/g)
+LBX066LA,PCB66 Lipid Adj (ng/g)
+LBX074LA,PCB74 Lipid Adj (ng/g)
+LBX081LA,"PCB 81, LIPID ADJUSTED"
+LBX087LA,PCB87 Lipid Adj (ng/g)
+LBX099LA,PCB99 Lipid Adj (ng/g)
+LBX101LA,PCB101 Lipid Adj (ng/g)
+LBX105LA,PCB105 Lipid Adj (ng/g)
+LBX110LA,PCB110 Lipid Adj (ng/g)
+LBX118LA,PCB118 Lipid Adj (ng/g)
+LBX126LA,"PCB 126, LIPID ADJUSTED"
+LBX128LA,PCB128 Lipid Adj (ng/g)
+LBX138LA,PCB138 Lipid Adj (ng/g)
+LBX146LA,PCB146 Lipid Adj (ng/g)
+LBX149LA,PCB149 Lipid Adj (ng/g)
+LBX151LA,PCB151 Lipid Adj (ng/g)
+LBX153LA,PCB153 Lipid Adj (ng/g)
+LBX156LA,PCB156 Lipid Adj (ng/g)
+LBX157LA,PCB157 Lipid Adj (ng/g)
+LBX167LA,PCB167 Lipid Adj (ng/g)
+LBX169LA,"PCB 169, LIPID ADJUSTED"
+LBX170LA,PCB170 Lipid Adj (ng/g)
+LBX172LA,PCB172 Lipid Adj (ng/g)
+LBX177LA,PCB177 Lipid Adj (ng/g)
+LBX178LA,PCB178 Lipid Adj (ng/g)
+LBX180LA,PCB180 Lipid Adj (ng/g)
+LBX183LA,PCB183 Lipid Adj (ng/g)
+LBX187LA,PCB187 Lipid Adj (ng/g)
+LBX189LA,PCB189 Lipid Adj (ng/g)
+LBX194LA,PCB194 Lipid Adj (ng/g)
+LBX195LA,PCB195 Lipid Adj (ng/g)
+LBX196LA,PCB196 Lipid Adj (ng/g)
+LBX199LA,PCB199 Lipid Adj (ng/g)
+LBX206LA,PCB206 Lipid Adj (ng/g)
+LBX209LA,PCB209 Lipid Adj (ng/g)
+LBXALD,Aldrin (ng/g)
+LBXALDLA,Aldrin Lipid Adj (ng/g)
+LBXBB1,"2,2',4,4',5,5'-hexabromobiphenyl"
+LBXBHC,Beta-hexachlorocyclohexane (ng/g)
+LBXBHCLA,B-hexachlorocyclohexane Lipid Adj (ng/g)
+LBXBR1,"2,2',4-tribromodiphenyl ether"
+LBXBR2,"2,4,4'-tribromodiphenyl ether"
+LBXBR3,"2,2',4,4'-tetrabromodiphenyl ether"
+LBXBR4,"2,2',3,4,4'-pentabromodiphenyl ether"
+LBXBR5,"2,2',4,4',5-pentabromodiphenyl ether"
+LBXBR6,"2,2',4,4',6-pentabromodiphenyl ether"
+LBXBR7,"2,2',4,4',5,5'-hexabromodiphenyl ether"
+LBXBR8,"2,2',4,4',5,6'-hexabromodiphenyl ether"
+LBXBR9,"2,2',3,4,4',5',6-heptabromodiphenyl ethr"
+LBXBR66,"2,3',4,4'-tetrabromodiphenyl ether"
+,
+LBXD01,"1,2,3,7,8-pncdd (fg/g)"
+LBXD02,"1,2,3,4,7,8-hxcdd (fg/g)"
+LBXD03,"1,2,3,6,7,8-hxcdd (fg/g)"
+LBXD04,"1,2,3,7,8,9-hxcdd (fg/g)"
+LBXD05,"1,2,3,4,6,7,8-hpcdd (fg/g)"
+LBXD07,"1,2,3,4,6,7,8,9-ocdd (fg/g)"
+LBXD01LA,"1,2,3,7,8-pncdd Lipid Adj (pg/g)"
+LBXD02LA,"1,2,3,4,7,8-hxcdd Lipid Adj (pg/g)"
+LBXD03LA,"1,2,3,6,7,8-hxcdd Lipid Adj (pg/g)"
+LBXD04LA,"1,2,3,7,8,9-hxcdd Lipid Adj (pg/g)"
+LBXD05LA,"1,2,3,4,6,7,8-hpcdd Lipid Adj (pg/g)"
+LBXD07LA,"1,2,3,4,6,7,8,9-ocdd Lipid Adj (pg/g)"
+LBXDIE,Dieldrin (ng/g)
+LBXDIELA,Dieldrin Lipid Adj (ng/g)
+LBXEND,Endrin (ng/g)
+LBXENDLA,Endrin Lipid Adj (ng/g)
+LBXF01,"2,3,7,8-tcdf (fg/g)"
+LBXF02,"1,2,3,7,8-pncdf (fg/g)"
+LBXF03,"2,3,4,7,8-pncdf (fg/g)"
+LBXF04,"1,2,3,4,7,8-hcxdf (fg/g)"
+LBXF05,"1,2,3,6,7,8-hxcdf (fg/g)"
+LBXF06,"1,2,3,7,8,9-hxcdf (fg/g)"
+LBXF07,"2,3,4,6,7,8-hxcdf (fg/g)"
+LBXF08,"1,2,3,4,6,7,8-hpcdf (fg/g)"
+LBXF09,"1,2,3,4,7,8,9-hpcdf (fg/g)"
+LBXF10,"1,2,3,4,6,7,8,9-ocdf (fg/g)"
+LBXF01LA,"2,3,7,8-tcdf Lipid Adj (pg/g)"
+LBXF02LA,"1,2,3,7,8-pncdf Lipid Adj (pg/g)"
+LBXF03LA,"2,3,4,7,8-pncdf Lipid Adj (pg/g)"
+LBXF04LA,"1,2,3,4,7,8-hxcdf Lipid Adj (pg/g)"
+LBXF05LA,"1,2,3,6,7,8-hxcdf Lipid Adj (pg/g)"
+LBXF06LA,"1,2,3,7,8,9-hxcdf Lipid Adj (pg/g)"
+LBXF07LA,"2,3,4,6,7,8-hxcdf Lipid Adj (pg/g)"
+LBXF08LA,"1,2,3,4,6,7,8-hxcdf Lipid Adj (pg/g)"
+LBXF09LA,"1,2,3,4,7,8,9-hpcdf Lipid Adj (pg/g)"
+LBXF10LA,"1,2,3,4,6,7,8,9-ocdf Lipid Adj (pg/g)"
+,
+LBXGHC,Gamma-hexachlorocyclohexane (ng/g)
+LBXGHCLA,G-hexachlorocyclohexane Lipid Adj (ng/g)
+LBXHCB,Hexachlorobenzene (ng/g)
+LBXHCBLA,Hexachlorobenzene Lipid Adj (ng/g)
+LBXHPE,Heptachlor Epoxide (ng/g)
+LBXHPELA,Heptachlor Epoxide Lipid Adj (ng/g)
+LBXHXC,"3,3',4,4',5,5'-hxcb (fg/g)"
+LBXHXCLA,"3,3',4,4',5,5'-hxcb Lipid Adj (pg/g)"
+LBXMIR,Mirex (ng/g)
+LBXMIRLA,Mirex Lipid Adj (ng/g)
+LBXODT,"o,p'-DDT (ng/g)"
+LBXODTLA,"o,p'-DDT Lipid Adj (ng/g)"
+LBXOXY,Oxychlordane (ng/g)
+LBXOXYLA,Oxychlordane Lipid Adj (ng/g)
+LBXPCB,"3,3',4,4',5-pncb (fg/g)"
+LBXPCBLA,"3,3',4,4',5-pcnb Lipid Adj (pg/g)"
+LBXPDE,"p,p'-DDE (ng/g)"
+LBXPDELA,"p,p'-DDE Lipid Adj (ng/g)"
+LBXPDT,"p,p'-DDT (ng/g)"
+LBXPDTLA,"p,p'-DDT Lipid Adj (ng/g)"
+,
+,
+,
+LBXTC2,"3,4,4',5-tcb (fg/g)"
+LBXTC2LA,"3,4,4',5-tcb Lipid Adj (pg/g)"
+LBXTCD,"2,3,7,8-tcdd (fg/g)"
+LBXTCDLA,"2,3,7,8-tcdd Lipid Adj (pg/g)"
+LBXTNA,Trans-nonachlor (ng/g)
+LBXTNALA,Trans-nonachlor Lipid Adj (ng/g)
