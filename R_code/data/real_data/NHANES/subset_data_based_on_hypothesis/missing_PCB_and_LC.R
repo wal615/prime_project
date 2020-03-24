@@ -22,13 +22,10 @@ outcome_name <- c("LBXGH")
 selected_col <- c(outcome_name, name_PCB, name_PCB_LC, name_other_variables)
 hemoglobin_data_selected <- hemoglobin_data[,..selected_col]
 
-# change the outcome name
-colnames(hemoglobin_data_selected)[colnames(hemoglobin_data_selected) %in% outcome_name] <- "outcome_LBXGH"
-
 # replace all the PCB related exposures' name to PCB
-colnames(hemoglobin_data_selected) <-  gsub(pattern = "^(LBX|LBD)", 
+colnames(hemoglobin_data_selected)[-1] <-  gsub(pattern = "^(LBX|LBD)", 
                                             replacement = "PCB", 
-                                            x = colnames(hemoglobin_data_selected),
+                                            x = colnames(hemoglobin_data_selected)[-1],
                                             perl = TRUE)
 name_PCB <- gsub(pattern = "^(LBX|LBD)", 
                  replacement = "PCB", 

@@ -2,7 +2,8 @@
 ## standardized function with tranformation features
 ##################################################################################
 # default 
-std_fn <- function(b){
+#' @export
+std.fn <- function(b){
   # mean-variance standardized for main effect
   for(k in 1:ncol(b)){
     me=mean(b[,k])
@@ -13,13 +14,14 @@ std_fn <- function(b){
   b
 }
 
-trans <- function(b, tran_FUN = null_tran){
+trans <- function(b, tran.FUN = null.tran){
   # transform 
-  b <- apply(b, 2, tran_FUN, ...)
+  b <- apply(b, 2, tran.FUN, ...)
   b
 }
 
-add_inter <- function(b){
+#' @export
+add.inter <- function(b){
   # interaction 
   b <- model.matrix(~.*.+0, data.frame(b))# adding the interaction term
   b
@@ -29,7 +31,7 @@ add_inter <- function(b){
 ## Null transformation function
 ##################################################################################
 
-null_tran <- function(y) {
+null.tran <- function(y) {
   y
 }
 
@@ -37,7 +39,7 @@ null_tran <- function(y) {
 ## log transformation function
 ##################################################################################
 
-log_tran <- function(y) {
+log.tran <- function(y) {
   log(y)
 }
 
@@ -45,27 +47,27 @@ log_tran <- function(y) {
 ## square root transformation function
 ##################################################################################
 
-sqrt_tran <- function(y) {
+sqrt.tran <- function(y) {
   sqrt(y)
 }
 
 ##################################################################################
-## cox_box transformation function
+## cox.box transformation function
 ##################################################################################
 
-box_cox_tran <- function(y) {
+box.cox.tran <- function(y) {
   bc <- MASS::boxcox(y~1, plotit = FALSE)
   lambda <- bc$x[which.max(bc$y)]  # find the optimal lambda based on lm model
-  if(lambda == 0) bc_y <- log(y) 
-  else bc_y <- (y^lambda - 1)/lambda
-  bc_y
+  if(lambda == 0) bc.y <- log(y) 
+  else bc.y <- (y^lambda - 1)/lambda
+  bc.y
 }
 
 ##################################################################################
 ## Rank transformation function
 ##################################################################################
 
-rank_tran <- function(y) {
+rank.tran <- function(y) {
   rank(y)
 }
 
@@ -73,17 +75,17 @@ rank_tran <- function(y) {
 ## Normal quantile transformation function
 ##################################################################################
 
-norm_quantile_tran <- function(y) {
-  emprircal_cdf <- ecdf(y) # empricial dist 
+norm.quantile.tran <- function(y) {
+  emprircal.cdf <- ecdf(y) # empricial dist 
   y[which.min(y)] <- y[which.min(y)] + 0.0001 # modify the max and min values to avoid Inf 
   y[which.max(y)] <- y[which.max(y)] - 0.0001
-  y <- emprircal_cdf(y) %>% qnorm(.) 
+  y <- emprircal.cdf(y) %>% qnorm(.) 
 }
 
 ##################################################################################
 ## Normal score transformation
 ##################################################################################
-norm_score_tran <- function(y) {
+norm.score.tran <- function(y) {
   (rank(y)/(length(y)+1)) %>% qnorm(.)
 }
 
@@ -91,7 +93,7 @@ norm_score_tran <- function(y) {
 ## Categorized transformation function
 ##################################################################################
 
-categorized_tran <- function(x, by) {
+categorized.tran <- function(x, by) {
   breaks <- c(quantile(x, probs = seq(0, 1, by = by))) %>% unique(.)
   cut(x = x, 
       breaks = breaks,
@@ -109,9 +111,9 @@ categorized_tran <- function(x, by) {
 invsqrt <- function(Sigma, tol = 1e-15) {
   ## get rid of zero egienvalues
   Seign <- eigen(Sigma)
-  eign_value <- Seign$values
-  eign_value_rec_sqrt <- if_else(eign_value > tol, 1/sqrt(eign_value), 0)
-  Seign$vectors %*% diag(eign_value_rec_sqrt) %*% t(Seign$vectors)
+  eign.value <- Seign$values
+  eign.value.rec.sqrt <- ifelse(eign.value > tol, 1/sqrt(eign.value), 0)
+  Seign$vectors %*% diag(eign.value.rec.sqrt) %*% t(Seign$vectors)
 }
 
 ##################################################################################
@@ -121,9 +123,9 @@ invsqrt <- function(Sigma, tol = 1e-15) {
 inv <- function(Sigma, tol = 1e-15) {
   ## get rid of zero egienvalues
   Seign <- eigen(Sigma)
-  eign_value <- Seign$values
-  eign_value_sqrt <- if_else(eign_value > tol, 1/eign_value, 0)
-  Seign$vectors %*% diag(eign_value_sqrt) %*% t(Seign$vectors)
+  eign.value <- Seign$values
+  eign.value.sqrt <- if.else(eign.value > tol, 1/eign.value, 0)
+  Seign$vectors %*% diag(eign.value.sqrt) %*% t(Seign$vectors)
 }
 
 
@@ -134,10 +136,10 @@ inv <- function(Sigma, tol = 1e-15) {
 msqrt <- function(Sigma) {
   ## get rid of zero egienvalues
   Seign <- eigen(Sigma)
-  eign_value <- Seign$values
-  if(any(eign_value<0)) stop("cov matrix has to be PSD")
-  eign_value_sqrt <- sqrt(eign_value)
-  Seign$vectors %*% diag(eign_value_sqrt) %*% t(Seign$vectors)
+  eign.value <- Seign$values
+  if(any(eign.value<0)) stop("cov matrix has to be PSD")
+  eign.value.sqrt <- sqrt(eign.value)
+  Seign$vectors %*% diag(eign.value.sqrt) %*% t(Seign$vectors)
 }
 
 mdist <- function(A,B){
@@ -147,17 +149,17 @@ mdist <- function(A,B){
 ##################################################################################
 ## square-root
 ##################################################################################
-tran_add_noise <- function(x) {
+tran.add.noise <- function(x) {
   p <- ncol(x)
   n <- nrow(x)
   x + matrix(rnorm(p*n, sd = sqrt(0.1)), ncol =p)
 }
 
-tran_com <- function(x) {
+tran.com <- function(x) {
   p <- ncol(x)
   t <- 8
-  col_tran <- diag(t)
-  col_tran[upper.tri(col_tran)] <- 1
-  col_tran <- Matrix::bdiag(col_tran, diag(p-t)) %>% as.matrix(.)
-  x %*% col_tran
+  col.tran <- diag(t)
+  col.tran[upper.tri(col.tran)] <- 1
+  col.tran <- Matrix::bdiag(col.tran, diag(p-t)) %>% as.matrix(.)
+  x %*% col.tran
 }
