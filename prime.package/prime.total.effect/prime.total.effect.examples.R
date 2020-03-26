@@ -1,6 +1,7 @@
 # example of prime project 
 options(warn = 1, error = bettertrace::stacktrace)
 library(prime.total.effect)
+# hemoglobin application ####
 # total.effect.estimation 
 data <- na.omit(hemoglobin.PCB)
 data <- data[,1:39] # only select y and PCBs 
@@ -24,3 +25,69 @@ y <- data$LBXGH
 x.empirical <- empirical.cov.method(x = x.total, emp.sigma = cov(x.total))$uncorr.data
 res.GCTA <- GCTA.rr(y = y, x = x.empirical, target = "beta2")
 res.GCTA <- GCTA.rr(y = y, x = x.total, target = "beta2")
+
+# simulation with PCBs covariates ####
+set.seed(1234)
+# 1. generate covariates
+n <- 200
+p <- 500
+sigma.x <- diag(p)
+x <- MASS::mvrnorm(n = n,
+                   mu = rep(0,p),
+                   Sigma = sigma.x)
+
+# 2. main coefficient 
+betam <- rnorm(p)
+# set several coefficient to 0 to mimic sparsity situation
+sparse_ratio <- 0.5
+zero_index <- ((1/sparse_ratio)*1:floor(p*sparse_ratio)) # 2  4  6  8 10 12 14 16 18 20
+betam[zero_index] <- 0
+# set the total main effect as 10
+betam <- as.numeric(sqrt(10)/sqrt(t(betam)%*%sigma.x%*%betam))*betam
+
+# 3. generate y
+# generate the error term
+rho_e <- 0.5
+sigma_e <- sqrt(10*((1-rho_e)/rho_e))
+epsilon <- rnorm(n, mean = 0, sd=sigma_e)
+y <- x %*% betam + epsilon
+
+# 4. total variance estimation target with 10
+res.GCTA <- GCTA.rr(x = x, y = y, target = "h2")
+bootstrap.GCTA <- para.bootstrap(h2 = res.GCTA, x = x, n.sub = 1000, h2.method = GCTA.rr, target = "h2")
+res.Dicker <- Dicker.2013(x = x, y = y, target = "h2")
+res.EignPrism <- EigenPrism(x = x, y = y, target = "h2")
+
+
+# simulation examples ####
+set.seed(1234)
+# 1. generate covariates
+n <- 200
+p <- 500
+sigma.x <- diag(p)
+x <- MASS::mvrnorm(n = n,
+                   mu = rep(0,p),
+                   Sigma = sigma.x)
+
+# 2. main coefficient 
+betam <- rnorm(p)
+# set several coefficient to 0 to mimic sparsity situation
+sparse_ratio <- 0.5
+zero_index <- ((1/sparse_ratio)*1:floor(p*sparse_ratio)) # 2  4  6  8 10 12 14 16 18 20
+betam[zero_index] <- 0
+# set the total main effect as 10
+betam <- as.numeric(sqrt(10)/sqrt(t(betam)%*%sigma.x%*%betam))*betam
+
+# 3. generate y
+# generate the error term
+rho_e <- 0.5
+sigma_e <- sqrt(10*((1-rho_e)/rho_e))
+epsilon <- rnorm(n, mean = 0, sd=sigma_e)
+y <- x %*% betam + epsilon
+
+# 4. total variance estimation target with 10
+res.GCTA <- GCTA.rr(x = x, y = y, target = "h2")
+bootstrap.GCTA <- para.bootstrap(h2 = res.GCTA, x = x, n.sub = 1000, h2.method = GCTA.rr, target = "h2")
+res.Dicker <- Dicker.2013(x = x, y = y, target = "h2")
+res.EignPrism <- EigenPrism(x = x, y = y, target = "h2")
+

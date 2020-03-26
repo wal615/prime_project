@@ -10,18 +10,18 @@ setwd("~/dev/prime_project/")
 create("prime.total.effect")
 
 # create the document 
-setwd("~/dev/prime_project/prime.total.effect/")
+setwd("~/dev/prime.total.effect/")
 document()
 
 # install the develop version of the prime.total.effect package 
-install("~/dev/prime_project/prime.total.effect/")
+install("~/dev/prime.total.effect/")
 library(prime.total.effect)
 # create help documents 
-setwd("~/dev/prime_project/prime.total.effect/")
+setwd("~/dev/prime.total.effect/")
 devtools::use_vignette(name = "Introduction")
 
 # adding the dataset #### 
-# setwd("~/dev/prime_project/prime.total.effect/")
+# setwd("~/dev/prime.total.effect/")
 # create a folder for raw data
 # devtools::use_data_raw() 
 # add the raw data into the data-raw folder
@@ -49,8 +49,8 @@ colnames(hemoglobin_data_selected)[-1] <-  gsub(pattern = "^(LBX|LBD)",
                                                 x = colnames(hemoglobin_data_selected)[-1],
                                                 perl = TRUE)
 write.csv(hemoglobin_data_selected, 
-          file = "~/dev/prime_project/prime.total.effect/data-raw/hemoglobin_data.csv",
+          file = "~/dev/prime.total.effect/data-raw/hemoglobin_data.csv",
           row.names = F)
 # add the data from the raw-data
-source("~/dev/prime_project/prime.total.effect/data-raw/hemoglobin_PCBs.R")
+source("~/dev/prime.total.effect/data-raw/hemoglobin_PCBs.R")
 

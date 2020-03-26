@@ -1,0 +1,82 @@
+---
+title: "Comparison between SDR and PCA on Hemoglobin data"
+author: "Xuelong Wang"
+date: "`r Sys.Date()`"
+output: 
+  pdf_document:
+    toc: true
+    number_sections: true
+    toc_depth: 3  # upto three depths of headings (specified by #, ## and ###)
+    keep_tex: FALSE
+header-includes:
+  - \usepackage{float,amsmath, bbm, amssymb, siunitx, bm}
+  - \usepackage{pdfpages}
+  - \floatplacement{figure}{H}
+  - \newcommand{\indep}{\rotatebox[origin=c]{90}{$\models$}}
+  - \newcommand{\vect}[1]{\boldsymbol{\mathbf{#1}}}
+editor_options: 
+chunk_output_type: console
+---
+    
+```{r setup, include=FALSE, cache=TRUE}
+knitr::opts_chunk$set(echo = FALSE, 
+                      comment = "", 
+                      message = FALSE, 
+                      warning = FALSE, 
+                      echo = FALSE, 
+                      fig.height = 5,
+                      fig.width = 8,
+                      tidy = TRUE,
+                      tidy.opts=list(width.cutoff=100),
+                      root.dir = "~/dev/prime_project/")
+options(scipen=1, digits=2, width = 100)
+# load library
+library(MASS)
+library(tidyverse)
+library(data.table)
+library(ggforce)
+library(ggpubr)
+library(gridExtra)
+library(kableExtra)
+library(knitr)
+source("./Dimension_reduction_PCBs.R")
+```
+
+# Motivation 
+Since PCBs are usually high dimension and highly correlated, one approach is to apply the dimension reduction method to the original data, then apply an analysis method on the projected data set. 
+
+# Goal
+Here, we compare the performances of Sufficient Dimension Reduction with PCA, which are commonly used dimension reduction method. 
+
+1. For the simplicity, we just choose the linear regression as the analysis method  
+1. We use $R^2$ and RMSE as the evaluation methods  
+1. Data set: Hemogoblin data   
+
+# Data
+The data is a subset of the Hemoglobin data removing all the missing values. 
+
+- $n = `r nrow(data)`$  
+- $n = `r ncol(data)`$  
+- All the PCBs have been standardized and log-transformed
+
+# Dimension reduction
+For PCA, we adopt a Cross-Validation method to choose the number of components. For SDR methods, we use the large sample tests for the results. The number of directions are the followings:
+
+- PCA: `r model$bestTune$ncomp`
+- SIR: `r sum(sir.test$p.value <= 0.05)`
+- SAVE: `r sum(save.test$"p.value(Nor)" <= 0.05)`
+
+# Predictive result 
+
+- Full data: $R^2$: `r summary(lm.full)$r.squared`, Ajusted $R^2$: `r summary(lm.full)$adj.r.squared`
+- PCA: $R^2$: `r summary(lm.pca)$r.squared`, Ajusted $R^2$: `r summary(lm.pca)$adj.r.squared`
+- SIR: $R^2$: `r summary(lm.sir)$r.squared`, Ajusted $R^2$: `r summary(lm.sir)$adj.r.squared`
+- SAVE: $R^2$: `r summary(lm.save)$r.squared`, Ajusted $R^2$: `r summary(lm.save)$adj.r.squared`
+
+
+```{r summary of lm, echo = T}
+summary(lm.full)
+summary(lm.pca)
+summary(lm.sir)
+summary(lm.save)
+```
