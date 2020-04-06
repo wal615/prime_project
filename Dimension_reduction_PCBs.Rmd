@@ -56,7 +56,7 @@ Here, we compare the performances of Sufficient Dimension Reduction with PCA, wh
 The data is a subset of the Hemoglobin data removing all the missing values. 
 
 - $n = `r nrow(data)`$  
-- $n = `r ncol(data)`$  
+- $p = `r ncol(data)-1`$  
 - All the PCBs have been standardized and log-transformed
 
 # Dimension reduction

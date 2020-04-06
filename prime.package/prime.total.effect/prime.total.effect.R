@@ -16,9 +16,14 @@ document()
 # install the develop version of the prime.total.effect package 
 install("~/dev/prime.total.effect/")
 library(prime.total.effect)
+
 # create help documents 
 setwd("~/dev/prime.total.effect/")
 devtools::use_vignette(name = "Introduction")
+
+# Add the modified vignette into the package
+setwd("~/dev/prime.total.effect/")
+devtools::build_vignettes()
 
 # adding the dataset #### 
 # setwd("~/dev/prime.total.effect/")
