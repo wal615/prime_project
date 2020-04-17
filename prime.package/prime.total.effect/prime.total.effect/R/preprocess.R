@@ -10,8 +10,7 @@ std.fn <- function(b){
     std=sqrt(var(b[,k]))
     b[,k]=(b[,k]-me)/std
   }
-
-  b
+  data.matrix(b) # return a matrix
 }
 
 trans <- function(b, tran.FUN = null.tran){

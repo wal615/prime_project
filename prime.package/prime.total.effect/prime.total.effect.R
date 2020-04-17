@@ -20,7 +20,8 @@ library(prime.total.effect)
 # create help documents 
 setwd("~/dev/prime.total.effect/")
 devtools::use_vignette(name = "Introduction")
-
+devtools::use_vignette(name = "Master")
+devtools::use_vignette(name = "Summary")
 # Add the modified vignette into the package
 setwd("~/dev/prime.total.effect/")
 devtools::build_vignettes()

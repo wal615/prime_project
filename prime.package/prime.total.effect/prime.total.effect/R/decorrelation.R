@@ -4,7 +4,9 @@
 #' @import glasso
 #' @export
 GLASSO.method <- function(x, rho = 0.001){
-  sigma=cov(x, x)
+  # assume that x is standardized
+  sigma=cor(x, x)
+  col.name <- colnames(x)
   # Compute sigma
   sigma <- glasso(s = sigma, rho = rho, thr = 0.05)$w
 
@@ -12,23 +14,33 @@ GLASSO.method <- function(x, rho = 0.001){
   sigma.isqrt <- invsqrt(sigma)
 
   # uncorrelated.data
-  uncorr.data=x%*%sigma.isqrt
-
-  list(uncorr.data = uncorr.data)
+  uncorr.data <- x%*%sigma.isqrt
+  rownames(uncorr.data) <- col.name
+  list(uncorr.data = uncorr.data,
+       method = "glasso",
+       args = list(rho = rho,
+                   thr = thr))
 }
 
 #' Historical data based method for covaraite decorrelation
 #' @param x A matrix for covariates
 #' @param emp.sigma A non-singular covariance matrix calculated from historical data 
 #' @export
-empirical.cov.method <- function(x,  emp.sigma){
+empirical.cov.method <- function(x, emp.sigma = NULL){
   
+  if(is.null(emp.sigma)) {
+    emp.sigma <- cor(x)
+  }
+  col.name <- colnames(x)
+  
+  # decorrelation via emprical covariance correlation matrix
   sigma.isqrt <- invsqrt(emp.sigma)  
   
   # uncorrelated.data
   uncorr.data <- x%*%sigma.isqrt
-  
-  list(uncorr.data = uncorr.data)
+  rownames(uncorr.data) <- col.name
+  list(uncorr.data = uncorr.data,
+       method = "historical")
   
 }
 
